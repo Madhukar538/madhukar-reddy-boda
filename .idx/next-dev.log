@@ -1,0 +1,43 @@
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:22334
+   - Network:      http://192.168.1.10:22334
+
+ ✓ Starting...
+ ✓ Ready in 4.8s
+ ○ Compiling / ...
+ ✓ Compiled / in 12.1s
+ GET / 500 in 15201ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1857ms
+ GET /favicon.ico 200 in 2532ms
+ ○ Compiling / ...
+ ✓ Compiled in 3.7s
+ ✓ Compiled / in 1352ms
+ GET / 200 in 5552ms
+ GET /favicon.ico?favicon.56766c03.ico 200 in 589ms
+ GET / 200 in 2791ms
+ GET / 200 in 1297ms
+ GET / 200 in 1317ms
+ GET / 200 in 1188ms
+ GET / 200 in 1523ms
+ GET / 200 in 1531ms
+ GET / 200 in 2706ms
+ GET / 200 in 2160ms
+ GET / 200 in 2412ms
+ GET / 200 in 2616ms
+ GET / 200 in 2376ms
+ GET / 200 in 2518ms
+ GET / 200 in 2722ms
+ GET / 200 in 1568ms
+ GET / 200 in 2392ms
+ GET / 200 in 3149ms
+ GET / 200 in 2451ms
+ GET / 200 in 2424ms
+ GET / 200 in 3397ms
+ GET /favicon.ico?favicon.56766c03.ico 200 in 448ms
+ GET / 200 in 1762ms
+ GET / 200 in 1511ms
+ GET / 200 in 1351ms
+ GET / 200 in 1878ms
+ GET / 200 in 3278ms
+ GET /favicon.ico?favicon.56766c03.ico 200 in 398ms

@@ -1,0 +1,12 @@
+ ⨯ Error: Attempted to call createMotionComponent() from the server but createMotionComponent is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.
+    at Experience (src\components\portfolio\experience.tsx:39:16)
+  37 |       <div className="relative mx-auto max-w-5xl pl-10 md:pl-12">
+  38 |         {/* Timeline line with animation */}
+> 39 |         <motion.div
+     |                ^
+  40 |           initial={{ height: 0 }}
+  41 |           animate={{ height: '100%' }}
+  42 |           transition={{ duration: 1, ease: 'easeInOut' }} {
+  digest: '4155045022'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.

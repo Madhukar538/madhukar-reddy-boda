@@ -1,3 +1,5 @@
+'use client';
+
 import { Briefcase } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { Card } from '@/components/ui/card';
