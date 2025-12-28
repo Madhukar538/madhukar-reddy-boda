@@ -11,96 +11,97 @@ const base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAIAAACxN37FAAAgAElEQVR4nIS
 export function Hero() {
   return (
     <section id="home" className="py-12 md:py-16">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex justify-center lg:justify-start"
-        >
-          <Image
-            src={`data:image/png;base64, ${base64Image}`}
-            alt="Boda Madhukar Reddy"
-            width={220}
-            height={220}
-            className="rounded-full object-cover shadow-lg ring-4 ring-accent/20"
-            data-ai-hint="person portrait"
-          />
-        </motion.div>
-
-        <div className="flex flex-col items-center gap-4 lg:max-w-3xl lg:items-start">
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05, duration: 0.45 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight font-headline text-primary leading-tight"
-          >
-            BODA MADHUKAR REDDY
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-lg md:text-xl font-semibold text-accent"
-          >
-            SOFTWARE ARCHITECT
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.4 }}
-            className="max-w-2xl text-base md:text-lg leading-relaxed text-muted-foreground"
-          >
-            Architecting resilient platforms with .NET, APIs, and AI integrations, with a focus on performance tuning and observability.
-          </motion.p>
-
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-2xl">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_20%_20%,#60a5fa_0,transparent_28%),radial-gradient(circle_at_80%_0%,#22d3ee_0,transparent_24%)]" />
+        <div className="relative flex flex-col items-center gap-8 px-4 py-10 text-center md:px-10 lg:flex-row lg:items-center lg:justify-between lg:text-left">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="flex flex-wrap justify-center lg:justify-start gap-2"
+            transition={{ duration: 0.4 }}
+            className="flex justify-center lg:justify-start"
           >
-
-            <Badge variant="secondary" className="text-sm">
-             C# .NET core (Web Api, MVC, Hybrid)
-            </Badge>
-
-            <Badge variant="secondary" className="text-sm">
-              SQL Server, Solr, Redis, MongoDB, Memory cache
-            </Badge>
-
-            <Badge variant="secondary" className="text-sm">
-              Capacity & SLA Validation
-            </Badge>
-            <Badge variant="secondary" className="text-sm font-semibold">
-              API Load Testing: k6 + Grafana
-            </Badge>
-            <Badge variant="secondary" className="text-sm">
-              Capacity & SLA Validation
-            </Badge>
+            <Image
+              src={`data:image/png;base64, ${base64Image}`}
+              alt="Boda Madhukar Reddy"
+              width={220}
+              height={220}
+              className="rounded-full object-cover shadow-lg ring-4 ring-accent/20"
+              data-ai-hint="person portrait"
+            />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="mt-2 flex w-full max-w-xl flex-col items-center gap-4 sm:flex-row sm:flex-wrap lg:items-start lg:justify-start"
-          >
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <a href="mailto:madhukarreddyboda538@gmail.com">
-                <Mail className="mr-2 h-5 w-5" />
-                madhukarreddyboda538@gmail.com
-              </a>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-              <a href="tel:+919573153479">
-                <Phone className="mr-2 h-5 w-5" />
-                +91 9573153479
-              </a>
-            </Button>
-          </motion.div>
+          <div className="flex flex-col items-center gap-5 lg:max-w-3xl lg:items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-primary shadow-sm"
+            >
+              Software Architect · Hyderabad, IN
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.45 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight font-headline text-primary leading-tight"
+            >
+              BODA MADHUKAR REDDY
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.4 }}
+              className="max-w-3xl text-base md:text-lg leading-relaxed text-muted-foreground"
+            >
+              Architecting resilient .NET and API platforms with AI-driven automations and rigorous performance engineering. I focus on system modernization, observability, and load testing with k6 + Grafana to keep services fast and dependable.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18, duration: 0.4 }}
+              className="flex flex-wrap justify-center gap-2 lg:justify-start"
+            >
+              <Badge variant="secondary" className="text-sm font-semibold">
+                API Load Testing · k6 + Grafana
+              </Badge>
+              <Badge variant="secondary" className="text-sm">
+                AI Workflows · LangChain / RAG
+              </Badge>
+              <Badge variant="secondary" className="text-sm">
+                C# / .NET (API, MVC, Hybrid)
+              </Badge>
+              <Badge variant="secondary" className="text-sm">
+                SQL Server · Solr · Redis · MongoDB
+              </Badge>
+              <Badge variant="outline" className="text-sm">
+                System Modernization & Observability
+              </Badge>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22, duration: 0.4 }}
+              className="mt-2 flex w-full max-w-xl flex-col items-center gap-4 sm:flex-row sm:flex-wrap lg:items-start lg:justify-start"
+            >
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <a href="mailto:madhukarreddyboda538@gmail.com">
+                  <Mail className="mr-2 h-5 w-5" />
+                  madhukarreddyboda538@gmail.com
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                <a href="tel:+919573153479">
+                  <Phone className="mr-2 h-5 w-5" />
+                  +91 9573153479
+                </a>
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

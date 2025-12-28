@@ -4,11 +4,12 @@ import { Section } from '@/components/portfolio/section';
 export function Summary() {
   return (
     <Section id="about" title="About Me">
-      <Card className="max-w-3xl mx-auto" variant="glass">
+      <Card className="max-w-4xl mx-auto overflow-hidden border border-border/60 bg-card/70 shadow-2xl" variant="glass">
+        <div className="h-1 w-full bg-gradient-to-r from-accent via-primary to-transparent opacity-80" />
         <CardContent className="pt-6">
           <div className="text-center">
             <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
-              Backend-focused Software Engineer with strong experience in building, optimizing, and scaling high-traffic systems.
+                Backend-focused Software Engineer with strong experience in building, optimizing, and scaling high-traffic systems.
 
 I specialize in .NET Core APIs, Solr, Redis, MSSQL, and Node.js, with hands-on expertise in performance tuning, memory optimization, and load testing using k6 + Grafana.
 

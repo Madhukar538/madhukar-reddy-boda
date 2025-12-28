@@ -129,73 +129,78 @@ const ecommerceProjects = [
 export function Projects() {
   return (
     <Section id="projects" title="Projects">
-      <div>
-        <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
-          Key Projects
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {keyProjects.map((project) => (
-            <Card
-              key={project.title}
-              variant="glass"
-              className="flex flex-col transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
-            >
-              <CardHeader>
-                <CardTitle>{project.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground">
-                  {project.description}
-                </p>
-              </CardContent>
-              <CardFooter>
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <Badge key={tech} variant="secondary">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-2xl px-5 py-10 md:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_15%_20%,#60a5fa_0,transparent_28%),radial-gradient(circle_at_90%_10%,#22d3ee_0,transparent_24%)]" />
 
-      <div className="mt-16">
-        <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
-          E-commerce Experience
-        </h3>
-        <Card variant="glass">
+        <div className="relative">
+          <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
+            Key Projects
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {keyProjects.map((project) => (
+              <Card
+                key={project.title}
+                variant="glass"
+                className="flex flex-col border border-border/60 bg-background/70 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
+              >
+                <CardHeader>
+                  <CardTitle>{project.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="text-sm text-muted-foreground">
+                    {project.description}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech) => (
+                      <Badge key={tech} variant="secondary">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative mt-16">
+          <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
+            E-commerce Experience
+          </h3>
+          <Card variant="glass" className="border border-border/60 bg-background/70">
             <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
-                {ecommerceProjects.map((project) => (
-                    <AccordionItem value={project.id} key={project.id}>
-                        <AccordionTrigger className="text-lg font-semibold hover:text-accent font-headline px-6">
-                            {project.title}
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="p-6 rounded-b-lg pt-2">
-                               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4">
-                                    <p><strong className="text-primary">Client:</strong> {project.client}</p>
-                                    <p><strong className="text-primary">Role:</strong> {project.role}</p>
-                                    <p><strong className="text-primary">Duration:</strong> {project.duration}</p>
-                               </div>
-                               <p className="mb-4 text-muted-foreground">{project.description}</p>
-                               <ul className="mb-4 list-disc space-y-2 pl-5 text-sm">
-                                   {project.responsibilities.map((item, index) => <li key={index}>{item}</li>)}
-                               </ul>
-                               <div className="flex flex-wrap gap-2 mb-4">
-                                   {project.tech.map(t => <Badge key={t} variant="outline">{t}</Badge>)}
-                               </div>
-                               <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-accent hover:underline">
-                                   Visit Website <LinkIcon className="ml-2 h-4 w-4" />
-                               </a>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
+              {ecommerceProjects.map((project) => (
+                <AccordionItem value={project.id} key={project.id}>
+                  <AccordionTrigger className="text-lg font-semibold hover:text-accent font-headline px-6">
+                    {project.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="p-6 rounded-b-lg pt-2">
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4">
+                        <p><strong className="text-primary">Client:</strong> {project.client}</p>
+                        <p><strong className="text-primary">Role:</strong> {project.role}</p>
+                        <p><strong className="text-primary">Duration:</strong> {project.duration}</p>
+                      </div>
+                      <p className="mb-4 text-muted-foreground">{project.description}</p>
+                      <ul className="mb-4 list-disc space-y-2 pl-5 text-sm">
+                        {project.responsibilities.map((item, index) => <li key={index}>{item}</li>)}
+                      </ul>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.tech.map(t => <Badge key={t} variant="outline">{t}</Badge>)}
+                      </div>
+                      <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-accent hover:underline">
+                        Visit Website <LinkIcon className="ml-2 h-4 w-4" />
+                      </a>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
             </Accordion>
-        </Card>
+          </Card>
+        </div>
       </div>
     </Section>
   );
