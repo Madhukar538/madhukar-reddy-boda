@@ -10,7 +10,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import profileImage from '@/assets/madhukar.png';
 
 const navLinks = [
   { href: '#about', label: 'About' },
@@ -98,7 +97,7 @@ export function Header() {
               >
                 <div className="h-9 w-9 overflow-hidden rounded-full ring-2 ring-accent/30 shadow-sm">
                   <Image
-                    src={profileImage}
+                    src="/madhukar.png"
                     alt="Boda Madhukar Reddy"
                     width={36}
                     height={36}
@@ -108,7 +107,7 @@ export function Header() {
                 </div>
                 <div className="leading-tight">
                   <p className="text-sm font-semibold text-primary">Boda Madhukar Reddy</p>
-                  <p className="text-xs text-muted-foreground">Performance & AI-driven APIs</p>
+                  <p className="text-xs text-muted-foreground">Software Architect · Hyderabad, IN</p>
                 </div>
               </motion.div>
             )}
