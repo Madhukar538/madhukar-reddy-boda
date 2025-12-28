@@ -62,6 +62,18 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 0.4 }}
             className="flex flex-wrap justify-center lg:justify-start gap-2"
           >
+
+            <Badge variant="secondary" className="text-sm">
+             C# .NET core (Web Api, MVC, Hybrid)
+            </Badge>
+
+            <Badge variant="secondary" className="text-sm">
+              SQL Server, Solr, Redis, MongoDB, Memory cache
+            </Badge>
+
+            <Badge variant="secondary" className="text-sm">
+              Capacity & SLA Validation
+            </Badge>
             <Badge variant="secondary" className="text-sm font-semibold">
               API Load Testing: k6 + Grafana
             </Badge>
@@ -74,7 +86,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="mt-2 flex w-full max-w-xl flex-col items-center gap-4 sm:flex-row lg:items-start lg:justify-start"
+            className="mt-2 flex w-full max-w-xl flex-col items-center gap-4 sm:flex-row sm:flex-wrap lg:items-start lg:justify-start"
           >
             <Button asChild size="lg" className="w-full sm:w-auto">
               <a href="mailto:madhukarreddyboda538@gmail.com">
