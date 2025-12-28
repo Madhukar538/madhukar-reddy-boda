@@ -11,6 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { FlaskConical } from 'lucide-react';
 
 const rdProjects = [
+  {
+    title: 'API Load Testing & Observability',
+    description:
+      'Designed repeatable k6 suites for critical APIs and wired results into Grafana dashboards to validate SLAs, spot regressions, and guide capacity planning.',
+    tech: ['k6', 'Grafana', 'API Performance', 'SLA/Capacity'],
+  },
    {
     title: 'PDF Generation from HTML in C#',
     description: 'Developed a solution for generating PDF documents from HTML content in a C# environment, utilizing libraries like PuppeteerSharp and iTextSharp to ensure high-quality output and accurate rendering.',

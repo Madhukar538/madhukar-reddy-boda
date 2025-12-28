@@ -2,6 +2,7 @@
 
 import { Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -9,8 +10,8 @@ const base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAIAAACxN37FAAAgAElEQVR4nIS
 
 export function Hero() {
   return (
-    <section id="home" className="py-20 md:py-32">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+    <section id="home" className="py-12 md:py-16">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -52,8 +53,22 @@ export function Hero() {
             transition={{ delay: 0.15, duration: 0.4 }}
             className="max-w-2xl text-base md:text-lg leading-relaxed text-muted-foreground"
           >
-            A seasoned architect delivering scalable, API-driven platforms with expertise in system modernization, and AI-powered automation.
+            Architecting resilient platforms with .NET, APIs, and AI integrations, with a focus on performance tuning and observability.
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="flex flex-wrap justify-center lg:justify-start gap-2"
+          >
+            <Badge variant="secondary" className="text-sm font-semibold">
+              API Load Testing: k6 + Grafana
+            </Badge>
+            <Badge variant="secondary" className="text-sm">
+              Capacity & SLA Validation
+            </Badge>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -79,4 +94,3 @@ export function Hero() {
     </section>
   );
 }
-

@@ -8,7 +8,13 @@ export function Summary() {
         <CardContent className="pt-6">
           <div className="text-center">
             <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
-              Seasoned Software Architect with 4+ years of experience in .NET-based system architecture, delivering scalable, API-driven platforms across domains. Proven expertise in building hybrid IoT and web solutions, modernizing legacy stacks, and integrating AI workflows using Lang Chain, RAG, and Transformer models for intelligent automation and retrieval.
+              Backend-focused Software Engineer with strong experience in building, optimizing, and scaling high-traffic systems.
+
+I specialize in .NET Core APIs, Solr, Redis, MSSQL, and Node.js, with hands-on expertise in performance tuning, memory optimization, and load testing using k6 + Grafana.
+
+I’ve worked extensively on complex integrations, handling real-world scenarios like partial failures, retries, callbacks, and high concurrency. My approach is practical and production-first — diagnose fast, fix right, and prevent recurrence.
+
+Passionate about automation, system reliability, and exploring emerging tech like AI-assisted development.
             </p>
           </div>
         </CardContent>
