@@ -14,6 +14,27 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Section } from '@/components/portfolio/section';
+import { portfolio as fossilIndiaPortfolio } from '../../portfolio/fossil-india';
+
+type FossilIndiaFeature = {
+  name: string;
+  details: string[];
+};
+type FossilIndiaChallenge = {
+  challenge: string;
+  solution: string;
+};
+type FossilIndiaProject = {
+  title: string;
+  doneUsing: string;
+  overview: string;
+  techStack: string[];
+  features: FossilIndiaFeature[];
+  performance: string[];
+  security: string[];
+  challenges: FossilIndiaChallenge[];
+  impact: string[];
+};
 import { Link as LinkIcon } from 'lucide-react';
 
 const keyProjects = [
@@ -78,6 +99,23 @@ const ecommerceProjects = [
         ],
         tech: ['AngularJs', 'Web API', 'ADO.Net', 'C#', 'ASP.Net', 'SQL Server', 'Solr', 'WCF', 'Windows Services']
     },
+        {
+          id: 'fossil-india',
+          title: 'Fossil India (Storefront Migration)',
+          client: 'Fossil India',
+          role: 'Lead Architect (Migration)',
+          duration: '2023 – 2024',
+          url: '#',
+          description: 'Led the migration of a legacy Angular storefront to a modern Next.js (App Router) platform, improving performance, security and developer experience while maintaining feature parity.',
+          responsibilities: [
+            'Architected and delivered the Next.js App Router migration plan and incremental rollout.',
+            'Implemented lazy hydration, dynamic imports, and image optimization to improve Core Web Vitals.',
+            'Migrated legacy global styles to CSS Modules and removed unused CSS.',
+            'Integrated CMS-driven dynamic templates with nonce-based CSP and security hardening.',
+            'Coordinated QA, SEO mapping, and production cutover to ensure zero-downtime deployment.'
+          ],
+          tech: ['Next.js', 'React', 'TypeScript', 'CSS Modules', 'Bootstrap', 'react-slick', 'crypto-js']
+        },
     {
         id: 'speedo',
         title: 'Speedo (Ecommerce)',
@@ -115,31 +153,34 @@ const ecommerceProjects = [
 export function Projects() {
   return (
     <Section id="projects" title="Projects">
-      <div>
+      <div className="mb-16">
         <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
-          Key Projects
+          Projects
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {keyProjects.map((project) => (
+          {(
+            ([...(fossilIndiaPortfolio as FossilIndiaProject[])].map((p) => ({
+              title: p.title,
+              description: p.overview,
+              tech: p.techStack,
+            })) as { title: string; description: string; tech: string[] }[])
+            .concat(keyProjects)
+          ).map((project) => (
             <Card
               key={project.title}
               variant="glass"
-              className="flex flex-col transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
+              className="flex flex-col border border-border/60 bg-background/70 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
             >
               <CardHeader>
                 <CardTitle>{project.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground">
-                  {project.description}
-                </p>
+                <p className="text-sm text-muted-foreground">{project.description}</p>
               </CardContent>
               <CardFooter>
                 <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech) => (
-                    <Badge key={tech} variant="secondary">
-                      {tech}
-                    </Badge>
+                    <Badge key={tech} variant="secondary">{tech}</Badge>
                   ))}
                 </div>
               </CardFooter>
@@ -147,6 +188,7 @@ export function Projects() {
           ))}
         </div>
       </div>
+      {/* ...existing code... */}
 
       <div className="mt-16">
         <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">
