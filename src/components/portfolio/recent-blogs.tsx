@@ -1,10 +1,15 @@
+'use client';
+
+import React, { useState } from 'react';
 import { blogs } from '@/data/blogs';
 import Link from 'next/link';
 import { ArrowRight, Calendar, Clock, Terminal } from 'lucide-react';
 import { Section } from './section';
+import { BlogModal } from './blog-modal';
 
 export function RecentBlogs() {
   const [featured, ...rest] = blogs;
+  const [activeBlogSlug, setActiveBlogSlug] = useState<string | null>(null);
 
   return (
     <Section id="insights" title="latest_posts()" comment="Technical blog & writing">
@@ -17,7 +22,14 @@ export function RecentBlogs() {
 
       <div className="space-y-4">
         {/* Featured post — full-width */}
-        <Link href={`/blog/${featured.slug}`} className="group block">
+        <Link
+          href={`/blog/${featured.slug}`}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveBlogSlug(featured.slug);
+          }}
+          className="group block"
+        >
           <div className="blog-card p-6 md:p-8">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="font-mono text-[10px] text-primary border border-primary/30 bg-primary/5 px-2 py-0.5 rounded-sm font-semibold uppercase tracking-wider">
@@ -59,7 +71,15 @@ export function RecentBlogs() {
         {/* Secondary posts — compact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {rest.map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveBlogSlug(post.slug);
+              }}
+              className="group block"
+            >
               <div className="terminal-card p-5 h-full flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-wider">
@@ -101,6 +121,9 @@ export function RecentBlogs() {
           </Link>
         </div>
       </div>
+
+      {/* Blog Overlay Modal */}
+      <BlogModal slug={activeBlogSlug} onClose={() => setActiveBlogSlug(null)} />
     </Section>
   );
 }
