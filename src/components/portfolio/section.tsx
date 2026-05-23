@@ -11,9 +11,9 @@ interface SectionProps {
 
 export function Section({ id, title, children, className, comment }: SectionProps) {
   return (
-    <section id={id} className={cn('py-10 md:py-14', className)}>
+    <section id={id} className={cn('py-5 md:py-8 lg:py-10', className)}>
       {/* Terminal-style section header */}
-      <div className="mb-8 space-y-1">
+      <div className="mb-4 md:mb-6 space-y-1">
         {comment && (
           <p className="font-mono text-xs text-muted-foreground/60">
             {'// '}{comment}

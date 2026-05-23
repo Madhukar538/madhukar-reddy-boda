@@ -7,71 +7,71 @@
    ============================================================ */
 @layer base {
   :root {
-    /* Light mode — clean white/gray for contrast (rarely used) */
+    /* Light mode */
     --background: 240 5% 96%;
-    --foreground: 240 10% 8%;
+    --foreground: 240 10% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 240 10% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
-    --primary: 152 100% 50%;
-    --primary-foreground: 240 10% 4%;
+    --popover-foreground: 240 10% 12%;
+    --primary: 152 55% 42%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 5% 90%;
     --secondary-foreground: 240 10% 15%;
     --muted: 240 5% 90%;
-    --muted-foreground: 240 5% 40%;
-    --accent: 192 100% 50%;
-    --accent-foreground: 240 10% 4%;
-    --destructive: 0 84% 60%;
+    --muted-foreground: 240 5% 42%;
+    --accent: 192 60% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 84%;
-    --input: 240 5% 84%;
-    --ring: 152 100% 50%;
+    --border: 240 5% 80%;
+    --input: 240 5% 80%;
+    --ring: 152 55% 42%;
     --radius: 0.25rem;
 
-    /* Terminal neons */
-    --neon-green: 152 100% 50%;
-    --neon-cyan: 192 100% 50%;
-    --neon-amber: 38 100% 50%;
-    --neon-pink: 322 100% 60%;
+    /* Soft terminal palette */
+    --neon-green: 152 55% 42%;
+    --neon-cyan: 192 60% 42%;
+    --neon-amber: 38 75% 46%;
+    --neon-pink: 322 55% 52%;
   }
 
   .dark {
     /* ── Core surfaces ── */
-    --background: 240 15% 4%;
-    --foreground: 220 15% 90%;
-    --card: 240 12% 7%;
-    --card-foreground: 220 15% 90%;
-    --popover: 240 12% 7%;
-    --popover-foreground: 220 15% 90%;
+    --background: 230 14% 6%;
+    --foreground: 220 14% 82%;
+    --card: 228 12% 9%;
+    --card-foreground: 220 14% 82%;
+    --popover: 228 12% 9%;
+    --popover-foreground: 220 14% 82%;
 
-    /* ── Neon Green primary ── */
-    --primary: 152 100% 50%;
-    --primary-foreground: 240 10% 4%;
+    /* ── Soft emerald primary ── */
+    --primary: 152 52% 52%;
+    --primary-foreground: 230 14% 6%;
 
     /* ── Surfaces ── */
-    --secondary: 240 10% 12%;
-    --secondary-foreground: 220 15% 75%;
-    --muted: 240 10% 12%;
-    --muted-foreground: 220 10% 45%;
+    --secondary: 228 10% 14%;
+    --secondary-foreground: 220 10% 68%;
+    --muted: 228 10% 14%;
+    --muted-foreground: 220 8% 50%;
 
-    /* ── Neon Cyan accent ── */
-    --accent: 192 100% 50%;
-    --accent-foreground: 240 10% 4%;
+    /* ── Soft teal accent ── */
+    --accent: 192 58% 50%;
+    --accent-foreground: 230 14% 6%;
 
-    --destructive: 0 62% 40%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 55% 38%;
+    --destructive-foreground: 0 0% 96%;
 
     /* ── Borders ── */
-    --border: 240 8% 14%;
-    --input: 240 8% 14%;
-    --ring: 152 100% 50%;
+    --border: 228 8% 16%;
+    --input: 228 8% 16%;
+    --ring: 152 52% 52%;
 
-    /* Terminal neons — explicit HSL values */
-    --neon-green: 152 100% 50%;
-    --neon-cyan: 192 100% 50%;
-    --neon-amber: 38 100% 50%;
-    --neon-pink: 322 100% 60%;
+    /* Soft terminal palette — readable on dark bg */
+    --neon-green: 152 52% 52%;
+    --neon-cyan: 192 58% 50%;
+    --neon-amber: 38 72% 54%;
+    --neon-pink: 322 50% 55%;
   }
 }
 
@@ -87,9 +87,9 @@
   body {
     @apply bg-background text-foreground min-h-dvh overflow-x-hidden;
     background-image:
-      linear-gradient(hsla(var(--border) / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, hsla(var(--border) / 0.35) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(hsla(var(--border) / 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, hsla(var(--border) / 0.18) 1px, transparent 1px);
+    background-size: 48px 48px;
     background-position: -1px -1px;
   }
 

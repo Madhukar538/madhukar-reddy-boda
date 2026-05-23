@@ -96,7 +96,7 @@ export function Hero() {
               <p className="font-mono text-xs text-primary">{'// Software Architect'}</p>
               <div className="flex flex-wrap gap-1 pt-1">
                 <span className="code-tag code-tag-cyan">[Hyderabad, IN]</span>
-                <span className="code-tag">[Open to work]</span>
+                <span className="code-tag">[@Revalsys Technologies]</span>
               </div>
             </div>
 
@@ -172,42 +172,42 @@ export function Hero() {
       </div>
 
       {/* ── Mobile/Tablet Hero ── */}
-      <section id="home" className="lg:hidden w-full pt-20 pb-6">
+      <section id="home" className="lg:hidden w-full pt-3 pb-3">
         <div className="terminal-card overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-card/80">
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-card/80">
             <div className="w-2 h-2 rounded-full bg-red-500/70" />
             <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
             <div className="w-2 h-2 rounded-full bg-green-500/70" />
             <span className="ml-2 font-mono text-xs text-muted-foreground">profile.json</span>
           </div>
-          <div className="p-6 flex flex-col items-center gap-5 text-center">
+          <div className="p-4 flex flex-col items-center gap-3 text-center">
             <Image
               src={`data:image/png;base64, ${base64Image}`}
               alt="Boda Madhukar Reddy"
-              width={120}
-              height={120}
+              width={88}
+              height={88}
               className="rounded-sm object-cover ring-1 ring-primary/40"
               priority
             />
-            <div className="space-y-2">
-              <h1 className="font-mono text-xl font-bold text-foreground">
+            <div className="space-y-1">
+              <h1 className="font-mono text-base font-bold text-foreground leading-tight">
                 BODA MADHUKAR REDDY
-                <span className="ml-1 inline-block w-2 h-4 bg-primary animate-pulse align-middle" />
+                <span className="ml-1 inline-block w-1.5 h-3.5 bg-primary animate-pulse align-middle" />
               </h1>
-              <p className="font-mono text-xs text-primary">{'// Software Architect · Hyderabad, IN'}</p>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-                Architecting resilient .NET APIs · Load testing with k6 + Grafana · AI-driven automation systems.
+              <p className="font-mono text-[11px] text-primary">{'// Software Architect · Hyderabad, IN'}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
+                .NET Core · k6 + Grafana · AI-driven systems.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               <a href="mailto:madhukarreddyboda538@gmail.com"
-                className="inline-flex items-center gap-2 font-mono text-xs px-4 py-2 bg-primary/10 border border-primary/30 rounded-sm text-primary hover:bg-primary/20 transition-colors">
-                <Mail className="h-3.5 w-3.5" />
+                className="inline-flex items-center gap-1.5 font-mono text-[11px] px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-sm text-primary hover:bg-primary/20 transition-colors">
+                <Mail className="h-3 w-3" />
                 email_me()
               </a>
               <a href="tel:+919573153479"
-                className="inline-flex items-center gap-2 font-mono text-xs px-4 py-2 bg-background/60 border border-border rounded-sm text-muted-foreground hover:text-foreground transition-colors">
-                <Phone className="h-3.5 w-3.5" />
+                className="inline-flex items-center gap-1.5 font-mono text-[11px] px-3 py-1.5 bg-background/60 border border-border rounded-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Phone className="h-3 w-3" />
                 call_me()
               </a>
             </div>
