@@ -1,95 +1,93 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Section } from '@/components/portfolio/section';
-import { Badge } from '@/components/ui/badge';
 import { FlaskConical } from 'lucide-react';
 
 const rdProjects = [
-   {
+  {
     title: 'API Load Testing & Observability',
-    description:
-      'Designed repeatable k6 suites for critical APIs and wired results into Grafana dashboards to validate SLAs, spot regressions, and guide capacity planning.',
-    tech: ['k6', 'Grafana', 'API Performance', 'SLA/Capacity'],
-  },
-   {
-    title: 'PDF Generation from HTML in C#',
-    description: 'Developed a solution for generating PDF documents from HTML content in a C# environment, utilizing libraries like PuppeteerSharp and iTextSharp to ensure high-quality output and accurate rendering.',
-    tech: ['C#', 'HTML', 'PuppeteerSharp'],
+    description: 'Designed repeatable k6 suites for critical APIs wired into Grafana dashboards to validate SLAs and guide capacity planning.',
+    tech: ['k6', 'Grafana', 'InfluxDB', 'SLA'],
+    status: 'SHIPPED',
   },
   {
-    title: 'AI-Powered Code Review Assistant',
-    description: 'Developed an internal tool that integrates with our CI/CD pipeline to automatically review code for quality, style, and potential bugs using a custom-trained LLM, reducing manual review time by 30%.',
-    tech: ['LLM', 'Python', 'FastAPI', 'CI/CD', 'Docker'],
+    title: 'PDF Generation from HTML in C#',
+    description: 'Production solution for generating PDFs from HTML using PuppeteerSharp and iTextSharp with pixel-accurate rendering.',
+    tech: ['C#', 'PuppeteerSharp', 'iTextSharp'],
+    status: 'SHIPPED',
+  },
+  {
+    title: 'AI Code Review Assistant',
+    description: 'CI/CD-integrated tool using custom LLM to review PRs for quality, style, and potential bugs — 30% reduction in manual review time.',
+    tech: ['LLM', 'FastAPI', 'Python', 'Docker', 'CI/CD'],
+    status: 'SHIPPED',
   },
   {
     title: 'IoT Predictive Maintenance PoC',
-    description: 'Built a proof-of-concept for an industrial IoT solution that uses sensor data and machine learning to predict equipment failures before they happen, leveraging MQTT for data ingestion and a .NET backend for analysis.',
-    tech: ['IoT', '.NET', 'MQTT', 'Machine Learning', 'Azure'],
+    description: 'Industrial IoT PoC predicting equipment failures via sensor data + ML using MQTT ingestion and .NET backend analysis.',
+    tech: ['IoT', '.NET', 'MQTT', 'ML', 'Azure'],
+    status: 'POC',
   },
   {
-    title: 'Advanced RAG for Documentation',
-    description: 'Engineered a Retrieval-Augmented Generation system for internal documentation, enabling developers to ask natural language questions and receive precise answers with source links, significantly improving knowledge discovery.',
+    title: 'Advanced RAG for Internal Docs',
+    description: 'RAG pipeline for internal docs — developers query in natural language, receive precise answers with source links.',
     tech: ['RAG', 'LangChain', 'Vector DB', 'Transformers'],
+    status: 'SHIPPED',
   },
- {
-    title: 'E2EE',
-    description: 'Developed an end-to-end encryption system for secure document sharing, ensuring that only authorized users can access sensitive information.',
+  {
+    title: 'End-to-End Encryption Layer',
+    description: 'Document sharing system with E2EE ensuring only authorized users access sensitive data via secure cryptographic protocols.',
     tech: ['E2EE', 'Cryptography', 'Secure Protocols'],
+    status: 'POC',
   },
   {
-    title: 'RabbitMQ',
-    description: 'Developed a messaging system using RabbitMQ to facilitate communication between microservices, ensuring reliable message delivery and processing.',
-    tech: ['RabbitMQ', 'Microservices', 'Messaging', 'Docker'],
+    title: 'RabbitMQ Microservices Bus',
+    description: 'Async messaging layer using RabbitMQ for reliable service-to-service communication with dead-letter queues and retries.',
+    tech: ['RabbitMQ', 'Microservices', 'Docker'],
+    status: 'SHIPPED',
   },
   {
-    title: 'GRPC Communication',
-    description: 'Developed a messaging system using gRPC to facilitate communication between microservices, ensuring reliable message delivery and processing.',
-    tech: ['gRPC', 'Microservices', 'Messaging', 'Docker'],
-  },  
+    title: 'gRPC Service Mesh',
+    description: 'High-performance inter-service communication using gRPC with Protocol Buffers for strongly-typed microservice contracts.',
+    tech: ['gRPC', 'Protobuf', 'Docker'],
+    status: 'POC',
+  },
 ];
+
+const statusColor: Record<string, string> = {
+  SHIPPED: 'text-primary border-primary/30 bg-primary/5',
+  POC: 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5',
+  WIP: 'text-blue-400 border-blue-400/30 bg-blue-400/5',
+};
 
 export function Research() {
   return (
-    <Section id="research" title="My R&D">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-2xl px-5 py-10 md:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_15%_20%,#60a5fa_0,transparent_28%),radial-gradient(circle_at_90%_10%,#22d3ee_0,transparent_24%)]" />
-        <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rdProjects.map((project) => (
-            <Card
-              key={project.title}
-              variant="glass"
-              className="flex flex-col border border-border/60 bg-background/70 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
-            >
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <FlaskConical className="h-6 w-6 text-accent" />
-                  <CardTitle>{project.title}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground">
-                  {project.description}
-                </p>
-              </CardContent>
-              <CardFooter>
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <Badge key={tech} variant="secondary">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+    <Section id="research" title="lab_experiments()" comment="R&D projects and explorations">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {rdProjects.map((project) => (
+          <div key={project.title} className="terminal-card p-5 group">
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <FlaskConical className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                <span className="font-mono text-xs text-yellow-400/80 font-semibold uppercase tracking-wide">
+                  [EXPERIMENT]
+                </span>
+              </div>
+              <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded-sm border font-semibold ${statusColor[project.status]}`}>
+                {project.status}
+              </span>
+            </div>
+            <h3 className="font-mono text-sm font-bold text-foreground mb-2 leading-snug group-hover:text-primary transition-colors">
+              {project.title}
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {project.tech.map((t) => (
+                <span key={t} className="code-tag code-tag-amber">[{t}]</span>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </Section>
   );

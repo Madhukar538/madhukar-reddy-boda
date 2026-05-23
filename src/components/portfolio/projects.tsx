@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Section } from '@/components/portfolio/section';
-import { portfolio as fossilIndiaPortfolio } from '../../../portfolio/fossil-india';
+import { portfolio as fossilIndiaPortfolio } from './fossil-india';
 
 type FossilIndiaFeature = {
   name: string;
@@ -228,83 +228,97 @@ export function Projects() {
   ];
 
   return (
-    <Section id="projects" title="Projects">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border/60 bg-card/70 shadow-2xl px-5 py-10 md:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_15%_20%,#60a5fa_0,transparent_28%),radial-gradient(circle_at_90%_10%,#22d3ee_0,transparent_24%)]" />
+    <Section id="projects" title="architected_systems()" comment="Key projects and e-commerce builds">
+      {/* Key projects grid */}
+      <div className="mb-3 font-mono text-xs text-muted-foreground/60">
+        {'// key_projects[] — systems built from scratch'}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+        {combined.map((project, idx) => (
+          <div key={project.title} className="terminal-card p-5 flex flex-col group">
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] text-primary/60">
+                  [{String(idx + 1).padStart(2, '0')}]
+                </span>
+              </div>
+            </div>
+            <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200 mb-2 leading-snug">
+              {project.title}
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-4">
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {project.tech.map((tech) => (
+                <span key={tech} className="code-tag code-tag-cyan">[{tech}]</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
 
-        <div className="relative">
-          <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">Projects</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {combined.map((project) => (
-              <Card
-                key={project.title}
-                variant="glass"
-                className="flex flex-col border border-border/60 bg-background/70 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
-              >
-                <CardHeader>
-                  <CardTitle>{project.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-sm text-muted-foreground">{project.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tech.map((tech) => (
-                      <Badge key={tech} variant="secondary">
-                        {tech}
-                      </Badge>
+      {/* E-commerce accordion */}
+      <div className="mb-3 font-mono text-xs text-muted-foreground/60">
+        {'// ecommerce_experience[] — client portals and integrations'}
+      </div>
+      <div className="terminal-card overflow-hidden">
+        <Accordion type="single" collapsible className="w-full">
+          {ecommerceProjects.map((project) => (
+            <AccordionItem
+              value={project.id}
+              key={project.id}
+              className="border-b border-border last:border-0"
+            >
+              <AccordionTrigger className="px-5 py-4 hover:no-underline group">
+                <div className="flex items-center gap-3 text-left">
+                  <span className="font-mono text-[10px] text-primary/60 shrink-0">$</span>
+                  <span className="font-mono text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {project.title}
+                  </span>
+                  <span className="font-mono text-[10px] text-muted-foreground hidden sm:block">
+                    {project.duration}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="px-5 pb-5 pt-1 space-y-4">
+                  <div className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-muted-foreground">
+                    <span><span className="text-primary/80">client:</span> {project.client}</span>
+                    <span><span className="text-primary/80">role:</span> {project.role}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {project.description}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {project.responsibilities.map((item, index) => (
+                      <li key={index} className="flex items-start gap-2 font-mono text-xs text-muted-foreground">
+                        <span className="text-primary mt-0.5 shrink-0">›</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {project.tech.map((t) => (
+                      <span key={t} className="code-tag">[{t}]</span>
                     ))}
                   </div>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mt-16">
-          <h3 className="mb-6 text-2xl font-bold text-center text-primary/90 font-headline">E-commerce Experience</h3>
-          <Card variant="glass" className="border border-border/60 bg-background/70">
-            <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
-              {ecommerceProjects.map((project) => (
-                <AccordionItem value={project.id} key={project.id}>
-                  <AccordionTrigger className="text-lg font-semibold hover:text-accent font-headline px-6">{project.title}</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="p-6 rounded-b-lg pt-2">
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4">
-                        <p>
-                          <strong className="text-primary">Client:</strong> {project.client}
-                        </p>
-                        <p>
-                          <strong className="text-primary">Role:</strong> {project.role}
-                        </p>
-                        <p>
-                          <strong className="text-primary">Duration:</strong> {project.duration}
-                        </p>
-                      </div>
-                      <p className="mb-4 text-muted-foreground">{project.description}</p>
-                      <ul className="mb-4 list-disc space-y-2 pl-5 text-sm">
-                        {project.responsibilities.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
-                      </ul>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.tech.map((t) => (
-                          <Badge key={t} variant="outline">
-                            {t}
-                          </Badge>
-                        ))}
-                      </div>
-                      <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-accent hover:underline">
-                        Visit Website <LinkIcon className="ml-2 h-4 w-4" />
-                      </a>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Card>
-        </div>
+                  {project.url !== '#' && (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 font-mono text-xs text-primary hover:text-primary/80 transition-colors"
+                    >
+                      <LinkIcon className="h-3 w-3" />
+                      visit_site()
+                    </a>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </Section>
   );

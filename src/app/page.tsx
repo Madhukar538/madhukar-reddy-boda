@@ -1,6 +1,6 @@
-import { Header } from '@/components/portfolio/header';
 import { Hero } from '@/components/portfolio/hero';
 import { Summary } from '@/components/portfolio/summary';
+import { RecentBlogs } from '@/components/portfolio/recent-blogs';
 import { Skills } from '@/components/portfolio/skills';
 import { Experience } from '@/components/portfolio/experience';
 import { Projects } from '@/components/portfolio/projects';
@@ -10,16 +10,18 @@ import { Research } from '@/components/portfolio/research';
 
 export default function Home() {
   return (
-    <div className="flex min-h-dvh flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 md:px-6">
+    <div className="flex min-h-dvh flex-col pb-20">
+      <main className="flex-1 container mx-auto px-4 md:px-6 pt-32 lg:grid lg:grid-cols-12 lg:gap-12">
         <Hero />
-        <Summary />
-        <Skills />
-        <Experience />
-        <Projects />
-        <Research />
-        <Education />
+        <div className="lg:col-span-8 flex flex-col gap-8 md:gap-12">
+          <Summary />
+          <RecentBlogs />
+          <Skills />
+          <Experience />
+          <Projects />
+          <Research />
+          <Education />
+        </div>
       </main>
       <Footer />
     </div>
