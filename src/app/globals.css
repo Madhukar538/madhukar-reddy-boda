@@ -73,6 +73,78 @@
     --neon-amber: 38 72% 54%;
     --neon-pink: 322 50% 55%;
   }
+
+  /* ── Dracula Theme ── */
+  [data-theme="dracula"] {
+    --background: 231 15% 18%;
+    --foreground: 60 30% 96%;
+    --card: 231 15% 15%;
+    --card-foreground: 60 30% 96%;
+    --primary: 326 100% 74%;
+    --primary-foreground: 231 15% 18%;
+    --accent: 135 94% 65%;
+    --accent-foreground: 231 15% 18%;
+    --border: 231 15% 25%;
+    --ring: 326 100% 74%;
+    --neon-green: 135 94% 65%;
+    --neon-cyan: 191 97% 77%;
+    --neon-amber: 43 100% 70%;
+    --neon-pink: 326 100% 74%;
+  }
+
+  /* ── Fallout/Amber Theme ── */
+  [data-theme="fallout"] {
+    --background: 20 20% 5%;
+    --foreground: 41 90% 55%;
+    --card: 20 20% 8%;
+    --card-foreground: 41 90% 55%;
+    --primary: 41 90% 55%;
+    --primary-foreground: 20 20% 5%;
+    --accent: 41 90% 45%;
+    --accent-foreground: 20 20% 5%;
+    --border: 41 40% 18%;
+    --ring: 41 90% 55%;
+    --neon-green: 41 90% 55%;
+    --neon-cyan: 41 90% 55%;
+    --neon-amber: 41 90% 55%;
+    --neon-pink: 41 90% 55%;
+  }
+
+  /* ── Nord Theme ── */
+  [data-theme="nord"] {
+    --background: 220 16% 16%;
+    --foreground: 218 27% 92%;
+    --card: 220 16% 22%;
+    --card-foreground: 218 27% 92%;
+    --primary: 193 43% 68%;
+    --primary-foreground: 220 16% 16%;
+    --accent: 193 30% 53%;
+    --accent-foreground: 220 16% 16%;
+    --border: 220 16% 28%;
+    --ring: 193 43% 68%;
+    --neon-green: 143 32% 64%;
+    --neon-cyan: 193 43% 68%;
+    --neon-amber: 40 50% 60%;
+    --neon-pink: 355 65% 65%;
+  }
+
+  /* ── Monokai Theme ── */
+  [data-theme="monokai"] {
+    --background: 70 8% 15%;
+    --foreground: 60 30% 96%;
+    --card: 70 8% 20%;
+    --card-foreground: 60 30% 96%;
+    --primary: 82 84% 53%;
+    --primary-foreground: 70 8% 15%;
+    --accent: 191 100% 60%;
+    --accent-foreground: 70 8% 15%;
+    --border: 70 8% 28%;
+    --ring: 82 84% 53%;
+    --neon-green: 82 84% 53%;
+    --neon-cyan: 191 100% 60%;
+    --neon-amber: 45 100% 60%;
+    --neon-pink: 338 95% 56%;
+  }
 }
 
 /* ============================================================

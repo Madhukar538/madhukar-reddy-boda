@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: 'Boda Madhukar Reddy — Software Architect & Tech Blogger',
   description:
     'Software Architect specializing in .NET Core, high-throughput APIs, k6 load testing, and AI-driven systems. Technical insights, architecture deep-dives, and engineering blog.',
+  icons: {
+    icon: '/madhukar.png',
+    shortcut: '/madhukar.png',
+    apple: '/madhukar.png',
+  },
 };
 
 export default function RootLayout({

@@ -32,7 +32,7 @@ const experienceData = {
 
 export function Experience() {
   return (
-    <Section id="experience" title="work_log()" comment="Professional experience">
+    <Section id="experience" title="work_log()" comment="Professional experience" data={experienceData}>
       <div className="terminal-card">
         {/* Terminal window chrome */}
         <div className="flex items-center gap-2 px-5 py-3 border-b border-border">

@@ -82,8 +82,14 @@ const colorMap = {
 };
 
 export function Skills() {
+  const serializableSkillData = skillData.map(({ title, skills, color }) => ({
+    title,
+    skills,
+    color,
+  }));
+
   return (
-    <Section id="skills" title="tech_stack()" comment="Skills and technologies">
+    <Section id="skills" title="tech_stack()" comment="Skills and technologies" data={serializableSkillData}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {skillData.map(({ title, icon: Icon, skills, color = 'green' }) => (
           <div key={title} className="terminal-card p-5">

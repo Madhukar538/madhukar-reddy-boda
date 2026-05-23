@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Briefcase, BookText, User, GraduationCap, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import { motion } from 'framer-motion';
 
 // All sections — used by desktop sidebar nav and scroll spy
@@ -123,9 +124,10 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right: theme toggle */}
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-muted-foreground hidden lg:block">v1.0.0</span>
+        {/* Right: theme toggle & switcher */}
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs text-muted-foreground hidden lg:block mr-1">v1.0.0</span>
+          <ThemeSwitcher />
           <ThemeToggle />
         </div>
       </header>
@@ -166,6 +168,10 @@ export function Navbar() {
               </Link>
             );
           })}
+          <div className="w-px h-5 bg-border/60 mx-1.5 shrink-0" />
+          <div className="px-1.5 shrink-0">
+            <ThemeSwitcher />
+          </div>
         </div>
       </nav>
     </>
