@@ -64,7 +64,7 @@ export function Hero() {
     <>
       {/* ── Desktop Sticky Sidebar Terminal Panel ── */}
       <div id="home" className="hidden lg:block lg:col-span-4">
-        <div className="sticky top-20 flex flex-col gap-0 rounded-sm terminal-card overflow-hidden">
+        <div className="sticky top-20 flex flex-col gap-0 rounded-sm overflow-hidden bg-card/55 backdrop-blur-xl border border-border/60 border-l-[3px] border-l-primary/60 shadow-xl shadow-black/20 transition-all duration-300 hover:shadow-2xl hover:border-l-accent/70">
           {/* Terminal chrome */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card/80">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
@@ -176,7 +176,7 @@ export function Hero() {
 
       {/* ── Mobile/Tablet Hero ── */}
       <section id="home" className="lg:hidden w-full pt-3 pb-3">
-        <div className="terminal-card overflow-hidden">
+        <div className="overflow-hidden bg-card/55 backdrop-blur-xl border border-border/60 border-t-[2px] border-t-primary/60 rounded-sm shadow-xl shadow-black/20">
           <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-card/80">
             <div className="w-2 h-2 rounded-full bg-red-500/70" />
             <div className="w-2 h-2 rounded-full bg-yellow-500/70" />

@@ -79,7 +79,7 @@ export function Navbar() {
           'hidden md:flex fixed top-0 left-0 right-0 z-[100] h-14 items-center justify-between px-6',
           'border-b transition-all duration-300',
           scrolled
-            ? 'bg-background/95 backdrop-blur-md border-border'
+            ? 'bg-card/60 backdrop-blur-xl border-border/50 shadow-lg shadow-black/10'
             : 'bg-transparent border-transparent'
         )}
       >
@@ -132,7 +132,7 @@ export function Navbar() {
 
       {/* ── Mobile floating bottom dock (5 items max) ── */}
       <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100]">
-        <div className="flex items-center bg-card border border-border rounded-sm shadow-lg px-1 py-1">
+        <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/50 rounded-sm shadow-xl shadow-black/20 px-1 py-1">
           {dockLinks.map((link) => {
             const Icon = link.icon;
             const isActive =

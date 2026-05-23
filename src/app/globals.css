@@ -86,11 +86,14 @@
 
   body {
     @apply bg-background text-foreground min-h-dvh overflow-x-hidden;
+    /* Subtle grid mesh */
     background-image:
-      linear-gradient(hsla(var(--border) / 0.18) 1px, transparent 1px),
-      linear-gradient(90deg, hsla(var(--border) / 0.18) 1px, transparent 1px);
+      linear-gradient(hsla(var(--border) / 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, hsla(var(--border) / 0.15) 1px, transparent 1px);
     background-size: 48px 48px;
     background-position: -1px -1px;
+    /* Radial glow behind the grid for depth */
+    background-color: hsl(var(--background));
   }
 
   /* Scanline overlay — only in dark mode */
@@ -130,19 +133,31 @@
    ============================================================ */
 @layer utilities {
 
+  /* ── Glass panel (reusable) ── */
+  .glass-panel {
+    background: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid hsl(var(--border) / 0.6);
+    border-radius: 0.25rem;
+  }
+
   /* ── Terminal Card ── */
   .terminal-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-left: 3px solid hsl(var(--neon-green));
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid hsl(var(--border) / 0.7);
+    border-left: 3px solid hsl(var(--neon-green) / 0.7);
     border-radius: 0.25rem;
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .terminal-card:hover {
-    border-left-color: hsl(var(--neon-cyan));
-    box-shadow: 0 0 0 1px hsl(var(--neon-cyan) / 0.15),
+    background: hsl(var(--card) / 0.75);
+    border-left-color: hsl(var(--neon-cyan) / 0.8);
+    box-shadow: 0 0 0 1px hsl(var(--neon-cyan) / 0.12),
                 0 8px 32px hsl(var(--neon-cyan) / 0.08),
                 inset 0 0 24px hsl(var(--neon-cyan) / 0.03);
     transform: translateY(-2px);
@@ -150,9 +165,11 @@
 
   /* ── Blog Card ── */
   .blog-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-top: 2px solid hsl(var(--neon-green));
+    background: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
+    border: 1px solid hsl(var(--border) / 0.6);
+    border-top: 2px solid hsl(var(--neon-green) / 0.7);
     border-radius: 0.25rem;
     position: relative;
     overflow: hidden;
@@ -160,8 +177,9 @@
   }
 
   .blog-card:hover {
-    border-top-color: hsl(var(--neon-cyan));
-    box-shadow: 0 0 30px hsl(var(--neon-cyan) / 0.1);
+    background: hsl(var(--card) / 0.72);
+    border-top-color: hsl(var(--neon-cyan) / 0.8);
+    box-shadow: 0 4px 30px hsl(var(--neon-cyan) / 0.1);
     transform: translateY(-3px);
   }
 
