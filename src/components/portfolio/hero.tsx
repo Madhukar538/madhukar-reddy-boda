@@ -20,30 +20,33 @@ export function Hero() {
 
   useEffect(() => {
     if (pathname !== '/') {
-      if (pathname.startsWith('/blog')) {
-        setActiveSection('insights');
-      }
+      if (pathname.startsWith('/blog')) setActiveSection('insights');
       return;
     }
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200;
-      for (const link of navLinks) {
-        if (!link.sectionId) continue;
-        const el = document.getElementById(link.sectionId);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(link.sectionId);
-          }
-        }
-      }
-    };
+    const sectionIds = navLinks.map((l) => l.sectionId).filter(Boolean) as string[];
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible.length > 0) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      {
+        rootMargin: '-10% 0px -50% 0px',
+        threshold: [0, 0.1, 0.25, 0.5],
+      }
+    );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, [pathname]);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId?: string) => {
