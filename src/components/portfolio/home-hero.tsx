@@ -8,7 +8,6 @@ import { motion, type Variants } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
-  Bot,
   Briefcase,
   FileDown,
   FlaskConical,
@@ -17,11 +16,15 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  Monitor,
+  Network,
+  Plug,
   Phone,
   Twitter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { avatarSrc } from './avatar';
+import { useOsMode } from '@/components/os/os-mode';
 import { Diagnostics } from './diagnostics';
 import { keyProjects, rdProjects } from '@/data/profile';
 
@@ -74,6 +77,16 @@ function Tile({
         {children}
       </Link>
     </motion.div>
+  );
+}
+
+function HeroOsButton() {
+  const { setEnabled } = useOsMode();
+  return (
+    <button type="button" onClick={() => setEnabled(true)} className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+      <Monitor className="h-4 w-4 text-primary" />
+      Try desktop mode
+    </button>
   );
 }
 
@@ -148,14 +161,18 @@ export function HomeHero() {
             </a>
           </motion.div>
 
-          <motion.div variants={item} className="flex justify-center lg:justify-start">
-            <Link
-              href="/ai"
-              className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Bot className="h-4 w-4 text-primary" />
-              New: ask your AI assistant about me. This site is an MCP server
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          <motion.div
+            variants={item}
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground"
+          >
+            <HeroOsButton />
+            <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+              <Network className="h-4 w-4 text-primary" />
+              Explore the knowledge graph
+            </Link>
+            <Link href="/ai" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+              <Plug className="h-4 w-4 text-primary" />
+              Connect your AI (MCP)
             </Link>
           </motion.div>
         </div>

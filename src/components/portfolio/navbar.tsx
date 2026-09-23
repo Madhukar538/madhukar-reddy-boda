@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { motion } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
+import { OsModeToggle } from '@/components/os/os-mode';
 
 // Every page on the site — each one is its own URL.
 export const navLinks = [
@@ -103,6 +104,7 @@ export function Navbar() {
           <div className="h-5 w-px bg-foreground/10" />
 
           <div className="flex items-center">
+            <OsModeToggle />
             <ThemeSwitcher />
             <ThemeToggle />
           </div>
@@ -143,6 +145,7 @@ export function Navbar() {
         {/* Detached control cluster, like iOS 26's separate tab-bar button */}
         <div className="glass glass-strong glass-pill pointer-events-auto flex flex-col items-center p-1">
           <LiquidLens strength={28} />
+          <OsModeToggle />
           <ThemeSwitcher />
           <ThemeToggle />
         </div>

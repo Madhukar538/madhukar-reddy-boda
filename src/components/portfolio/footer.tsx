@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { OsModeToggle } from '@/components/os/os-mode';
 
 const pages = [
   { href: '/', label: 'Home' },
@@ -9,6 +10,7 @@ const pages = [
   { href: '/lab', label: 'R&D Lab' },
   { href: '/blog', label: 'Blog' },
   { href: '/ai', label: 'AI / MCP' },
+  { href: '/graph', label: 'Graph' },
 ];
 
 const socials = [
@@ -38,6 +40,7 @@ export function Footer() {
             <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="text-foreground/70 hover:text-primary transition-colors">
               Résumé (PDF)
             </a>
+            <OsModeToggle variant="link" className="text-left text-foreground/70 hover:text-primary transition-colors" />
           </nav>
         </div>
         <div className="mt-6 pt-5 border-t border-foreground/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
