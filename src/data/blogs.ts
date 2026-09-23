@@ -11,31 +11,59 @@ export interface BlogPost {
 
 export const blogs: BlogPost[] = [
   {
-    slug: "dotnet-runtime-configurable-background-workers",
-    title: "Start, Stop and Retune .NET Background Workers at Runtime, and 3 Bugs My First Version Hid",
-    excerpt: "A small .NET 8 manager for named background workers you can start, reconfigure and stop at runtime. A test harness exposed a stop that throws, updates that wait a full interval, and a race that leaves orphaned workers. Here are the fixes, measured.",
+    slug: "dotnet-dynamic-background-service-manager",
+    title: "A Dynamic Background Service Manager in .NET 8: Start, Update and Stop Workers at Runtime",
+    excerpt: "How a small .NET 8 console app runs any number of named background workers, each with its own interval and config, and lets you start, retune and stop them while it runs, using async loops, CancellationToken and a ConcurrentDictionary.",
     date: "September 23, 2026",
-    readTime: "7 min read",
+    readTime: "5 min read",
     category: "Software Architecture",
-    tags: [".NET Core", "C#", "Background Services", "Concurrency", "Performance"],
+    tags: [".NET Core", "C#", "Background Services", "Concurrency", "Async"],
     content: `
-      <p class="lead">Most .NET background work is fixed at startup: you register a <code>BackgroundService</code> and it runs until the app stops. I wanted something more dynamic: start a named worker, change how often it runs, and stop it, all at runtime. The first version fit in three small files and appeared to work. Then I tested it properly and found three bugs, each of which would hurt in production.</p>
+      <p class="lead">Most .NET background work is fixed when the app starts: you register a <code>BackgroundService</code> and it runs until shutdown. This project takes a different approach: a small .NET 8 console app that starts, reconfigures and stops any number of named background workers <strong>while it is running</strong>, from simple typed commands.</p>
 
-      <h2>1. The Idea</h2>
-      <p>A small .NET 8 console app, the <strong>Dynamic Background Service Manager</strong>, accepts commands at a prompt:</p>
+      <h2>1. What It Does</h2>
+      <p>The app prints a prompt and accepts five commands:</p>
       <ul>
-        <li><code>START &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> spins up a new worker loop with its own interval and settings.</li>
-        <li><code>UPDATE &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> changes a running worker without restarting it.</li>
-        <li><code>STOP &lt;id&gt;</code> and <code>LIST</code> do what they say.</li>
+        <li><code>START &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> starts a new worker that runs every <em>interval</em> milliseconds with its own config value.</li>
+        <li><code>UPDATE &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> changes a running worker's interval and config without restarting it.</li>
+        <li><code>STOP &lt;id&gt;</code> cancels one worker.</li>
+        <li><code>LIST</code> shows every running worker and its current settings.</li>
+        <li><code>EXIT</code> quits.</li>
       </ul>
-      <p>This pattern suits per-tenant pollers, sync jobs that operations staff switch on and off, or anything where the number and pace of workers is data, not code.</p>
+      <p>That makes the number and pace of workers <em>data</em>, not code, which suits per-tenant pollers, sync jobs you switch on and off, or scheduled tasks whose frequency changes at runtime.</p>
 
-      <h2>2. The First Version</h2>
-      <p>Each worker is an async loop around <code>Task.Delay</code>, cancelled through a <code>CancellationTokenSource</code>. A manager keeps the workers in a <code>ConcurrentDictionary</code>.</p>
+      <h2>2. How the Code Is Organised</h2>
+      <p>Three files, each with one job:</p>
+      <pre>
+Service&amp;Instances/
+├── Program.cs          console loop: reads and parses commands
+├── Service.cs          MyBackgroundService + ConfigData: one worker
+└── ServiceManager.cs   BackgroundServiceManager: owns all workers</pre>
+
+      <h2>3. The Worker: MyBackgroundService</h2>
+      <p>Each worker carries its settings in a small <code>ConfigData</code> class: how often to run, and a custom value standing in for whatever real settings a job would need.</p>
       <pre class="language-csharp">
+public class ConfigData
+{
+    public int Interval { get; set; } = 5000;  // Default interval in milliseconds
+    public string CustomValue { get; set; } = "DefaultConfig";
+}</pre>
+      <p>The worker itself is an async loop. It does its work (here, a log line), then waits for the interval with <code>Task.Delay</code>, and repeats until its <code>CancellationTokenSource</code> is cancelled:</p>
+      <pre class="language-csharp">
+private CancellationTokenSource _cts;
+private string _serviceId;
+private ConfigData _config;
+
+public MyBackgroundService(string serviceId, ConfigData config)
+{
+    _serviceId = serviceId;
+    _config = config;
+    _cts = new CancellationTokenSource();
+}
+
 public async Task StartAsync()
 {
-    Console.WriteLine($"Service {_serviceId} started. ...");
+    Console.WriteLine($"Service {_serviceId} started. Interval: {_config.Interval} ms, Config: {_config.CustomValue}");
 
     while (!_cts.Token.IsCancellationRequested)
     {
@@ -46,191 +74,139 @@ public async Task StartAsync()
     Console.WriteLine($"Service {_serviceId} stopped.");
 }
 
-public void Stop() =&gt; _cts.Cancel();
-public void UpdateConfig(ConfigData newConfig) =&gt; _config = newConfig;</pre>
-      <pre class="language-csharp">
-public string StartService(string serviceId, ConfigData config)
+public void Stop()
 {
-    if (_services.ContainsKey(serviceId))
-        return $"Service {serviceId} is already running.";
+    _cts.Cancel();
+}
 
-    var service = new MyBackgroundService(serviceId, config);
-    _services.TryAdd(serviceId, (service, config));
-
-    Task.Run(() =&gt; service.StartAsync());   // fire and forget
-    return $"Service {serviceId} started.";
+public void UpdateConfig(ConfigData newConfig)
+{
+    _config = newConfig;
+    Console.WriteLine($"Service {_serviceId} updated: Interval={_config.Interval} ms, Config={_config.CustomValue}");
 }</pre>
-      <p>A quick manual session looked perfect:</p>
+      <p>Three details make it work:</p>
+      <ul>
+        <li><strong>Cancellation instead of flags.</strong> The loop checks <code>_cts.Token.IsCancellationRequested</code>, and the same token is passed to <code>Task.Delay</code>, so <code>Stop()</code> also interrupts a worker that is in the middle of waiting.</li>
+        <li><strong>Config is read on every pass.</strong> <code>UpdateConfig</code> just replaces <code>_config</code>. The loop reads <code>_config</code> each time round, so the next pass picks up the new value and interval.</li>
+        <li><strong>Async, not threads.</strong> While a worker waits it holds no thread, so hundreds of workers cost almost nothing when idle.</li>
+      </ul>
+
+      <h2>4. The Manager: BackgroundServiceManager</h2>
+      <p>The manager owns all workers in a <code>ConcurrentDictionary</code> keyed by id. Each entry stores the worker together with its current config, so <code>LIST</code> can report settings without asking every worker.</p>
+      <pre class="language-csharp">
+public class BackgroundServiceManager
+{
+    private readonly ConcurrentDictionary&lt;string, (MyBackgroundService, ConfigData)&gt; _services;
+
+    public BackgroundServiceManager()
+    {
+        _services = new ConcurrentDictionary&lt;string, (MyBackgroundService, ConfigData)&gt;();
+    }
+
+    public string StartService(string serviceId, ConfigData config)
+    {
+        if (_services.ContainsKey(serviceId))
+        {
+            return $"Service {serviceId} is already running.";
+        }
+
+        var service = new MyBackgroundService(serviceId, config);
+        _services.TryAdd(serviceId, (service, config));
+
+        Task.Run(() =&gt; service.StartAsync());
+
+        return $"Service {serviceId} started.";
+    }
+
+    public string StopService(string serviceId)
+    {
+        if (_services.TryRemove(serviceId, out var serviceTuple))
+        {
+            serviceTuple.Item1.Stop();
+            return $"Service {serviceId} stopped.";
+        }
+
+        return $"Service {serviceId} not found.";
+    }
+
+    public string UpdateServiceConfig(string serviceId, ConfigData newConfig)
+    {
+        if (_services.TryGetValue(serviceId, out var serviceTuple))
+        {
+            serviceTuple.Item1.UpdateConfig(newConfig);
+            _services[serviceId] = (serviceTuple.Item1, newConfig); // Update config in dictionary
+            return $"Service {serviceId} updated with new config.";
+        }
+
+        return $"Service {serviceId} not found.";
+    }
+
+    public Dictionary&lt;string, ConfigData&gt; GetRunningServices()
+    {
+        return _services.ToDictionary(k =&gt; k.Key, v =&gt; v.Value.Item2);
+    }
+}</pre>
+      <ul>
+        <li><strong>StartService</strong> refuses a duplicate id, creates the worker, records it, and starts its loop on the thread pool with <code>Task.Run</code>. It returns straight away, so the prompt stays responsive.</li>
+        <li><strong>StopService</strong> removes the entry and cancels the worker in one step with <code>TryRemove</code>.</li>
+        <li><strong>UpdateServiceConfig</strong> pushes the new config into the running worker and updates the stored copy.</li>
+        <li><strong>GetRunningServices</strong> returns a snapshot, a plain dictionary copy, so the caller can loop over it while workers are added or removed.</li>
+      </ul>
+
+      <h2>5. The Command Loop</h2>
+      <p><code>Program.cs</code> reads a line, splits it on spaces and switches on the first word. Each branch validates its arguments and calls the manager. Here is <code>START</code>:</p>
+      <pre class="language-csharp">
+case "START":
+    if (parts.Length &lt; 4)
+    {
+        Console.WriteLine("Usage: START &lt;ServiceID&gt; &lt;Interval(ms)&gt; &lt;ConfigValue&gt;");
+        break;
+    }
+
+    string serviceId = parts[1];
+    if (!int.TryParse(parts[2], out int interval))
+    {
+        Console.WriteLine("Invalid interval.");
+        break;
+    }
+
+    string configValue = parts[3];
+    ConfigData config = new ConfigData { Interval = interval, CustomValue = configValue };
+    Console.WriteLine(serviceManager.StartService(serviceId, config));
+    break;</pre>
+      <p>A typical session:</p>
       <pre>
+Dynamic Background Service Manager
+Available Commands: START &lt;id&gt; &lt;interval&gt; &lt;config&gt;, STOP &lt;id&gt;, UPDATE &lt;id&gt; &lt;interval&gt; &lt;config&gt;, LIST, EXIT
+
 Enter command: START a 1000 hello
+Service a started.
+Service a started. Interval: 1000 ms, Config: hello
 Service a is running with config: hello
 Service a is running with config: hello
+
 Enter command: UPDATE a 200 fast
 Service a updated: Interval=200 ms, Config=fast
+Service a updated with new config.
 Service a is running with config: fast
 Service a is running with config: fast
-Enter command: STOP a
-Service a stopped.
+
 Enter command: LIST
-No active services.</pre>
+Running Services:
+- a: Interval=200, Config=fast
 
-      <h2>3. Testing It Properly</h2>
-      <p>A manual session proves the happy path. So I wrote a small harness that measures what really happens when a worker stops, when its interval changes, and when several <code>START</code> commands arrive at once:</p>
-      <pre>
-[1] Stop:    task ended with TaskCanceledException; status = Canceled
-[2] Update:  10 s -&gt; 100 ms at 201 ms; first tick on the new config at 10,007 ms
-[3] Race:    8 concurrent STARTs, same id: 2 "started" replies in 4 of 200 rounds</pre>
+Enter command: STOP a
+Service a stopped.</pre>
 
-      <h3>Bug 1: stopping is treated as a failure</h3>
-      <p><code>Task.Delay(interval, token)</code> doesn't return when the token is cancelled. It <strong>throws</strong> <code>TaskCanceledException</code>. So the loop never reaches its last line: the worker's own "stopped" message never prints, and any cleanup after the loop (flushing a buffer, releasing a lock) would silently never run. The manual session hid this, because the manager prints the same "Service a stopped." text. And since the task was started with fire-and-forget <code>Task.Run</code>, nothing ever observes the exception.</p>
-
-      <h3>Bug 2: UPDATE waits for the old interval</h3>
-      <p><code>UpdateConfig</code> swaps the config, but the loop is already asleep inside <code>Task.Delay</code> with the <em>old</em> interval. Changing a 10-second worker to 100 ms took effect only after <strong>10,007 ms</strong>. With an hourly job, "update" would mean "sometime in the next hour".</p>
-
-      <h3>Bug 3: two STARTs can both win</h3>
-      <p><code>ContainsKey</code> followed by <code>TryAdd</code> is a check-then-act race. Two concurrent starts can both pass the check. One insert fails, but its return value is ignored, so <strong>both</strong> workers start. The loser isn't in the dictionary, so <code>STOP</code> can never reach it: an orphaned loop that runs until the process dies. It happened in 4 of 200 rounds of 8 parallel starts.</p>
-
-      <h2>4. The Fixed Version</h2>
-      <p>Three changes, each aimed at one bug:</p>
+      <h2>6. Taking It Further</h2>
+      <p>The console is only one front end. Ideas for a production version:</p>
       <ul>
-        <li><strong>Stopping is not an error.</strong> Catch <code>OperationCanceledException</code> and put cleanup in <code>finally</code>, so it always runs. The worker exposes its <code>Completion</code> task, so a stop can <em>wait</em> for the worker to finish.</li>
-        <li><strong>A wake token for updates.</strong> Each delay is linked to two tokens: <em>stop</em> and <em>wake</em>. <code>Update</code> swaps the config (an immutable record, so a reader never sees half an update) and cancels the wake token. The current sleep ends immediately and the next one uses the new interval.</li>
-        <li><strong>Let the dictionary decide.</strong> Build the worker, try to insert it, and start it only if the insert won. There's no separate check left to race.</li>
-      </ul>
-      <pre class="language-csharp">
-public sealed record WorkerConfig(TimeSpan Interval, string Value);
-
-public sealed class Worker : IAsyncDisposable
-{
-    private readonly CancellationTokenSource _stop = new();
-    private CancellationTokenSource _wake = new();
-    private volatile WorkerConfig _config;
-
-    public Worker(string id, WorkerConfig config) =&gt; (Id, _config) = (id, config);
-
-    public string Id { get; }
-    public WorkerConfig Config =&gt; _config;
-    public Task Completion { get; private set; } = Task.CompletedTask;
-
-    public void Start() =&gt; Completion = RunAsync();
-
-    private async Task RunAsync()
-    {
-        await Task.Yield(); // return to the caller right away
-        try
-        {
-            while (!_stop.IsCancellationRequested)
-            {
-                var config = _config;
-                Console.WriteLine($"[{Id}] tick: {config.Value}");
-
-                using var delay = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token, _wake.Token);
-                try { await Task.Delay(config.Interval, delay.Token); }
-                catch (OperationCanceledException) when (!_stop.IsCancellationRequested) { } // woken by Update
-            }
-        }
-        catch (OperationCanceledException) { } // stopping is not an error
-        finally
-        {
-            Console.WriteLine($"[{Id}] stopped"); // cleanup always runs
-        }
-    }
-
-    public void Update(WorkerConfig config)
-    {
-        _config = config;
-        // Cut the current delay short so the new interval applies now.
-        Interlocked.Exchange(ref _wake, new CancellationTokenSource()).Cancel();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        _stop.Cancel();
-        await Completion;
-        _stop.Dispose();
-    }
-}</pre>
-      <pre class="language-csharp">
-public sealed class WorkerManager : IAsyncDisposable
-{
-    private readonly ConcurrentDictionary&lt;string, Worker&gt; _workers = new();
-
-    public bool Start(string id, WorkerConfig config)
-    {
-        var worker = new Worker(id, config);
-        if (!_workers.TryAdd(id, worker)) return false; // only the winner ever runs
-        worker.Start();
-        return true;
-    }
-
-    public async Task&lt;bool&gt; StopAsync(string id)
-    {
-        if (!_workers.TryRemove(id, out var worker)) return false;
-        await worker.DisposeAsync(); // returns once the worker has really finished
-        return true;
-    }
-
-    public bool Update(string id, WorkerConfig config)
-    {
-        if (!_workers.TryGetValue(id, out var worker)) return false;
-        worker.Update(config);
-        return true;
-    }
-
-    public IReadOnlyDictionary&lt;string, WorkerConfig&gt; List() =&gt;
-        _workers.ToDictionary(p =&gt; p.Key, p =&gt; p.Value.Config);
-
-    public async ValueTask DisposeAsync() =&gt;
-        await Task.WhenAll(_workers.Keys.Select(StopAsync));
-}</pre>
-
-      <h2>5. Results</h2>
-      <p>The same harness against the new code:</p>
-      <pre>
-[1] Stop:    StopAsync = true; the worker's finally block ran
-[2] Update:  10 s -&gt; 100 ms at 201 ms; first tick on the new config at 207 ms
-[3] Race:    rounds without exactly one successful START: 0 of 2,000</pre>
-      <p>A stop now waits for cleanup, an update applies within milliseconds instead of after a full interval, and 2,000 rounds of concurrent starts produced exactly one worker each time.</p>
-
-      <h2>6. Hosting It in ASP.NET Core</h2>
-      <p>The manager doesn't care where commands come from. Registered as a singleton, it becomes a small HTTP API. A hosted service stops every worker cleanly when the app shuts down, which covers the last gap the console version had: its <code>EXIT</code> left running loops behind.</p>
-      <pre class="language-csharp">
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton&lt;WorkerManager&gt;();
-builder.Services.AddHostedService&lt;WorkerShutdown&gt;();
-var app = builder.Build();
-
-app.MapPost("/workers/{id}", (string id, WorkerConfig config, WorkerManager m) =&gt;
-    m.Start(id, config) ? Results.Created($"/workers/{id}", config) : Results.Conflict());
-app.MapPut("/workers/{id}", (string id, WorkerConfig config, WorkerManager m) =&gt;
-    m.Update(id, config) ? Results.NoContent() : Results.NotFound());
-app.MapDelete("/workers/{id}", async (string id, WorkerManager m) =&gt;
-    await m.StopAsync(id) ? Results.NoContent() : Results.NotFound());
-app.MapGet("/workers", (WorkerManager m) =&gt; m.List());
-
-app.Run();
-
-// Stops every worker cleanly when the app shuts down.
-sealed class WorkerShutdown(WorkerManager manager) : IHostedService
-{
-    public Task StartAsync(CancellationToken ct) =&gt; Task.CompletedTask;
-    public async Task StopAsync(CancellationToken ct) =&gt; await manager.DisposeAsync();
-}</pre>
-      <pre>
-POST   /workers/a   {"interval":"00:00:01","value":"hello"}   -&gt; 201 Created
-POST   /workers/a   (same id again)                             -&gt; 409 Conflict
-PUT    /workers/a   {"interval":"00:00:00.3","value":"fast"}    -&gt; 204, applied immediately
-GET    /workers     {"a":{"interval":"00:00:00.3000000","value":"fast"}}
-DELETE /workers/a                                               -&gt; 204, after "[a] stopped"
-DELETE /workers/a   (again)                                     -&gt; 404</pre>
-
-      <h2>7. Takeaways</h2>
-      <ul>
-        <li><strong>Cancellation throws.</strong> Any <code>await</code> that takes a token can end in <code>OperationCanceledException</code>. Treat it as a normal exit and put cleanup in <code>finally</code>.</li>
-        <li><strong>"Update" means waking the loop</strong>, not just swapping a field that the loop reads after its next sleep.</li>
-        <li><strong>On concurrent collections, the atomic operation is the check.</strong> <code>ContainsKey</code> then <code>TryAdd</code> is two operations. Use the result of <code>TryAdd</code>, <code>GetOrAdd</code> or <code>TryRemove</code>.</li>
-        <li><strong>Don't fire and forget.</strong> Keep the task, so stopping can await it and failures have somewhere to go.</li>
-        <li><strong>Test the edges, not the demo.</strong> A 60-line harness found all three bugs; the manual session found none.</li>
+        <li><strong>Expose it as an API.</strong> Register <code>BackgroundServiceManager</code> as a singleton in ASP.NET Core and map <code>POST</code>, <code>PUT</code>, <code>DELETE</code> and <code>GET</code> endpoints to start, update, stop and list, so other systems can control workers.</li>
+        <li><strong>Stop cleanly on shutdown.</strong> An <code>IHostedService</code> can stop every worker when the app exits, and the manager can keep each worker's task so a stop can wait for it to finish.</li>
+        <li><strong>Apply updates immediately.</strong> A new interval takes effect after the current wait ends; cancelling the current <code>Task.Delay</code> with a second "wake" token applies it at once.</li>
+        <li><strong>Treat stopping as normal.</strong> <code>Task.Delay</code> throws <code>OperationCanceledException</code> when cancelled; catching it (with cleanup in <code>finally</code>) lets the worker log its own "stopped" line.</li>
+        <li><strong>Guard concurrent starts.</strong> Using the return value of <code>TryAdd</code> as the duplicate check keeps two simultaneous <code>START</code>s from both launching a worker.</li>
+        <li><strong>Persist the workers.</strong> Save ids and configs to a database so workers come back after a restart.</li>
       </ul>
     `
   },
