@@ -28,13 +28,6 @@ export const rdProjects: Experiment[] = [
     post: 'hybrid-search-solr-bm25-vector-rrf',
   },
   {
-    title: 'Multi-Tenant RAG Chatbot Platform',
-    description: 'Embeddable AI assistant: SignalR streaming, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking and an async RabbitMQ ingestion pipeline.',
-    tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'Next.js'],
-    status: 'WIP',
-    post: 'rag-chatbot-latency-audit',
-  },
-  {
     title: 'On-Demand ISR: Next.js 16 + .NET',
     description: 'Static pages with zero API calls per view, kept fresh by signed webhooks from .NET that expire exact cache tags. Handles new and deleted pages without a rebuild.',
     tech: ['Next.js 16', 'ASP.NET Core', 'ISR', 'Webhooks'],
@@ -45,18 +38,6 @@ export const rdProjects: Experiment[] = [
     title: 'MCP Server for Code & Database Intelligence',
     description: '.NET Model Context Protocol server exposing database schema extraction, code analysis and TFS work items as AI tools, with background metadata sync to MongoDB and a Blazor admin dashboard.',
     tech: ['MCP', '.NET', 'MongoDB', 'Blazor'],
-    status: 'WIP',
-  },
-  {
-    title: 'Uptime & Incident Platform on Uptime Kuma',
-    description: 'Uptime Kuma kept as a headless check engine behind a custom .NET API and React admin UI: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.',
-    tech: ['Uptime Kuma', '.NET 10', 'React Router', 'Socket.IO', 'Docker'],
-    status: 'WIP',
-  },
-  {
-    title: 'Offline-First Field Inspection App',
-    description: 'One storage interface over native Android SQLite and browser IndexedDB, with master-data sync and a transactional outbox that replays queued actions when connectivity returns.',
-    tech: ['TypeScript', 'SQLite', 'IndexedDB', 'Android', 'Sync'],
     status: 'WIP',
   },
   {

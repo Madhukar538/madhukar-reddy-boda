@@ -26,9 +26,37 @@ type FossilIndiaProject = {
   challenges: FossilIndiaChallenge[];
   impact: string[];
 };
-import { ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-export const keyProjects = [
+type ProjectCard = {
+  title: string;
+  description: string;
+  tech: string[];
+  /** Slug of a blog post that writes this project up. */
+  post?: string;
+};
+
+export const keyProjects: ProjectCard[] = [
+  {
+    title: 'Multi-Tenant AI Chatbot Platform',
+    description:
+      'Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.',
+    tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'Next.js 16'],
+    post: 'rag-chatbot-latency-audit',
+  },
+  {
+    title: 'Offline-First Procurement & Inspection App',
+    description:
+      'Next.js PWA plus Android shell for field procurement: one storage interface over Android SQLite and IndexedDB, master-data sync, and a transactional outbox that replays actions when back online.',
+    tech: ['Next.js', '.NET', 'SQLite', 'IndexedDB', 'Android'],
+  },
+  {
+    title: 'Uptime & Incident Management Platform',
+    description:
+      'Uptime Kuma as a headless check engine behind a custom .NET 10 API and React admin: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.',
+    tech: ['.NET 10', 'Uptime Kuma', 'React Router', 'PostgreSQL', 'Docker'],
+  },
   {
     title: 'Real-Time IoT Data Platform',
     description:
@@ -209,7 +237,7 @@ const ecommerceProjects = [
 ];
 
 export function Projects() {
-  const combined = [
+  const combined: ProjectCard[] = [
     ...(fossilIndiaPortfolio as FossilIndiaProject[]).map((p) => ({
       title: p.title,
       description: p.overview,
@@ -238,6 +266,15 @@ export function Projects() {
                 <span key={tech} className="chip">{tech}</span>
               ))}
             </div>
+            {project.post && (
+              <Link
+                href={`/blog/${project.post}`}
+                className="group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary"
+              >
+                Read the write-up
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            )}
           </div>
         ))}
       </div>
