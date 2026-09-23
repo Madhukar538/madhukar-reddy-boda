@@ -115,13 +115,17 @@ export function HomeHero() {
       <section className="grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
         <div className="space-y-6 text-center lg:text-left">
           <motion.div variants={item} className="flex justify-center lg:justify-start">
-            <span className="glass glass-pill inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-foreground/80">
+            <Link
+              href="/fix-a-bug"
+              className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-foreground/80 hover:text-foreground transition-colors"
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--sys-green))] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[hsl(var(--sys-green))]" />
               </span>
               Open to fixing bugs &amp; giving solutions
-            </span>
+              <ArrowRight className="h-3 w-3 opacity-60" />
+            </Link>
           </motion.div>
 
           <motion.h1
