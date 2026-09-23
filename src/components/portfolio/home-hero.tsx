@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { avatarSrc } from './avatar';
+import { useOsMode } from '@/components/os/os-mode';
 import { Diagnostics } from './diagnostics';
 import { keyProjects, rdProjects } from '@/data/profile';
 
@@ -76,6 +77,16 @@ function Tile({
         {children}
       </Link>
     </motion.div>
+  );
+}
+
+function HeroOsButton() {
+  const { setEnabled } = useOsMode();
+  return (
+    <button type="button" onClick={() => setEnabled(true)} className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+      <Monitor className="h-4 w-4 text-primary" />
+      Try desktop mode
+    </button>
   );
 }
 
@@ -154,10 +165,7 @@ export function HomeHero() {
             variants={item}
             className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground"
           >
-            <Link href="/os" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
-              <Monitor className="h-4 w-4 text-primary" />
-              Try desktop mode
-            </Link>
+            <HeroOsButton />
             <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
               <Network className="h-4 w-4 text-primary" />
               Explore the knowledge graph

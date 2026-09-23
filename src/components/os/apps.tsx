@@ -44,6 +44,8 @@ export type AppContext = {
   data: OsData;
   payload?: string;
   open: (id: AppId, payload?: string) => void;
+  /** Leaves desktop mode (turns the toggle off). */
+  exit: () => void;
 };
 
 export type AppDef = {
@@ -120,7 +122,7 @@ const APP_ALIASES: Record<string, AppId> = {
   resume: 'resume', cv: 'resume', terminal: 'terminal',
 };
 
-function TerminalApp({ data, open }: AppContext) {
+function TerminalApp({ data, open, exit }: AppContext) {
   const { setTheme } = useTheme();
   const [lines, setLines] = useState<Line[]>([
     { kind: 'out', text: `Welcome to madhukar-os. Type 'help' to see what you can do.` },
@@ -207,8 +209,8 @@ function TerminalApp({ data, open }: AppContext) {
         setLines([]);
         return null;
       case 'exit':
-        window.location.href = '/';
-        return 'Bye!';
+        setTimeout(exit, 300);
+        return 'Leaving desktop mode. Bye!';
       default:
         return `${cmd}: command not found. Type 'help'.`;
     }

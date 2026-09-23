@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { ChevronLeft, LogOut, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -294,13 +293,13 @@ function Wallpaper() {
  * would make `position: fixed` relative to it) and <main> is its own stacking
  * context below the footer. A portal escapes both.
  */
-export function PortfolioOS({ data }: { data: OsData }) {
+export function PortfolioOS({ data, onExit }: { data: OsData; onExit: () => void }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  return mounted ? createPortal(<Desktop data={data} />, document.body) : null;
+  return mounted ? createPortal(<Desktop data={data} onExit={onExit} />, document.body) : null;
 }
 
-function Desktop({ data }: { data: OsData }) {
+function Desktop({ data, onExit }: { data: OsData; onExit: () => void }) {
   const isMobile = useIsMobile();
   const clock = useClock();
   const [wins, setWins] = useState<Win[]>([]);
@@ -397,7 +396,7 @@ function Desktop({ data }: { data: OsData }) {
     open(item.app, item.payload);
   };
 
-  const ctx = (payload?: string) => ({ data, payload, open });
+  const ctx = (payload?: string) => ({ data, payload, open, exit: onExit });
 
   if (isMobile === null) return <div className="fixed inset-0 z-[120]"><Wallpaper /></div>;
 
@@ -409,7 +408,7 @@ function Desktop({ data }: { data: OsData }) {
         <Wallpaper />
         <div className="flex h-8 shrink-0 items-center justify-between px-5 text-xs font-semibold text-foreground">
           <span>{clock.split(' ').slice(-2).join(' ')}</span>
-          <Link href="/" className="flex items-center gap-1 text-primary">Exit <LogOut className="h-3 w-3" /></Link>
+          <button type="button" onClick={onExit} className="flex items-center gap-1 text-primary">Exit <LogOut className="h-3 w-3" /></button>
         </div>
         <AnimatePresence mode="wait">
           {current ? (
@@ -467,9 +466,9 @@ function Desktop({ data }: { data: OsData }) {
           </button>
           <span className="scale-75"><ThemeToggle /></span>
           <span className="tabular-nums">{clock}</span>
-          <Link href="/" className="flex items-center gap-1 rounded-md px-1.5 py-0.5 hover:bg-foreground/10">
+          <button type="button" onClick={onExit} className="flex items-center gap-1 rounded-md px-1.5 py-0.5 hover:bg-foreground/10">
             <LogOut className="h-3.5 w-3.5" /> Exit
-          </Link>
+          </button>
         </div>
       </div>
 
