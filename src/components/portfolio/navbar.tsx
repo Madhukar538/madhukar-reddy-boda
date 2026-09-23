@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, BookText, User, GraduationCap, FlaskConical, Layers, PenLine } from 'lucide-react';
+import { Home, Briefcase, BookText, User, GraduationCap, FlaskConical, Layers, PenLine, FolderKanban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -15,7 +15,7 @@ export const navLinks = [
   { href: '/#about',      label: 'About',      icon: User,          sectionId: 'about'      },
   { href: '/#skills',     label: 'Skills',     icon: Layers,        sectionId: 'skills'     },
   { href: '/#experience', label: 'Experience', icon: Briefcase,     sectionId: 'experience' },
-  { href: '/#projects',   label: 'Work',       icon: Briefcase,     sectionId: 'projects'   },
+  { href: '/#projects',   label: 'Work',       icon: FolderKanban,     sectionId: 'projects'   },
   { href: '/#research',   label: 'Lab',        icon: FlaskConical,  sectionId: 'research'   },
   { href: '/#education',  label: 'Education',  icon: GraduationCap, sectionId: 'education'  },
   { href: '/#insights',   label: 'Blog',       icon: PenLine,       sectionId: 'insights'   },
@@ -26,7 +26,7 @@ const dockLinks = [
   { href: '/#home',       label: 'Home',   icon: Home,      sectionId: 'home'       },
   { href: '/#skills',     label: 'Skills', icon: Layers,    sectionId: 'skills'     },
   { href: '/#experience', label: 'Career', icon: Briefcase, sectionId: 'experience' },
-  { href: '/#projects',   label: 'Work',   icon: Briefcase, sectionId: 'projects'   },
+  { href: '/#projects',   label: 'Work',   icon: FolderKanban, sectionId: 'projects'   },
   { href: '/#insights',   label: 'Blog',   icon: PenLine,   sectionId: 'insights'   },
 ];
 
@@ -137,7 +137,7 @@ export function Navbar() {
       </header>
 
       {/* ── Mobile / tablet floating tab bar ── */}
-      <div className="lg:hidden fixed bottom-4 inset-x-0 z-[100] flex items-end justify-center gap-2 px-3 pointer-events-none">
+      <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
         <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1">
           {dockLinks.map((link) => {
             const Icon = link.icon;
@@ -147,7 +147,7 @@ export function Navbar() {
                 key={link.label}
                 href={link.href}
                 className={cn(
-                  'relative flex w-[3.25rem] sm:w-16 flex-col items-center justify-center py-1.5 rounded-full transition-colors duration-200',
+                  'relative flex w-[2.875rem] min-[360px]:w-[3.25rem] sm:w-16 flex-col items-center justify-center py-1.5 rounded-full transition-colors duration-200',
                   isActive ? 'text-primary' : 'text-foreground/70 hover:text-foreground'
                 )}
               >

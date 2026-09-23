@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { blogs } from '@/data/blogs';
 import { X, Calendar, Clock } from 'lucide-react';
 import { AuthorCard } from './author-card';
@@ -35,6 +36,11 @@ export function BlogModal({ slug, onClose }: BlogModalProps) {
     }
   }, [slug]);
 
+  // Render into <body> so the sheet sits above the fixed nav bars
+  // (main is its own stacking context at z-0).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Close on Escape
   useEffect(() => {
     if (!slug) return;
@@ -43,7 +49,9 @@ export function BlogModal({ slug, onClose }: BlogModalProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [slug, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {slug && (
         <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true" aria-label={post.title}>
@@ -120,6 +128,7 @@ export function BlogModal({ slug, onClose }: BlogModalProps) {
           </div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
