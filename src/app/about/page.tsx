@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { FileDown } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
@@ -15,6 +16,12 @@ export default function AboutPage() {
       eyebrow="About"
       title="Production-first engineering."
       description="Diagnose fast, fix right, prevent recurrence — the approach behind every system I build."
+      actions={
+        <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="tinted-button !px-5 !py-2.5">
+          <FileDown className="h-4 w-4" />
+          Download résumé (PDF)
+        </a>
+      }
     >
       <Summary />
       <Skills />

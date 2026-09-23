@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/accordion';
 import { Section } from '@/components/portfolio/section';
 import { portfolio as fossilIndiaPortfolio } from './fossil-india';
+import { keyProjects, type ProjectCard } from '@/data/profile';
 
 type FossilIndiaFeature = {
   name: string;
@@ -29,83 +30,6 @@ type FossilIndiaProject = {
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-type ProjectCard = {
-  title: string;
-  description: string;
-  tech: string[];
-  /** Slug of a blog post that writes this project up. */
-  post?: string;
-};
-
-export const keyProjects: ProjectCard[] = [
-  {
-    title: 'Multi-Tenant AI Chatbot Platform',
-    description:
-      'Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.',
-    tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'Next.js 16'],
-    post: 'rag-chatbot-latency-audit',
-  },
-  {
-    title: 'Offline-First Procurement & Inspection App',
-    description:
-      'Next.js PWA plus Android shell for field procurement: one storage interface over Android SQLite and IndexedDB, master-data sync, and a transactional outbox that replays actions when back online.',
-    tech: ['Next.js', '.NET', 'SQLite', 'IndexedDB', 'Android'],
-  },
-  {
-    title: 'Uptime & Incident Management Platform',
-    description:
-      'Uptime Kuma as a headless check engine behind a custom .NET 10 API and React admin: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.',
-    tech: ['.NET 10', 'Uptime Kuma', 'React Router', 'PostgreSQL', 'Docker'],
-  },
-  {
-    title: 'Real-Time IoT Data Platform',
-    description:
-      'Built a .NET system with auto MQTT listener management, Cassandra storage, and fault-tolerant recovery for 24/7 IoT data processing.',
-    tech: ['.NET', 'MQTT', 'Cassandra', 'Bg Services', 'Solr'],
-  },
-  {
-    title: 'Custom IntelliSense Extension',
-    description:
-      'Built a Visual Studio plugin to enhance IntelliSense with internal framework awareness, providing smart completions and navigation aids for proprietary codebases.',
-    tech: ['Visual Studio Extensibility'],
-  },
-  {
-    title: 'Outlook Reminder Plugin',
-    description:
-      'Developed a lightweight Outlook add-in to schedule contextual follow-ups directly from emails, improving task tracking.',
-    tech: ['Office Add-in', 'JavaScript', 'HTML', 'Outlook API'],
-  },
-  {
-    title: 'Modular Video Conferencing System',
-    description:
-      'Engineered a plug-and-play video calling platform supporting multi-user sessions with live signaling and user-state awareness for enterprise systems.',
-    tech: ['WebRTC', 'SignalR', 'Angular', 'Node.js', '.NET'],
-  },
-  {
-    title: 'FaceAuth with Liveness Detection',
-    description:
-      'Implemented facial recognition using OpenCV with adjustable thresholding and added spoof-prevention via real-time liveness detection.',
-    tech: ['OpenCV', '.NET', 'Angular'],
-  },
-  {
-    title: 'Context-Aware Support Chatbot',
-    description:
-      'Created an NLP-based chatbot to handle ticket creation via dynamic input collection, reducing support workload by automating API calls.',
-    tech: ['Python', 'FastAPI', 'LangChain', 'LLM'],
-  },
-  {
-    title: 'Document RAG System',
-    description:
-      'Designed a caching layer using action filters and in-memory persistence to accelerate dashboard data delivery, with configurable TTLs and tiered caching.',
-    tech: ['.NET', 'Memory Cache', 'Filters', 'SQL Server'],
-  },
-  {
-    title: 'PWBAssistant NuGet Package',
-    description:
-      'Authored NuGet package (v0.3.0) for advanced, automated table scraping from web pages using Playwright automation.',
-    tech: ['NuGet', 'Playwright', '.NET'],
-  },
-];
 
 const ecommerceProjects = [
   {
