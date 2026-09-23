@@ -4,15 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Section } from '@/components/portfolio/section';
 import { portfolio as fossilIndiaPortfolio } from './fossil-india';
 
@@ -35,7 +26,7 @@ type FossilIndiaProject = {
   challenges: FossilIndiaChallenge[];
   impact: string[];
 };
-import { Link as LinkIcon } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 const keyProjects = [
   {
@@ -228,79 +219,66 @@ export function Projects() {
   ];
 
   return (
-    <Section id="projects" title="architected_systems()" comment="Key projects and e-commerce builds">
-      {/* Key projects grid */}
-      <div className="mb-3 font-mono text-xs text-muted-foreground/60">
-        {'// key_projects[] — systems built from scratch'}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+    <Section id="projects" title="Selected Work" comment="Key projects and e-commerce builds">
+      <p className="mb-3 text-sm font-semibold text-foreground/70">Systems built from scratch</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-10">
         {combined.map((project, idx) => (
-          <div key={project.title} className="terminal-card p-5 flex flex-col group">
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] text-primary/60">
-                  [{String(idx + 1).padStart(2, '0')}]
-                </span>
-              </div>
-            </div>
-            <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200 mb-2 leading-snug">
+          <div key={project.title} className="glass glass-interactive p-5 flex flex-col">
+            <span className="mb-3 text-xs font-semibold tabular-nums text-primary">
+              {String(idx + 1).padStart(2, '0')}
+            </span>
+            <h3 className="text-[17px] font-semibold text-foreground mb-1.5 leading-snug">
               {project.title}
             </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-4">
+            <p className="text-sm text-muted-foreground leading-relaxed flex-1 mb-4">
               {project.description}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {project.tech.map((tech) => (
-                <span key={tech} className="code-tag code-tag-cyan">[{tech}]</span>
+                <span key={tech} className="chip">{tech}</span>
               ))}
             </div>
           </div>
         ))}
       </div>
 
-      {/* E-commerce accordion */}
-      <div className="mb-3 font-mono text-xs text-muted-foreground/60">
-        {'// ecommerce_experience[] — client portals and integrations'}
-      </div>
-      <div className="terminal-card overflow-hidden">
+      <p className="mb-3 text-sm font-semibold text-foreground/70">E-commerce portals &amp; integrations</p>
+      <div className="glass overflow-hidden">
         <Accordion type="single" collapsible className="w-full">
           {ecommerceProjects.map((project) => (
             <AccordionItem
               value={project.id}
               key={project.id}
-              className="border-b border-border last:border-0"
+              className="border-b border-foreground/10 last:border-0"
             >
-              <AccordionTrigger className="px-5 py-4 hover:no-underline group">
-                <div className="flex items-center gap-3 text-left">
-                  <span className="font-mono text-[10px] text-primary/60 shrink-0">$</span>
-                  <span className="font-mono text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+              <AccordionTrigger className="px-5 md:px-6 py-4 hover:no-underline hover:bg-foreground/[0.03] transition-colors">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-3 text-left">
+                  <span className="text-[15px] font-semibold text-foreground">
                     {project.title}
                   </span>
-                  <span className="font-mono text-[10px] text-muted-foreground hidden sm:block">
-                    {project.duration}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{project.duration}</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="px-5 pb-5 pt-1 space-y-4">
-                  <div className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-muted-foreground">
-                    <span><span className="text-primary/80">client:</span> {project.client}</span>
-                    <span><span className="text-primary/80">role:</span> {project.role}</span>
+                <div className="px-5 md:px-6 pb-6 pt-1 space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="chip chip-accent">{project.role}</span>
+                    <span className="chip">{project.client}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-foreground/80 leading-relaxed">
                     {project.description}
                   </p>
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-2">
                     {project.responsibilities.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2 font-mono text-xs text-muted-foreground">
-                        <span className="text-primary mt-0.5 shrink-0">›</span>
+                      <li key={index} className="flex items-start gap-3 text-sm text-muted-foreground leading-relaxed">
+                        <span className="mt-[0.5rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
                         {item}
                       </li>
                     ))}
                   </ul>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {project.tech.map((t) => (
-                      <span key={t} className="code-tag">[{t}]</span>
+                      <span key={t} className="chip">{t}</span>
                     ))}
                   </div>
                   {project.url !== '#' && (
@@ -308,10 +286,10 @@ export function Projects() {
                       href={project.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 font-mono text-xs text-primary hover:text-primary/80 transition-colors"
+                      className="tinted-button !py-1.5 !text-xs"
                     >
-                      <LinkIcon className="h-3 w-3" />
-                      visit_site()
+                      Visit site
+                      <ArrowUpRight className="h-3.5 w-3.5" />
                     </a>
                   )}
                 </div>

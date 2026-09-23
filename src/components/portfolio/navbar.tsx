@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, BookText, User, GraduationCap, Terminal } from 'lucide-react';
+import { Home, Briefcase, BookText, User, GraduationCap, FlaskConical, Layers, PenLine, FolderKanban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -11,23 +11,23 @@ import { motion } from 'framer-motion';
 
 // All sections — used by desktop sidebar nav and scroll spy
 export const navLinks = [
-  { href: '/#home',       label: 'home',       icon: Home,          sectionId: 'home'       },
-  { href: '/#about',      label: 'about',      icon: User,          sectionId: 'about'      },
-  { href: '/#skills',     label: 'skills',     icon: GraduationCap, sectionId: 'skills'     },
-  { href: '/#experience', label: 'experience', icon: Briefcase,     sectionId: 'experience' },
-  { href: '/#projects',   label: 'projects',   icon: Briefcase,     sectionId: 'projects'   },
-  { href: '/#research',   label: 'research',   icon: BookText,      sectionId: 'research'   },
-  { href: '/#education',  label: 'edu',        icon: GraduationCap, sectionId: 'education'  },
-  { href: '/#insights',   label: 'blog',       icon: BookText,      sectionId: 'insights'   },
+  { href: '/#home',       label: 'Home',       icon: Home,          sectionId: 'home'       },
+  { href: '/#about',      label: 'About',      icon: User,          sectionId: 'about'      },
+  { href: '/#skills',     label: 'Skills',     icon: Layers,        sectionId: 'skills'     },
+  { href: '/#experience', label: 'Experience', icon: Briefcase,     sectionId: 'experience' },
+  { href: '/#projects',   label: 'Work',       icon: FolderKanban,     sectionId: 'projects'   },
+  { href: '/#research',   label: 'Lab',        icon: FlaskConical,  sectionId: 'research'   },
+  { href: '/#education',  label: 'Education',  icon: GraduationCap, sectionId: 'education'  },
+  { href: '/#insights',   label: 'Blog',       icon: PenLine,       sectionId: 'insights'   },
 ];
 
-// Mobile bottom dock — capped to 5 key sections to fit any phone screen
+// Mobile tab bar — capped to 5 key sections to fit any phone screen
 const dockLinks = [
-  { href: '/#home',       label: 'home',  icon: Home,          sectionId: 'home'       },
-  { href: '/#skills',     label: 'skills',icon: GraduationCap, sectionId: 'skills'     },
-  { href: '/#experience', label: 'exp',   icon: Briefcase,     sectionId: 'experience' },
-  { href: '/#projects',   label: 'work',  icon: Briefcase,     sectionId: 'projects'   },
-  { href: '/#insights',   label: 'blog',  icon: BookText,      sectionId: 'insights'   },
+  { href: '/#home',       label: 'Home',   icon: Home,      sectionId: 'home'       },
+  { href: '/#skills',     label: 'Skills', icon: Layers,    sectionId: 'skills'     },
+  { href: '/#experience', label: 'Career', icon: Briefcase, sectionId: 'experience' },
+  { href: '/#projects',   label: 'Work',   icon: FolderKanban, sectionId: 'projects'   },
+  { href: '/#insights',   label: 'Blog',   icon: PenLine,   sectionId: 'insights'   },
 ];
 
 export function Navbar() {
@@ -64,116 +64,113 @@ export function Navbar() {
       }
     );
 
+    // querySelectorAll: #home exists twice (desktop sidebar + mobile hero)
     sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
+      document.querySelectorAll(`[id="${id}"]`).forEach((el) => observer.observe(el));
     });
 
     return () => observer.disconnect();
   }, [pathname]);
 
+  const isLinkActive = (sectionId: string) =>
+    sectionId === 'insights'
+      ? pathname.startsWith('/blog') || activeSection === 'insights'
+      : pathname === '/' && activeSection === sectionId;
+
   return (
     <>
-      {/* ── Desktop top bar ── */}
-      <header
-        className={cn(
-          'hidden md:flex fixed top-0 left-0 right-0 z-[100] h-14 items-center justify-between px-6',
-          'border-b transition-all duration-300',
-          scrolled
-            ? 'bg-card/60 backdrop-blur-xl border-border/50 shadow-lg shadow-black/10'
-            : 'bg-transparent border-transparent'
-        )}
-      >
-        {/* Left: terminal prompt brand */}
-        <Link href="/" className="flex items-center gap-2 font-mono text-sm font-semibold group">
-          <Terminal className="h-4 w-4 text-primary" />
-          <span className="text-muted-foreground">~/</span>
-          <span className="text-primary">madhukar</span>
-          <span className="text-muted-foreground"> ~</span>
-          <span className="animate-pulse text-primary ml-0.5">▋</span>
-        </Link>
+      {/* ── Desktop floating glass capsule ── */}
+      <header className="hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none">
+        <div
+          className={cn(
+            'glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 pl-2 pr-2 py-1.5 transition-all duration-500',
+            scrolled ? 'shadow-2xl' : ''
+          )}
+        >
+          {/* Brand */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+              MR
+            </span>
+            Madhukar
+          </Link>
 
-        {/* Center: nav links */}
-        <nav className="flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive =
-              link.sectionId === 'insights'
-                ? pathname.startsWith('/blog') || activeSection === 'insights'
-                : pathname === '/' && activeSection === link.sectionId;
+          <div className="h-5 w-px bg-foreground/10" />
 
+          {/* Links */}
+          <nav className="flex items-center gap-0.5">
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link.sectionId);
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={cn(
+                    'relative px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-colors duration-200',
+                    isActive ? 'text-foreground' : 'text-foreground/60 hover:text-foreground'
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative">{link.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="h-5 w-px bg-foreground/10" />
+
+          {/* Appearance controls */}
+          <div className="flex items-center">
+            <ThemeSwitcher />
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* ── Mobile / tablet floating tab bar ── */}
+      <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
+        <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1">
+          {dockLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = isLinkActive(link.sectionId);
             return (
               <Link
                 key={link.label}
                 href={link.href}
                 className={cn(
-                  'relative px-3 py-1.5 text-xs font-mono font-medium transition-all duration-200 rounded-sm',
-                  'hover:text-primary hover:bg-primary/5',
-                  isActive ? 'text-primary bg-primary/8' : 'text-muted-foreground'
+                  'relative flex w-[2.875rem] min-[360px]:w-[3.25rem] sm:w-16 flex-col items-center justify-center py-1.5 rounded-full transition-colors duration-200',
+                  isActive ? 'text-primary' : 'text-foreground/70 hover:text-foreground'
                 )}
               >
                 {isActive && (
                   <motion.span
-                    layoutId="nav-pill"
-                    className="absolute inset-0 border border-primary/40 rounded-sm bg-primary/5"
-                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    layoutId="mobile-pill"
+                    className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                <span className="relative">[{link.label}]</span>
+                <Icon className="relative h-[1.15rem] w-[1.15rem]" strokeWidth={isActive ? 2.4 : 2} />
+                <span className="relative text-[10px] font-medium mt-0.5">{link.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Right: theme toggle & switcher */}
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-muted-foreground hidden lg:block mr-1">v1.0.0</span>
+        {/* Separate circular control cluster, like iOS 26's detached tab-bar button */}
+        <div className="glass glass-strong glass-pill pointer-events-auto flex flex-col items-center p-1">
           <ThemeSwitcher />
           <ThemeToggle />
         </div>
-      </header>
-
-      {/* ── Mobile floating bottom dock (5 items max) ── */}
-      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100]">
-        <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/50 rounded-sm shadow-xl shadow-black/20 px-1 py-1">
-          {dockLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive =
-              link.sectionId === 'insights'
-                ? pathname.startsWith('/blog') || activeSection === 'insights'
-                : pathname === '/' && activeSection === link.sectionId;
-
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={cn(
-                  'relative flex flex-col items-center justify-center px-3 py-2 rounded-sm transition-all duration-200',
-                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span className={cn(
-                  'text-[9px] mt-0.5 font-mono',
-                  isActive ? 'text-primary' : 'text-muted-foreground/60'
-                )}>
-                  {link.label}
-                </span>
-                {isActive && (
-                  <motion.div
-                    layoutId="mobile-dot"
-                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </Link>
-            );
-          })}
-          <div className="w-px h-5 bg-border/60 mx-1.5 shrink-0" />
-          <div className="px-1.5 shrink-0">
-            <ThemeSwitcher />
-          </div>
-        </div>
-      </nav>
+      </div>
     </>
   );
 }

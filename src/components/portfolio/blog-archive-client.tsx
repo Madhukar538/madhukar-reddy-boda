@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { blogs } from '@/data/blogs';
 import Link from 'next/link';
-import { ArrowRight, Calendar, Clock, Terminal } from 'lucide-react';
+import { ArrowRight, Calendar, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import { BlogModal } from './blog-modal';
 
 const categories = ['All', 'Software Architecture', 'Observability', 'Artificial Intelligence'];
@@ -17,43 +19,48 @@ export function BlogArchiveClient() {
     : blogs.filter((b) => b.category === selectedCategory);
 
   return (
-    <div className="min-h-dvh pb-24">
-      <main className="container mx-auto px-4 md:px-6 pt-24 max-w-4xl">
-
+    <div className="min-h-dvh pb-28 lg:pb-16">
+      <main className="container mx-auto px-4 md:px-6 pt-8 lg:pt-28 max-w-4xl">
         {/* Page header */}
-        <div className="mb-12 space-y-3">
-          <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <Terminal className="h-3.5 w-3.5 text-primary" />
-            <span className="text-primary">$</span>
-            <span>ls ~/blog --sort=date --format=long</span>
-          </div>
-          <h1 className="font-mono text-3xl md:text-4xl font-bold text-foreground">
-            <span className="neon-text">/</span>blog
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-lg">
+        <div className="mb-8 space-y-2">
+          <p className="eyebrow">Writing</p>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">Blog</h1>
+          <p className="text-[15px] text-muted-foreground max-w-lg">
             Architecture deep-dives · Performance engineering · AI systems · System design.
           </p>
         </div>
 
-        {/* Category filter */}
-        <div className="flex flex-wrap gap-2 mb-10">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`font-mono text-xs px-3 py-1.5 rounded-sm border transition-all duration-200 ${
-                selectedCategory === cat
-                  ? 'border-primary/40 text-primary bg-primary/8'
-                  : 'border-border text-muted-foreground hover:border-primary/30 hover:text-primary/80'
-              }`}
-            >
-              [{cat}]
-            </button>
-          ))}
+        {/* Category filter — glass segmented control */}
+        <div className="mb-8 -mx-4 px-4 overflow-x-auto">
+          <div className="glass glass-pill inline-flex items-center p-1">
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={cn(
+                    'relative whitespace-nowrap px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200',
+                    isActive ? 'text-primary-foreground' : 'text-foreground/65 hover:text-foreground'
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="blog-filter"
+                      className="absolute inset-0 rounded-full bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_14px_-4px_hsl(var(--primary)/0.6)]"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                  <span className="relative">{cat}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Post list */}
-        <div className="space-y-5">
+        <div className="space-y-3 md:space-y-4">
           {filteredBlogs.map((post, idx) => (
             <Link
               key={post.slug}
@@ -64,48 +71,42 @@ export function BlogArchiveClient() {
               }}
               className="group block"
             >
-              <article
-                className="blog-card p-6 md:p-7"
-                style={{ borderTopColor: idx === 0 && selectedCategory === 'All' ? 'hsl(var(--neon-green))' : undefined }}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <article className="glass glass-interactive p-6 md:p-7">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                   <div className="flex flex-wrap items-center gap-2">
                     {idx === 0 && selectedCategory === 'All' && (
-                      <span className="font-mono text-[10px] text-primary border border-primary/30 bg-primary/5 px-2 py-0.5 rounded-sm font-semibold uppercase">
-                        FEATURED
-                      </span>
+                      <span className="chip chip-accent">Featured</span>
                     )}
-                    <span className="font-mono text-[10px] text-yellow-400/80 uppercase tracking-wider">
-                      {post.category}
-                    </span>
+                    <span className="chip">{post.category}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground font-mono">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
+                      <Calendar className="h-3.5 w-3.5" />
                       {post.date}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-3.5 w-3.5" />
                       {post.readTime}
                     </span>
                   </div>
                 </div>
 
-                <h2 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200 mb-2 leading-snug">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 leading-snug">
                   {post.title}
                 </h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-5">
                   {post.excerpt}
                 </p>
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap gap-1.5">
                     {post.tags.map((tag) => (
-                      <span key={tag} className="code-tag">[{tag}]</span>
+                      <span key={tag} className="chip">{tag}</span>
                     ))}
                   </div>
-                  <span className="flex items-center gap-1.5 font-mono text-xs text-primary group-hover:gap-2.5 transition-all duration-200">
-                    read() <ArrowRight className="h-3.5 w-3.5" />
+                  <span className="flex items-center gap-1.5 text-sm font-semibold text-primary">
+                    Read
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </div>
               </article>
@@ -114,7 +115,6 @@ export function BlogArchiveClient() {
         </div>
       </main>
 
-      {/* Blog Overlay Modal */}
       <BlogModal slug={activeBlogSlug} onClose={() => setActiveBlogSlug(null)} />
     </div>
   );

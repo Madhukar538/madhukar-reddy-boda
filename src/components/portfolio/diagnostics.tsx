@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Cpu, Network, Terminal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Activity, Cpu, Network } from 'lucide-react';
 
 const mockLogs = [
   '[INFO] Initializing portfolio components... success',
@@ -26,7 +27,6 @@ export function Diagnostics() {
   const [memory, setMemory] = useState(38.4);
   const [ping, setPing] = useState(14);
   const [logs, setLogs] = useState<string[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // 1. Uptime clock
   useEffect(() => {
@@ -84,63 +84,50 @@ export function Diagnostics() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll logs container ONLY (prevents window scrollIntoView lag/jump)
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [logs]);
+  const latestLog = logs[logs.length - 1]?.replace(/^\[(INFO|DEBUG)\]\s*/, '');
+
+  const stats = [
+    { icon: Activity, label: 'Uptime', value: formatUptime(uptime) },
+    { icon: Cpu,      label: 'Heap',   value: `${memory} MB` },
+    { icon: Network,  label: 'Ping',   value: `${ping} ms` },
+  ];
 
   return (
-    <div className="font-mono text-[11px] space-y-2 bg-background/40 border border-border/80 rounded-sm p-3 shadow-inner">
-      <div className="flex items-center justify-between border-b border-border/40 pb-1.5 mb-1.5">
-        <span className="text-muted-foreground/60 flex items-center gap-1.5">
-          <Terminal className="h-3 w-3 text-primary" />
-          {'// diagnostics.sys'}
+    <div className="glass-inset p-3 space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-foreground/80">Live Status</span>
+        <span className="flex items-center gap-1.5 text-[11px] font-medium text-[hsl(var(--sys-green))]">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--sys-green))] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[hsl(var(--sys-green))]" />
+          </span>
+          Online
         </span>
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
       </div>
 
-      {/* Grid of stats */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-foreground/80">
-        <div className="flex items-center gap-1.5">
-          <Activity className="h-3 w-3 text-primary/70 shrink-0" />
-          <span className="text-muted-foreground/50">UPTIME:</span>
-          <span className="text-primary font-medium tabular-nums">{formatUptime(uptime)}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Cpu className="h-3 w-3 text-primary/70 shrink-0" />
-          <span className="text-muted-foreground/50">HEAP:</span>
-          <span className="font-medium tabular-nums">{memory} MB</span>
-        </div>
-        <div className="flex items-center gap-1.5 col-span-2">
-          <Network className="h-3 w-3 text-primary/70 shrink-0" />
-          <span className="text-muted-foreground/50">PING:</span>
-          <span className="font-medium tabular-nums text-accent">{ping} ms</span>
-          <span className="text-muted-foreground/30">|</span>
-          <span className="text-muted-foreground/50">STATUS:</span>
-          <span className="text-emerald-500 font-semibold uppercase text-[9px] tracking-wide">ONLINE</span>
-        </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {stats.map(({ icon: Icon, label, value }) => (
+          <div key={label} className="rounded-xl bg-background/40 dark:bg-white/5 px-2 py-2 text-center">
+            <Icon className="mx-auto mb-1 h-3.5 w-3.5 text-primary" />
+            <p className="text-[11px] font-semibold tabular-nums text-foreground">{value}</p>
+            <p className="text-[10px] text-muted-foreground">{label}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Rolling logs container */}
-      <div
-        ref={containerRef}
-        className="border border-border/30 rounded-sm bg-black/30 p-2 mt-2 h-20 overflow-y-auto scrollbar-thin select-text scroll-smooth"
-      >
-        <div className="space-y-1">
-          {logs.map((log, index) => {
-            const isInfo = log.includes('[INFO]');
-            return (
-              <p
-                key={index}
-                className={isInfo ? 'text-foreground/70' : 'text-primary/70'}
-              >
-                {log}
-              </p>
-            );
-          })}
-        </div>
+      <div className="h-4 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.p
+            key={logs.length + (latestLog ?? '')}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className="truncate text-[11px] text-muted-foreground"
+          >
+            {latestLog}
+          </motion.p>
+        </AnimatePresence>
       </div>
     </div>
   );

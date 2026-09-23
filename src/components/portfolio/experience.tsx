@@ -1,6 +1,6 @@
 'use client';
 
-import { Briefcase, ChevronRight } from 'lucide-react';
+import { Briefcase, Calendar, MapPin } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { motion } from 'framer-motion';
 
@@ -32,75 +32,58 @@ const experienceData = {
 
 export function Experience() {
   return (
-    <Section id="experience" title="work_log()" comment="Professional experience" data={experienceData}>
-      <div className="terminal-card">
-        {/* Terminal window chrome */}
-        <div className="flex items-center gap-2 px-5 py-3 border-b border-border">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-          <span className="ml-2 font-mono text-xs text-muted-foreground">work_log.json</span>
+    <Section id="experience" title="Experience" comment="Professional experience" data={experienceData}>
+      <div className="glass p-6 md:p-8">
+        {/* Role header */}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_8px_20px_-8px_hsl(var(--primary)/0.7)]">
+            <Briefcase className="h-5 w-5" />
+          </span>
+          <div className="flex-1 space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-xl font-bold text-foreground">{experienceData.title}</h3>
+              <span className="chip chip-accent">{experienceData.type}</span>
+            </div>
+            <p className="text-[15px] font-medium text-foreground/80">{experienceData.company}</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{experienceData.duration}</span>
+              <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{experienceData.location}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="px-5 md:px-8 py-6">
-          {/* Job header — terminal output style */}
-          <div className="mb-6 space-y-2">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-primary font-mono text-xs">$</span>
-                <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
-              </div>
-              <h3 className="font-mono text-lg font-bold text-foreground">
-                {experienceData.title}
-              </h3>
-              <span className="font-mono text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-sm border border-primary/20">
-                {experienceData.type}
-              </span>
+        {/* Highlights */}
+        <div className="mb-7 grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          {experienceData.highlights.map(({ label, value }) => (
+            <div key={label} className="glass-inset p-4">
+              <p className="text-sm font-semibold text-primary mb-1">{label}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{value}</p>
             </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-1 font-mono text-xs text-muted-foreground pl-6">
-              <span className="text-foreground/70">{experienceData.company}</span>
-              <span>{'>'} {experienceData.duration}</span>
-              <span>{'>'} {experienceData.location}</span>
-            </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Highlights — structured key-value */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-            {experienceData.highlights.map(({ label, value }) => (
-              <div key={label} className="bg-background/60 border border-border rounded-sm p-3">
-                <p className="font-mono text-xs text-primary mb-1">{'// '}{label}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Responsibilities — terminal list */}
-          <div>
-            <p className="font-mono text-xs text-muted-foreground/60 mb-3">
-              {'// responsibilities[]'}
-            </p>
-            <motion.ul
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
-              className="space-y-2"
+        {/* Responsibilities */}
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+          Key contributions
+        </p>
+        <motion.ul
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
+          className="space-y-2.5"
+        >
+          {experienceData.responsibilities.map((item, idx) => (
+            <motion.li
+              key={idx}
+              variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0 } }}
+              className="flex items-start gap-3"
             >
-              {experienceData.responsibilities.map((item, idx) => (
-                <motion.li
-                  key={idx}
-                  variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0 } }}
-                  className="flex items-start gap-2.5 group"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
-                  <span className="font-mono text-xs text-muted-foreground group-hover:text-foreground/80 transition-colors leading-relaxed">
-                    {item}
-                  </span>
-                </motion.li>
-              ))}
-            </motion.ul>
-          </div>
-        </div>
+              <span className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span className="text-[15px] text-foreground/80 leading-relaxed">{item}</span>
+            </motion.li>
+          ))}
+        </motion.ul>
       </div>
     </Section>
   );

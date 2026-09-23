@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { useState, type ReactNode } from 'react';
 import { toYaml, highlightJson, highlightYaml } from '@/lib/formatter';
 import { Check, Copy } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface SectionProps {
   id: string;
@@ -50,76 +51,70 @@ export function Section({ id, title, children, className, comment, data }: Secti
   };
 
   return (
-    <section id={id} className={cn('py-5 md:py-8 lg:py-10', className)}>
-      {/* Terminal-style section header */}
-      <div className="mb-4 md:mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+    <section id={id} className={cn('py-6 md:py-8 lg:py-10 scroll-mt-24', className)}>
+      <div className="mb-5 md:mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div className="space-y-1 flex-1">
-          {comment && (
-            <p className="font-mono text-xs text-muted-foreground/60">
-              {'// '}{comment}
-            </p>
-          )}
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-primary font-bold text-sm select-none">##</span>
-            <h2 className="font-mono text-xl md:text-2xl font-bold tracking-tight text-foreground">
-              {title}
-            </h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent" />
-          </div>
+          {comment && <p className="eyebrow">{comment}</p>}
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            {title}
+          </h2>
         </div>
 
-        {/* View Toggle Tabs */}
+        {/* Segmented control: UI / JSON / YAML */}
         {data && (
-          <div className="flex items-center gap-1.5 self-start sm:self-auto bg-background/50 border border-border/80 rounded-sm p-1">
+          <div className="glass glass-pill self-start sm:self-auto flex items-center p-1" role="tablist">
             {(['ui', 'json', 'yaml'] as const).map((mode) => (
               <button
                 key={mode}
+                type="button"
+                role="tab"
+                aria-selected={viewMode === mode}
                 onClick={() => setViewMode(mode)}
                 className={cn(
-                  'px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-wider rounded-sm transition-all duration-150',
-                  viewMode === mode
-                    ? 'text-primary bg-primary/10 border border-primary/30'
-                    : 'text-muted-foreground hover:text-foreground border border-transparent'
+                  'relative px-3.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full transition-colors duration-200',
+                  viewMode === mode ? 'text-foreground' : 'text-foreground/55 hover:text-foreground'
                 )}
               >
-                [{mode}]
+                {viewMode === mode && (
+                  <motion.span
+                    layoutId={`segment-${id}`}
+                    className="absolute inset-0 rounded-full bg-background/80 dark:bg-foreground/15 shadow-[0_1px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.3)]"
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <span className="relative">{mode}</span>
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Content Rendering */}
       {viewMode === 'ui' ? (
         children
       ) : (
-        <div className="relative terminal-card overflow-hidden">
-          {/* Chrome top bar */}
-          <div className="flex items-center justify-between px-5 py-2.5 border-b border-border bg-card/80">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-              <span className="ml-2 font-mono text-xs text-muted-foreground">
-                {id}_data.{viewMode}
-              </span>
-            </div>
-            {/* Copy Button */}
+        <div className="glass overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-foreground/10">
+            <span className="text-xs font-medium text-muted-foreground">
+              {id}.{viewMode}
+            </span>
             <button
+              type="button"
               onClick={handleCopy}
-              className="p-1.5 rounded-sm hover:bg-background/80 text-muted-foreground hover:text-primary transition-all duration-200"
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-foreground/10 hover:text-foreground transition-colors"
               title="Copy code"
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <>
+                  <Check className="h-3.5 w-3.5 text-[hsl(var(--sys-green))]" /> Copied
+                </>
               ) : (
-                <Copy className="h-3.5 w-3.5" />
+                <>
+                  <Copy className="h-3.5 w-3.5" /> Copy
+                </>
               )}
             </button>
           </div>
-          <div className="p-5 md:p-6 bg-card/45 backdrop-blur-xl">
-            {renderCodeContent()}
-          </div>
+          <div className="p-5 md:p-6">{renderCodeContent()}</div>
         </div>
       )}
     </section>
