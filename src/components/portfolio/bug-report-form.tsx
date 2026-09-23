@@ -57,9 +57,13 @@ export function BugReportForm() {
   const [status, setStatus] = useState<Status>({ state: 'idle' });
   const [copied, setCopied] = useState(false);
   const startedAt = useRef(0);
+  const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     startedAt.current = Date.now();
+    // Arriving from a blog post (?topic=<post title>) pre-fills the title.
+    const topic = new URLSearchParams(window.location.search).get('topic')?.trim();
+    if (topic && titleRef.current && !titleRef.current.value) titleRef.current.value = `Help with: ${topic}`.slice(0, 120);
   }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -142,7 +146,7 @@ export function BugReportForm() {
       </div>
 
       <Field label="Title" error={fields.title}>
-        <input name="title" required maxLength={120} className={fieldClass} placeholder="Checkout API times out under load" />
+        <input ref={titleRef} name="title" required maxLength={120} className={fieldClass} placeholder="Checkout API times out under load" />
       </Field>
 
       <Field label="What's happening?" hint="Symptoms, errors, what you expected" error={fields.description}>

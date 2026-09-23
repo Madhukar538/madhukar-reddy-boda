@@ -25,7 +25,7 @@ export const blogs: BlogPost[] = [
       <p>My first idea was to run LLMs on it. With 8 GB of unified memory, that was never going to work: the models I use are 18 to 21 GB. What an M1 is great at is the lightweight part of a platform: a build server, a reverse proxy, a handful of Next.js and .NET containers, and a couple of databases. Heavy AI inference stays on a separate GPU box.</p>
 
       <h2>2. The Architecture</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 git push ──▶ GitHub webhook ──▶ Coolify (Linux VM on the Mac)
                                    │  builds image, rolls out container
                                    ▼
@@ -42,7 +42,7 @@ Terraform ──▶ Cloudflare API  (tunnel, DNS, routing rules)
 
       <h2>3. Wildcard Routing: One Rule for Every App</h2>
       <p>The trick that makes it feel like a PaaS is a single wildcard DNS record pointing at the tunnel, with the tunnel sending everything to Coolify's Traefik proxy. Traefik routes by hostname, so a new app just needs a domain in Coolify. No DNS or Cloudflare changes, ever.</p>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre class="language-hcl">
 resource "cloudflare_dns_record" "wildcard" {
   zone_id = var.cloudflare_zone_id
   name    = "*.mydomain.com"
@@ -114,7 +114,7 @@ resource "cloudflare_dns_record" "wildcard" {
       <p>At 8 GB per node, Ceph is out; it wants far more memory than that. One node serving <strong>NFS</strong> for shared storage is the practical replacement.</p>
 
       <h2>3. The Two Contenders</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
                     Docker Swarm             K3s (lightweight Kubernetes)
 Setup time          ~30 minutes              ~2-3 hours (with troubleshooting)
 RAM per node        ~1.5 GB with services    ~3.5 GB with services
@@ -133,7 +133,7 @@ Dashboard           Portainer CE             Rancher / Lens / k9s</pre>
       <p><strong>When to move to K3s:</strong> at 20+ services, when you need CPU/memory-based autoscaling (Swarm can't do this natively), or when you need fine-grained scheduling, secrets or network policies.</p>
 
       <h2>5. The Build Order</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 # Phase 1 - foundation
 static IPs + Wake-on-LAN -> Proxmox VE on all 10 nodes
 
@@ -173,7 +173,7 @@ rolling image update -> zero downtime</pre>
       <p class="lead">A server-rendered Next.js site backed by a .NET API usually calls that API on every page view, even when the content hasn't changed in days. I wanted static-file speed with CMS-level freshness and no rebuilds. This POC proves it with tag-based on-demand ISR (Incremental Static Regeneration), triggered by webhooks from .NET.</p>
 
       <h2>1. The Architecture</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 .NET Core API ──▶ Next.js (build) ──▶ static HTML cache ──▶ users (no API call)
       │                                      ▲
       └──── POST /api/revalidate ────────────┘
@@ -202,7 +202,7 @@ rolling image update -> zero downtime</pre>
 
       <h2>5. Trap #2: Next.js 16 Changed <code>revalidateTag</code></h2>
       <p>The single-argument <code>revalidateTag(tag)</code> from most tutorials is deprecated in Next.js 16. It now takes a second argument:</p>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre class="language-typescript">
 // expire immediately: what a synchronous "content saved" webhook wants
 revalidateTag('page-home', { expire: 0 });
 
@@ -231,7 +231,7 @@ revalidateTag('page-home', 'max');</pre>
       <p class="lead">E-commerce search fails in two opposite ways. BM25 keyword search can't tell that "evening wristwatch" and "dress watch" mean the same thing. Pure vector search happily returns "something watch-like" when the shopper typed an exact SKU. This R&amp;D engine runs both and fuses the results, on a Solr 9 core of about 540 real catalog products, without touching the production search path.</p>
 
       <h2>1. The Pipeline</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 query ─▶ SKU short-circuit ─▶ split into item clauses ─▶ for each clause:
    ├─ price phrase parser        (under / between / ~ / 12k)
    ├─ rule-based NLU             (brand, category, colour, size, badge, type)
@@ -244,7 +244,7 @@ query ─▶ SKU short-circuit ─▶ split into item clauses ─▶ for each cl
 
       <h2>2. Reciprocal Rank Fusion</h2>
       <p>BM25 scores and cosine similarities live on different scales, so you can't just add them. RRF ignores scores and uses only rank positions:</p>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
       <p>A product ranked well by <em>both</em> retrievers rises to the top. One found by only one retriever still gets a fair share. The same primitive powers the "similar products" endpoint, where it fuses vector similarity with Solr's MoreLikeThis.</p>
 
@@ -296,7 +296,7 @@ score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
       <p class="lead">We're building a multi-tenant RAG chatbot platform on .NET 10: an embeddable widget, SignalR streaming, pgvector retrieval, a text-to-SQL agent, MCP tools and episodic memory. It worked, but a data question took 30-40 seconds. I audited the whole request path to find out why.</p>
 
       <h2>1. The Platform in One Picture</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 Next.js admin portal  |  embeddable JS widget (iframe)
               │  REST + SignalR
               ▼
@@ -309,7 +309,7 @@ Next.js admin portal  |  embeddable JS widget (iframe)
 
       <h2>2. Where 40 Seconds Went</h2>
       <p>For a SQL-style question, roughly 12-15 seconds is unavoidable LLM and database work. The other ~13 seconds was waste:</p>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 nested SQL LLM calls           ~8000 ms   ◀ biggest win
 redundant intent re-parsing    ~2000 ms
 artificial streaming delay     ~1500 ms
@@ -341,7 +341,7 @@ other overhead                  ~500 ms</pre>
       </ul>
 
       <h2>7. The Plan</h2>
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre>
 Week 1    quick wins: streaming, duplicate search, kernel reuse, MCP pooling
           target: 30-40 s ─▶ 20-25 s
 Week 2-3  single-shot SQL, cached intent, parallel pipeline steps
@@ -378,7 +378,7 @@ Week 3-4  tenant isolation, retries, per-tenant invalidation, latency dashboards
         <li><strong>ValueTask:</strong> Asynchronous methods that frequently complete synchronously were changed from returning <code>Task&lt;T&gt;</code> to <code>ValueTask&lt;T&gt;</code>, eliminating Task object allocations.</li>
       </ul>
 
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre class="language-csharp">
 // Zero-allocation parsing snippet
 public ReadOnlySpan&lt;char&gt; ExtractToken(ReadOnlySpan&lt;char&gt; header) {
     int index = header.IndexOf("Bearer ");
@@ -412,7 +412,7 @@ public ReadOnlySpan&lt;char&gt; ExtractToken(ReadOnlySpan&lt;char&gt; header) {
         <li>System utilization (Memory/CPU of the target services).</li>
       </ul>
 
-      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+      <pre class="language-javascript">
 // Example k6 test scenario script
 import http from 'k6/http';
 import { check, sleep } from 'k6';

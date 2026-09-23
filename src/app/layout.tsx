@@ -7,11 +7,18 @@ import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
 import { Footer } from '@/components/portfolio/footer';
 import { OsModeProvider } from '@/components/os/os-mode';
+import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: 'Boda Madhukar Reddy — Software Architect & Tech Blogger',
   description:
     'Software Architect specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering. Architecture deep-dives and engineering blog.',
+  alternates: {
+    types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
+  },
+  openGraph: { type: 'website', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
+  twitter: { card: 'summary_large_image' },
   icons: {
     icon: '/madhukar.png',
     shortcut: '/madhukar.png',

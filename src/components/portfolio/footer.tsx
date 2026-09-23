@@ -3,12 +3,12 @@ import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import { OsModeToggle } from '@/components/os/os-mode';
 
 const pages = [
-  { href: '/', label: 'Home' },
+  { href: '/', label: 'Blog' },
+  { href: '/topics', label: 'Topics' },
   { href: '/about', label: 'About' },
   { href: '/experience', label: 'Experience' },
   { href: '/projects', label: 'Projects' },
   { href: '/lab', label: 'R&D Lab' },
-  { href: '/blog', label: 'Blog' },
   { href: '/ai', label: 'AI / MCP' },
   { href: '/graph', label: 'Graph' },
   { href: '/fix-a-bug', label: 'Fix a bug' },

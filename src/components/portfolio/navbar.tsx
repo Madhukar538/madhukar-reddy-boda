@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, User, FlaskConical, PenLine, FolderKanban } from 'lucide-react';
+import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Tags } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -12,27 +12,28 @@ import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
 
 // Every page on the site — each one is its own URL.
+// The blog is the home page; the portfolio pages follow it.
 export const navLinks = [
-  { href: '/',           label: 'Home',       icon: Home },
-  { href: '/about',      label: 'About',      icon: User },
-  { href: '/experience', label: 'Experience', icon: Briefcase },
+  { href: '/',           label: 'Blog',       icon: PenLine },
+  { href: '/topics',     label: 'Topics',     icon: Tags },
   { href: '/projects',   label: 'Projects',   icon: FolderKanban },
   { href: '/lab',        label: 'Lab',        icon: FlaskConical },
-  { href: '/blog',       label: 'Blog',       icon: PenLine },
+  { href: '/experience', label: 'Experience', icon: Briefcase },
+  { href: '/about',      label: 'About',      icon: User },
 ];
 
 // Mobile tab bar — capped to 5 so it fits a 320px screen.
-// The Lab is reachable from Home and the Projects page.
+// The Lab is reachable from About and the Projects page.
 const tabLinks = [
-  { href: '/',           label: 'Home',    icon: Home },
-  { href: '/about',      label: 'About',   icon: User },
-  { href: '/experience', label: 'Career',  icon: Briefcase },
+  { href: '/',           label: 'Blog',    icon: PenLine },
+  { href: '/topics',     label: 'Topics',  icon: Tags },
   { href: '/projects',   label: 'Work',    icon: FolderKanban },
-  { href: '/blog',       label: 'Blog',    icon: PenLine },
+  { href: '/experience', label: 'Career',  icon: Briefcase },
+  { href: '/about',      label: 'About',   icon: User },
 ];
 
 export function isActivePath(pathname: string, href: string) {
-  if (href === '/') return pathname === '/';
+  if (href === '/') return pathname === '/' || pathname.startsWith('/blog');
   if (href === '/projects') return pathname.startsWith('/projects') || pathname.startsWith('/lab');
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -72,7 +73,7 @@ export function Navbar() {
           <div className="h-5 w-px bg-foreground/10" />
 
           <nav className="flex items-center gap-0.5" aria-label="Main">
-            {navLinks.slice(1).map((link) => {
+            {navLinks.map((link) => {
               // Lab has its own entry on desktop, so match it exactly here.
               const isActive =
                 link.href === '/projects'
