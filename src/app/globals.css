@@ -543,3 +543,8 @@
   --glass-alpha: 0.34;
   --glass-alpha-strong: 0.52;
 }
+
+/* Architecture diagrams: marching dashes on the active connection */
+@keyframes diagram-dash {
+  to { stroke-dashoffset: -12; }
+}

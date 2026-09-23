@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { AuthorCard } from '@/components/portfolio/author-card';
+import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
+import { diagrams } from '@/data/diagrams';
 import type { Metadata } from 'next';
 import { ArticleClient } from '@/components/portfolio/article-client';
 
@@ -24,6 +26,7 @@ export async function generateStaticParams() {
 export default function BlogPostReader({ params }: Props) {
   const post = blogs.find((p) => p.slug === params.slug);
   if (!post) notFound();
+  const diagram = diagrams[post.slug];
 
   return (
     <div className="pb-12 lg:pb-16">
@@ -60,6 +63,8 @@ export default function BlogPostReader({ params }: Props) {
               ))}
             </div>
           </div>
+
+          {diagram && <ArchitectureDiagram diagram={diagram} />}
 
           <div className="border-t border-foreground/10 pt-8">
             <ArticleClient content={post.content} />
