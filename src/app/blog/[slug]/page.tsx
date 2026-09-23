@@ -26,8 +26,8 @@ export default function BlogPostReader({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="min-h-dvh pb-28 lg:pb-16">
-      <main className="container mx-auto px-4 md:px-6 pt-6 lg:pt-28 max-w-3xl">
+    <div className="pb-12 lg:pb-16">
+      <main className="container mx-auto px-4 md:px-6 pt-8 lg:pt-36 max-w-3xl">
         <Link
           href="/blog"
           className="glass glass-pill glass-interactive inline-flex items-center gap-1.5 pl-3 pr-4 py-2 mb-6 text-sm font-medium text-primary group"

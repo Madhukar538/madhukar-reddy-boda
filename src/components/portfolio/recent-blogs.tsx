@@ -1,26 +1,17 @@
-'use client';
-
-import React, { useState } from 'react';
 import { blogs } from '@/data/blogs';
 import Link from 'next/link';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { Section } from './section';
-import { BlogModal } from './blog-modal';
 
 export function RecentBlogs() {
   const [featured, ...rest] = blogs;
-  const [activeBlogSlug, setActiveBlogSlug] = useState<string | null>(null);
 
   return (
-    <Section id="insights" title="Latest Writing" comment="Technical blog">
+    <Section id="insights" title="Latest Writing" comment="From the blog">
       <div className="space-y-3 md:space-y-4">
         {/* Featured post */}
         <Link
           href={`/blog/${featured.slug}`}
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveBlogSlug(featured.slug);
-          }}
           className="group block"
         >
           <div className="glass glass-interactive p-6 md:p-8 overflow-hidden">
@@ -68,10 +59,6 @@ export function RecentBlogs() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveBlogSlug(post.slug);
-              }}
               className="group block"
             >
               <div className="glass glass-interactive p-5 h-full flex flex-col">
@@ -111,8 +98,6 @@ export function RecentBlogs() {
           </Link>
         </div>
       </div>
-
-      <BlogModal slug={activeBlogSlug} onClose={() => setActiveBlogSlug(null)} />
     </Section>
   );
 }

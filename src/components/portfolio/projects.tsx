@@ -28,7 +28,7 @@ type FossilIndiaProject = {
 };
 import { ArrowUpRight } from 'lucide-react';
 
-const keyProjects = [
+export const keyProjects = [
   {
     title: 'Real-Time IoT Data Platform',
     description:
@@ -219,7 +219,7 @@ export function Projects() {
   ];
 
   return (
-    <Section id="projects" title="Selected Work" comment="Key projects and e-commerce builds">
+    <Section id="projects" title="Key Projects" comment="Systems and e-commerce builds">
       <p className="mb-3 text-sm font-semibold text-foreground/70">Systems built from scratch</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-10">
         {combined.map((project, idx) => (

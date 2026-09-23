@@ -51,11 +51,11 @@ export function Section({ id, title, children, className, comment, data }: Secti
   };
 
   return (
-    <section id={id} className={cn('py-6 md:py-8 lg:py-10 scroll-mt-24', className)}>
+    <section id={id} className={cn('py-6 md:py-8 first:pt-0 scroll-mt-28', className)}>
       <div className="mb-5 md:mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div className="space-y-1 flex-1">
           {comment && <p className="eyebrow">{comment}</p>}
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             {title}
           </h2>
         </div>

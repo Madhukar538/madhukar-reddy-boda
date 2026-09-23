@@ -1,0 +1,277 @@
+'use client';
+
+import React, { useEffect, type ReactNode } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { motion, type Variants } from 'framer-motion';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Briefcase,
+  FlaskConical,
+  FolderKanban,
+  Github,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  Twitter,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { avatarSrc } from './avatar';
+import { Diagnostics } from './diagnostics';
+import { keyProjects } from './projects';
+import { rdProjects } from './research';
+
+// Old single-page anchors (/#skills etc.) now live on their own pages.
+const legacyHashes: Record<string, string> = {
+  about: '/about',
+  skills: '/about#skills',
+  education: '/about#education',
+  experience: '/experience',
+  projects: '/projects',
+  research: '/lab',
+  insights: '/blog',
+};
+
+const stack = [
+  'C#', '.NET Core', 'TypeScript', 'SQL Server', 'Redis', 'Solr', 'MongoDB',
+  'k6', 'Grafana', 'RabbitMQ', 'gRPC', 'SignalR', 'MQTT', 'LangChain', 'RAG',
+  'Angular', 'Next.js', 'Docker', 'Playwright',
+];
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 18, filter: 'blur(6px)' },
+  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 260, damping: 28 } },
+};
+
+function Tile({
+  href,
+  className,
+  children,
+  label,
+}: {
+  href: string;
+  className?: string;
+  children: ReactNode;
+  label: string;
+}) {
+  return (
+    <motion.div variants={item} className={className}>
+      <Link
+        href={href}
+        aria-label={label}
+        className="group glass glass-interactive flex h-full flex-col p-5 md:p-6"
+      >
+        <ArrowUpRight className="absolute right-5 top-5 h-4 w-4 text-foreground/30 transition-all duration-300 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        {children}
+      </Link>
+    </motion.div>
+  );
+}
+
+function TileIcon({ className, children }: { className: string; children: ReactNode }) {
+  return (
+    <span className={cn('mb-4 flex h-10 w-10 items-center justify-center rounded-2xl', className)}>
+      {children}
+    </span>
+  );
+}
+
+export function HomeHero() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const target = legacyHashes[window.location.hash.slice(1)];
+    if (target) router.replace(target);
+  }, [router]);
+
+  const featured = keyProjects[0];
+  const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
+
+  return (
+    <motion.div variants={container} initial="hidden" animate="show">
+      {/* ── Hero ── */}
+      <section className="grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
+        <div className="space-y-6 text-center lg:text-left">
+          <motion.div variants={item} className="flex justify-center lg:justify-start">
+            <span className="glass glass-pill inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-foreground/80">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--sys-green))] opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[hsl(var(--sys-green))]" />
+              </span>
+              Open to new opportunities
+            </span>
+          </motion.div>
+
+          <motion.h1
+            variants={item}
+            className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground"
+          >
+            Architecting <span className="text-gradient">fast, observable</span> systems.
+          </motion.h1>
+
+          <motion.p
+            variants={item}
+            className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed"
+          >
+            I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
+            Software Architect in Hyderabad. I design high-throughput .NET APIs, load-test them with
+            k6 + Grafana, and bring AI in where it earns its place.
+          </motion.p>
+
+          <motion.div variants={item} className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+            <Link href="/projects" className="tinted-button !px-5 !py-2.5">
+              See my work
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/blog"
+              className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-foreground"
+            >
+              Read the blog
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Profile card */}
+        <motion.div variants={item} className="mx-auto w-full max-w-sm">
+          <div className="glass p-6 text-center">
+            <div className="relative mx-auto mb-5 w-fit">
+              <div className="absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />
+              <div className="relative rounded-full p-1.5 glass glass-pill">
+                <Image
+                  src={avatarSrc}
+                  alt="Boda Madhukar Reddy"
+                  width={148}
+                  height={148}
+                  className="rounded-full object-cover"
+                  priority
+                />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-foreground">Boda Madhukar Reddy</p>
+            <p className="text-sm font-medium text-primary">Software Architect</p>
+            <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3" /> Hyderabad, India
+            </p>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              <div className="glass-inset py-3">
+                <p className="text-2xl font-bold text-foreground">5+</p>
+                <p className="text-[11px] text-muted-foreground">Years</p>
+              </div>
+              <div className="glass-inset py-3">
+                <p className="text-2xl font-bold text-foreground">20+</p>
+                <p className="text-[11px] text-muted-foreground">Systems shipped</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── Bento grid ── */}
+      <section aria-label="Highlights" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <Tile href="/experience" label="Experience" className="sm:col-span-2">
+          <TileIcon className="bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+            <Briefcase className="h-5 w-5" />
+          </TileIcon>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currently</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">Software Architect</p>
+          <p className="text-[15px] text-foreground/75">Revalsys Technologies · 2021 – Present</p>
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+            Leading .NET R&amp;D, legacy modernization, AI integrations and e-commerce platforms for
+            Jockey, Speedo, Manyavar and more.
+          </p>
+        </Tile>
+
+        <motion.div variants={item} className="sm:col-span-2 lg:col-span-2">
+          <div className="glass h-full p-5 md:p-6">
+            <Diagnostics />
+          </div>
+        </motion.div>
+
+        <Tile href="/about#skills" label="Tech stack" className="sm:col-span-2 lg:col-span-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tech stack</p>
+          <p className="mt-1 text-xl font-bold text-foreground">Tools I build with</p>
+          <p className="mt-2 mb-5 text-sm text-muted-foreground leading-relaxed">
+            Backend, data, messaging, observability and AI — {stack.length}+ technologies used in production.
+          </p>
+          <div className="marquee mt-auto -mx-5 md:-mx-6">
+            <div className="marquee-track gap-2 pr-2">
+              {[...stack, ...stack].map((s, i) => (
+                <span key={i} className="chip shrink-0" aria-hidden={i >= stack.length}>
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Tile>
+
+        <Tile href="/projects" label="Projects" className="sm:col-span-1">
+          <TileIcon className="bg-[hsl(var(--sys-teal)/0.15)] text-[hsl(var(--sys-teal))]">
+            <FolderKanban className="h-5 w-5" />
+          </TileIcon>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Featured</p>
+          <p className="mt-1 text-lg font-bold text-foreground leading-snug">{featured.title}</p>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">{featured.description}</p>
+        </Tile>
+
+        <Tile href="/lab" label="R&D Lab" className="sm:col-span-1">
+          <TileIcon className="bg-[hsl(var(--sys-purple)/0.15)] text-[hsl(var(--sys-purple))]">
+            <FlaskConical className="h-5 w-5" />
+          </TileIcon>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">R&amp;D Lab</p>
+          <p className="mt-1 text-4xl font-bold text-foreground">{rdProjects.length}</p>
+          <p className="text-sm text-muted-foreground">experiments · {shipped} shipped</p>
+        </Tile>
+
+        {/* Contact */}
+        <motion.div variants={item} className="sm:col-span-2 lg:col-span-4">
+          <div className="glass flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
+            <div className="flex-1 space-y-1">
+              <p className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                Let&apos;s build something reliable.
+              </p>
+              <p className="text-[15px] text-muted-foreground">
+                Architecture reviews, performance work, or a full build — my inbox is open.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <a href="mailto:madhukarreddyboda538@gmail.com" className="tinted-button">
+                <Mail className="h-4 w-4" /> Email
+              </a>
+              <a
+                href="tel:+919573153479"
+                className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground"
+              >
+                <Phone className="h-4 w-4" /> Call
+              </a>
+              {[
+                { href: 'https://github.com/Madhukar538', icon: Github, label: 'GitHub' },
+                { href: 'https://linkedin.com/', icon: Linkedin, label: 'LinkedIn' },
+                { href: 'https://twitter.com/', icon: Twitter, label: 'Twitter' },
+              ].map(({ href, icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="glass glass-pill glass-interactive flex h-9 w-9 items-center justify-center text-foreground/75 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+    </motion.div>
+  );
+}

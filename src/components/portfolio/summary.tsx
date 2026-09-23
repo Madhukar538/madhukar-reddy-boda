@@ -10,7 +10,7 @@ const facts = [
 
 export function Summary() {
   return (
-    <Section id="about" title="About Me" comment="Professional summary">
+    <Section id="about" title="Overview" comment="Professional summary">
       <div className="glass p-6 md:p-8 space-y-6">
         <p className="text-lg md:text-xl leading-relaxed text-foreground/90 font-medium">
           Backend-focused Software Architect with strong experience in building,

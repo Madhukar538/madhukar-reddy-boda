@@ -6,12 +6,10 @@ import Link from 'next/link';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { BlogModal } from './blog-modal';
 
 const categories = ['All', 'Software Architecture', 'Observability', 'Artificial Intelligence'];
 
 export function BlogArchiveClient() {
-  const [activeBlogSlug, setActiveBlogSlug] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const filteredBlogs = selectedCategory === 'All'
@@ -19,12 +17,12 @@ export function BlogArchiveClient() {
     : blogs.filter((b) => b.category === selectedCategory);
 
   return (
-    <div className="min-h-dvh pb-28 lg:pb-16">
-      <main className="container mx-auto px-4 md:px-6 pt-8 lg:pt-28 max-w-4xl">
+    <div className="pb-12 lg:pb-16">
+      <main className="container mx-auto px-4 md:px-6 pt-10 lg:pt-36 max-w-4xl">
         {/* Page header */}
         <div className="mb-8 space-y-2">
           <p className="eyebrow">Writing</p>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">Blog</h1>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground">Blog</h1>
           <p className="text-[15px] text-muted-foreground max-w-lg">
             Architecture deep-dives · Performance engineering · AI systems · System design.
           </p>
@@ -65,10 +63,6 @@ export function BlogArchiveClient() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveBlogSlug(post.slug);
-              }}
               className="group block"
             >
               <article className="glass glass-interactive p-6 md:p-7">
@@ -114,8 +108,6 @@ export function BlogArchiveClient() {
           ))}
         </div>
       </main>
-
-      <BlogModal slug={activeBlogSlug} onClose={() => setActiveBlogSlug(null)} />
     </div>
   );
 }
