@@ -19,13 +19,20 @@ export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) 
   const [active, setActive] = useState<string | null>(toc[0]?.id ?? null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  // Progress through the article body, not the whole page.
+  // Progress through the article body, and the section being read: the last
+  // heading above 30% of the viewport. Computed on scroll so long jumps
+  // (anchor links, End key) land on the right section.
   useEffect(() => {
     const body = document.querySelector<HTMLElement>('.article-body');
     if (!body) return;
+    const headings = toc.map((t) => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
     let frame = 0;
     const update = () => {
       frame = 0;
+      const line = window.innerHeight * 0.3;
+      const passed = headings.filter((h) => h.getBoundingClientRect().top < line);
+      setActive((passed.at(-1) ?? headings[0])?.id ?? null);
+
       // Share of the body that has scrolled into view: done when its end is on screen.
       const rect = body.getBoundingClientRect();
       const progress = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / Math.max(rect.height, 1)));
@@ -43,22 +50,7 @@ export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) 
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, [words]);
-
-  // Highlight the section whose heading was passed most recently.
-  useEffect(() => {
-    const headings = toc.map((t) => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
-    if (!headings.length) return;
-    const observer = new IntersectionObserver(
-      () => {
-        const passed = headings.filter((h) => h.getBoundingClientRect().top < window.innerHeight * 0.3);
-        setActive((passed.at(-1) ?? headings[0]).id);
-      },
-      { rootMargin: '0px 0px -60% 0px', threshold: [0, 1] }
-    );
-    headings.forEach((h) => observer.observe(h));
-    return () => observer.disconnect();
-  }, [toc]);
+  }, [words, toc]);
 
   useEffect(() => {
     if (!sheetOpen) return;

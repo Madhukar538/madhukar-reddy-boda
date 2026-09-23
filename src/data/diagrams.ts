@@ -200,8 +200,45 @@ const onDemandIsr: Diagram = {
   ],
 };
 
+const runtimeWorkers: Diagram = {
+  title: 'Runtime-configurable workers',
+  caption: 'Start, retune and stop background loops by id, without restarting the app.',
+  height: 320,
+  nodes: [
+    { id: 'cmd', label: 'Commands', sub: 'console or HTTP', x: 90, y: 160, kind: 'client',
+      what: 'START, UPDATE, STOP and LIST, typed at a console prompt or sent as POST, PUT, DELETE and GET requests.',
+      tech: ['Console', 'Minimal API'] },
+    { id: 'mgr', label: 'WorkerManager', sub: 'one entry per id', x: 290, y: 160, kind: 'service',
+      what: 'Owns every running worker in a ConcurrentDictionary keyed by id. The dictionary insert decides who wins a START, so a worker only runs if it was registered.',
+      tech: ['ConcurrentDictionary', 'TryAdd / TryRemove'],
+      note: 'The first version started the worker even when the insert lost, leaving an orphan nobody could stop.' },
+    { id: 'wa', label: 'Worker "sync"', sub: 'tick every 1 s', x: 500, y: 70, kind: 'service',
+      what: 'An async loop: do the work, then wait for the interval. Its wait is linked to two tokens, stop and wake.',
+      tech: ['Task.Delay', 'CancellationToken'] },
+    { id: 'wb', label: 'Worker "report"', sub: 'tick every 30 s', x: 500, y: 250, kind: 'service',
+      what: 'Same loop, different config. Each worker holds its own immutable config record, swapped atomically on UPDATE.',
+      tech: ['record WorkerConfig', 'volatile'] },
+    { id: 'job', label: 'The actual job', sub: 'poll · sync · clean up', x: 680, y: 160, kind: 'data',
+      what: 'Whatever the tick does: poll a queue, sync a cache, send a report. It reads the config current at that tick.',
+      tech: ['Your code'] },
+  ],
+  edges: [
+    { id: 'c1', from: 'cmd', to: 'mgr' },
+    { id: 'm1', from: 'mgr', to: 'wa' },
+    { id: 'm2', from: 'mgr', to: 'wb' },
+    { id: 'j1', from: 'wa', to: 'job' },
+    { id: 'j2', from: 'wb', to: 'job' },
+  ],
+  flows: [
+    { id: 'start', label: 'START', steps: [['c1'], ['m1'], ['j1']] },
+    { id: 'update', label: 'UPDATE (wakes the wait)', steps: [['c1'], ['m2'], ['j2']] },
+    { id: 'stop', label: 'STOP (waits for cleanup)', steps: [['c1'], ['m1'], ['-m1'], ['-c1']] },
+  ],
+};
+
 export const diagrams: Record<string, Diagram> = {
   'hybrid-search-solr-bm25-vector-rrf': hybridSearch,
   'rag-chatbot-latency-audit': ragChatbot,
   'nextjs-dotnet-on-demand-isr': onDemandIsr,
+  'dotnet-runtime-configurable-background-workers': runtimeWorkers,
 };
