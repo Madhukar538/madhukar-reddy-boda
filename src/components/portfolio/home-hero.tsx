@@ -9,6 +9,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Briefcase,
+  FileDown,
   FlaskConical,
   FolderKanban,
   Github,
@@ -21,8 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { avatarSrc } from './avatar';
 import { Diagnostics } from './diagnostics';
-import { keyProjects } from './projects';
-import { rdProjects } from './research';
+import { keyProjects, rdProjects } from '@/data/profile';
 
 // Old single-page anchors (/#skills etc.) now live on their own pages.
 const legacyHashes: Record<string, string> = {
@@ -137,6 +137,14 @@ export function HomeHero() {
             >
               Read the blog
             </Link>
+            <a
+              href="/resume.pdf"
+              download="Boda-Madhukar-Reddy-Resume.pdf"
+              className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-foreground"
+            >
+              <FileDown className="h-4 w-4 text-primary" />
+              Résumé
+            </a>
           </motion.div>
         </div>
 

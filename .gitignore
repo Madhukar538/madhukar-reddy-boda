@@ -47,3 +47,6 @@ firestore-debug.log
 # codex local run logs
 .idx/*.log
 .idx/*.err.log
+
+# generated at build time from src/data/profile.ts
+/public/resume.pdf

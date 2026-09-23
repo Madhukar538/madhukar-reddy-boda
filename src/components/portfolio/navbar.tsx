@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { motion } from 'framer-motion';
+import { LiquidLens } from '@/components/liquid-lens';
 
 // Every page on the site — each one is its own URL.
 export const navLinks = [
@@ -56,6 +57,7 @@ export function Navbar() {
             scrolled && 'shadow-2xl'
           )}
         >
+          <LiquidLens />
           <Link
             href="/"
             className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
@@ -110,6 +112,7 @@ export function Navbar() {
       {/* ── Mobile / tablet floating tab bar ── */}
       <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
         <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
+          <LiquidLens strength={32} />
           {tabLinks.map((link) => {
             const Icon = link.icon;
             const isActive = isActivePath(pathname, link.href);
@@ -139,6 +142,7 @@ export function Navbar() {
 
         {/* Detached control cluster, like iOS 26's separate tab-bar button */}
         <div className="glass glass-strong glass-pill pointer-events-auto flex flex-col items-center p-1">
+          <LiquidLens strength={28} />
           <ThemeSwitcher />
           <ThemeToggle />
         </div>

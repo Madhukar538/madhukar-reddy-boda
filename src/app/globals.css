@@ -528,3 +528,18 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
 }
+
+/* ============================================================
+   REFRACTION (Chromium only, see components/liquid-lens.tsx)
+   The SVG lens does the frosting, so the tint can be thinner and
+   the bent content behind the glass shows through.
+   ============================================================ */
+.glass[data-refract] {
+  --glass-alpha: 0.32;
+  --glass-alpha-strong: 0.48;
+}
+
+.dark .glass[data-refract] {
+  --glass-alpha: 0.34;
+  --glass-alpha-strong: 0.52;
+}
