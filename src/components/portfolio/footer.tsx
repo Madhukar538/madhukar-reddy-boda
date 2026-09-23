@@ -9,6 +9,7 @@ const pages = [
   { href: '/lab', label: 'R&D Lab' },
   { href: '/blog', label: 'Blog' },
   { href: '/ai', label: 'AI / MCP' },
+  { href: '/graph', label: 'Graph' },
 ];
 
 const socials = [
