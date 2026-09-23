@@ -11,6 +11,82 @@ export interface BlogPost {
 
 export const blogs: BlogPost[] = [
   {
+    slug: "turning-my-macbook-into-a-self-hosted-paas",
+    title: "How I Turned My MacBook into a Self-Hosted Vercel with Coolify, Cloudflare Tunnel & Terraform",
+    excerpt: "An 8 GB M1 MacBook, a domain, and zero open router ports: building a git-push-to-deploy platform at home, and the six things that broke along the way.",
+    date: "September 23, 2026",
+    readTime: "9 min read",
+    category: "DevOps",
+    tags: ["Coolify", "Cloudflare Tunnel", "Terraform", "Self-Hosting", "Docker"],
+    content: `
+      <p class="lead">I wanted a place to host demo apps and APIs the way Vercel does it: push to GitHub, get a live HTTPS URL. Instead of paying for a platform, I turned a 2020 M1 MacBook Pro (8 GB RAM) into one. The site you are reading right now is served from that laptop. Here is the architecture, the build, and the problems I hit on the way.</p>
+
+      <h2>1. What the Mac Can (and Can't) Do</h2>
+      <p>My first idea was to run LLMs on it. With 8 GB of unified memory, that was never going to work: the models I use are 18 to 21 GB. What an M1 is great at is the lightweight part of a platform: a build server, a reverse proxy, a handful of Next.js and .NET containers, and a couple of databases. Heavy AI inference stays on a separate GPU box.</p>
+
+      <h2>2. The Architecture</h2>
+      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+git push ──▶ GitHub webhook ──▶ Coolify (Linux VM on the Mac)
+                                   │  builds image, rolls out container
+                                   ▼
+Browser ─▶ app.mydomain ─▶ Cloudflare edge (HTTPS) ─▶ Tunnel ─▶ Traefik ─▶ container
+
+Terraform ──▶ Cloudflare API  (tunnel, DNS, routing rules)
+          └─▶ Coolify API     (projects, apps, databases, services)</pre>
+      <ul>
+        <li><strong>Colima</strong> runs a lightweight Ubuntu VM (4 CPU / 4 GB) because Coolify needs Linux.</li>
+        <li><strong>Coolify</strong> is the open-source Heroku/Vercel alternative: GitHub integration, Nixpacks/Dockerfile builds, one-click databases, rolling deploys with health checks.</li>
+        <li><strong>Cloudflare Tunnel</strong> makes an outbound-only connection to Cloudflare. No port forwarding, no static IP, free HTTPS, and my home IP is never exposed.</li>
+        <li><strong>Terraform</strong> describes the whole thing as code: the tunnel, a wildcard DNS record, and every app.</li>
+      </ul>
+
+      <h2>3. Wildcard Routing: One Rule for Every App</h2>
+      <p>The trick that makes it feel like a PaaS is a single wildcard DNS record pointing at the tunnel, with the tunnel sending everything to Coolify's Traefik proxy. Traefik routes by hostname, so a new app just needs a domain in Coolify. No DNS or Cloudflare changes, ever.</p>
+      <pre class="bg-black/40 p-4 rounded-xl text-xs overflow-x-auto text-emerald-400 border border-white/5">
+resource "cloudflare_dns_record" "wildcard" {
+  zone_id = var.cloudflare_zone_id
+  name    = "*.mydomain.com"
+  type    = "CNAME"
+  content = "TUNNEL_ID.cfargotunnel.com"
+  proxied = true
+}
+
+# Tunnel ingress: every subdomain goes to Traefik
+{ hostname = "*.mydomain.com", service = "http://coolify-proxy:80" }</pre>
+      <p>Apps themselves are Terraform resources too. The community Coolify provider can't create applications, so I drive Coolify's REST API with the generic <code>restapi</code> provider. Adding a site is now one map entry and a <code>terraform apply</code>.</p>
+
+      <h2>4. Six Things That Broke (and the Fixes)</h2>
+      <ul>
+        <li><strong>Coolify couldn't SSH into its own server.</strong> It connects to <code>host.docker.internal</code>, but under Colima that name points at the Mac, not the Linux VM. Pointing the server at the VM's Docker gateway IP fixed it.</li>
+        <li><strong>Every <code>https://</code> domain became a redirect loop or a 404.</strong> The tunnel talks plain HTTP to Traefik while Cloudflare terminates TLS. An <code>https://</code> domain in Coolify makes Traefik redirect HTTP to HTTPS forever. Rule of thumb: always <code>http://app.domain:PORT</code> in Coolify; the visitor still gets HTTPS from Cloudflare.</li>
+        <li><strong>The apex domain wouldn't route.</strong> <code>*.domain</code> does not match <code>domain</code> itself. The bare domain needs its own DNS record and tunnel rule.</li>
+        <li><strong>An n8n worker crash-looped with NOAUTH.</strong> Enabling "Connect to Predefined Network" attached it to Coolify's internal network, where the hostname <code>redis</code> also belongs to Coolify's own password-protected Redis. Turning that setting off restored isolation and fixed the crash.</li>
+        <li><strong>Terraform updates broke deployments.</strong> Coolify's create endpoint stores a GitHub repo as <code>owner/repo</code>, but its PATCH endpoint stores whatever you send and later prefixes <code>github.com</code> again. Sending the short form on update fixed it. I only found this because I redeployed right after a Terraform change.</li>
+        <li><strong>"The site is down" (it wasn't).</strong> My router cached the domain's empty answer from the minutes when DNS was mid-migration. The whole internet could see the site except my own Wi-Fi. Negative DNS caching is real.</li>
+      </ul>
+
+      <h2>5. Security on a Home Server</h2>
+      <ul>
+        <li><strong>No inbound ports</strong>: the tunnel only makes outbound connections.</li>
+        <li><strong>Webhook-only exposure</strong>: GitHub reaches a hostname that forwards only the <code>/webhooks/</code> path to Coolify; everything else returns 404. Each webhook is signed with a secret.</li>
+        <li><strong>The admin dashboard</strong> requires a password plus TOTP 2FA, and its REST API is blocked at the tunnel (API tokens bypass 2FA). Terraform uses the API over localhost only.</li>
+        <li><strong>Tools with root-level Docker access</strong> (Portainer) stay bound to localhost, not the internet.</li>
+        <li><strong>Secrets</strong> live in the macOS Keychain and are passed to Terraform as environment variables, never in files.</li>
+        <li><strong>Nightly backups</strong> of Coolify's database, encryption key and SSH keys go to the Mac's disk, outside the VM, with 14-day retention.</li>
+      </ul>
+
+      <h2>6. The Result</h2>
+      <p>This blog post is the test. I committed it to the portfolio repo, pushed to <code>main</code>, and GitHub's webhook told Coolify to rebuild. With a health check on <code>/</code>, the old container keeps serving until the new one is healthy, so the deploy has no downtime. Grafana and n8n run alongside it as one-click services on their own subdomains.</p>
+
+      <h2>7. Honest Limitations</h2>
+      <ul>
+        <li>It's a laptop: if it sleeps or loses power, the sites go down. Fine for demos, not for production.</li>
+        <li>8 GB is tight. Builds are the peak, so I keep concurrent builds to one.</li>
+        <li>The same Terraform code can later point at a small cloud VM with almost no changes. That is the real win of doing it as code from day one.</li>
+      </ul>
+    `
+  },
+  {
     slug: "dotnet-performance-tuning-api-throughput",
     title: "Deep-Dive: .NET Core API Performance Tuning & Memory Optimization",
     excerpt: "Learn how we reduced latency by 40% and optimized GC pressure in high-throughput .NET Core microservices.",
