@@ -10,6 +10,7 @@ const pages = [
   { href: '/blog', label: 'Blog' },
   { href: '/ai', label: 'AI / MCP' },
   { href: '/graph', label: 'Graph' },
+  { href: '/ask', label: 'Madhu-bot' },
 ];
 
 const socials = [

@@ -17,6 +17,8 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  Network,
+  Plug,
   Phone,
   Twitter,
 } from 'lucide-react';
@@ -148,14 +150,22 @@ export function HomeHero() {
             </a>
           </motion.div>
 
-          <motion.div variants={item} className="flex justify-center lg:justify-start">
-            <Link
-              href="/ai"
-              className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
+          <motion.div
+            variants={item}
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground"
+          >
+            <Link href="/ask" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
               <Bot className="h-4 w-4 text-primary" />
-              New: ask your AI assistant about me. This site is an MCP server
+              Ask Madhu-bot
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+              <Network className="h-4 w-4 text-primary" />
+              Explore the knowledge graph
+            </Link>
+            <Link href="/ai" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+              <Plug className="h-4 w-4 text-primary" />
+              Connect your AI (MCP)
             </Link>
           </motion.div>
         </div>
