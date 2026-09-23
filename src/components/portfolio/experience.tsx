@@ -32,7 +32,7 @@ const experienceData = {
 
 export function Experience() {
   return (
-    <Section id="experience" title="Experience" comment="Professional experience" data={experienceData}>
+    <Section id="experience" title="Current Role" comment="2021 – Present" data={experienceData}>
       <div className="glass p-6 md:p-8">
         {/* Role header */}
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">

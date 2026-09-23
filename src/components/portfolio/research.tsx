@@ -1,7 +1,7 @@
 import { Section } from '@/components/portfolio/section';
 import { FlaskConical } from 'lucide-react';
 
-const rdProjects = [
+export const rdProjects = [
   {
     title: 'API Load Testing & Observability',
     description: 'Designed repeatable k6 suites for critical APIs wired into Grafana dashboards to validate SLAs and guide capacity planning.',
@@ -60,7 +60,7 @@ const statusChip: Record<string, { className: string; label: string }> = {
 
 export function Research() {
   return (
-    <Section id="research" title="R&D Lab" comment="Experiments and explorations">
+    <Section id="research" title="Experiments" comment="Shipped tools and proofs of concept">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         {rdProjects.map((project) => {
           const status = statusChip[project.status];

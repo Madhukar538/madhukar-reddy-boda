@@ -5,12 +5,12 @@ const facts = [
   { icon: Target,   label: 'Focus',         value: 'Backend · APIs · Performance' },
   { icon: Layers,   label: 'Primary stack', value: '.NET Core · SQL Server · Redis' },
   { icon: Gauge,    label: 'Experience',    value: '5+ years' },
-  { icon: Sparkles, label: 'Status',        value: 'Open to work', highlight: true },
+  { icon: Sparkles, label: 'Open to',       value: 'Fixing bugs & giving solutions', highlight: true },
 ];
 
 export function Summary() {
   return (
-    <Section id="about" title="About Me" comment="Professional summary">
+    <Section id="about" title="Overview" comment="Professional summary">
       <div className="glass p-6 md:p-8 space-y-6">
         <p className="text-lg md:text-xl leading-relaxed text-foreground/90 font-medium">
           Backend-focused Software Architect with strong experience in building,

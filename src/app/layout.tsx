@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Navbar } from '@/components/portfolio/navbar';
 import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
+import { Footer } from '@/components/portfolio/footer';
 
 export const metadata: Metadata = {
   title: 'Boda Madhukar Reddy — Software Architect & Tech Blogger',
@@ -55,9 +56,10 @@ export default function RootLayout({
           <LiquidWallpaper />
           <PWARegister />
           <Navbar />
-          <main className="relative z-0">
+          <main className="relative z-0 min-h-[70dvh]">
             {children}
           </main>
+          <Footer />
           <Toaster />
         </ThemeProvider>
       </body>

@@ -3,79 +3,48 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, BookText, User, GraduationCap, FlaskConical, Layers, PenLine, FolderKanban } from 'lucide-react';
+import { Home, Briefcase, User, FlaskConical, PenLine, FolderKanban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { motion } from 'framer-motion';
 
-// All sections — used by desktop sidebar nav and scroll spy
+// Every page on the site — each one is its own URL.
 export const navLinks = [
-  { href: '/#home',       label: 'Home',       icon: Home,          sectionId: 'home'       },
-  { href: '/#about',      label: 'About',      icon: User,          sectionId: 'about'      },
-  { href: '/#skills',     label: 'Skills',     icon: Layers,        sectionId: 'skills'     },
-  { href: '/#experience', label: 'Experience', icon: Briefcase,     sectionId: 'experience' },
-  { href: '/#projects',   label: 'Work',       icon: FolderKanban,     sectionId: 'projects'   },
-  { href: '/#research',   label: 'Lab',        icon: FlaskConical,  sectionId: 'research'   },
-  { href: '/#education',  label: 'Education',  icon: GraduationCap, sectionId: 'education'  },
-  { href: '/#insights',   label: 'Blog',       icon: PenLine,       sectionId: 'insights'   },
+  { href: '/',           label: 'Home',       icon: Home },
+  { href: '/about',      label: 'About',      icon: User },
+  { href: '/experience', label: 'Experience', icon: Briefcase },
+  { href: '/projects',   label: 'Projects',   icon: FolderKanban },
+  { href: '/lab',        label: 'Lab',        icon: FlaskConical },
+  { href: '/blog',       label: 'Blog',       icon: PenLine },
 ];
 
-// Mobile tab bar — capped to 5 key sections to fit any phone screen
-const dockLinks = [
-  { href: '/#home',       label: 'Home',   icon: Home,      sectionId: 'home'       },
-  { href: '/#skills',     label: 'Skills', icon: Layers,    sectionId: 'skills'     },
-  { href: '/#experience', label: 'Career', icon: Briefcase, sectionId: 'experience' },
-  { href: '/#projects',   label: 'Work',   icon: FolderKanban, sectionId: 'projects'   },
-  { href: '/#insights',   label: 'Blog',   icon: PenLine,   sectionId: 'insights'   },
+// Mobile tab bar — capped to 5 so it fits a 320px screen.
+// The Lab is reachable from Home and the Projects page.
+const tabLinks = [
+  { href: '/',           label: 'Home',    icon: Home },
+  { href: '/about',      label: 'About',   icon: User },
+  { href: '/experience', label: 'Career',  icon: Briefcase },
+  { href: '/projects',   label: 'Work',    icon: FolderKanban },
+  { href: '/blog',       label: 'Blog',    icon: PenLine },
 ];
+
+export function isActivePath(pathname: string, href: string) {
+  if (href === '/') return pathname === '/';
+  if (href === '/projects') return pathname.startsWith('/projects') || pathname.startsWith('/lab');
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const pathname = usePathname();
-  const [activeSection, setActiveSection] = useState('home');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScrolled = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScrolled);
-    return () => window.removeEventListener('scroll', handleScrolled);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  useEffect(() => {
-    if (pathname !== '/') {
-      setActiveSection(pathname.startsWith('/blog') ? 'insights' : '');
-      return;
-    }
-
-    const sectionIds = navLinks.map((l) => l.sectionId).filter(Boolean) as string[];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible.length > 0) {
-          setActiveSection(visible[0].target.id);
-        }
-      },
-      {
-        rootMargin: '-10% 0px -50% 0px',
-        threshold: [0, 0.1, 0.25, 0.5],
-      }
-    );
-
-    // querySelectorAll: #home exists twice (desktop sidebar + mobile hero)
-    sectionIds.forEach((id) => {
-      document.querySelectorAll(`[id="${id}"]`).forEach((el) => observer.observe(el));
-    });
-
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  const isLinkActive = (sectionId: string) =>
-    sectionId === 'insights'
-      ? pathname.startsWith('/blog') || activeSection === 'insights'
-      : pathname === '/' && activeSection === sectionId;
 
   return (
     <>
@@ -83,11 +52,10 @@ export function Navbar() {
       <header className="hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none">
         <div
           className={cn(
-            'glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 pl-2 pr-2 py-1.5 transition-all duration-500',
-            scrolled ? 'shadow-2xl' : ''
+            'glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
+            scrolled && 'shadow-2xl'
           )}
         >
-          {/* Brand */}
           <Link
             href="/"
             className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
@@ -100,14 +68,18 @@ export function Navbar() {
 
           <div className="h-5 w-px bg-foreground/10" />
 
-          {/* Links */}
-          <nav className="flex items-center gap-0.5">
-            {navLinks.map((link) => {
-              const isActive = isLinkActive(link.sectionId);
+          <nav className="flex items-center gap-0.5" aria-label="Main">
+            {navLinks.slice(1).map((link) => {
+              // Lab has its own entry on desktop, so match it exactly here.
+              const isActive =
+                link.href === '/projects'
+                  ? pathname.startsWith('/projects')
+                  : isActivePath(pathname, link.href);
               return (
                 <Link
-                  key={link.label}
+                  key={link.href}
                   href={link.href}
+                  aria-current={isActive ? 'page' : undefined}
                   className={cn(
                     'relative px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-colors duration-200',
                     isActive ? 'text-foreground' : 'text-foreground/60 hover:text-foreground'
@@ -128,7 +100,6 @@ export function Navbar() {
 
           <div className="h-5 w-px bg-foreground/10" />
 
-          {/* Appearance controls */}
           <div className="flex items-center">
             <ThemeSwitcher />
             <ThemeToggle />
@@ -138,14 +109,15 @@ export function Navbar() {
 
       {/* ── Mobile / tablet floating tab bar ── */}
       <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
-        <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1">
-          {dockLinks.map((link) => {
+        <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
+          {tabLinks.map((link) => {
             const Icon = link.icon;
-            const isActive = isLinkActive(link.sectionId);
+            const isActive = isActivePath(pathname, link.href);
             return (
               <Link
-                key={link.label}
+                key={link.href}
                 href={link.href}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'relative flex w-[2.875rem] min-[360px]:w-[3.25rem] sm:w-16 flex-col items-center justify-center py-1.5 rounded-full transition-colors duration-200',
                   isActive ? 'text-primary' : 'text-foreground/70 hover:text-foreground'
@@ -165,7 +137,7 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Separate circular control cluster, like iOS 26's detached tab-bar button */}
+        {/* Detached control cluster, like iOS 26's separate tab-bar button */}
         <div className="glass glass-strong glass-pill pointer-events-auto flex flex-col items-center p-1">
           <ThemeSwitcher />
           <ThemeToggle />
