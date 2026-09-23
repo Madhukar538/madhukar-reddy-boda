@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { FileDown } from 'lucide-react';
-import { PageShell } from '@/components/portfolio/page-shell';
+import { HomeHero } from '@/components/portfolio/home-hero';
 import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
@@ -12,20 +11,13 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <PageShell
-      eyebrow="About"
-      title="Production-first engineering."
-      description="Diagnose fast, fix right, prevent recurrence — the approach behind every system I build."
-      actions={
-        <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="tinted-button !px-5 !py-2.5">
-          <FileDown className="h-4 w-4" />
-          Download résumé (PDF)
-        </a>
-      }
-    >
-      <Summary />
-      <Skills />
-      <Education />
-    </PageShell>
+    <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
+      <HomeHero />
+      <div className="mt-14 md:mt-20">
+        <Summary />
+        <Skills />
+        <Education />
+      </div>
+    </div>
   );
 }

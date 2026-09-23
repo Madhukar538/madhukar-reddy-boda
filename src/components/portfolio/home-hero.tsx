@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { motion, type Variants } from 'framer-motion';
 import {
   ArrowRight,
@@ -27,17 +26,6 @@ import { avatarSrc } from './avatar';
 import { useOsMode } from '@/components/os/os-mode';
 import { Diagnostics } from './diagnostics';
 import { keyProjects, rdProjects } from '@/data/profile';
-
-// Old single-page anchors (/#skills etc.) now live on their own pages.
-const legacyHashes: Record<string, string> = {
-  about: '/about',
-  skills: '/about#skills',
-  education: '/about#education',
-  experience: '/experience',
-  projects: '/projects',
-  research: '/lab',
-  insights: '/blog',
-};
 
 const stack = [
   'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
@@ -99,13 +87,6 @@ function TileIcon({ className, children }: { className: string; children: ReactN
 }
 
 export function HomeHero() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const target = legacyHashes[window.location.hash.slice(1)];
-    if (target) router.replace(target);
-  }, [router]);
-
   const featured = keyProjects[0];
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
 
@@ -150,7 +131,7 @@ export function HomeHero() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/blog"
+              href="/"
               className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-foreground"
             >
               Read the blog

@@ -1,11 +1,6 @@
-import { BlogArchiveClient } from '@/components/portfolio/blog-archive-client';
-import type { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Blog — Boda Madhukar Reddy',
-  description: 'Technical writing on .NET performance engineering, high-throughput APIs, load testing with k6, and AI/ML system design.',
-};
-
+// The home page is the blog now.
 export default function BlogArchive() {
-  return <BlogArchiveClient />;
+  permanentRedirect('/');
 }

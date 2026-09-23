@@ -490,29 +490,127 @@
 }
 
 /* ============================================================
-   ARTICLE BODY (blog content HTML)
+   ARTICLE BODY (blog content HTML, processed by src/lib/blog.ts)
    ============================================================ */
-.article-body pre {
+.article-body {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: hsl(var(--foreground) / 0.82);
+}
+.article-body > * + * { margin-top: 1.25rem; }
+.article-body p.lead {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: hsl(var(--foreground) / 0.9);
+}
+.article-body h2,
+.article-body h3 {
   position: relative;
-  padding: 1.1rem 1.25rem;
+  scroll-margin-top: 7rem;
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.article-body h2 { margin-top: 2.75rem; font-size: 1.6rem; }
+.article-body h3 { margin-top: 2rem; font-size: 1.25rem; }
+.article-body .heading-anchor {
+  position: absolute;
+  left: -1.1em;
+  padding-right: 0.3em;
+  color: hsl(var(--primary));
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.article-body h2:hover .heading-anchor,
+.article-body h3:hover .heading-anchor,
+.article-body .heading-anchor:focus-visible { opacity: 1; }
+@media (max-width: 767px) {
+  .article-body { font-size: 1rem; }
+  .article-body .heading-anchor { display: none; }
+}
+.article-body a:not(.heading-anchor) {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.article-body ul { list-style: disc; padding-left: 1.4rem; }
+.article-body ol { list-style: decimal; padding-left: 1.4rem; }
+.article-body li + li { margin-top: 0.5rem; }
+.article-body li::marker { color: hsl(var(--primary)); }
+.article-body strong { color: hsl(var(--foreground)); font-weight: 600; }
+.article-body blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding: 0.25rem 0 0.25rem 1rem;
+  color: hsl(var(--foreground) / 0.75);
+  font-style: italic;
+}
+.article-body :not(pre) > code {
+  padding: 0.15em 0.4em;
+  border-radius: 0.4rem;
+  font-size: 0.85em;
+  color: hsl(var(--primary));
+  background: hsl(var(--foreground) / 0.08);
+}
+
+/* Code and diagram blocks */
+.article-body .code-block {
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+  overflow: hidden;
   border-radius: 1rem;
+  background: hsl(var(--foreground) / 0.045);
+  box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.08);
+}
+.dark .article-body .code-block {
+  background: rgb(0 0 0 / 0.38);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+.article-body .code-block figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.6rem 0.45rem 1.1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  border-bottom: 1px solid hsl(var(--foreground) / 0.07);
+}
+.article-body .code-block pre {
+  margin: 0;
+  padding: 1rem 1.15rem 1.15rem;
   overflow-x: auto;
   font-size: 0.8rem;
   line-height: 1.65;
-  color: hsl(var(--foreground) / 0.9);
-  background: hsl(var(--foreground) / 0.05);
-  box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.08);
+  color: hsl(var(--foreground) / 0.88);
 }
+.article-body .code-block[data-kind='diagram'] pre { color: hsl(var(--foreground) / 0.8); }
+.article-body .copy-btn {
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--foreground) / 0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.article-body .copy-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--foreground) / 0.14); }
 
-.dark .article-body pre {
-  background: rgb(0 0 0 / 0.35);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
-}
-
-.article-body strong {
-  color: hsl(var(--foreground));
-  font-weight: 600;
-}
+/* Syntax colours (highlight.js classes), tuned per theme */
+.hljs-comment, .hljs-quote { color: hsl(var(--foreground) / 0.45); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword { color: hsl(var(--sys-pink)); }
+.hljs-string, .hljs-regexp, .hljs-template-string, .hljs-addition { color: hsl(135 55% 36%); }
+.hljs-number, .hljs-literal, .hljs-symbol, .hljs-variable.language_ { color: hsl(var(--sys-orange)); }
+.hljs-title, .hljs-title.function_, .hljs-title.class_, .hljs-section { color: hsl(var(--primary)); }
+.hljs-type, .hljs-params, .hljs-attr, .hljs-property, .hljs-attribute { color: hsl(var(--sys-purple)); }
+.hljs-meta, .hljs-doctag, .hljs-tag { color: hsl(var(--sys-teal)); }
+.dark .hljs-string, .dark .hljs-regexp, .dark .hljs-template-string, .dark .hljs-addition { color: hsl(135 60% 62%); }
 
 /* ============================================================
    MARQUEE (tech-stack ticker on the home bento)
