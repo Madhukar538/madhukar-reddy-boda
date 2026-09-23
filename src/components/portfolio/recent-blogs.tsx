@@ -4,7 +4,8 @@ import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { Section } from './section';
 
 export function RecentBlogs() {
-  const [featured, ...rest] = blogs;
+  const [featured, ...others] = blogs;
+  const rest = others.slice(0, 3);
 
   return (
     <Section id="insights" title="Latest Writing" comment="From the blog">

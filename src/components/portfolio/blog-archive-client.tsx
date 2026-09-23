@@ -7,7 +7,7 @@ import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-const categories = ['All', 'Software Architecture', 'Observability', 'Artificial Intelligence'];
+const categories = ['All', ...Array.from(new Set(blogs.map((b) => b.category)))];
 
 export function BlogArchiveClient() {
   const [selectedCategory, setSelectedCategory] = useState('All');
