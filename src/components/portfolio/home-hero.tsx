@@ -17,6 +17,7 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  Monitor,
   Network,
   Plug,
   Phone,
@@ -154,6 +155,10 @@ export function HomeHero() {
             variants={item}
             className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground"
           >
+            <Link href="/os" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+              <Monitor className="h-4 w-4 text-primary" />
+              Try desktop mode
+            </Link>
             <Link href="/ask" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
               <Bot className="h-4 w-4 text-primary" />
               Ask Madhu-bot
