@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { useTheme } from 'next-themes';
 import {
-  Bot,
   Briefcase,
   FileText,
   FlaskConical,
@@ -21,7 +20,6 @@ import { Education } from '@/components/portfolio/education';
 import { Experience } from '@/components/portfolio/experience';
 import { Projects } from '@/components/portfolio/projects';
 import { Research } from '@/components/portfolio/research';
-import { MadhuBot } from '@/components/portfolio/madhu-bot';
 import { KnowledgeGraphView } from '@/components/portfolio/knowledge-graph';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
 import { diagrams } from '@/data/diagrams';
@@ -40,7 +38,7 @@ export type OsPost = {
 
 export type OsData = { posts: OsPost[]; graph: KnowledgeGraph };
 
-export type AppId = 'about' | 'experience' | 'projects' | 'lab' | 'reader' | 'graph' | 'bot' | 'resume' | 'terminal';
+export type AppId = 'about' | 'experience' | 'projects' | 'lab' | 'reader' | 'graph' | 'resume' | 'terminal';
 
 export type AppContext = {
   data: OsData;
@@ -118,7 +116,7 @@ type Line = { kind: 'in' | 'out'; text: string };
 
 const APP_ALIASES: Record<string, AppId> = {
   about: 'about', experience: 'experience', exp: 'experience', projects: 'projects', work: 'projects',
-  lab: 'lab', blog: 'reader', reader: 'reader', graph: 'graph', bot: 'bot', 'madhu-bot': 'bot',
+  lab: 'lab', blog: 'reader', reader: 'reader', graph: 'graph',
   resume: 'resume', cv: 'resume', terminal: 'terminal',
 };
 
@@ -145,7 +143,7 @@ function TerminalApp({ data, open }: AppContext) {
         return [
           'whoami            who I am',
           'ls <projects|lab|posts|skills|apps>',
-          'open <app>        open an app (about, projects, lab, blog, graph, bot, resume)',
+          'open <app>        open an app (about, projects, lab, blog, graph, resume)',
           'read <n>          open blog post n from `ls posts`',
           'cat resume        the short version',
           'neofetch          system info, the fun way',
@@ -160,7 +158,7 @@ function TerminalApp({ data, open }: AppContext) {
         if (arg === 'lab') return rdProjects.map((p) => `• [${p.status}] ${p.title}`).join('\n');
         if (arg.startsWith('post') || arg === 'blog') return data.posts.map((p, i) => `${i + 1}. ${p.title}`).join('\n');
         if (arg.startsWith('skill')) return skillCategories.map((c) => `${c.title}: ${c.skills.join(', ')}`).join('\n');
-        return 'about  experience  projects  lab  blog  graph  bot  resume  terminal';
+        return 'about  experience  projects  lab  blog  graph  resume  terminal';
       }
       case 'open': {
         const id = APP_ALIASES[arg];
@@ -300,8 +298,6 @@ export const APPS: AppDef[] = [
     render: (ctx) => <ReaderApp {...ctx} /> },
   { id: 'graph', name: 'Graph', icon: Network, tint: 'from-amber-300 to-orange-600', size: { w: 980, h: 640 },
     render: ({ data }) => page(<KnowledgeGraphView graph={data.graph} />) },
-  { id: 'bot', name: 'Madhu-bot', icon: Bot, tint: 'from-emerald-300 to-teal-600', size: { w: 640, h: 620 },
-    render: () => <MadhuBot compact /> },
   { id: 'resume', name: 'Résumé', icon: FileText, tint: 'from-slate-200 to-slate-500', size: { w: 700, h: 640 },
     render: () => <ResumeApp /> },
   { id: 'terminal', name: 'Terminal', icon: TerminalIcon, tint: 'from-zinc-600 to-zinc-900', size: { w: 620, h: 400 },
