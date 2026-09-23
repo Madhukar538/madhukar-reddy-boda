@@ -5,7 +5,7 @@ const facts = [
   { icon: Target,   label: 'Focus',         value: 'Backend · APIs · Performance' },
   { icon: Layers,   label: 'Primary stack', value: '.NET Core · SQL Server · Redis' },
   { icon: Gauge,    label: 'Experience',    value: '5+ years' },
-  { icon: Sparkles, label: 'Status',        value: 'Open to work', highlight: true },
+  { icon: Sparkles, label: 'Open to',       value: 'Fixing bugs & giving solutions', highlight: true },
 ];
 
 export function Summary() {

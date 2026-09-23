@@ -106,7 +106,7 @@ export function HomeHero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--sys-green))] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[hsl(var(--sys-green))]" />
               </span>
-              Open to new opportunities
+              Open to fixing bugs &amp; giving solutions
             </span>
           </motion.div>
 
@@ -236,10 +236,10 @@ export function HomeHero() {
           <div className="glass flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
             <div className="flex-1 space-y-1">
               <p className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                Let&apos;s build something reliable.
+                Stuck on a bug? Let&apos;s solve it.
               </p>
               <p className="text-[15px] text-muted-foreground">
-                Architecture reviews, performance work, or a full build — my inbox is open.
+                I&apos;m working at Revalsys Technologies, and happy to help debug issues or suggest solutions.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
