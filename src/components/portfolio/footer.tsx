@@ -8,6 +8,7 @@ const pages = [
   { href: '/projects', label: 'Projects' },
   { href: '/lab', label: 'R&D Lab' },
   { href: '/blog', label: 'Blog' },
+  { href: '/ai', label: 'AI / MCP' },
 ];
 
 const socials = [
