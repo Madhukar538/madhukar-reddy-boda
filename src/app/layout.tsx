@@ -10,7 +10,7 @@ import { Footer } from '@/components/portfolio/footer';
 export const metadata: Metadata = {
   title: 'Boda Madhukar Reddy — Software Architect & Tech Blogger',
   description:
-    'Software Architect specializing in .NET Core, high-throughput APIs, k6 load testing, and AI-driven systems. Technical insights, architecture deep-dives, and engineering blog.',
+    'Software Architect specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering. Architecture deep-dives and engineering blog.',
   icons: {
     icon: '/madhukar.png',
     shortcut: '/madhukar.png',

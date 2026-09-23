@@ -36,9 +36,9 @@ const legacyHashes: Record<string, string> = {
 };
 
 const stack = [
-  'C#', '.NET Core', 'TypeScript', 'SQL Server', 'Redis', 'Solr', 'MongoDB',
-  'k6', 'Grafana', 'RabbitMQ', 'gRPC', 'SignalR', 'MQTT', 'LangChain', 'RAG',
-  'Angular', 'Next.js', 'Docker', 'Playwright',
+  'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
+  'Ollama', 'pgvector', 'Solr 9', 'SQL Server', 'PostgreSQL', 'MongoDB', 'ClickHouse', 'Redis',
+  'RabbitMQ', 'SignalR', 'gRPC', 'k6', 'Grafana', 'Docker', 'K3s', 'Terraform', 'Playwright',
 ];
 
 const container: Variants = {
@@ -122,8 +122,8 @@ export function HomeHero() {
             className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed"
           >
             I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
-            Software Architect in Hyderabad. I design high-throughput .NET APIs, load-test them with
-            k6 + Grafana, and bring AI in where it earns its place.
+            Software Architect in Hyderabad. I design high-throughput .NET APIs, build self-hosted AI
+            platforms (RAG, MCP and hybrid search), and load-test everything with k6 + Grafana.
           </motion.p>
 
           <motion.div variants={item} className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
@@ -185,8 +185,8 @@ export function HomeHero() {
           <p className="mt-1 text-2xl font-bold text-foreground">Software Architect</p>
           <p className="text-[15px] text-foreground/75">Revalsys Technologies · 2021 – Present</p>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-            Leading .NET R&amp;D, legacy modernization, AI integrations and e-commerce platforms for
-            Jockey, Speedo, Manyavar and more.
+            Leading .NET R&amp;D: multi-tenant RAG chatbots, MCP servers, hybrid search, offline-first
+            apps, and e-commerce platforms for Jockey, Speedo, Manyavar and more.
           </p>
         </Tile>
 

@@ -4,7 +4,7 @@ import { Experience } from '@/components/portfolio/experience';
 
 export const metadata: Metadata = {
   title: 'Experience — Boda Madhukar Reddy',
-  description: 'Software Architect at Revalsys Technologies: .NET R&D, legacy modernization, AI/ML integrations and large e-commerce platforms.',
+  description: 'Software Architect at Revalsys Technologies: .NET R&D, multi-tenant RAG and MCP platforms, hybrid search, offline-first apps and large e-commerce builds.',
 };
 
 export default function ExperiencePage() {

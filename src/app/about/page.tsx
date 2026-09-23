@@ -6,7 +6,7 @@ import { Education } from '@/components/portfolio/education';
 
 export const metadata: Metadata = {
   title: 'About — Boda Madhukar Reddy',
-  description: 'Backend-focused Software Architect: .NET Core, Redis, Solr, SQL Server, k6 performance engineering and AI integrations.',
+  description: 'Backend-focused Software Architect: .NET 10, Next.js, Solr, SQL Server, Redis, k6 performance engineering, RAG, MCP and self-hosted LLMs.',
 };
 
 export default function AboutPage() {
