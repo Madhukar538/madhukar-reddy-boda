@@ -406,6 +406,19 @@
   animation-delay: -4s;
 }
 
+/* Live fluid (WebGL) layered over the blobs; fades in once it's running */
+.liquid-wallpaper .fluid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.liquid-wallpaper .fluid-canvas[data-active] {
+  opacity: 1;
+}
+
 /* Fine grain so large gradients don't band */
 .liquid-wallpaper::after {
   content: '';

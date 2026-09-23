@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { FluidBackground } from './fluid-background';
 
 /**
  * Vivid, slowly drifting backdrop that the glass surfaces refract,
@@ -37,6 +38,7 @@ export function LiquidWallpaper() {
       <div className="blob blob-b" />
       <div className="blob blob-c" />
       <div className="blob blob-d" />
+      <FluidBackground />
     </div>
   );
 }

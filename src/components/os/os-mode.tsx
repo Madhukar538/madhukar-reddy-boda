@@ -39,6 +39,13 @@ export function OsModeProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
+  // Lets the live fluid background pause while the desktop covers the page.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (enabled) root.dataset.osMode = 'on';
+    else delete root.dataset.osMode;
+  }, [enabled]);
+
   useEffect(() => {
     if (!enabled || data) return;
     let cancelled = false;
