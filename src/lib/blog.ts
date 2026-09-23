@@ -148,6 +148,5 @@ export const summaries = (list = posts): PostSummary[] =>
     text: plainText(content).toLowerCase(),
   }));
 
-/** Absolute site URL for metadata; set SITE_URL in production. */
-export const siteUrl = () =>
-  (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || process.env.COOLIFY_URL?.split(',')[0] || 'http://localhost:3000').replace(/\/$/, '');
+/** Absolute site URL for metadata, feeds and social cards. SITE_URL overrides it (e.g. for a staging deploy). */
+export const siteUrl = () => (process.env.SITE_URL || 'https://dhucar.in').replace(/\/$/, '');
