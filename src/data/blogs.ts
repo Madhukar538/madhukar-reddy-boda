@@ -11,6 +11,446 @@ export interface BlogPost {
 
 export const blogs: BlogPost[] = [
   {
+    slug: "mcp-server-code-database-intelligence",
+    title: "Giving AI Assistants a Map of Your Codebase: An MCP Server for C# Code and SQL Server Schemas",
+    excerpt: "How I built a Model Context Protocol server that analyses C# solutions with Roslyn and SQL Server schemas through catalogue views, stores a structured map in MongoDB per workspace, and exposes it to AI assistants as 40+ tools.",
+    date: "September 23, 2026",
+    readTime: "14 min read",
+    category: "Artificial Intelligence",
+    tags: ["MCP", "Roslyn", ".NET Core", "MongoDB", "SQL Server"],
+    content: `
+      <p class="lead">AI coding assistants are great with the file you have open and poor at answering questions about a 40-project solution they have never seen: "Who calls this stored procedure?", "Which tables does cancelling an order touch?", "What does this DTO look like?". This post walks through an MCP server I built to fix that. It reads C# solutions with Roslyn and SQL Server schemas through system views, stores a structured map of both in MongoDB, and exposes that map to any AI assistant as more than 40 Model Context Protocol tools.</p>
+
+      <h2>1. The Problem: Context, Not Intelligence</h2>
+      <p>A language model can reason about code perfectly well. What it lacks in a large legacy system is the <em>map</em>: which class lives in which project, which methods call which stored procedures, which tables those procedures read and write. Pasting files into a chat doesn't scale, and plain text search misses what a name <em>means</em>. <code>Order</code> the class, <code>Order</code> the table and <code>order</code> the variable all look the same to grep.</p>
+      <p>The approach: <strong>precompute the map once, keep it fresh on a schedule, and let the assistant query it</strong> instead of guessing. The Model Context Protocol (MCP) is the standard way to plug that kind of query surface into Claude, Copilot, Cursor or any other MCP client.</p>
+
+      <h2>2. Architecture at a Glance</h2>
+      <pre>
+Source repositories ──┐
+                       ├──▶ Sync worker ──▶ Roslyn analyzer ────────┐
+ SQL Server database ──┘   (per workspace)  Schema extractor ───────┤
+                                                                    ▼
+                                                   MongoDB (one database per workspace)
+                                                                    │
+ AI assistant ◀──── MCP endpoint /{workspace}/mcp ◀─── tool executor ┘</pre>
+      <ul>
+        <li><strong>Sync worker</strong>: a background service that, per workspace and on a schedule, downloads the source, analyses it and extracts the database schema.</li>
+        <li><strong>Roslyn analyzer</strong>: turns every class and method into structured metadata: signatures, dependencies, stored procedures used, complexity and documentation.</li>
+        <li><strong>Schema extractor</strong>: reads tables, columns, keys, indexes and stored procedures from SQL Server's catalogue views.</li>
+        <li><strong>MongoDB</strong>: one database per workspace, holding classes, methods, method source, tables and stored procedures.</li>
+        <li><strong>MCP endpoint</strong>: JSON-RPC over HTTP at <code>/{workspace}/mcp</code>, backed by a single tool executor.</li>
+        <li><strong>Blazor dashboard</strong>: workspaces, sync status and live logs for whoever operates it.</li>
+      </ul>
+
+      <h2>3. Step 1: Fetching Source Without a Working Copy</h2>
+      <p>The server never keeps a clone. Each sync asks the Git host's REST API for the repository's full item list (optionally on a specific branch), then downloads every file into a directory created for that run only:</p>
+      <pre class="language-csharp">
+// 1. List every item in the repository (optionally on a given branch)
+var itemsUrl = $"{baseUrl}/repositories/{repoId}/items"
+             + $"?scopePath=/&amp;recursionLevel=Full{branchFilter}";
+
+// 2. Download each file into a throwaway directory for this sync run
+foreach (var item in items.Where(i =&gt; !i.IsFolder))
+{
+    var localPath = Path.Combine(repoDir, item.Path.TrimStart('/'));
+    Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
+    var bytes = await http.GetByteArrayAsync(FileUrl(repoId, item.Path));
+    await File.WriteAllBytesAsync(localPath, bytes);
+}</pre>
+      <pre class="language-csharp">
+var workDir = Path.Combine(Path.GetTempPath(), $"code-sync_{Guid.NewGuid():N}");
+Directory.CreateDirectory(workDir);
+try
+{
+    // download → analyze → extract schema → save
+}
+finally
+{
+    Directory.Delete(workDir, recursive: true);   // nothing left on disk, even on failure
+}</pre>
+      <p>Three small decisions keep this robust. The temp directory has a GUID in its name, so overlapping runs can never collide. Cleanup sits in <code>finally</code>, so a failed run leaves nothing behind. And a missing branch returns "skip this repository" instead of an exception, so one misconfigured repo doesn't cancel the whole sync.</p>
+
+      <h2>4. Step 2: Understanding the Code with Roslyn</h2>
+      <p>Regexes can find the word <code>class</code>. Roslyn, the C# compiler as a library, knows what every identifier <em>binds to</em>. The analyzer loads each solution through <code>MSBuildWorkspace</code>, compiles each project, and walks every document:</p>
+      <pre class="language-csharp">
+// Once per process: point Roslyn at an installed MSBuild
+if (!MSBuildLocator.IsRegistered)
+    MSBuildLocator.RegisterDefaults();
+
+var workspace = MSBuildWorkspace.Create();
+workspace.WorkspaceFailed += (_, e) =&gt; logger.LogWarning(e.Diagnostic.Message);
+
+foreach (var slnPath in Directory.GetFiles(sourceDir, "*.sln", SearchOption.AllDirectories))
+{
+    var solution = await workspace.OpenSolutionAsync(slnPath);
+    foreach (var project in solution.Projects)
+    {
+        if (await project.GetCompilationAsync() is null) continue;
+
+        foreach (var document in project.Documents.Where(d =&gt; d.FilePath!.EndsWith(".cs")))
+        {
+            var root  = await document.GetSyntaxRootAsync();      // what the code says
+            var model = await document.GetSemanticModelAsync();   // what it means
+            foreach (var cls in root!.DescendantNodes().OfType&lt;ClassDeclarationSyntax&gt;())
+                results.Add(Describe(cls, model!, project, slnPath));
+        }
+    }
+}</pre>
+      <p>The key distinction is <strong>syntax tree vs semantic model</strong>. The syntax tree is the shape of the text: this is a class declaration, that is a method call. The semantic model is what the compiler concluded: this identifier is the type <code>OrderRepository</code> from the <code>Shop.Data</code> assembly. Almost everything useful below comes from the semantic model.</p>
+
+      <h3>What gets extracted per class</h3>
+      <p>Each class becomes one document with its methods nested inside. The ID combines namespace, class, project and file, so the same class name in two projects stays distinct:</p>
+      <pre class="language-json">
+{
+  "_id": "Shop.Orders.OrderService@Shop.Orders:OrderService.cs",
+  "className": "OrderService",
+  "namespace": "Shop.Orders",
+  "project": "Shop.Orders",
+  "solution": "Shop.sln",
+  "layer": "Application",
+  "type": "Service",
+  "documentation": "Creates, prices and cancels orders.",
+  "baseTypes": ["IOrderService"],
+  "dependencies": [
+    { "target": "OrderRepository", "project": "Shop.Data", "referenceType": "ProjectReference" }
+  ],
+  "methods": [
+    {
+      "methodName": "CancelOrderAsync",
+      "returnType": "Task&lt;bool&gt;",
+      "parameters": [{ "name": "orderId", "type": "int" }],
+      "storedProcedures": ["usp_CancelOrder"],
+      "cyclomaticComplexity": 4,
+      "linesOfCode": 21
+    }
+  ]
+}</pre>
+
+      <h3>Dependencies from the semantic model</h3>
+      <p>For every identifier in a class, ask the semantic model which type it refers to. Framework types are skipped, and only types defined in the solution's own projects are kept, labelled as same-project or cross-project references:</p>
+      <pre class="language-csharp">
+foreach (var id in cls.DescendantNodes().OfType&lt;IdentifierNameSyntax&gt;())
+{
+    // Ask the semantic model what this name actually refers to
+    if (model.GetSymbolInfo(id).Symbol is not INamedTypeSymbol type) continue;
+    if (type.ContainingNamespace?.ToString().StartsWith("System") == true) continue;
+
+    // Keep only types that live in this solution's own projects
+    var owner = solution.Projects.FirstOrDefault(p =&gt; p.AssemblyName == type.ContainingAssembly?.Name);
+    if (owner is null) continue;
+
+    deps.TryAdd($"{type.Name}:{owner.Name}", new DependencyInfo
+    {
+        Target = type.Name,
+        Project = owner.Name,
+        ReferenceType = owner.AssemblyName == model.Compilation.Assembly.Name
+            ? "SameProject" : "ProjectReference",
+    });
+}</pre>
+      <p>That turns "what does this class depend on?" into an exact answer across project boundaries, which plain text search cannot give.</p>
+
+      <h3>Stored procedures, found where they are named</h3>
+      <p>In data-heavy .NET code, stored procedure names usually appear as string literals passed to <code>SqlCommand</code> or Dapper. Scanning each method's string literals for procedure-style names links C# methods to database logic, and that link powers tools like "who calls this procedure?":</p>
+      <pre class="language-csharp">
+var names = method.DescendantNodes()
+    .OfType&lt;LiteralExpressionSyntax&gt;()
+    .Where(l =&gt; l.IsKind(SyntaxKind.StringLiteralExpression))
+    .Select(l =&gt; l.Token.ValueText)
+    .Where(s =&gt; Regex.IsMatch(s, @"^(sp_|usp_|proc_)[A-Za-z0-9_]+$", RegexOptions.IgnoreCase))
+    .Distinct();</pre>
+
+      <h3>Complexity and size</h3>
+      <p>Cyclomatic complexity is 1 plus the number of decision points. With a syntax tree that is a count of node types. Lines of code skip blanks and comments. Together they let an assistant answer "where are the riskiest methods?":</p>
+      <pre class="language-csharp">
+int complexity = 1
+    + method.DescendantNodes().OfType&lt;IfStatementSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;WhileStatementSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;ForStatementSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;ForEachStatementSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;CaseSwitchLabelSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;CatchClauseSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;ConditionalExpressionSyntax&gt;().Count()
+    + method.DescendantNodes().OfType&lt;BinaryExpressionSyntax&gt;()
+          .Count(b =&gt; b.IsKind(SyntaxKind.LogicalAndExpression) || b.IsKind(SyntaxKind.LogicalOrExpression));</pre>
+
+      <h3>Documentation, layer and type</h3>
+      <p>XML doc comments come from the symbol (<code>GetDocumentationCommentXml()</code>) with the <code>&lt;summary&gt;</code> extracted. Layer and type are inferred from conventions: namespaces containing <code>.Api</code>, <code>.Application</code>, <code>.Infrastructure</code> or <code>.Domain</code>, and class names ending in <code>Controller</code>, <code>Service</code>, <code>Repository</code>, <code>Dto</code> or <code>Request</code>. Cheap heuristics, but they make questions like "list the infrastructure classes in project X" possible.</p>
+
+      <h3>Method source, stored separately</h3>
+      <p>The full source of every method is saved in its own collection, keyed by file and method name. Metadata documents stay small and fast to scan, and <code>get_method_source</code> can still hand the assistant the exact code when it needs it, instead of the assistant guessing at an implementation from its signature.</p>
+
+      <h2>5. Step 3: Reading the Database Schema</h2>
+      <p>SQL Server describes itself. <code>INFORMATION_SCHEMA.TABLES</code>, <code>COLUMNS</code>, <code>ROUTINES</code> and <code>PARAMETERS</code> give tables, columns, procedure definitions and parameters. The <code>sys.*</code> catalogue views fill in what the standard views don't cover, such as foreign keys and indexes:</p>
+      <pre class="language-sql">
+SELECT fk.name  AS ForeignKey,
+       c.name   AS ColumnName,
+       rt.name  AS ReferencedTable,
+       rc.name  AS ReferencedColumn
+FROM sys.foreign_keys fk
+JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+JOIN sys.columns c  ON fkc.parent_object_id = c.object_id  AND fkc.parent_column_id = c.column_id
+JOIN sys.tables  t  ON fk.parent_object_id = t.object_id
+JOIN sys.tables  rt ON fk.referenced_object_id = rt.object_id
+JOIN sys.columns rc ON fkc.referenced_object_id = rc.object_id AND fkc.referenced_column_id = rc.column_id
+WHERE t.name = @TableName;</pre>
+      <p>With foreign keys and procedure definitions stored next to the code metadata, the assistant can follow a feature end to end: controller → service → stored procedure → tables → related tables.</p>
+
+      <h2>6. Step 4: Storing the Map in MongoDB</h2>
+      <p>Code metadata is naturally nested (class → methods → parameters) and its shape changes as the analyzer learns new tricks, so a document store fits better than a relational schema. Every write is an <strong>idempotent upsert</strong> keyed on a natural identity: class ID for classes, schema plus name for tables and procedures. Re-running a sync updates in place instead of duplicating:</p>
+      <pre class="language-csharp">
+var ops = tables.Select(t =&gt; new ReplaceOneModel&lt;TableSchema&gt;(
+    Builders&lt;TableSchema&gt;.Filter.And(
+        Builders&lt;TableSchema&gt;.Filter.Eq(x =&gt; x.Schema, t.Schema),
+        Builders&lt;TableSchema&gt;.Filter.Eq(x =&gt; x.TableName, t.TableName)),
+    t) { IsUpsert = true });
+
+await collection.BulkWriteAsync(ops);   // one round trip, safe to re-run</pre>
+      <p>One ordering detail matters: class metadata is saved <em>before</em> the database step runs. If the SQL server is unreachable, the code map is still updated, and a partial sync beats an all-or-nothing one.</p>
+
+      <h2>7. Multi-Tenancy: One Server, Many Workspaces</h2>
+      <p>One deployment serves several independent codebases. Each <strong>workspace</strong> is a document describing what to sync and how often:</p>
+      <pre class="language-json">
+{
+  "name": "shop-platform",              // also the MongoDB database name
+  "repositories": ["shop-api", "shop-admin"],
+  "branch": "main",
+  "dbConnectionString": "Server=…;Database=ShopDb;…",
+  "dbName": "ShopDb",
+  "syncFrequencyMinutes": 240,
+  "status": "Pending",                  // Pending → Active → Pending | Failed | Disabled
+  "lastRunUtc": "2026-09-23T04:00:00Z",
+  "nextRunUtc": "2026-09-23T08:00:00Z"
+}</pre>
+      <p>Each workspace gets its <strong>own MongoDB database</strong>, named after the workspace, so data never mixes and removing a workspace is a single drop. A provisioner creates the database and its collections the first time a workspace syncs.</p>
+      <p>At request time a scoped <code>TenantProvider</code> carries the workspace name taken from the URL, and every Mongo access resolves its database through it:</p>
+      <pre class="language-csharp">
+public class TenantProvider : ITenantProvider   // registered as Scoped
+{
+    public string? DatabaseName { get; set; }
+}
+
+public IMongoDatabase GetDatabase() =&gt;
+    _client.GetDatabase(_tenant.DatabaseName ?? _settings.DefaultDatabase);
+
+[HttpPost("{workspace}/mcp")]
+public async Task Mcp(string workspace)
+{
+    _tenant.DatabaseName = workspace;   // every query in this request now targets that workspace
+    …
+}</pre>
+      <p>The MCP URL itself selects the workspace: <code>https://host/shop-platform/mcp</code> and <code>https://host/billing/mcp</code> are two different code maps behind the same server.</p>
+
+      <h2>8. Scheduling Syncs</h2>
+      <p>A single <code>BackgroundService</code> wakes every minute, finds workspaces that are due, and runs them one by one with a small state machine: <em>Pending → Active → Pending</em>, or <em>Failed</em> on error, with <em>Disabled</em> to pause one:</p>
+      <pre class="language-csharp">
+protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+{
+    while (!stoppingToken.IsCancellationRequested)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var configs = await scope.ServiceProvider
+            .GetRequiredService&lt;IWorkspaceConfigService&gt;().GetAllAsync();
+
+        foreach (var cfg in configs.Where(c =&gt; c.Status != Status.Disabled
+                                            &amp;&amp; (c.NextRunUtc is null || c.NextRunUtc &lt;= DateTime.UtcNow)))
+        {
+            try
+            {
+                await MarkAsync(cfg, Status.Active);
+                await _provisioner.ProvisionAsync(cfg);          // create database + collections if new
+                await RunSyncForWorkspaceAsync(cfg, stoppingToken);
+                cfg.LastRunUtc = DateTime.UtcNow;
+                cfg.NextRunUtc = cfg.LastRunUtc.Value.AddMinutes(cfg.SyncFrequencyMinutes);
+                await MarkAsync(cfg, Status.Pending);
+            }
+            catch (Exception ex)
+            {
+                await MarkAsync(cfg, Status.Failed);             // one bad workspace doesn't stop the others
+                _logger.LogError(ex, "Workspace {Name} failed", cfg.Name);
+            }
+        }
+
+        await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+    }
+}</pre>
+
+      <h3>An isolated container per sync</h3>
+      <p>The subtle part: each workspace has its own repositories, access token and source database, but the sync services read their settings through <code>IOptions&lt;T&gt;</code>. Rather than mutate app-wide singletons (and race with the next workspace), each run builds a <strong>fresh, short-lived DI container</strong> with that workspace's options baked in:</p>
+      <pre class="language-csharp">
+var services = new ServiceCollection();
+services.AddLogging();
+services.AddSingleton(Options.Create(new RepositorySettings
+{
+    Repositories = cfg.Repositories,
+    Branch = cfg.Branch,
+    AccessToken = cfg.AccessToken ?? defaults.AccessToken,
+}));
+services.AddSingleton(Options.Create(new DatabaseSettings
+{
+    ConnectionString = cfg.DbConnectionString,     // source SQL database
+    Databases = [cfg.DbName],
+}));
+services.AddSingleton(Options.Create(new MongoDbSettings
+{
+    ConnectionString = defaults.MongoConnectionString,
+    DatabaseName = cfg.Name,                       // destination: this workspace's database
+}));
+services.AddScoped&lt;ICodeAnalyzerService, CodeAnalyzerService&gt;();
+services.AddScoped&lt;ISchemaExtractorService, SchemaExtractorService&gt;();
+services.AddScoped&lt;IMetadataSyncService, MetadataSyncService&gt;();
+// …the rest of the sync pipeline
+
+using var provider = services.BuildServiceProvider();
+await provider.GetRequiredService&lt;IMetadataSyncService&gt;().SyncAsync(ct);</pre>
+      <p>The pipeline code stays unaware of tenants: it just reads its options. The container is disposed when the run ends, taking the per-workspace credentials with it.</p>
+
+      <h2>9. Speaking MCP</h2>
+      <p>MCP is JSON-RPC 2.0. A client sends <code>initialize</code> to learn the server's capabilities, <code>tools/list</code> to discover tools with their JSON Schemas, and <code>tools/call</code> to run one. The endpoint accepts POSTs and answers in the Streamable HTTP style as server-sent events, with standard JSON-RPC error codes (<code>-32700</code> parse error, <code>-32601</code> unknown method, <code>-32603</code> internal error):</p>
+      <pre class="language-csharp">
+switch (request.Method)
+{
+    case "initialize":
+        await Send(new { protocolVersion = "2024-11-05",
+                         capabilities = new { tools = new { } },
+                         serverInfo = new { name = "code-intelligence", version = "1.0.0" } });
+        break;
+
+    case "tools/list":
+        await Send(new { tools = ToolDefinitions.GetAll()
+            .Select(t =&gt; new { name = t.Name, description = t.Description, inputSchema = t.InputSchema }) });
+        break;
+
+    case "tools/call":
+        var result = await _executor.ExecuteAsync(toolName, args);
+        // MCP wants a content array; the structured result travels as JSON text
+        await Send(new { content = new[] { new { type = "text", text = JsonSerializer.Serialize(result) } } });
+        break;
+
+    default:
+        await SendError(-32601, $"Unknown method: {request.Method}");
+        break;
+}</pre>
+
+      <h3>Tools as data</h3>
+      <p>Each tool is declared once, with a name, a description written for the model and a JSON Schema for its arguments. The descriptions matter more than they look: they are the only documentation the assistant reads before choosing a tool.</p>
+      <pre class="language-csharp">
+new ToolDefinition(
+    "find_method",
+    "Search for methods across all classes",
+    Schema(new()
+    {
+        ["methodName"] = ("string",  "The name of the method to find"),
+        ["className"]  = ("string",  "Filter by class name"),
+        ["limit"]      = ("integer", "Max results to return (default 50)"),
+    }))</pre>
+      <p>A single executor maps tool names to handlers with a <code>switch</code> expression:</p>
+      <pre class="language-csharp">
+public Task&lt;object&gt; ExecuteAsync(string tool, Dictionary&lt;string, object&gt; args) =&gt; tool switch
+{
+    "find_class"                      =&gt; FindClassAsync(args),
+    "find_method"                     =&gt; FindMethodAsync(args),
+    "get_method_source"               =&gt; GetMethodSourceAsync(args),
+    "search_stored_procedures"        =&gt; SearchStoredProceduresAsync(args),
+    "get_class_dependencies"          =&gt; GetClassDependenciesAsync(args),
+    "get_table_schema"                =&gt; GetTableSchemaAsync(args),
+    "get_table_relationships"         =&gt; GetTableRelationshipsAsync(args),
+    "find_stored_procedures_by_table" =&gt; FindStoredProceduresByTableAsync(args),
+    "class_count_by_layer"            =&gt; ClassCountByLayerAsync(args),
+    // …40-odd more
+    _ =&gt; throw new InvalidOperationException($"Unknown tool: {tool}"),
+};</pre>
+      <p>The catalogue is grouped by the questions developers actually ask:</p>
+      <ul>
+        <li><strong>Search:</strong> <code>find_class</code>, <code>find_method</code>, <code>find_dto</code>, <code>search_by_namespace</code>, <code>search_class_name</code>.</li>
+        <li><strong>Method analysis:</strong> <code>get_method_signature</code>, <code>get_method_source</code>, <code>list_class_methods</code>, <code>find_methods_by_return_type</code>, <code>trace_method_calls</code>.</li>
+        <li><strong>Structure:</strong> <code>get_project_structure</code>, <code>get_layer_analysis</code>, <code>list_solutions</code>, <code>list_projects</code>, <code>get_class_dependencies</code>.</li>
+        <li><strong>Database:</strong> <code>get_table_schema</code>, <code>get_table_relationships</code>, <code>get_table_foreign_keys</code>, <code>get_stored_procedure</code>, <code>get_sp_parameters</code>, <code>find_stored_procedures_by_table</code>.</li>
+        <li><strong>Code ↔ database:</strong> <code>search_stored_procedures</code> finds the C# methods that call a procedure.</li>
+        <li><strong>Statistics:</strong> <code>count_classes</code>, <code>class_count_by_layer</code>, <code>top_classes_by_method_count</code>, <code>top_tables_by_size</code>.</li>
+      </ul>
+      <p>Arguments arrive as <code>JsonElement</code>s or primitives depending on the client, so handlers read them tolerantly (accepting either form, with sensible defaults such as a 50-result limit) instead of failing on a type mismatch.</p>
+
+      <h3>What it looks like in use</h3>
+      <pre>
+You:        Which methods call usp_CancelOrder, and what does that procedure touch?
+
+Assistant → search_stored_procedures { "storedProcName": "usp_CancelOrder" }
+          ← OrderService.CancelOrderAsync, AdminOrderController.ForceCancel
+Assistant → get_stored_procedure     { "name": "usp_CancelOrder" }
+          ← definition + parameters (@OrderId int, @Reason nvarchar(200))
+Assistant → get_table_relationships  { "tableName": "Orders" }
+          ← FK Orders.CustomerId → Customers.Id, OrderLines.OrderId → Orders.Id
+
+Assistant:  Two callers use it… it updates Orders and OrderLines, so cancelling
+            also affects any report that joins OrderLines. Here is the method source…</pre>
+      <p>Three small, precise tool calls replace pasting a dozen files into the chat, and the answer is grounded in what the compiler and the database actually say.</p>
+
+      <h2>10. Operating It</h2>
+      <h3>Settings in MongoDB, with a file fallback</h3>
+      <p>Repository credentials, database connections and access keys can change without a redeploy. A tiny custom <code>IOptions&lt;T&gt;</code> starts with the value from <code>appsettings.json</code> and is overwritten from MongoDB at startup if a stored value exists, so every service keeps using ordinary options injection:</p>
+      <pre class="language-csharp">
+public class MongoOptionsProvider&lt;T&gt; : IOptions&lt;T&gt; where T : class, new()
+{
+    private T? _value;
+    public MongoOptionsProvider(T fallback) =&gt; _value = fallback;   // from appsettings.json
+    public void SetValue(T? value) { if (value != null) _value = value; }
+    public T Value =&gt; _value ?? new T();
+}
+
+// Program.cs: register with the appsettings value, then overwrite from MongoDB at startup
+var repoSettings = new MongoOptionsProvider&lt;RepositorySettings&gt;(
+    builder.Configuration.GetSection("Repositories").Get&lt;RepositorySettings&gt;() ?? new());
+builder.Services.AddSingleton&lt;IOptions&lt;RepositorySettings&gt;&gt;(repoSettings);
+…
+repoSettings.SetValue(await settingsService.GetRepositorySettingsAsync());</pre>
+      <p>The settings API masks secrets on read: passwords in connection strings are replaced with asterisks, and access keys show only their first four characters.</p>
+
+      <h3>Live logs in the dashboard</h3>
+      <p>A sync over a big solution takes minutes, and watching it helps. A custom Serilog sink raises an event for every log line; the Blazor Server dashboard subscribes and appends lines as they arrive, with no polling and no extra infrastructure:</p>
+      <pre class="language-csharp">
+public class LogSink(LogStreamingService stream) : ILogEventSink
+{
+    public void Emit(LogEvent e) =&gt;
+        stream.Broadcast($"[{e.Timestamp:HH:mm:ss}] [{e.Level.ToString()[..3].ToUpper()}] {e.RenderMessage()}");
+}
+
+public class LogStreamingService
+{
+    public event Action&lt;string&gt;? OnLogReceived;
+    public void Broadcast(string line) =&gt; OnLogReceived?.Invoke(line);
+}
+
+// Program.cs
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Sink(new LogSink(logStreaming))   // the dashboard subscribes to OnLogReceived
+    .WriteTo.File("logs/sync-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();</pre>
+      <p>A singleton status service does the same for sync state (running, last duration, classes, tables and procedures found, next run), raising <code>OnChange</code> so the dashboard re-renders the moment a sync starts or finishes.</p>
+
+      <h3>Access</h3>
+      <p>The dashboard uses cookie authentication with access keys that can be managed at runtime, and a small middleware logs each request's client IP (honouring <code>X-Forwarded-For</code>), user agent and an optional device header for auditing.</p>
+
+      <h2>11. What's Next</h2>
+      <ul>
+        <li><strong>A true call graph.</strong> Class-level dependencies are exact today. Resolving every invocation inside each method (Roslyn's <code>SymbolFinder</code> can do this) would make "who calls this method?" as precise as "what does this class use?".</li>
+        <li><strong>Semantic search.</strong> Embedding method source and documentation next to the structured metadata would add "find the code that handles refunds" alongside exact-name lookups: RAG over code, grounded by the same map.</li>
+        <li><strong>Incremental syncs.</strong> Re-analysing only the files changed since the last commit instead of the whole solution.</li>
+        <li><strong>Secrets at rest.</strong> Encrypting stored tokens and connection strings, or moving them to a secret store.</li>
+      </ul>
+
+      <h2>12. Takeaways</h2>
+      <ul>
+        <li><strong>Give assistants a map, not a pile of files.</strong> Precomputed, structured metadata beats pasting code into a prompt.</li>
+        <li><strong>Use the compiler.</strong> Roslyn's semantic model answers "what does this refer to?" exactly; text search can only guess.</li>
+        <li><strong>Link code to data.</strong> Connecting methods to stored procedures to tables is where the biggest questions get answered.</li>
+        <li><strong>Make syncs idempotent and partial-failure tolerant.</strong> Upserts, a temp directory per run, per-repository error isolation, and saving code before touching the database.</li>
+        <li><strong>Isolate tenants by construction.</strong> A database per workspace, a scoped tenant from the URL, and a fresh DI container per sync.</li>
+      </ul>
+    `
+  },
+  {
     slug: "dotnet-dynamic-background-service-manager",
     title: "A Dynamic Background Service Manager in .NET 8: Start, Update and Stop Workers at Runtime",
     excerpt: "How a small .NET 8 console app runs any number of named background workers, each with its own interval and config, and lets you start, retune and stop them while it runs, using async loops, CancellationToken and a ConcurrentDictionary.",

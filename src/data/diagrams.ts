@@ -235,9 +235,57 @@ const runtimeWorkers: Diagram = {
   ],
 };
 
+const codeIntelMcp: Diagram = {
+  title: 'Code & database intelligence over MCP',
+  caption: 'A scheduled sync builds the map; AI assistants query it through MCP tools.',
+  height: 400,
+  nodes: [
+    { id: 'repos', label: 'Source repos', sub: 'C# solutions', x: 90, y: 70, kind: 'data',
+      what: 'The workspace’s repositories. Each sync downloads every file for the configured branch into a temp directory created for that run.',
+      tech: ['Git host REST API', 'Temp dir per run'] },
+    { id: 'sqldb', label: 'SQL Server', sub: 'source database', x: 90, y: 250, kind: 'data',
+      what: 'Tables, columns, keys, indexes and stored procedures, read from INFORMATION_SCHEMA and sys.* catalogue views.',
+      tech: ['INFORMATION_SCHEMA', 'sys.foreign_keys', 'sys.indexes'] },
+    { id: 'sync', label: 'Sync worker', sub: 'per workspace', x: 270, y: 160, kind: 'service',
+      what: 'A BackgroundService that wakes every minute, picks workspaces that are due, and runs the pipeline in a fresh DI container holding that workspace’s credentials.',
+      tech: ['BackgroundService', 'Isolated DI container'],
+      note: 'State machine: Pending → Active → Pending, or Failed; Disabled pauses a workspace.' },
+    { id: 'roslyn', label: 'Roslyn analyzer', sub: 'semantic model', x: 450, y: 70, kind: 'ai',
+      what: 'Opens each solution with MSBuildWorkspace and extracts classes, methods, parameters, dependencies, stored procedures used, complexity and XML docs.',
+      tech: ['Roslyn', 'MSBuildWorkspace', 'SemanticModel'] },
+    { id: 'schema', label: 'Schema extractor', sub: 'catalogue views', x: 450, y: 250, kind: 'service',
+      what: 'Turns the database catalogue into table and stored-procedure documents, including foreign keys and procedure parameters.',
+      tech: ['ADO.NET', 'SQL'] },
+    { id: 'mongo', label: 'MongoDB', sub: 'one db per workspace', x: 630, y: 160, kind: 'data',
+      what: 'Classes (methods nested), method source, tables and stored procedures, written with idempotent bulk upserts.',
+      tech: ['MongoDB', 'BulkWrite upserts'] },
+    { id: 'mcp', label: 'MCP endpoint', sub: '/{workspace}/mcp', x: 450, y: 350, kind: 'service',
+      what: 'JSON-RPC 2.0 over HTTP: initialize, tools/list and tools/call. The URL picks the workspace; a single executor maps 40+ tool names to handlers.',
+      tech: ['MCP', 'JSON-RPC', 'SSE'] },
+    { id: 'ai', label: 'AI assistant', sub: 'Claude, Copilot, Cursor', x: 150, y: 350, kind: 'client',
+      what: 'Any MCP client. It discovers the tools, then calls small precise ones like search_stored_procedures or get_table_relationships instead of guessing.',
+      tech: ['MCP client'] },
+  ],
+  edges: [
+    { id: 's1', from: 'repos', to: 'sync' },
+    { id: 's2', from: 'sqldb', to: 'sync' },
+    { id: 's3', from: 'sync', to: 'roslyn' },
+    { id: 's4', from: 'sync', to: 'schema' },
+    { id: 's5', from: 'roslyn', to: 'mongo' },
+    { id: 's6', from: 'schema', to: 'mongo' },
+    { id: 'q1', from: 'ai', to: 'mcp', twoWay: true },
+    { id: 'q2', from: 'mcp', to: 'mongo', twoWay: true },
+  ],
+  flows: [
+    { id: 'sync', label: 'Scheduled sync', steps: [['s1', 's2'], ['s3', 's4'], ['s5', 's6']] },
+    { id: 'ask', label: 'Assistant asks', steps: [['q1'], ['q2'], ['-q2'], ['-q1']] },
+  ],
+};
+
 export const diagrams: Record<string, Diagram> = {
   'hybrid-search-solr-bm25-vector-rrf': hybridSearch,
   'rag-chatbot-latency-audit': ragChatbot,
   'nextjs-dotnet-on-demand-isr': onDemandIsr,
   'dotnet-dynamic-background-service-manager': runtimeWorkers,
+  'mcp-server-code-database-intelligence': codeIntelMcp,
 };

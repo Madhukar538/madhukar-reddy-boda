@@ -86,7 +86,7 @@ export const experience = {
   ],
   responsibilities: [
     'Architecting a multi-tenant RAG chatbot platform on .NET 10: Semantic Kernel agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
-    'Built an MCP (Model Context Protocol) server exposing database schemas, code analysis and TFS work items as AI tools.',
+    'Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.',
     'Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.',
     'Building an offline-first procurement and inspection app (Next.js PWA + Android SQLite) with outbox-based sync.',
     'Building an uptime and incident-management platform on Uptime Kuma with a .NET API, push alerts and ticketing.',
@@ -220,9 +220,10 @@ export const rdProjects: Experiment[] = [
   },
   {
     title: 'MCP Server for Code & Database Intelligence',
-    description: '.NET Model Context Protocol server exposing database schema extraction, code analysis and TFS work items as AI tools, with background metadata sync to MongoDB and a Blazor admin dashboard.',
-    tech: ['MCP', '.NET', 'MongoDB', 'Blazor'],
+    description: 'Gives AI assistants a map of large C# codebases: Roslyn analyses whole solutions (classes, methods, dependencies, stored procedures used, complexity) and SQL Server catalogue views supply tables, keys and procedures. Scheduled per-workspace syncs store it in MongoDB, exposed as 40+ MCP tools with a Blazor dashboard and live logs.',
+    tech: ['MCP', 'Roslyn', '.NET', 'MongoDB', 'SQL Server', 'Blazor'],
     status: 'WIP',
+    post: 'mcp-server-code-database-intelligence',
   },
   {
     title: 'Self-Hosted Web Analytics',
