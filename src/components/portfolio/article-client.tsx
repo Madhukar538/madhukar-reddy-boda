@@ -27,7 +27,7 @@ export function ArticleClient({ content }: ArticleClientProps) {
       if (pre.querySelector('.copy-btn')) return;
 
       const button = document.createElement('button');
-      button.className = 'copy-btn absolute top-3 right-3 px-2 py-1 rounded text-[10px] font-semibold bg-white/5 border border-white/10 hover:bg-white/15 text-muted-foreground hover:text-foreground transition-all duration-200';
+      button.className = 'copy-btn absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-foreground/10 hover:bg-foreground/15 text-muted-foreground hover:text-foreground transition-all duration-200';
       button.innerText = 'Copy';
       
       pre.style.position = 'relative';
@@ -48,16 +48,17 @@ export function ArticleClient({ content }: ArticleClientProps) {
     <>
       {/* Scroll Progress Bar */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 bg-accent z-[100] origin-left transition-all duration-100" 
+        className="fixed top-0 left-0 right-0 h-[3px] bg-primary z-[300] origin-left transition-transform duration-100 shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
         style={{ transform: `scaleX(${scrollProgress / 100})` }}
       />
       
       {/* Article Body */}
       <div 
-        className="relative space-y-6 text-muted-foreground leading-relaxed text-sm md:text-base
-          [&>p>code]:bg-white/10 [&>p>code]:px-1.5 [&>p>code]:py-0.5 [&>p>code]:rounded [&>p>code]:text-xs [&>p>code]:text-accent
-          [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-foreground [&>h2]:mt-10 [&>h2]:mb-4 [&>h2]:font-headline
-          [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2
+        className="article-body relative space-y-6 text-foreground/80 leading-relaxed text-[15px] md:text-[17px]
+          [&_p>code]:bg-foreground/10 [&_p>code]:px-1.5 [&_p>code]:py-0.5 [&_p>code]:rounded-md [&_p>code]:text-[0.85em] [&_p>code]:text-primary
+          [&_li>code]:bg-foreground/10 [&_li>code]:px-1.5 [&_li>code]:py-0.5 [&_li>code]:rounded-md [&_li>code]:text-[0.85em] [&_li>code]:text-primary
+          [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:tracking-tight [&>h2]:text-foreground [&>h2]:mt-10 [&>h2]:mb-4
+          [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>ul]:marker:text-primary
           [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:space-y-2
           [&>p.lead]:text-lg [&>p.lead]:text-foreground/80 [&>p.lead]:leading-relaxed"
         dangerouslySetInnerHTML={{ __html: content }}

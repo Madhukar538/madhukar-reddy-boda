@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { blogs } from '@/data/blogs';
-import { X, Calendar, Clock, Terminal } from 'lucide-react';
+import { X, Calendar, Clock } from 'lucide-react';
+import { AuthorCard } from './author-card';
 import { ArticleClient } from './article-client';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,113 +35,85 @@ export function BlogModal({ slug, onClose }: BlogModalProps) {
     }
   }, [slug]);
 
+  // Close on Escape
+  useEffect(() => {
+    if (!slug) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [slug, onClose]);
+
   return (
     <AnimatePresence>
       {slug && (
-        <div className="fixed inset-0 z-[200] overflow-y-auto">
+        <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true" aria-label={post.title}>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-md cursor-pointer"
+            className="fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm cursor-pointer"
           />
 
-          {/* Modal Container */}
-          <div className="flex min-h-screen items-center justify-center p-4 md:p-6">
+          {/* Sheet */}
+          <div className="pointer-events-none flex h-full items-end md:items-center justify-center md:p-6">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="relative w-full max-w-3xl bg-background/95 border border-border/80 rounded-sm shadow-2xl overflow-hidden z-10"
+              initial={{ opacity: 0, y: 60, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 60, scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              className="glass glass-strong pointer-events-auto relative w-full max-w-3xl overflow-hidden rounded-b-none md:rounded-b-[var(--glass-radius)]"
+              style={{ ['--glass-radius' as string]: '2rem' }}
             >
-              {/* Terminal chrome header */}
-              <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-card/80 select-none">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500/70 cursor-pointer hover:bg-red-500" onClick={onClose} />
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-                <span className="ml-2 font-mono text-xs text-muted-foreground truncate max-w-[200px] md:max-w-xs">
-                  {post.slug}.md
-                </span>
-
-                <div className="ml-auto flex items-center gap-4 text-xs font-mono text-muted-foreground">
-                  <span className="hidden md:flex items-center gap-1.5">
-                    <Calendar className="h-3 w-3" />
+              {/* Grabber + toolbar */}
+              <div className="sticky top-0 z-10 flex items-center gap-3 px-5 pt-3 pb-3 border-b border-foreground/10">
+                <div className="absolute left-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full bg-foreground/20 md:hidden" />
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
                     {post.date}
                   </span>
-                  <span className="hidden md:flex items-center gap-1.5">
-                    <Clock className="h-3 w-3" />
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
                     {post.readTime}
                   </span>
-                  <button
-                    onClick={onClose}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-sm border border-primary/20 hover:border-primary/50 text-[10px] text-primary hover:bg-primary/5 uppercase tracking-wide transition-all"
-                  >
-                    <X className="h-3 w-3" />
-                    [exit]
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-foreground/10 text-foreground/70 hover:bg-foreground/15 hover:text-foreground transition-colors active:scale-90"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
 
-              {/* Modal scroll area */}
               <div
                 ref={scrollContainerRef}
-                className="max-h-[calc(100vh-120px)] overflow-y-auto p-6 md:p-10 scrollbar-thin select-text"
+                className="max-h-[85dvh] md:max-h-[calc(100dvh-8rem)] overflow-y-auto p-6 md:p-10 select-text"
               >
-                {/* Meta */}
-                <div className="mb-6 space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="font-mono text-[10px] text-yellow-400/80 border border-yellow-400/20 bg-yellow-400/5 px-2 py-0.5 rounded-sm uppercase tracking-wider">
-                      {post.category}
-                    </span>
-                    <span className="md:hidden font-mono text-[10px] text-muted-foreground/60">
-                      {post.date} · {post.readTime}
-                    </span>
-                  </div>
-
-                  <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                <div className="mb-8 space-y-4">
+                  <span className="chip chip-accent">{post.category}</span>
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight">
                     {post.title}
                   </h1>
-
                   <div className="flex flex-wrap gap-1.5">
                     {post.tags.map((tag) => (
-                      <span key={tag} className="code-tag">[{tag}]</span>
+                      <span key={tag} className="chip">{tag}</span>
                     ))}
                   </div>
                 </div>
 
-                {/* Article body */}
-                <div className="border-t border-border pt-6">
+                <div className="border-t border-foreground/10 pt-8">
                   <ArticleClient content={post.content} />
                 </div>
 
-                {/* Author block — whoami style */}
-                <div className="mt-12 pt-8 border-t border-border">
-                  <p className="font-mono text-xs text-muted-foreground/60 mb-4">
-                    {'$ whoami'}
+                <div className="mt-12 pt-8 border-t border-foreground/10">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+                    About the author
                   </p>
-                  <div className="terminal-card p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="h-12 w-12 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center font-mono font-bold text-primary text-sm shrink-0">
-                        MR
-                      </div>
-                      <div className="space-y-1.5">
-                        <p className="font-mono text-sm font-bold text-foreground">
-                          Boda Madhukar Reddy
-                        </p>
-                        <p className="font-mono text-xs text-primary">
-                          // Software Architect @ Revalsys Technologies
-                        </p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Building high-throughput .NET Core systems, load-testing with k6 + Grafana,
-                          and engineering AI-driven automation tools. Writing about real-world
-                          engineering problems and production-first solutions.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <AuthorCard />
                 </div>
               </div>
             </motion.div>

@@ -1,103 +1,115 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Palette, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type ThemeOption = {
+type AccentOption = {
   id: string;
   label: string;
-  primary: string; // Tailwind color value for preview dot
-  bg: string;      // Tailwind color value for preview bg
+  swatch: string; // CSS color for the preview swatch
 };
 
-const themes: ThemeOption[] = [
-  { id: 'matrix',  label: 'Matrix',  primary: 'bg-emerald-500', bg: 'bg-zinc-950' },
-  { id: 'dracula', label: 'Dracula', primary: 'bg-[#ff79c6]',   bg: 'bg-[#282a36]' },
-  { id: 'fallout', label: 'Fallout', primary: 'bg-[#ffb000]',   bg: 'bg-[#0d0805]' },
-  { id: 'nord',    label: 'Nord',    primary: 'bg-[#88c0d0]',   bg: 'bg-[#2e3440]' },
-  { id: 'monokai', label: 'Monokai', primary: 'bg-[#a6e22e]',   bg: 'bg-[#272822]' },
+// Apple system accent colors
+const accents: AccentOption[] = [
+  { id: 'blue',     label: 'Blue',     swatch: '#0A84FF' },
+  { id: 'purple',   label: 'Purple',   swatch: '#BF5AF2' },
+  { id: 'pink',     label: 'Pink',     swatch: '#FF375F' },
+  { id: 'orange',   label: 'Orange',   swatch: '#FF9F0A' },
+  { id: 'green',    label: 'Green',    swatch: '#30D158' },
+  { id: 'graphite', label: 'Graphite', swatch: '#8E8E93' },
 ];
 
+const STORAGE_KEY = 'portfolio-accent';
+
+function applyAccent(id: string) {
+  if (id === 'blue') {
+    document.documentElement.removeAttribute('data-accent');
+  } else {
+    document.documentElement.setAttribute('data-accent', id);
+  }
+}
+
 export function ThemeSwitcher() {
-  const [currentTheme, setCurrentTheme] = useState('matrix');
+  const [current, setCurrent] = useState('blue');
   const [open, setOpen] = useState(false);
 
-  // Initialize theme from localStorage on load
   useEffect(() => {
-    const saved = localStorage.getItem('portfolio-theme') || 'matrix';
-    setCurrentTheme(saved);
-    if (saved !== 'matrix') {
-      document.documentElement.setAttribute('data-theme', saved);
-    }
+    let saved = 'blue';
+    try {
+      saved = localStorage.getItem(STORAGE_KEY) || 'blue';
+    } catch {}
+    if (!accents.some((a) => a.id === saved)) saved = 'blue';
+    setCurrent(saved);
+    applyAccent(saved);
   }, []);
 
-  const changeTheme = (themeId: string) => {
-    setCurrentTheme(themeId);
-    localStorage.setItem('portfolio-theme', themeId);
-    
-    if (themeId === 'matrix') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', themeId);
-    }
+  const changeAccent = (id: string) => {
+    setCurrent(id);
+    try {
+      localStorage.setItem(STORAGE_KEY, id);
+    } catch {}
+    applyAccent(id);
     setOpen(false);
   };
+
+  const active = accents.find((a) => a.id === current) ?? accents[0];
 
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="p-2 rounded-sm hover:bg-background/80 text-muted-foreground hover:text-primary transition-all duration-200"
-        aria-label="Switch Theme"
+        className="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-foreground/10 active:scale-90"
+        aria-label="Choose accent color"
+        aria-expanded={open}
       >
-        <Palette className="h-4.5 w-4.5" />
+        <span
+          className="h-4 w-4 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_0_0_2px_hsl(var(--background)/0.6)]"
+          style={{
+            background: `conic-gradient(from 180deg, ${accents.map((a) => a.swatch).join(', ')}, ${accents[0].swatch})`,
+          }}
+        />
+        <span className="sr-only">Current accent: {active.label}</span>
       </button>
 
       <AnimatePresence>
         {open && (
           <>
-            {/* Click outside overlay */}
-            <div 
-              className="fixed inset-0 z-40" 
-              onClick={() => setOpen(false)} 
-            />
-            
-            {/* Popover */}
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 5 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 5 }}
-              className="absolute right-0 bottom-full mb-3 md:bottom-auto md:top-full md:mt-3 z-50 w-44 rounded-sm border border-border/80 bg-card p-1.5 shadow-xl shadow-black/20 backdrop-blur-xl"
+              initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
+              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+              className="glass glass-strong absolute right-0 bottom-full mb-3 lg:bottom-auto lg:top-full lg:mt-3 z-50 w-48 p-2 origin-bottom-right lg:origin-top-right"
+              style={{ ['--glass-radius' as string]: '1.25rem' }}
             >
-              <div className="px-2 py-1.5 border-b border-border/60 mb-1">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground/80">
-                  {'// select_theme'}
-                </span>
-              </div>
+              <p className="px-2.5 pt-1 pb-2 text-[11px] font-semibold text-muted-foreground">
+                Accent Color
+              </p>
               <div className="space-y-0.5">
-                {themes.map((theme) => {
-                  const isSelected = currentTheme === theme.id;
+                {accents.map((accent) => {
+                  const isSelected = current === accent.id;
                   return (
                     <button
-                      key={theme.id}
-                      onClick={() => changeTheme(theme.id)}
+                      key={accent.id}
+                      type="button"
+                      onClick={() => changeAccent(accent.id)}
                       className={cn(
-                        'w-full flex items-center justify-between px-2 py-1.5 rounded-sm font-mono text-xs transition-all duration-150',
-                        isSelected 
-                          ? 'text-primary bg-primary/10' 
-                          : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
+                        'w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-sm transition-colors duration-150',
+                        isSelected ? 'bg-foreground/10 text-foreground' : 'text-foreground/80 hover:bg-foreground/5'
                       )}
                     >
-                      <div className="flex items-center gap-2">
-                        {/* Theme color previews */}
-                        <div className={cn('w-3.5 h-3.5 rounded-full border border-border/60 flex items-center justify-center overflow-hidden shrink-0', theme.bg)}>
-                          <div className={cn('w-1.5 h-1.5 rounded-full', theme.primary)} />
-                        </div>
-                        <span>{theme.label}</span>
-                      </div>
-                      {isSelected && <Check className="h-3 w-3 text-primary shrink-0" />}
+                      <span className="flex items-center gap-2.5">
+                        <span
+                          className="h-4 w-4 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
+                          style={{ background: accent.swatch }}
+                        />
+                        {accent.label}
+                      </span>
+                      {isSelected && <Check className="h-3.5 w-3.5 text-primary" />}
                     </button>
                   );
                 })}

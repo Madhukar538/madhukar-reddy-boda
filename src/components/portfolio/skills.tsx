@@ -75,10 +75,10 @@ const skillData: SkillCategory[] = [
   },
 ];
 
-const colorMap = {
-  green: 'code-tag',
-  cyan: 'code-tag code-tag-cyan',
-  amber: 'code-tag code-tag-amber',
+const iconTint = {
+  green: 'text-primary bg-primary/[0.12]',
+  cyan: 'text-[hsl(var(--sys-teal))] bg-[hsl(var(--sys-teal)/0.12)]',
+  amber: 'text-[hsl(var(--sys-orange))] bg-[hsl(var(--sys-orange)/0.12)]',
 };
 
 export function Skills() {
@@ -89,22 +89,20 @@ export function Skills() {
   }));
 
   return (
-    <Section id="skills" title="tech_stack()" comment="Skills and technologies" data={serializableSkillData}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <Section id="skills" title="Tech Stack" comment="Skills and technologies" data={serializableSkillData}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
         {skillData.map(({ title, icon: Icon, skills, color = 'green' }) => (
-          <div key={title} className="terminal-card p-5">
-            {/* Category header */}
-            <div className="flex items-center gap-2 mb-4">
-              <Icon className="h-4 w-4 text-primary shrink-0" />
-              <span className="font-mono text-xs font-semibold text-foreground/80 uppercase tracking-wider">
-                {'// '}{title}
+          <div key={title} className="glass glass-interactive p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconTint[color]}`}>
+                <Icon className="h-[1.1rem] w-[1.1rem]" />
               </span>
+              <span className="text-[15px] font-semibold text-foreground">{title}</span>
             </div>
-            {/* Skill tags */}
             <div className="flex flex-wrap gap-1.5">
               {skills.map((skill) => (
-                <span key={skill} className={colorMap[color]}>
-                  [{skill}]
+                <span key={skill} className="chip">
+                  {skill}
                 </span>
               ))}
             </div>

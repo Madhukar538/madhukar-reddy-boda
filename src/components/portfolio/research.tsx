@@ -52,42 +52,40 @@ const rdProjects = [
   },
 ];
 
-const statusColor: Record<string, string> = {
-  SHIPPED: 'text-primary border-primary/30 bg-primary/5',
-  POC: 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5',
-  WIP: 'text-blue-400 border-blue-400/30 bg-blue-400/5',
+const statusChip: Record<string, { className: string; label: string }> = {
+  SHIPPED: { className: 'chip chip-green', label: 'Shipped' },
+  POC: { className: 'chip chip-orange', label: 'Proof of concept' },
+  WIP: { className: 'chip chip-teal', label: 'In progress' },
 };
 
 export function Research() {
   return (
-    <Section id="research" title="lab_experiments()" comment="R&D projects and explorations">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {rdProjects.map((project) => (
-          <div key={project.title} className="terminal-card p-5 group">
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <FlaskConical className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
-                <span className="font-mono text-xs text-yellow-400/80 font-semibold uppercase tracking-wide">
-                  [EXPERIMENT]
+    <Section id="research" title="R&D Lab" comment="Experiments and explorations">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+        {rdProjects.map((project) => {
+          const status = statusChip[project.status];
+          return (
+            <div key={project.title} className="glass glass-interactive p-5 flex flex-col">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--sys-purple)/0.14)] text-[hsl(var(--sys-purple))]">
+                  <FlaskConical className="h-[1.1rem] w-[1.1rem]" />
                 </span>
+                <span className={status.className}>{status.label}</span>
               </div>
-              <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded-sm border font-semibold ${statusColor[project.status]}`}>
-                {project.status}
-              </span>
+              <h3 className="text-[17px] font-semibold text-foreground mb-1.5 leading-snug">
+                {project.title}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">
+                {project.description}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {project.tech.map((t) => (
+                  <span key={t} className="chip">{t}</span>
+                ))}
+              </div>
             </div>
-            <h3 className="font-mono text-sm font-bold text-foreground mb-2 leading-snug group-hover:text-primary transition-colors">
-              {project.title}
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed mb-4">
-              {project.description}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {project.tech.map((t) => (
-                <span key={t} className="code-tag code-tag-amber">[{t}]</span>
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </Section>
   );

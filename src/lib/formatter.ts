@@ -47,7 +47,7 @@ export function toYaml(obj: any, indent = 0): string {
 }
 
 /**
- * Tokenizes and highlights JSON strings for the terminal theme
+ * Tokenizes and highlights JSON strings for the code view
  */
 export function highlightJson(json: string): string {
   // Escape HTML tags to prevent XSS
@@ -68,15 +68,15 @@ export function highlightJson(json: string): string {
           return `<span class="${cls}">${match.slice(0, -1)}</span>:`;
         } else {
           // It's a string value
-          cls = 'text-accent/90';
+          cls = 'text-[hsl(var(--sys-teal))]';
         }
       } else if (/true|false/.test(match)) {
-        cls = 'text-amber-500 font-medium';
+        cls = 'text-[hsl(var(--sys-orange))] font-medium';
       } else if (/null/.test(match)) {
         cls = 'text-muted-foreground/60';
       } else {
         // Number
-        cls = 'text-amber-500 font-medium';
+        cls = 'text-[hsl(var(--sys-orange))] font-medium';
       }
       return `<span class="${cls}">${match}</span>`;
     }
@@ -84,7 +84,7 @@ export function highlightJson(json: string): string {
 }
 
 /**
- * Tokenizes and highlights YAML strings for the terminal theme
+ * Tokenizes and highlights YAML strings for the code view
  */
 export function highlightYaml(yaml: string): string {
   let escaped = yaml
@@ -117,9 +117,9 @@ export function highlightYaml(yaml: string): string {
         const trimmedVal = value.trim();
         if (trimmedVal) {
           if (trimmedVal.startsWith('"') || trimmedVal.startsWith("'")) {
-            valSpan = ` <span class="text-accent/90">${trimmedVal}</span>`;
+            valSpan = ` <span class="text-[hsl(var(--sys-teal))]">${trimmedVal}</span>`;
           } else if (trimmedVal === 'true' || trimmedVal === 'false' || !isNaN(Number(trimmedVal))) {
-            valSpan = ` <span class="text-amber-500 font-medium">${trimmedVal}</span>`;
+            valSpan = ` <span class="text-[hsl(var(--sys-orange))] font-medium">${trimmedVal}</span>`;
           } else if (trimmedVal === '|' || trimmedVal === '>') {
             valSpan = ` <span class="text-primary/70">${trimmedVal}</span>`;
           } else {
@@ -138,9 +138,9 @@ export function highlightYaml(yaml: string): string {
         const trimmedVal = val.trim();
         if (trimmedVal) {
           if (trimmedVal.startsWith('"') || trimmedVal.startsWith("'")) {
-            valSpan = `<span class="text-accent/90">${trimmedVal}</span>`;
+            valSpan = `<span class="text-[hsl(var(--sys-teal))]">${trimmedVal}</span>`;
           } else if (trimmedVal === 'true' || trimmedVal === 'false' || !isNaN(Number(trimmedVal))) {
-            valSpan = `<span class="text-amber-500 font-medium">${trimmedVal}</span>`;
+            valSpan = `<span class="text-[hsl(var(--sys-orange))] font-medium">${trimmedVal}</span>`;
           } else {
             valSpan = `<span class="text-foreground/80">${trimmedVal}</span>`;
           }

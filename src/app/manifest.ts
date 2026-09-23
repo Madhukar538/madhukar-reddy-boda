@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Portfolio of Boda Madhukar Reddy, Software Architect specializing in .NET and AI platforms.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0b132b',
-    theme_color: '#3b82f6',
+    background_color: '#f2f2f7',
+    theme_color: '#0a84ff',
     icons: [
       {
         src: '/icon.png',
