@@ -6,6 +6,7 @@ import { List, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TocItem } from '@/lib/blog';
 
+// Same pace as readTime() in src/data/blogs.ts (not imported, to keep post content out of the client bundle).
 const WORDS_PER_MINUTE = 220;
 
 /**

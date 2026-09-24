@@ -7,7 +7,8 @@ import bash from 'highlight.js/lib/languages/bash';
 import yaml from 'highlight.js/lib/languages/yaml';
 import sql from 'highlight.js/lib/languages/sql';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
-import { blogs, type BlogPost } from '@/data/blogs';
+import type { HLJSApi, Language } from 'highlight.js';
+import { blogs, countWords, type BlogPost } from '@/data/blogs';
 
 /**
  * Server-side blog helpers: ordering, topics, related posts, and turning a
@@ -15,7 +16,29 @@ import { blogs, type BlogPost } from '@/data/blogs';
  * of contents and syntax-highlighted code, with no client-side highlighter).
  */
 
-const LANGUAGES = { csharp, javascript, typescript, json, bash, yaml, sql, dockerfile };
+// highlight.js ships no HCL, so Terraform gets a small grammar: blocks, attributes, strings with ${} interpolation.
+const hcl = (hljs: HLJSApi): Language => ({
+  name: 'HCL',
+  aliases: ['terraform', 'tf'],
+  keywords: { literal: 'true false null', keyword: 'for in if' },
+  contains: [
+    hljs.HASH_COMMENT_MODE,
+    hljs.C_LINE_COMMENT_MODE,
+    hljs.C_BLOCK_COMMENT_MODE,
+    hljs.C_NUMBER_MODE,
+    {
+      scope: 'string',
+      begin: '"',
+      end: '"',
+      contains: [hljs.BACKSLASH_ESCAPE, { scope: 'subst', begin: /\$\{/, end: /\}/ }],
+    },
+    // Block type: resource "a" "b" {  or  locals {
+    { scope: 'keyword', begin: /\b[a-z_][\w-]*(?=(?:\s+"[^"\n]*")*\s*\{)/, relevance: 0 },
+    { scope: 'attr', begin: /[a-z_][\w-]*(?=\s*=(?!=))/, relevance: 0 },
+  ],
+});
+
+const LANGUAGES = { csharp, javascript, typescript, json, bash, yaml, sql, dockerfile, hcl };
 for (const [name, lang] of Object.entries(LANGUAGES)) hljs.registerLanguage(name, lang);
 
 const LABELS: Record<string, string> = {
@@ -84,7 +107,7 @@ export function renderPost(post: BlogPost): RenderedPost {
     return `<figure class="code-block" data-kind="${kind}"><figcaption>${label}</figcaption><pre><code class="hljs">${body}</code></pre></figure>`;
   });
 
-  return { html, toc, words: plainText(post.content).split(' ').length };
+  return { html, toc, words: countWords(post.content) };
 }
 
 /** Posts sharing the most tags (then category), newest first on ties. */

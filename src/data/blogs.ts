@@ -4,18 +4,24 @@ export interface BlogPost {
   excerpt: string;
   content: string; // Rich HTML content
   date: string;
-  readTime: string;
+  readTime: string; // Worked out from the content, e.g. "8 min read"
   category: string;
   tags: string[];
 }
 
-export const blogs: BlogPost[] = [
+export const WORDS_PER_MINUTE = 220;
+
+/** Words of visible text in a post's HTML (code blocks included). */
+export const countWords = (html: string) => html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+
+export const readTime = (html: string) => `${Math.max(1, Math.round(countWords(html) / WORDS_PER_MINUTE))} min read`;
+
+const posts: Omit<BlogPost, 'readTime'>[] = [
   {
     slug: "mcp-server-code-database-intelligence",
     title: "Giving AI Assistants a Map of Your Codebase: An MCP Server for C# Code and SQL Server Schemas",
     excerpt: "How I built a Model Context Protocol server that analyses C# solutions with Roslyn and SQL Server schemas through catalogue views, stores a structured map in MongoDB per workspace, and exposes it to AI assistants as 40+ tools.",
     date: "September 23, 2026",
-    readTime: "14 min read",
     category: "Artificial Intelligence",
     tags: ["MCP", "Roslyn", ".NET Core", "MongoDB", "SQL Server"],
     content: `
@@ -455,7 +461,6 @@ Log.Logger = new LoggerConfiguration()
     title: "A Dynamic Background Service Manager in .NET 8: Start, Update and Stop Workers at Runtime",
     excerpt: "How a small .NET 8 console app runs any number of named background workers, each with its own interval and config, and lets you start, retune and stop them while it runs, using async loops, CancellationToken and a ConcurrentDictionary.",
     date: "September 23, 2026",
-    readTime: "5 min read",
     category: "Software Architecture",
     tags: [".NET Core", "C#", "Background Services", "Concurrency", "Async"],
     content: `
@@ -655,7 +660,6 @@ Service a stopped.</pre>
     title: "How I Turned My MacBook into a Self-Hosted Vercel with Coolify, Cloudflare Tunnel & Terraform",
     excerpt: "An 8 GB M1 MacBook, a domain, and zero open router ports: building a git-push-to-deploy platform at home, and the six things that broke along the way.",
     date: "September 23, 2026",
-    readTime: "9 min read",
     category: "DevOps",
     tags: ["Coolify", "Cloudflare Tunnel", "Terraform", "Self-Hosting", "Docker"],
     content: `
@@ -731,7 +735,6 @@ resource "cloudflare_dns_record" "wildcard" {
     title: "Building a VMSS-Style Cluster from 10 Mini PCs: Why I'm Starting with Docker Swarm, Not K3s",
     excerpt: "Ten 13th-gen machines with 8 GB RAM each, a zero-dollar software budget, and no Kubernetes experience. Here's the research, the trade-offs, and the build order I settled on.",
     date: "August 24, 2026",
-    readTime: "7 min read",
     category: "DevOps",
     tags: ["Docker Swarm", "K3s", "Proxmox", "Homelab", "Kubernetes"],
     content: `
@@ -806,7 +809,6 @@ rolling image update -> zero downtime</pre>
     title: "Static Pages, Fresh Content: On-Demand ISR Between Next.js 16 and a .NET API",
     excerpt: "Zero API calls per page view, and content that updates the moment an editor saves. A hands-on proof of concept with tag-based revalidation driven by .NET webhooks, plus two traps I hit along the way.",
     date: "August 22, 2026",
-    readTime: "8 min read",
     category: "Software Architecture",
     tags: ["Next.js", ".NET Core", "ISR", "Caching", "Webhooks"],
     content: `
@@ -864,7 +866,6 @@ revalidateTag('page-home', 'max');</pre>
     title: "Hybrid Product Search on Solr 9: BM25 + Vectors + Reciprocal Rank Fusion in .NET",
     excerpt: "Keyword search misses meaning; vector search misses exact terms. Fusing both with RRF, adding rule-based query understanding and running embeddings in-process gave a search that handles \"red card case and gold tone watch under 5000\".",
     date: "August 14, 2026",
-    readTime: "10 min read",
     category: "Software Architecture",
     tags: ["Solr", "Vector Search", "RRF", "ONNX", ".NET Core"],
     content: `
@@ -929,7 +930,6 @@ score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
     title: "Why Our RAG Chatbot Took 40 Seconds to Answer, and the Plan to Make It 70% Faster",
     excerpt: "An end-to-end audit of a multi-tenant .NET RAG chatbot found 7-8 LLM calls per request, a duplicate vector search and 1.5 seconds of artificial streaming delay. Here's where the time went and the fix plan.",
     date: "July 17, 2026",
-    readTime: "8 min read",
     category: "Artificial Intelligence",
     tags: ["RAG", "LLMs", "Semantic Kernel", "Performance", ".NET Core"],
     content: `
@@ -1001,7 +1001,6 @@ Week 3-4  tenant isolation, retries, per-tenant invalidation, latency dashboards
     title: "Deep-Dive: .NET Core API Performance Tuning & Memory Optimization",
     excerpt: "Learn how we reduced latency by 40% and optimized GC pressure in high-throughput .NET Core microservices.",
     date: "May 20, 2026",
-    readTime: "8 min read",
     category: "Software Architecture",
     tags: [".NET Core", "Performance", "GC Optimization", "APIs"],
     content: `
@@ -1035,7 +1034,6 @@ public ReadOnlySpan&lt;char&gt; ExtractToken(ReadOnlySpan&lt;char&gt; header) {
     title: "Designing Repeatable Load Testing Suites with k6 and Grafana",
     excerpt: "A guide to building a continuous load testing pipeline to detect latency regressions before code reaches staging.",
     date: "April 15, 2026",
-    readTime: "6 min read",
     category: "Observability",
     tags: ["k6", "Grafana", "Load Testing", "DevOps"],
     content: `
@@ -1080,7 +1078,6 @@ export default function () {
     title: "Building an Advanced RAG Pipeline for Developer Knowledge Discovery",
     excerpt: "How we leveraged LangChain and vector databases to build a context-aware search engine for internal APIs.",
     date: "March 10, 2026",
-    readTime: "7 min read",
     category: "Artificial Intelligence",
     tags: ["RAG", "LangChain", "Vector DB", "LLMs"],
     content: `
@@ -1102,3 +1099,5 @@ export default function () {
     `
   }
 ];
+
+export const blogs: BlogPost[] = posts.map((post) => ({ ...post, readTime: readTime(post.content) }));
