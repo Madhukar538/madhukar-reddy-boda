@@ -1,5 +1,5 @@
 import { bugReportSchema, ticketId, triage, type BugReport, type Priority } from '@/lib/bug-triage';
-import { escapeHtml, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
+import { escapeHtml, missingTelegramVars, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
 
 // "Hire me for a bug": validates a report, triages it into a ticket and
 // sends it to Telegram.
@@ -45,6 +45,16 @@ function formatTicket(id: string, report: BugReport, priority: Priority, reasons
   // Telegram caps messages at 4096 characters.
   const text = lines.join('\n');
   return text.length > 4000 ? `${text.slice(0, 3990)}…` : text;
+}
+
+/** Setup check: open /api/bug-report to see whether Telegram is configured (names only, no values). */
+export function GET() {
+  const missing = missingTelegramVars();
+  return Response.json(
+    missing.length
+      ? { configured: false, missing, hint: 'Add these in the server environment, then redeploy or restart the app.' }
+      : { configured: true }
+  );
 }
 
 export async function POST(request: Request) {
