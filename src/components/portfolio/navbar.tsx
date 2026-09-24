@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Tags } from 'lucide-react';
+import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Settings2, Tags, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
 
@@ -41,6 +41,9 @@ export function isActivePath(pathname: string, href: string) {
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(false);
+
+  useEffect(() => setControlsOpen(false), [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -114,8 +117,8 @@ export function Navbar() {
 
       {/* ── Mobile / tablet floating tab bar ── */}
       <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
-        <nav className="glass glass-strong glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
-          <LiquidLens strength={32} />
+        {/* No LiquidLens here: its refraction keeps the text behind the bar sharp, which fights the labels. */}
+        <nav className="glass glass-strong glass-bar glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
           {tabLinks.map((link) => {
             const Icon = link.icon;
             const isActive = isActivePath(pathname, link.href);
@@ -143,12 +146,39 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Detached control cluster, like iOS 26's separate tab-bar button */}
-        <div className="glass glass-strong glass-pill pointer-events-auto flex flex-col items-center p-1">
-          <LiquidLens strength={28} />
-          <OsModeToggle />
-          <ThemeSwitcher />
-          <ThemeToggle />
+        {/* One detached button, like iOS 26's separate tab-bar button; opens the display controls. */}
+        <div className="relative pointer-events-auto">
+          <AnimatePresence>
+            {controlsOpen && (
+              <>
+                <div className="fixed inset-0 -z-10" onClick={() => setControlsOpen(false)} />
+                <motion.div
+                  id="display-controls"
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                  className="glass glass-strong glass-bar glass-pill absolute bottom-full right-0 mb-2 flex flex-col items-center p-1 origin-bottom"
+                >
+                  <OsModeToggle />
+                  <ThemeSwitcher />
+                  <ThemeToggle />
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+          <div className="glass glass-strong glass-bar glass-pill p-1">
+            <button
+              type="button"
+              onClick={() => setControlsOpen((o) => !o)}
+              aria-expanded={controlsOpen}
+              aria-controls="display-controls"
+              aria-label={controlsOpen ? 'Close display settings' : 'Display settings'}
+              className="flex h-[2.9rem] w-[2.9rem] items-center justify-center rounded-full text-foreground/80 transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90"
+            >
+              {controlsOpen ? <X className="h-[1.15rem] w-[1.15rem]" /> : <Settings2 className="h-[1.15rem] w-[1.15rem]" />}
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ import {
   keyProjects,
   profile,
   rdProjects,
+  responsibilities,
   skillCategories,
 } from '../src/data/profile';
 
@@ -104,7 +105,7 @@ export function ResumeDocument() {
             </View>
           ))}
           <View style={{ marginTop: 5 }}>
-            {experience.responsibilities.map((r) => (
+            {responsibilities.map((r) => (
               <Bullet key={r}>{r}</Bullet>
             ))}
           </View>
