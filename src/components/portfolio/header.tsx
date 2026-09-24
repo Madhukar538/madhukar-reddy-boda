@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import Image from 'next/image';
 
 const navLinks = [
@@ -88,7 +88,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <AnimatePresence>
             {showProfile && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -8, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
@@ -109,7 +109,7 @@ export function Header() {
                   <p className="text-sm font-semibold text-primary">Boda Madhukar Reddy</p>
                   <p className="text-xs text-muted-foreground">Software Architect · Hyderabad, IN</p>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
           <ThemeToggle />

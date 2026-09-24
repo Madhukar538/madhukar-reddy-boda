@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Bug, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PostCard } from './post-card';
@@ -88,7 +88,7 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
                 )}
               >
                 {category === cat && (
-                  <motion.span
+                  <m.span
                     layoutId="blog-index-filter"
                     className="absolute inset-0 rounded-full bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_14px_-4px_hsl(var(--primary)/0.6)]"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}

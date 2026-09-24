@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 
 type AccentOption = {
   id: string;
@@ -78,7 +78,7 @@ export function ThemeSwitcher() {
         {open && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
@@ -114,7 +114,7 @@ export function ThemeSwitcher() {
                   );
                 })}
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

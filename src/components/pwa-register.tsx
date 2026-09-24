@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { RefreshCw, X } from 'lucide-react';
 
 // Changes on every deployment (see next.config.ts), which makes the browser
@@ -74,7 +74,7 @@ export function PWARegister() {
   return (
     <AnimatePresence>
       {waiting && !dismissed && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 24, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -97,7 +97,7 @@ export function PWARegister() {
               <X className="h-4 w-4" />
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

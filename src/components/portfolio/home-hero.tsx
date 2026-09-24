@@ -3,7 +3,6 @@
 import React, { type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, type Variants } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -23,7 +22,6 @@ import {
   Twitter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { avatarSrc } from './avatar';
 import { useOsMode } from '@/components/os/os-mode';
 import { clientProjects, keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
 
@@ -35,15 +33,7 @@ const stack = [
 
 const socialIcons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
 
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
-};
 
-const item: Variants = {
-  hidden: { opacity: 0, y: 18, filter: 'blur(6px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 260, damping: 28 } },
-};
 
 /** Facts about the site's writing, computed on the server at build time. */
 export type SiteStats = {
@@ -65,7 +55,7 @@ function Tile({
   label: string;
 }) {
   return (
-    <motion.div variants={item} className={className}>
+    <div className={className}>
       <Link
         href={href}
         title={label}
@@ -74,7 +64,7 @@ function Tile({
         <ArrowUpRight className="absolute right-5 top-5 h-4 w-4 text-foreground/30 transition-all duration-300 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         {children}
       </Link>
-    </motion.div>
+    </div>
   );
 }
 
@@ -102,20 +92,20 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show">
+    <div>
       {/* ── Hero ── */}
       <section className="grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
         <div className="space-y-6 text-center lg:text-left">
           {/* Phones: a compact identity row, since the profile card is desktop-only. */}
-          <motion.div variants={item} className="flex items-center justify-center gap-3 lg:hidden">
-            <Image src={avatarSrc} alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
+          <div className="flex items-center justify-center gap-3 lg:hidden">
+            <Image src="/madhukar.png" alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
             <span className="text-left text-sm leading-tight">
               <span className="block font-semibold text-foreground">{profile.name}</span>
               <span className="block text-muted-foreground">{profile.title} · {profile.location}</span>
             </span>
-          </motion.div>
+          </div>
 
-          <motion.div variants={item} className="flex justify-center lg:justify-start">
+          <div className="flex justify-center lg:justify-start">
             <Link
               href="/fix-a-bug"
               className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-foreground/80 hover:text-foreground transition-colors"
@@ -127,25 +117,19 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
               Open to fixing bugs &amp; giving solutions
               <ArrowRight className="h-3 w-3 opacity-60" />
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={item}
-            className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground"
-          >
+          <h1 className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
             Architecting <span className="text-gradient">fast, observable</span> systems.
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={item}
-            className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed"
-          >
+          <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
             I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
             Software Architect in Hyderabad. I design high-throughput .NET APIs, build self-hosted AI
             platforms (RAG, MCP and hybrid search), and load-test everything with k6 + Grafana.
-          </motion.p>
+          </p>
 
-          <motion.div variants={item} className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
             <Link href="/projects" className="tinted-button !px-5 !py-2.5">
               See my work
               <ArrowRight className="h-4 w-4" />
@@ -158,17 +142,17 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
               <FileDown className="h-4 w-4 text-primary" />
               Résumé
             </a>
-          </motion.div>
+          </div>
         </div>
 
         {/* Profile card */}
-        <motion.div variants={item} className="mx-auto hidden w-full max-w-sm lg:block">
+        <div className="mx-auto hidden w-full max-w-sm lg:block">
           <div className="glass p-6 text-center">
             <div className="relative mx-auto mb-5 w-fit">
               <div className="absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />
               <div className="relative rounded-full p-1.5 glass glass-pill">
                 <Image
-                  src={avatarSrc}
+                  src="/madhukar.png"
                   alt="Boda Madhukar Reddy"
                   width={148}
                   height={148}
@@ -193,7 +177,7 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ── Bento grid ── */}
@@ -258,7 +242,7 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
         </Tile>
 
         {/* Contact */}
-        <motion.div variants={item} className="sm:col-span-2 lg:col-span-4">
+        <div className="sm:col-span-2 lg:col-span-4">
           <div className="glass flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
             <div className="flex-1 space-y-1">
               <p className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
@@ -295,12 +279,9 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
               })}
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={item}
-          className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 text-sm font-medium text-muted-foreground"
-        >
+        <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 text-sm font-medium text-muted-foreground">
           <span className="text-xs font-semibold uppercase tracking-wide">Explore</span>
           <HeroOsButton />
           <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
@@ -311,8 +292,8 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
             <Plug className="h-4 w-4 text-primary" />
             Connect your AI (MCP)
           </Link>
-        </motion.div>
+        </div>
       </section>
-    </motion.div>
+    </div>
   );
 }
