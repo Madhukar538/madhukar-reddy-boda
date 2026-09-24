@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { useState, type ReactNode } from 'react';
 import { toYaml, highlightJson, highlightYaml } from '@/lib/formatter';
 import { Check, Copy } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface SectionProps {
   id: string;
@@ -76,7 +76,7 @@ export function Section({ id, title, children, className, comment, data }: Secti
                 )}
               >
                 {viewMode === mode && (
-                  <motion.span
+                  <m.span
                     layoutId={`segment-${id}`}
                     className="absolute inset-0 rounded-full bg-background/80 dark:bg-foreground/15 shadow-[0_1px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.3)]"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}

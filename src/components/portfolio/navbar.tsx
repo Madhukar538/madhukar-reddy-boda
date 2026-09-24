@@ -7,7 +7,7 @@ import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Settings2, Tags, 
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
 
@@ -93,7 +93,7 @@ export function Navbar() {
                   )}
                 >
                   {isActive && (
-                    <motion.span
+                    <m.span
                       layoutId="nav-pill"
                       className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
@@ -133,7 +133,7 @@ export function Navbar() {
                 )}
               >
                 {isActive && (
-                  <motion.span
+                  <m.span
                     layoutId="mobile-pill"
                     className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
@@ -152,7 +152,7 @@ export function Navbar() {
             {controlsOpen && (
               <>
                 <div className="fixed inset-0 -z-10" onClick={() => setControlsOpen(false)} />
-                <motion.div
+                <m.div
                   id="display-controls"
                   initial={{ opacity: 0, y: 8, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -163,7 +163,7 @@ export function Navbar() {
                   <OsModeToggle />
                   <ThemeSwitcher />
                   <ThemeToggle />
-                </motion.div>
+                </m.div>
               </>
             )}
           </AnimatePresence>

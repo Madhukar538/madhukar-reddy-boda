@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Pause, Play, RotateCcw, StepForward } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Diagram, DiagramEdge, DiagramNode, NodeKind } from '@/data/diagrams';
 
@@ -253,7 +253,7 @@ export function ArchitectureDiagram({ diagram }: { diagram: Diagram }) {
                 )}
               >
                 {i === flowIndex && (
-                  <motion.span
+                  <m.span
                     layoutId={`flow-${uid}`}
                     className="absolute inset-0 rounded-full bg-primary"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
@@ -402,7 +402,7 @@ export function ArchitectureDiagram({ diagram }: { diagram: Diagram }) {
         </ol>
 
         {/* Detail panel */}
-        <motion.div
+        <m.div
           key={selectedNode.id}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -428,7 +428,7 @@ export function ArchitectureDiagram({ diagram }: { diagram: Diagram }) {
               <span key={t} className="chip">{t}</span>
             ))}
           </div>
-        </motion.div>
+        </m.div>
 
         <figcaption className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           {(Object.keys(kindLabel) as NodeKind[]).map((k) => (

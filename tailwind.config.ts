@@ -11,11 +11,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'Inter', 'system-ui', 'sans-serif'],
-        headline: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'Inter', 'system-ui', 'sans-serif'],
-        mono: ['ui-monospace', '"SF Mono"', '"JetBrains Mono"', 'Menlo', 'monospace'],
-        code: ['ui-monospace', '"SF Mono"', '"JetBrains Mono"', 'Menlo', 'monospace'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        body: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        headline: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', '"SF Mono"', 'var(--font-jetbrains-mono)', 'Menlo', 'monospace'],
+        code: ['ui-monospace', '"SF Mono"', 'var(--font-jetbrains-mono)', 'Menlo', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

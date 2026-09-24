@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -7,6 +8,7 @@ import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
 import { Footer } from '@/components/portfolio/footer';
 import { OsModeProvider } from '@/components/os/os-mode';
+import { MotionProvider } from '@/components/motion-provider';
 import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
@@ -19,9 +21,8 @@ export const metadata: Metadata = {
   },
   openGraph: { type: 'website', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
   twitter: { card: 'summary_large_image' },
+  // The favicon comes from app/icon.png (64px); the full photo is only for home-screen icons.
   icons: {
-    icon: '/madhukar.png',
-    shortcut: '/madhukar.png',
     apple: '/madhukar.png',
   },
 };
@@ -35,6 +36,11 @@ export const viewport: Viewport = {
   ],
 };
 
+// Self-hosted at build time: no render-blocking request to Google, and the files are preloaded.
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
+// Code blocks only, so it isn't preloaded on every page.
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
+
 // Applies the saved accent tint before first paint to avoid a color flash.
 const accentScript = `try{var a=localStorage.getItem('portfolio-accent');if(a&&a!=='blue')document.documentElement.setAttribute('data-accent',a)}catch(e){}`;
 
@@ -44,14 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
         <script dangerouslySetInnerHTML={{ __html: accentScript }} />
       </head>
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
@@ -61,6 +61,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <MotionProvider>
           <OsModeProvider>
             <LiquidWallpaper />
             <PWARegister />
@@ -71,6 +72,7 @@ export default function RootLayout({
             <Footer />
             <Toaster />
           </OsModeProvider>
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

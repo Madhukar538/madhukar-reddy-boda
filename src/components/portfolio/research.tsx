@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { cn } from '@/lib/utils';
@@ -51,7 +51,7 @@ export function Research() {
                 )}
               >
                 {isActive && (
-                  <motion.span
+                  <m.span
                     layoutId="lab-filter"
                     className="absolute inset-0 rounded-full bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_14px_-4px_hsl(var(--primary)/0.6)]"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}

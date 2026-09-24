@@ -1,16 +1,6 @@
-'use client';
-
-import { motion } from 'framer-motion';
-
 // Re-mounts on every route change, giving each page a soft entrance.
+// A CSS animation (see .page-enter in globals.css), so the page is painted
+// from the server HTML without waiting for JavaScript.
 export default function Template({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className="page-enter">{children}</div>;
 }
