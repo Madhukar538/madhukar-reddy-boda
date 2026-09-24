@@ -1,27 +1,37 @@
 import { bugReportSchema, ticketId, triage, type BugReport, type Priority } from '@/lib/bug-triage';
-import { escapeHtml, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
+import { escapeHtml, missingTelegramVars, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
 
 // "Hire me for a bug": validates a report, triages it into a ticket and
 // sends it to Telegram.
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Best-effort, per-instance rate limit: 3 reports per IP per 10 minutes.
+// Best-effort, per-instance rate limit: 3 delivered reports per IP per 10 minutes.
+// Only successful deliveries count, so failed attempts (e.g. while Telegram
+// isn't configured yet) don't lock a visitor out.
 const WINDOW_MS = 10 * 60 * 1000;
 const LIMIT = 3;
 const hits = new Map<string, number[]>();
 
+const recentHits = (ip: string) => (hits.get(ip) ?? []).filter((t) => Date.now() - t < WINDOW_MS);
+
 function rateLimited(ip: string) {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  if (recent.length >= LIMIT) {
-    hits.set(ip, recent);
-    return true;
-  }
-  recent.push(now);
-  hits.set(ip, recent);
+  return recentHits(ip).length >= LIMIT;
+}
+
+function recordReport(ip: string) {
   if (hits.size > 5000) hits.clear();
-  return false;
+  hits.set(ip, [...recentHits(ip), Date.now()]);
+}
+
+/** Visitor IP: Cloudflare's header first (the site sits behind Cloudflare), then the proxy chain. */
+function clientIp(request: Request) {
+  return (
+    request.headers.get('cf-connecting-ip') ||
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+  );
 }
 
 const PRIORITY_ICON: Record<Priority, string> = { P1: '🔴', P2: '🟠', P3: '🟡', P4: '🟢' };
@@ -47,6 +57,16 @@ function formatTicket(id: string, report: BugReport, priority: Priority, reasons
   return text.length > 4000 ? `${text.slice(0, 3990)}…` : text;
 }
 
+/** Setup check: open /api/bug-report to see whether Telegram is configured (names only, no values). */
+export function GET() {
+  const missing = missingTelegramVars();
+  return Response.json(
+    missing.length
+      ? { configured: false, missing, hint: 'Add these in the server environment, then redeploy or restart the app.' }
+      : { configured: true }
+  );
+}
+
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -66,7 +86,7 @@ export async function POST(request: Request) {
   const tooFast = report.startedAt !== undefined && Date.now() - report.startedAt < 3000;
   if (report.website || tooFast) return Response.json({ ok: true, ticket: ticketId() });
 
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || request.headers.get('x-real-ip') || 'unknown';
+  const ip = clientIp(request);
   if (rateLimited(ip)) {
     return Response.json({ error: 'Too many reports from you just now. Try again in a few minutes.' }, { status: 429 });
   }
@@ -79,6 +99,7 @@ export async function POST(request: Request) {
   const { priority, reasons } = triage(report);
   try {
     await sendTelegramMessage(formatTicket(id, report, priority, reasons));
+    recordReport(ip);
   } catch (error) {
     console.error('[bug-report]', error);
     return Response.json({ error: "Couldn't deliver your report. Please try again or email me." }, { status: 502 });

@@ -3,8 +3,18 @@
  * and TELEGRAM_CHAT_ID (your chat with the bot) in the server environment.
  */
 
+// Values pasted into a dashboard often carry quotes or stray whitespace.
+const env = (name: string) => process.env[name]?.trim().replace(/^(['"])(.*)\1$/, '$2').trim() || undefined;
+
+const REQUIRED = ['TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID'] as const;
+
+/** Names of required variables that are missing (never their values). */
+export function missingTelegramVars() {
+  return REQUIRED.filter((name) => !env(name));
+}
+
 export function telegramConfigured() {
-  return Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
+  return missingTelegramVars().length === 0;
 }
 
 /** Escapes text for Telegram's HTML parse mode. */
@@ -13,8 +23,8 @@ export function escapeHtml(text: string) {
 }
 
 export async function sendTelegramMessage(html: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const token = env('TELEGRAM_BOT_TOKEN');
+  const chatId = env('TELEGRAM_CHAT_ID');
   if (!token || !chatId) throw new Error('Telegram is not configured');
 
   // TELEGRAM_API_BASE is only for pointing tests at a mock server.
