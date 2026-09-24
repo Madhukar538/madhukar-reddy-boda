@@ -13,11 +13,23 @@ export const profile = {
   phone: '+91 95731 53479',
   phoneHref: 'tel:+919573153479',
   github: 'https://github.com/Madhukar538',
+  // Full profile URLs. Left empty, the icon is hidden rather than linking to a site's home page.
+  linkedin: '',
+  twitter: '',
   summary:
     'Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
     'Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. ' +
     'Production-first: diagnose fast, fix right, prevent recurrence.',
 };
+
+/** Social profiles that are filled in, for icon rows on the site. */
+export const socialLinks = (
+  [
+    { network: 'GitHub', href: profile.github },
+    { network: 'LinkedIn', href: profile.linkedin },
+    { network: 'Twitter', href: profile.twitter },
+  ] as const
+).filter((link) => link.href);
 
 export type SkillCategory = {
   title: string;

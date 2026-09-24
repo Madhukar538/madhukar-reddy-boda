@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import { OsModeToggle } from '@/components/os/os-mode';
+import { profile, socialLinks } from '@/data/profile';
 
 const pages = [
   { href: '/', label: 'Blog' },
@@ -14,11 +15,11 @@ const pages = [
   { href: '/fix-a-bug', label: 'Fix a bug' },
 ];
 
+const icons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
+
 const socials = [
-  { href: 'mailto:madhukarreddyboda538@gmail.com', icon: Mail, label: 'Email' },
-  { href: 'https://github.com/Madhukar538', icon: Github, label: 'GitHub' },
-  { href: 'https://linkedin.com/', icon: Linkedin, label: 'LinkedIn' },
-  { href: 'https://twitter.com/', icon: Twitter, label: 'Twitter' },
+  { href: `mailto:${profile.email}`, icon: Mail, label: 'Email' },
+  ...socialLinks.map(({ network, href }) => ({ href, icon: icons[network], label: network })),
 ];
 
 export function Footer() {

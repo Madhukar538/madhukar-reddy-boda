@@ -25,13 +25,15 @@ import { cn } from '@/lib/utils';
 import { avatarSrc } from './avatar';
 import { useOsMode } from '@/components/os/os-mode';
 import { Diagnostics } from './diagnostics';
-import { keyProjects, rdProjects } from '@/data/profile';
+import { keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
 
 const stack = [
   'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
   'Ollama', 'pgvector', 'Solr 9', 'SQL Server', 'PostgreSQL', 'MongoDB', 'ClickHouse', 'Redis',
   'RabbitMQ', 'SignalR', 'gRPC', 'k6', 'Grafana', 'Docker', 'K3s', 'Terraform', 'Playwright',
 ];
+
+const socialIcons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
 
 const container: Variants = {
   hidden: {},
@@ -265,20 +267,18 @@ export function HomeHero() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <a href="mailto:madhukarreddyboda538@gmail.com" className="tinted-button">
+              <a href={`mailto:${profile.email}`} className="tinted-button">
                 <Mail className="h-4 w-4" /> Email
               </a>
               <a
-                href="tel:+919573153479"
+                href={profile.phoneHref}
                 className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground"
               >
                 <Phone className="h-4 w-4" /> Call
               </a>
-              {[
-                { href: 'https://github.com/Madhukar538', icon: Github, label: 'GitHub' },
-                { href: 'https://linkedin.com/', icon: Linkedin, label: 'LinkedIn' },
-                { href: 'https://twitter.com/', icon: Twitter, label: 'Twitter' },
-              ].map(({ href, icon: Icon, label }) => (
+              {socialLinks.map(({ network: label, href }) => {
+                const Icon = socialIcons[label];
+                return (
                 <a
                   key={label}
                   href={href}
@@ -289,7 +289,8 @@ export function HomeHero() {
                 >
                   <Icon className="h-4 w-4" />
                 </a>
-              ))}
+                );
+              })}
             </div>
           </div>
         </motion.div>
