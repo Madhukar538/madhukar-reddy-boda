@@ -96,27 +96,50 @@ export const experience = {
     { label: 'AI platforms', value: 'Multi-tenant RAG · MCP servers · hybrid vector search · self-hosted LLMs' },
     { label: 'Architecture', value: 'Modernized .NET stacks · offline-first apps · observability-first' },
   ],
-  responsibilities: [
-    'Architecting a multi-tenant RAG chatbot platform on .NET 10: Semantic Kernel agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
-    'Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.',
-    'Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.',
-    'Building an offline-first procurement and inspection app (Next.js PWA + Android SQLite) with outbox-based sync.',
-    'Building an uptime and incident-management platform on Uptime Kuma with a .NET API, push alerts and ticketing.',
-    'Run AI workloads on self-hosted LLMs (Ollama on an in-house GPU server), with no cloud AI dependency.',
-    'Tuned MongoDB indexes for the meeting platform, cutting conversation queries from 500–2000 ms to 5–50 ms.',
-    'Led .NET-based R&D projects for rapid prototyping and system innovation.',
-    'Migrated legacy systems to modern .NET hybrid architectures.',
-    'Integrated AI/ML workflows — NLP chatbots, RAG systems, code review automation.',
-    'Built PoCs for IoT (MQTT), debugging tools, and context-aware assistants.',
-    'Developed document processing and complex third-party integration pipelines.',
-    'Built internal Code Review tool — reduced PR cycle time by 30%.',
-    'Created RDLC Application for internal workflow, end-to-end requirement to delivery.',
-    'Led ONDC (Open Network for Digital Commerce) integration.',
-    'E-commerce: Jockey, Speedo, Manyavar, LuxCozi (Angular + .NET).',
-    'RevalERP · RevalHRM · RevalCRM · RevalCMS · RevalPOS · RevalInventory · RevalProject · RevalSales.',
-    'Reval Meet — video conferencing platform (WebRTC + SignalR + Node.js).',
+  groups: [
+    {
+      label: 'AI platforms',
+      items: [
+        'Architecting a multi-tenant RAG chatbot platform on .NET 10: Semantic Kernel agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
+        'Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.',
+        'Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.',
+        'Run AI workloads on self-hosted LLMs (Ollama on an in-house GPU server), with no cloud AI dependency.',
+        'Integrated AI/ML workflows — NLP chatbots, RAG systems, code review automation.',
+      ],
+    },
+    {
+      label: 'Performance & tooling',
+      items: [
+        'Tuned MongoDB indexes for the meeting platform, cutting conversation queries from 500–2000 ms to 5–50 ms.',
+        'Built internal Code Review tool — reduced PR cycle time by 30%.',
+        'Developed document processing and complex third-party integration pipelines.',
+      ],
+    },
+    {
+      label: 'Architecture & R&D',
+      items: [
+        'Building an offline-first procurement and inspection app (Next.js PWA + Android SQLite) with outbox-based sync.',
+        'Building an uptime and incident-management platform on Uptime Kuma with a .NET API, push alerts and ticketing.',
+        'Led .NET-based R&D projects for rapid prototyping and system innovation.',
+        'Migrated legacy systems to modern .NET hybrid architectures.',
+        'Built PoCs for IoT (MQTT), debugging tools, and context-aware assistants.',
+        'Created RDLC Application for internal workflow, end-to-end requirement to delivery.',
+      ],
+    },
+    {
+      label: 'Client delivery',
+      items: [
+        'Led ONDC (Open Network for Digital Commerce) integration.',
+        'E-commerce: Jockey, Speedo, Manyavar, LuxCozi (Angular + .NET).',
+        'RevalERP · RevalHRM · RevalCRM · RevalCMS · RevalPOS · RevalInventory · RevalProject · RevalSales.',
+        'Reval Meet — video conferencing platform (WebRTC + SignalR + Node.js).',
+      ],
+    },
   ],
 };
+
+/** Every contribution as one list, for the résumé and plain-text views. */
+export const responsibilities = experience.groups.flatMap((g) => g.items);
 
 export const education = {
   degree: 'B.Sc in Computer Science',
@@ -131,6 +154,10 @@ export type ProjectCard = {
   tech: string[];
   /** Slug of a blog post that writes this project up. */
   post?: string;
+  /** Shown large at the top of the Projects page. */
+  featured?: boolean;
+  /** One measurable result, shown on featured cards. */
+  outcome?: string;
 };
 
 export const keyProjects: ProjectCard[] = [
@@ -140,18 +167,22 @@ export const keyProjects: ProjectCard[] = [
       'Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.',
     tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'Next.js 16'],
     post: 'rag-chatbot-latency-audit',
+    featured: true,
+    outcome: 'Latency audit traced 40 s answers to 7–8 LLM calls per request; the fix plan targets ~70% faster replies.',
   },
   {
     title: 'Offline-First Procurement & Inspection App',
     description:
       'Next.js PWA plus Android shell for field procurement: one storage interface over Android SQLite and IndexedDB, master-data sync, and a transactional outbox that replays actions when back online.',
     tech: ['Next.js', '.NET', 'SQLite', 'IndexedDB', 'Android'],
+    featured: true,
   },
   {
     title: 'Uptime & Incident Management Platform',
     description:
       'Uptime Kuma as a headless check engine behind a custom .NET 10 API and React admin: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.',
     tech: ['.NET 10', 'Uptime Kuma', 'React Router', 'PostgreSQL', 'Docker'],
+    featured: true,
   },
   {
     title: 'Real-Time IoT Data Platform',
@@ -200,6 +231,147 @@ export const keyProjects: ProjectCard[] = [
     description:
       'Authored NuGet package (v0.3.0) for advanced, automated table scraping from web pages using Playwright automation.',
     tech: ['NuGet', 'Playwright', '.NET'],
+  },
+];
+
+export type ClientProject = {
+  id: string;
+  title: string;
+  client: string;
+  role: string;
+  duration: string;
+  url?: string;
+  description: string;
+  responsibilities: string[];
+  tech: string[];
+};
+
+// E-commerce portals and integrations delivered for clients.
+export const clientProjects: ClientProject[] = [
+  {
+    id: 'fossil-india',
+    title: 'Fossil India',
+    client: 'Fossil India',
+    role: 'Lead Architect (Migration)',
+    duration: '2023 – 2024',
+    description:
+      'Led migration from Angular to Next.js with focus on performance, security, and feature parity.',
+    responsibilities: [
+      'Defined migration strategy and phased rollout for minimal disruption.',
+      'Implemented performance optimizations (lazy hydration, dynamic imports, image and font optimizations).',
+      'Established nonce-based CSP and secure headers for production environments.',
+      'Coordinated SEO, metadata mapping and QA verification for organic ranking preservation.',
+    ],
+    tech: ['Next.js', 'React', 'TypeScript', 'CSS Modules'],
+  },
+  {
+    id: 'jockey',
+    title: 'Jockey',
+    client: 'Jockey (Page industries ltd, Bangalore)',
+    role: 'Software Development Team Lead',
+    duration: 'Jan 2021 – May 2023',
+    url: 'https://www.jockey.in/',
+    description:
+      "Developed features for one of India's leading E-commerce portals, contributing to various modules across the platform.",
+    responsibilities: [
+      'Administrator Facing Application: Developed Order Management, SAP, and HR Mantra modules, plus Return/Refund Automation and reporting.',
+      'CRM: Built the user complaint management system to handle the lifecycle of customer issues.',
+      'SAP Communication Channel: Developed data sync between the E-commerce app and SAP using web and windows services.',
+      'Partner Order Management: Created modules to manage the order process flow for partners.',
+      'Interacted with clients, prepared requirement documents, and provided production support.',
+      'Managed releases via DevOps and coordinated with the testing team.',
+    ],
+    tech: [
+      'AngularJs',
+      'Web API',
+      'ADO.Net',
+      'C#',
+      'ASP.Net',
+      'SQL Server',
+      'Solr',
+      'WCF',
+      'Windows Services',
+    ],
+  },
+  {
+    id: 'manyavar',
+    title: 'Manyavar',
+    client: 'Vedant Fashion Limited',
+    role: 'Software Development Team Member',
+    duration: 'Jun 2021 – Jan 2022',
+    url: 'https://www.manyavar.com/',
+    description:
+      "Contributed to the development of the Manyavar e-commerce site, a major platform in the ethnic wear market.",
+    responsibilities: [
+      'Focused on backend development for the Administrator-facing CMS.',
+      "Contributed to various modules to enhance the platform's functionality and performance.",
+      'Worked within a team to deliver features for a high-traffic e-commerce website.',
+    ],
+    tech: [
+      'AngularJs',
+      'Web API',
+      'ADO.Net',
+      'C#',
+      'ASP.Net',
+      'SQL Server',
+      'Solr',
+      'WCF',
+      'Windows Services',
+    ],
+  },
+  {
+    id: 'LuxCozi',
+    title: 'LuxCozi',
+    client: 'LuxCozi',
+    role: 'Software Development Team Lead',
+    duration: 'Jun 2021 – Jan 2022',
+    url: 'https://www.luxcozi.com/',
+    description:
+      "Contributed to the development of the LuxCozi e-commerce site, a major platform in the ethnic wear market.",
+    responsibilities: [
+      'Focused on backend development for the Administrator-facing CMS.',
+      "Contributed to various modules to enhance the platform's functionality and performance.",
+      'Worked within a team to deliver features for a high-traffic e-commerce website.',
+    ],
+    tech: [
+      'AngularJs',
+      'Web API',
+      'ADO.Net',
+      'C#',
+      'ASP.Net',
+      'SQL Server',
+      'Solr',
+      'WCF',
+      'Windows Services',
+    ],
+  },
+  {
+    id: 'speedo',
+    title: 'Speedo',
+    client: 'Speedo',
+    role: 'Software Development Team Lead',
+    duration: 'July 2019 – Jun 2021',
+    url: 'https://www.speedo.in/',
+    description:
+      'Led development efforts for the Speedo e-commerce platform, focusing on core administrative and customer-facing features.',
+    responsibilities: [
+      'Administrator Facing Application: Involved in developing major modules like Order Management and Reports.',
+      'CRM: Developed the User complaint management system to raise, process, and close complaints.',
+      'Partner Order Management: Developed a module to maintain the order process flow.',
+      'Understood client requirements and provided production support.',
+      'Coordinated with testing teams and prepared release notes for UAT and Production deployments.',
+    ],
+    tech: [
+      'AngularJs',
+      'Web API',
+      'ADO.Net',
+      'C#',
+      'ASP.Net',
+      'SQL Server',
+      'Solr',
+      'WCF',
+      'Windows Services',
+    ],
   },
 ];
 

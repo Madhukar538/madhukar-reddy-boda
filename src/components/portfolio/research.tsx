@@ -26,7 +26,10 @@ const filters: { id: 'ALL' | Status; label: string }[] = [
 
 export function Research() {
   const [filter, setFilter] = useState<'ALL' | Status>('ALL');
-  const visible = filter === 'ALL' ? rdProjects : rdProjects.filter((p) => p.status === filter);
+  // Experiments with a full write-up lead: they're the strongest evidence.
+  const visible = (filter === 'ALL' ? rdProjects : rdProjects.filter((p) => p.status === filter))
+    .slice()
+    .sort((a, b) => Number(!!b.post) - Number(!!a.post));
 
   return (
     <Section id="research" title="Experiments" comment={`${rdProjects.length} projects · shipped tools, prototypes and research`}>

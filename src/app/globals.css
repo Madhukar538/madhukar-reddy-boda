@@ -638,6 +638,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+  /* The track holds the list twice for a seamless loop; show it once when static. */
+  .marquee-track > [aria-hidden='true'] { display: none; }
 }
 
 /* ============================================================
@@ -653,6 +655,11 @@
 .dark .glass[data-refract] {
   --glass-alpha: 0.34;
   --glass-alpha-strong: 0.52;
+}
+
+/* The mobile tab bar floats over body text, so it stays more opaque to keep labels legible. */
+.glass.glass-bar {
+  --glass-alpha-strong: 0.82;
 }
 
 /* Architecture diagrams: marching dashes on the active connection */

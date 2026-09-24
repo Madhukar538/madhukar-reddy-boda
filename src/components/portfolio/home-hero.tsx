@@ -7,6 +7,7 @@ import { motion, type Variants } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
+  BookOpen,
   Briefcase,
   FileDown,
   FlaskConical,
@@ -24,8 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import { avatarSrc } from './avatar';
 import { useOsMode } from '@/components/os/os-mode';
-import { Diagnostics } from './diagnostics';
-import { keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
+import { clientProjects, keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
 
 const stack = [
   'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
@@ -45,6 +45,14 @@ const item: Variants = {
   show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 260, damping: 28 } },
 };
 
+/** Facts about the site's writing, computed on the server at build time. */
+export type SiteStats = {
+  posts: number;
+  topics: number;
+  latest: { slug: string; title: string; date: string };
+  updated: string;
+};
+
 function Tile({
   href,
   className,
@@ -60,7 +68,7 @@ function Tile({
     <motion.div variants={item} className={className}>
       <Link
         href={href}
-        aria-label={label}
+        title={label}
         className="group glass glass-interactive flex h-full flex-col p-5 md:p-6"
       >
         <ArrowUpRight className="absolute right-5 top-5 h-4 w-4 text-foreground/30 transition-all duration-300 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -88,8 +96,9 @@ function TileIcon({ className, children }: { className: string; children: ReactN
   );
 }
 
-export function HomeHero() {
-  const featured = keyProjects[0];
+export function HomeHero({ stats }: { stats: SiteStats }) {
+  const featured = keyProjects.find((p) => p.featured) ?? keyProjects[0];
+  const projectCount = keyProjects.length + clientProjects.length;
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
 
   return (
@@ -97,6 +106,15 @@ export function HomeHero() {
       {/* ── Hero ── */}
       <section className="grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
         <div className="space-y-6 text-center lg:text-left">
+          {/* Phones: a compact identity row, since the profile card is desktop-only. */}
+          <motion.div variants={item} className="flex items-center justify-center gap-3 lg:hidden">
+            <Image src={avatarSrc} alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
+            <span className="text-left text-sm leading-tight">
+              <span className="block font-semibold text-foreground">{profile.name}</span>
+              <span className="block text-muted-foreground">{profile.title} · {profile.location}</span>
+            </span>
+          </motion.div>
+
           <motion.div variants={item} className="flex justify-center lg:justify-start">
             <Link
               href="/fix-a-bug"
@@ -132,12 +150,6 @@ export function HomeHero() {
               See my work
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              href="/"
-              className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-foreground"
-            >
-              Read the blog
-            </Link>
             <a
               href="/resume.pdf"
               download="Boda-Madhukar-Reddy-Resume.pdf"
@@ -147,25 +159,10 @@ export function HomeHero() {
               Résumé
             </a>
           </motion.div>
-
-          <motion.div
-            variants={item}
-            className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground"
-          >
-            <HeroOsButton />
-            <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
-              <Network className="h-4 w-4 text-primary" />
-              Explore the knowledge graph
-            </Link>
-            <Link href="/ai" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
-              <Plug className="h-4 w-4 text-primary" />
-              Connect your AI (MCP)
-            </Link>
-          </motion.div>
         </div>
 
         {/* Profile card */}
-        <motion.div variants={item} className="mx-auto w-full max-w-sm">
+        <motion.div variants={item} className="mx-auto hidden w-full max-w-sm lg:block">
           <div className="glass p-6 text-center">
             <div className="relative mx-auto mb-5 w-fit">
               <div className="absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />
@@ -191,8 +188,8 @@ export function HomeHero() {
                 <p className="text-[11px] text-muted-foreground">Years</p>
               </div>
               <div className="glass-inset py-3">
-                <p className="text-2xl font-bold text-foreground">20+</p>
-                <p className="text-[11px] text-muted-foreground">Systems shipped</p>
+                <p className="text-2xl font-bold text-foreground">{projectCount}</p>
+                <p className="text-[11px] text-muted-foreground">Projects delivered</p>
               </div>
             </div>
           </div>
@@ -214,11 +211,16 @@ export function HomeHero() {
           </p>
         </Tile>
 
-        <motion.div variants={item} className="sm:col-span-2 lg:col-span-2">
-          <div className="glass h-full p-5 md:p-6">
-            <Diagnostics />
-          </div>
-        </motion.div>
+        <Tile href={`/blog/${stats.latest.slug}`} label="Latest post" className="sm:col-span-2 lg:col-span-2">
+          <TileIcon className="bg-[hsl(var(--sys-orange)/0.15)] text-[hsl(var(--sys-orange))]">
+            <BookOpen className="h-5 w-5" />
+          </TileIcon>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Latest post · {stats.latest.date}</p>
+          <p className="mt-1 text-lg font-bold text-foreground leading-snug line-clamp-2">{stats.latest.title}</p>
+          <p className="mt-auto pt-4 text-sm text-muted-foreground">
+            {stats.posts} posts · {stats.topics} topics · updated {stats.updated}
+          </p>
+        </Tile>
 
         <Tile href="/about#skills" label="Tech stack" className="sm:col-span-2 lg:col-span-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tech stack</p>
@@ -260,7 +262,7 @@ export function HomeHero() {
           <div className="glass flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
             <div className="flex-1 space-y-1">
               <p className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                Stuck on a bug? Let&apos;s solve it.
+                Let&apos;s talk.
               </p>
               <p className="text-[15px] text-muted-foreground">
                 I&apos;m working at Revalsys Technologies, and happy to help debug issues or suggest solutions.
@@ -293,6 +295,22 @@ export function HomeHero() {
               })}
             </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          variants={item}
+          className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 text-sm font-medium text-muted-foreground"
+        >
+          <span className="text-xs font-semibold uppercase tracking-wide">Explore</span>
+          <HeroOsButton />
+          <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+            <Network className="h-4 w-4 text-primary" />
+            The knowledge graph
+          </Link>
+          <Link href="/ai" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
+            <Plug className="h-4 w-4 text-primary" />
+            Connect your AI (MCP)
+          </Link>
         </motion.div>
       </section>
     </motion.div>
