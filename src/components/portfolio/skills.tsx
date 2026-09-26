@@ -11,7 +11,7 @@ import {
   Server,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { skillCategories } from '@/data/profile';
+import type { SkillCategory } from '@/data/profile';
 
 const icons: Record<string, LucideIcon> = {
   Languages: Code2,
@@ -32,8 +32,7 @@ const iconTint = {
   amber: 'text-[hsl(var(--sys-orange))] bg-[hsl(var(--sys-orange)/0.12)]',
 };
 
-export function Skills() {
-
+export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }) {
   return (
     <Section id="skills" title="Tech Stack" comment="Skills and technologies" data={skillCategories}>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">

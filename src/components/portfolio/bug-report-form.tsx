@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { ArrowRight, Bug, Check, Copy, Loader2, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CATEGORIES, URGENCIES } from '@/lib/bug-report-options';
-import { profile } from '@/data/profile';
 
 type Status =
   | { state: 'idle' }
@@ -197,7 +196,7 @@ export function BugReportForm() {
 }
 
 /** Small "how it works" strip shown beside the form. */
-export function BugProcess() {
+export function BugProcess({ email }: { email: string }) {
   const steps = [
     { title: 'Describe it', body: 'Symptoms, errors and your stack. Rough notes are fine.' },
     { title: 'Auto-triage', body: 'The report is scored P1–P4 from urgency and impact signals.' },
@@ -219,7 +218,7 @@ export function BugProcess() {
       ))}
       <li className="hidden lg:flex items-center gap-2 px-2 text-sm text-muted-foreground">
         Prefer email?{' '}
-        <a href={`mailto:${profile.email}`} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+        <a href={`mailto:${email}`} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
           Write to me <ArrowRight className="h-3.5 w-3.5" />
         </a>
       </li>

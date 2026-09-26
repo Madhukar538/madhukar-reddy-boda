@@ -1,9 +1,8 @@
 import { GraduationCap, MapPin } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
-import { education } from '@/data/profile';
+import type { Education as EducationData } from '@/lib/content';
 
-
-export function Education() {
+export function Education({ education }: { education: EducationData }) {
   return (
     <Section id="education" title="Education" comment="Academic background" data={education}>
       <div className="glass p-6 md:p-8">

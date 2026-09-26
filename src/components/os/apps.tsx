@@ -23,7 +23,7 @@ import { Research } from '@/components/portfolio/research';
 import { KnowledgeGraphView } from '@/components/portfolio/knowledge-graph';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
 import { diagrams } from '@/data/diagrams';
-import { experience, keyProjects, profile, rdProjects, skillCategories } from '@/data/profile';
+import type { SiteContent } from '@/lib/content';
 import type { KnowledgeGraph } from '@/lib/knowledge-graph';
 
 export type OsPost = {
@@ -36,7 +36,7 @@ export type OsPost = {
   content: string;
 };
 
-export type OsData = { posts: OsPost[]; graph: KnowledgeGraph };
+export type OsData = { posts: OsPost[]; graph: KnowledgeGraph; content: Omit<SiteContent, 'posts'> };
 
 export type AppId = 'about' | 'experience' | 'projects' | 'lab' | 'reader' | 'graph' | 'resume' | 'terminal';
 
@@ -135,6 +135,7 @@ function TerminalApp({ data, open, exit }: AppContext) {
 
   useEffect(() => endRef.current?.scrollIntoView({ block: 'end' }), [lines]);
 
+  const { profile, experience, keyProjects, rdProjects, skillCategories } = data.content;
   const run = (raw: string): string | null => {
     const [cmd, ...args] = raw.trim().split(/\s+/);
     const arg = args.join(' ').toLowerCase();
@@ -289,13 +290,13 @@ const page = (children: ReactNode) => <div className="h-full overflow-y-auto p-5
 
 export const APPS: AppDef[] = [
   { id: 'about', name: 'About', icon: User, tint: 'from-sky-400 to-blue-600', size: { w: 760, h: 560 },
-    render: () => page(<><Summary /><Skills /><Education /></>) },
+    render: ({ data: { content } }) => page(<><Summary /><Skills skillCategories={content.skillCategories} /><Education education={content.education} /></>) },
   { id: 'experience', name: 'Experience', icon: Briefcase, tint: 'from-indigo-400 to-violet-600', size: { w: 760, h: 560 },
-    render: () => page(<Experience />) },
+    render: ({ data: { content } }) => page(<Experience experience={content.experience} clientProjects={content.clientProjects} />) },
   { id: 'projects', name: 'Projects', icon: FolderKanban, tint: 'from-teal-300 to-cyan-600', size: { w: 860, h: 600 },
-    render: () => page(<Projects />) },
+    render: ({ data: { content } }) => page(<Projects keyProjects={content.keyProjects} clientProjects={content.clientProjects} />) },
   { id: 'lab', name: 'R&D Lab', icon: FlaskConical, tint: 'from-fuchsia-400 to-purple-700', size: { w: 860, h: 600 },
-    render: () => page(<Research />) },
+    render: ({ data: { content } }) => page(<Research rdProjects={content.rdProjects} />) },
   { id: 'reader', name: 'Reader', icon: PenLine, tint: 'from-orange-300 to-rose-500', size: { w: 980, h: 640 },
     render: (ctx) => <ReaderApp {...ctx} /> },
   { id: 'graph', name: 'Graph', icon: Network, tint: 'from-amber-300 to-orange-600', size: { w: 980, h: 640 },

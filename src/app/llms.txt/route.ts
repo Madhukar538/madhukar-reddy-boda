@@ -1,11 +1,13 @@
-import { blogs } from '@/data/blogs';
-import { experience, keyProjects, profile, rdProjects, skillCategories } from '@/data/profile';
+import { getContent } from '@/lib/content';
 
 // llms.txt (https://llmstxt.org): a plain-text map of the site for AI tools.
-// Built at deploy time from the same data as the pages.
-export const dynamic = 'force-static';
+// Built from the same content as the pages.
+// Rendered per request from the tagged data cache (lib/content.ts), so it is
+// current as soon as content changes; static route handlers aren't revalidated by tag.
+export const dynamic = 'force-dynamic';
 
-export function GET() {
+export async function GET() {
+  const { posts, experience, keyProjects, profile, rdProjects, skillCategories } = await getContent();
   const lines = [
     `# ${profile.name}`,
     '',
@@ -33,7 +35,7 @@ export function GET() {
     '',
     '## Blog',
     '',
-    ...blogs.map((p) => `- [${p.title}](/blog/${p.slug}): ${p.excerpt}`),
+    ...posts.map((p) => `- [${p.title}](/blog/${p.slug}): ${p.excerpt}`),
     '',
     '## Key projects',
     '',

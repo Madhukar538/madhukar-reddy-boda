@@ -1,12 +1,16 @@
-import { isoDate, posts, siteUrl } from '@/lib/blog';
+import { isoDate, siteUrl } from '@/lib/blog';
+import { getContent } from '@/lib/content';
 
 // RSS 2.0 feed of every post, with the full HTML in content:encoded.
-export const dynamic = 'force-static';
+// Rendered per request from the tagged data cache (lib/content.ts), so it is
+// current as soon as content changes; static route handlers aren't revalidated by tag.
+export const dynamic = 'force-dynamic';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const cdata = (s: string) => `<![CDATA[${s.replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
 
-export function GET() {
+export async function GET() {
+  const { posts } = await getContent();
   const base = siteUrl();
   const items = posts
     .map(

@@ -9,7 +9,7 @@ import sql from 'highlight.js/lib/languages/sql';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
 import markdown from 'highlight.js/lib/languages/markdown';
 import type { HLJSApi, Language } from 'highlight.js';
-import { blogs, countWords, type BlogPost } from '@/data/blogs';
+import { countWords, type BlogPost } from '@/data/blogs';
 import { CALLOUT_KINDS, calloutIcon, type CalloutKind } from '@/components/vault/callout-icons';
 
 /**
@@ -80,10 +80,9 @@ const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '
 
 export const plainText = (html: string) => decode(html).replace(/\s+/g, ' ').trim();
 
-/** Newest first. */
-export const posts: BlogPost[] = [...blogs].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+// Every helper below takes the post list (newest first) from getContent() in lib/content.ts.
 
-export const getPost = (slug: string) => posts.find((p) => p.slug === slug);
+export const getPost = (posts: BlogPost[], slug: string) => posts.find((p) => p.slug === slug);
 
 export const isoDate = (post: BlogPost) => new Date(Date.parse(post.date)).toISOString();
 
@@ -181,7 +180,7 @@ export function renderPost(post: BlogPost): RenderedPost {
 }
 
 /** Posts sharing the most tags (then category), newest first on ties. */
-export function relatedPosts(post: BlogPost, count = 3) {
+export function relatedPosts(posts: BlogPost[], post: BlogPost, count = 3) {
   return posts
     .filter((p) => p.slug !== post.slug)
     .map((p) => ({
@@ -195,7 +194,7 @@ export function relatedPosts(post: BlogPost, count = 3) {
 }
 
 /** Older and newer neighbours in date order. */
-export function adjacentPosts(post: BlogPost) {
+export function adjacentPosts(posts: BlogPost[], post: BlogPost) {
   const i = posts.findIndex((p) => p.slug === post.slug);
   return { newer: posts[i - 1] ?? null, older: posts[i + 1] ?? null };
 }
@@ -203,7 +202,7 @@ export function adjacentPosts(post: BlogPost) {
 export type Topic = { slug: string; name: string; kind: 'category' | 'tag'; count: number };
 
 /** Categories first, then tags used by more than one post, then the rest. */
-export function allTopics(): Topic[] {
+export function allTopics(posts: BlogPost[]): Topic[] {
   const map = new Map<string, Topic>();
   const add = (name: string, kind: Topic['kind']) => {
     const slug = slugify(name);
@@ -220,7 +219,7 @@ export function allTopics(): Topic[] {
   );
 }
 
-export function postsForTopic(slug: string) {
+export function postsForTopic(posts: BlogPost[], slug: string) {
   return posts.filter((p) => slugify(p.category) === slug || p.tags.some((t) => slugify(t) === slug));
 }
 
@@ -229,7 +228,7 @@ export type PostSummary = Pick<BlogPost, 'slug' | 'title' | 'excerpt' | 'date' |
   text: string;
 };
 
-export const summaries = (list = posts): PostSummary[] =>
+export const summaries = (list: BlogPost[]): PostSummary[] =>
   list.map(({ slug, title, excerpt, date, readTime, category, tags, content }) => ({
     slug,
     title,

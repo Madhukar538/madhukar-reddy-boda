@@ -24,7 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { RollingText } from '@/components/vault/rolling-text';
 import { useOsMode } from '@/components/os/os-mode';
-import { clientProjects, keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
+import type { SiteContent } from '@/lib/content';
 
 const stack = [
   'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
@@ -87,7 +87,10 @@ function TileIcon({ className, children }: { className: string; children: ReactN
   );
 }
 
-export function HomeHero({ stats }: { stats: SiteStats }) {
+export type HeroContent = Pick<SiteContent, 'profile' | 'socialLinks' | 'keyProjects' | 'clientProjects' | 'rdProjects'>;
+
+export function HomeHero({ content, stats }: { content: HeroContent; stats: SiteStats }) {
+  const { profile, socialLinks, keyProjects, clientProjects, rdProjects } = content;
   const featured = keyProjects.find((p) => p.featured) ?? keyProjects[0];
   const projectCount = keyProjects.length + clientProjects.length;
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;

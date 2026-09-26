@@ -1,6 +1,6 @@
 import type { BlogPost } from '@/data/blogs';
-import { clientProjects, keyProjects, rdProjects } from '@/data/profile';
-import { allTopics, posts, postsForTopic, slugify } from '@/lib/blog';
+import { allTopics, postsForTopic, slugify } from '@/lib/blog';
+import type { SiteContent } from '@/lib/content';
 import { buildKnowledgeGraph, type KnowledgeGraph } from '@/lib/knowledge-graph';
 import { anchorId } from '@/lib/utils';
 
@@ -29,7 +29,8 @@ const PAGES: Note[] = [
 ];
 
 /** Every note on the site. */
-export function vaultNotes(): Note[] {
+export function vaultNotes(content: SiteContent): Note[] {
+  const { posts, keyProjects, clientProjects, rdProjects } = content;
   return [
     ...posts.map((p) => ({
       href: `/blog/${p.slug}`,
@@ -59,12 +60,12 @@ export function vaultNotes(): Note[] {
       meta: `Lab · ${p.status.toLowerCase()}`,
       excerpt: clip(p.description),
     })),
-    ...allTopics().map((t) => ({
+    ...allTopics(posts).map((t) => ({
       href: `/topics/${t.slug}`,
       title: t.name,
       type: 'topic' as const,
       meta: `${t.kind === 'category' ? 'Area' : 'Topic'} · ${t.count} ${t.count === 1 ? 'post' : 'posts'}`,
-      excerpt: clip(postsForTopic(t.slug).map((p) => p.title).join(' · ')),
+      excerpt: clip(postsForTopic(posts, t.slug).map((p) => p.title).join(' · ')),
     })),
     ...PAGES,
   ];
@@ -78,7 +79,10 @@ export type NoteLink = { href: string; title: string; type: NoteType; via?: stri
  * (the "unlinked mentions" of a vault without explicit links). Outgoing:
  * its category and tags as topic notes.
  */
-export function postLinks(post: BlogPost): { backlinks: NoteLink[]; mentions: NoteLink[]; outgoing: NoteLink[] } {
+export function postLinks(
+  { posts, keyProjects, rdProjects }: SiteContent,
+  post: BlogPost
+): { backlinks: NoteLink[]; mentions: NoteLink[]; outgoing: NoteLink[] } {
   const backlinks: NoteLink[] = [
     ...keyProjects
       .filter((p) => p.post === post.slug)
@@ -111,8 +115,8 @@ export type LocalGraph = KnowledgeGraph & { center: string };
  * at depth 2: the post, its technologies and write-up links, then the notes
  * that share those technologies (the most-connected ones, capped).
  */
-export function localGraph(slug: string, maxNodes = 22): LocalGraph {
-  const graph = buildKnowledgeGraph();
+export function localGraph(content: SiteContent, slug: string, maxNodes = 22): LocalGraph {
+  const graph = buildKnowledgeGraph(content);
   const center = `post:${slug}`;
   const neighbours = (id: string) =>
     graph.links.flatMap((l) => (l.source === id ? [l.target] : l.target === id ? [l.source] : []));

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { Callout } from '@/components/vault/callout';
-import { clientProjects, keyProjects, type ProjectCard } from '@/data/profile';
+import type { ClientProject, ProjectCard } from '@/data/profile';
 import { anchorId } from '@/lib/utils';
 
 function WriteUp({ slug }: { slug: string }) {
@@ -49,7 +49,7 @@ function CompactCard({ project }: { project: ProjectCard }) {
   );
 }
 
-export function Projects() {
+export function Projects({ keyProjects, clientProjects }: { keyProjects: ProjectCard[]; clientProjects: ClientProject[] }) {
   const featured = keyProjects.filter((p) => p.featured);
   const rest = keyProjects.filter((p) => !p.featured);
 

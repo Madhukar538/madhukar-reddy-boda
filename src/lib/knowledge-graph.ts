@@ -1,5 +1,4 @@
-import { blogs } from '@/data/blogs';
-import { keyProjects, rdProjects } from '@/data/profile';
+import type { SiteContent } from '@/lib/content';
 import { anchorId } from '@/lib/utils';
 
 /**
@@ -49,7 +48,10 @@ const canonical = (tech: string) => ALIASES[tech.toLowerCase()] ?? tech;
 
 const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-export function buildKnowledgeGraph(minTechLinks = 2): KnowledgeGraph {
+export function buildKnowledgeGraph(
+  { posts, keyProjects, rdProjects }: Pick<SiteContent, 'posts' | 'keyProjects' | 'rdProjects'>,
+  minTechLinks = 2
+): KnowledgeGraph {
   const nodes: GraphNode[] = [];
   const techLinks: { item: string; tech: string }[] = [];
   const links: GraphLink[] = [];
@@ -73,7 +75,7 @@ export function buildKnowledgeGraph(minTechLinks = 2): KnowledgeGraph {
     )
   );
 
-  blogs.forEach((b) =>
+  posts.forEach((b) =>
     addItem(
       { id: `post:${b.slug}`, type: 'post', label: b.title, description: b.excerpt, href: `/blog/${b.slug}`, meta: `${b.category} · ${b.date}` },
       b.tags
