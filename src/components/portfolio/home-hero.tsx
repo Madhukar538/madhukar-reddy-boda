@@ -22,6 +22,7 @@ import {
   Twitter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { RollingText } from '@/components/vault/rolling-text';
 import { useOsMode } from '@/components/os/os-mode';
 import { clientProjects, keyProjects, profile, rdProjects, socialLinks } from '@/data/profile';
 
@@ -120,7 +121,9 @@ export function HomeHero({ stats }: { stats: SiteStats }) {
           </div>
 
           <h1 className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
-            Architecting <span className="text-gradient">fast, observable</span> systems.
+            Architecting{' '}
+            <RollingText words={['fast, observable', 'high-throughput', 'self-hosted AI', 'load-tested']} />{' '}
+            systems.
           </h1>
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">

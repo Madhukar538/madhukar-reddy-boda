@@ -5,6 +5,7 @@ import { ArrowRight, Bug, Rss } from 'lucide-react';
 import { BlogIndex } from '@/components/blog/blog-index';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
+import { RollingText } from '@/components/vault/rolling-text';
 
 export const metadata: Metadata = {
   alternates: {
@@ -31,7 +32,9 @@ export default function Home() {
             </span>
           </Link>
           <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl font-bold tracking-tight text-foreground">
-            Notes from building <span className="text-gradient">fast, observable</span> systems.
+            Notes from building{' '}
+            <RollingText words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
+            systems.
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
             Field notes on .NET performance, self-hosted AI (RAG, MCP, hybrid search), load testing and homelab

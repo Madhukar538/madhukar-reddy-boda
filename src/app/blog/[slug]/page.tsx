@@ -13,6 +13,7 @@ import { localGraph, postLinks } from '@/lib/vault';
 import { Properties } from '@/components/vault/properties';
 import { LinkedMentions } from '@/components/vault/linked-mentions';
 import { LocalGraphLazy } from '@/components/vault/local-graph-lazy';
+import { Callout } from '@/components/vault/callout';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -99,16 +100,15 @@ export default async function BlogPost({ params }: Props) {
               <ShareButtons title={post.title} />
             </div>
 
-            <div className="glass-inset p-5 md:p-6 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-              <div>
-                <p className="font-semibold text-foreground">Fighting something like this in your own system?</p>
-                <p className="text-sm text-muted-foreground">Describe it and I&apos;ll take a look: bugs, slow APIs, {post.category.toLowerCase()} questions.</p>
+            <Callout kind="question" title="Fighting something like this in your own system?">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                <p className="text-sm">Describe it and I&apos;ll take a look: bugs, slow APIs, {post.category.toLowerCase()} questions.</p>
+                <Link href={`/fix-a-bug?topic=${encodeURIComponent(post.title)}`} className="tinted-button !px-4 !py-2 shrink-0">
+                  <Bug className="h-4 w-4" />
+                  File a ticket
+                </Link>
               </div>
-              <Link href={`/fix-a-bug?topic=${encodeURIComponent(post.title)}`} className="tinted-button !px-4 !py-2 shrink-0">
-                <Bug className="h-4 w-4" />
-                File a ticket
-              </Link>
-            </div>
+            </Callout>
 
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">About the author</p>
@@ -118,7 +118,7 @@ export default async function BlogPost({ params }: Props) {
         </article>
 
         <aside className="lg:sticky lg:top-28 space-y-4">
-          <ReaderChrome toc={toc} words={words} />
+          <ReaderChrome toc={toc} words={words} backlinks={links.backlinks.length + links.mentions.length} />
           <LocalGraphLazy graph={localGraph(post.slug)} />
         </aside>
       </div>

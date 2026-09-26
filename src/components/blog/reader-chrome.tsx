@@ -14,7 +14,7 @@ const WORDS_PER_MINUTE = 220;
  * the table of contents (sticky on desktop, a sheet on mobile) with the
  * current section highlighted, and copy buttons on code blocks.
  */
-export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) {
+export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; words: number; backlinks?: number }) {
   const barRef = useRef<HTMLDivElement>(null);
   const [minutesLeft, setMinutesLeft] = useState(Math.max(1, Math.round(words / WORDS_PER_MINUTE)));
   const [active, setActive] = useState<string | null>(toc[0]?.id ?? null);
@@ -59,6 +59,29 @@ export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [sheetOpen]);
+
+  // Foldable sections, as in Obsidian: the arrow on an h2 hides everything
+  // up to the next h2. Folding is per visit; nothing is stored.
+  useEffect(() => {
+    const toggles = document.querySelectorAll<HTMLButtonElement>('.article-body .fold-toggle');
+    const cleanups: (() => void)[] = [];
+    toggles.forEach((button) => {
+      const heading = button.parentElement!;
+      const onClick = () => {
+        const folded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!folded));
+        button.setAttribute('aria-label', folded ? 'Unfold section' : 'Fold section');
+        heading.classList.toggle('is-folded', folded);
+        for (let el = heading.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
+          (el as HTMLElement).hidden = folded;
+        }
+        window.dispatchEvent(new Event('scroll'));
+      };
+      button.addEventListener('click', onClick);
+      cleanups.push(() => button.removeEventListener('click', onClick));
+    });
+    return () => cleanups.forEach((c) => c());
+  }, []);
 
   // Copy buttons on code blocks.
   useEffect(() => {
@@ -128,6 +151,18 @@ export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) 
           {list()}
         </nav>
       )}
+
+      {/* Obsidian-style status bar (desktop). */}
+      <div
+        aria-hidden
+        className="vault-statusbar fixed bottom-0 right-4 z-[90] hidden items-center gap-4 rounded-t-lg px-3 py-1 text-[11px] tabular-nums text-muted-foreground lg:flex"
+      >
+        <a href="#linked-mentions" tabIndex={-1} className="hover:text-foreground">
+          {backlinks} {backlinks === 1 ? 'backlink' : 'backlinks'}
+        </a>
+        <span>{words.toLocaleString('en-US')} words</span>
+        <span>{timeLeft}</span>
+      </div>
 
       {/* Mobile: floating button + sheet */}
       {toc.length > 1 && (
