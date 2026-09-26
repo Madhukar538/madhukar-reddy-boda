@@ -26,6 +26,14 @@ export const bugReportSchema = z.object({
     .optional()
     .default('')
     .refine((v) => v === '' || /^https?:\/\/\S+$/.test(v), 'Links must start with http(s)://'),
+  // The page the ticket was filed from (the genie sends it; the form page doesn't).
+  page: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .default('')
+    .refine((v) => v === '' || v.startsWith('/'), 'Page must be a site path'),
   // Anti-spam: a hidden field bots fill in, and the time the form was opened.
   website: z.string().optional().default(''),
   startedAt: z.number().optional(),
