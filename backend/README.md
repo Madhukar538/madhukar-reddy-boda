@@ -90,7 +90,7 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 | Variable | Notes |
 |---|---|
-| `Portfolio__Mongo__ConnectionString` | Use a MongoDB user limited to this database. |
+| `Portfolio__Mongo__ConnectionString` | The MongoDB Atlas connection string (`mongodb+srv://…`). Use a database user limited to `readWrite` on the `portfolio` database. |
 | `Portfolio__Security__JwtSigningKey` | `openssl rand -base64 48` |
 | `Portfolio__Security__EncryptionKey` | exactly 32 bytes: `openssl rand -base64 32` |
 | `Portfolio__Security__SetupToken` | `openssl rand -hex 32`, only until the admin is enrolled |
@@ -144,6 +144,13 @@ Swagger UI is available at `/swagger` in Development only.
 
 ## Deploy (Coolify)
 
-`docker-compose.yml` runs the API and MongoDB 7. MongoDB is on the private network only, with authentication on. Set `MONGO_APP_USER`, `MONGO_APP_PASSWORD`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+`docker-compose.yml` runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+
+**Atlas checklist**
+
+- **Network Access:** add your Coolify server's public IP. Avoid `0.0.0.0/0`, which lets anyone on the internet try your database password.
+- **Database Access:** give the API its own user with the built-in role `readWrite` on the `portfolio` database only, not `atlasAdmin` or "read and write to any database". Use a long generated password. Characters like `@ : / ?` in it must be URL-encoded in the connection string.
+- The API creates its indexes and imports `seed/content.json` into empty collections on first start. It never overwrites existing data.
+- Atlas encrypts connections with TLS and data at rest, and the free tier has no automatic backups. Export the `portfolio` database now and then (`mongodump`), or use a paid tier with backups.
 
 On first start the API creates its indexes and imports `seed/content.json` into any empty collection. It never overwrites existing data. Regenerate the seed from the site with `npx tsx --tsconfig tsconfig.json scripts/export-content.ts`.
