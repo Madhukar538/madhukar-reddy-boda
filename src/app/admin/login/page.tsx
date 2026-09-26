@@ -27,8 +27,9 @@ function SignIn() {
   const [code, setCode] = useState('');
   const [useRecovery, setUseRecovery] = useState(false);
   const [passkeys, setPasskeys] = useState(false);
-  // Off when the owner has switched the admin to passkey-only in the database.
-  const [passwordAllowed, setPasswordAllowed] = useState(true);
+  // Off when the owner has switched the admin to passkey-only in the database. Null until the API
+  // answers, and nothing is shown meanwhile, so the password form never flashes up and vanishes.
+  const [passwordAllowed, setPasswordAllowed] = useState<boolean | null>(null);
   // The setup link only appears while setup can actually run.
   const [setupAvailable, setSetupAvailable] = useState(false);
 
@@ -39,7 +40,7 @@ function SignIn() {
         setPasswordAllowed(o.isPasswordLoginEnabled);
         setSetupAvailable(o.isSetupAvailable);
       })
-      .catch(() => {}); // If this can't be checked, keep the form; the API still enforces the switch.
+      .catch(() => setPasswordAllowed(true)); // Can't check: show the form; the API still enforces the switch.
   }, []);
   useEffect(() => {
     if (status === 'signed-in') router.replace(next);
@@ -92,7 +93,7 @@ function SignIn() {
     }
   };
 
-  if (status === 'loading' || status === 'signed-in') return <Spinner label={status === 'loading' ? 'Checking your session' : 'Signing you in'} />;
+  if (status === 'loading' || status === 'signed-in' || passwordAllowed === null) return <Spinner label={status === 'signed-in' ? 'Signing you in' : 'Checking your session'} />;
 
   return (
     <div className="mx-auto max-w-md">
