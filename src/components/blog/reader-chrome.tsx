@@ -120,7 +120,7 @@ export function ReaderChrome({ toc, words }: { toc: TocItem[]; words: number }) 
 
       {/* Desktop: sticky contents */}
       {toc.length > 1 && (
-        <nav aria-label="Contents" className="hidden lg:block glass p-4 max-h-[calc(100dvh-9rem)] overflow-y-auto">
+        <nav aria-label="Contents" className="hidden lg:block glass p-4 max-h-[max(10rem,calc(100dvh-29rem))] overflow-y-auto">
           <div className="mb-2 flex items-baseline justify-between px-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contents</p>
             <p className="text-xs text-muted-foreground">{timeLeft}</p>

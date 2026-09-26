@@ -84,11 +84,53 @@ export const getPost = (slug: string) => posts.find((p) => p.slug === slug);
 
 export const isoDate = (post: BlogPost) => new Date(Date.parse(post.date)).toISOString();
 
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Elements whose text never gets a wikilink.
+const NO_LINK = /^(a|code|pre|h[1-6]|figure|figcaption|kbd)$/;
+
+/**
+ * Obsidian-style [[wikilinks]]: the first mention of each of the post's tags
+ * in body text links to that tag's topic note. Skips code, headings and
+ * existing links.
+ */
+function linkMentions(html: string, tags: string[]) {
+  const pending = tags
+    .filter((t) => t.length > 1)
+    .map((tag) => ({
+      href: `/topics/${slugify(tag)}`,
+      re: new RegExp(`(?<![\\w.#+-])${escapeRegExp(tag)}(?![\\w#+])`, 'i'),
+    }));
+  let skip = 0;
+  return html
+    .split(/(<[^>]+>)/)
+    .map((part) => {
+      const tag = part.match(/^<(\/?)([a-z0-9]+)/i);
+      if (tag) {
+        if (NO_LINK.test(tag[2].toLowerCase()) && !part.endsWith('/>')) skip += tag[1] ? -1 : 1;
+        return part;
+      }
+      if (skip > 0 || !pending.length) return part;
+      for (let i = 0; i < pending.length; i++) {
+        const { href, re } = pending[i];
+        const match = part.match(re);
+        if (!match || match.index === undefined) continue;
+        pending.splice(i--, 1);
+        const end = match.index + match[0].length;
+        part = `${part.slice(0, match.index)}<a class="wikilink" href="${href}">${match[0]}</a>${part.slice(end)}`;
+        // Don't search inside the link just inserted.
+        break;
+      }
+      return part;
+    })
+    .join('');
+}
+
 export function renderPost(post: BlogPost): RenderedPost {
   const toc: TocItem[] = [];
   const used = new Set<string>();
 
-  let html = post.content.replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level: string, inner: string) => {
+  let html = linkMentions(post.content, post.tags).replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level: string, inner: string) => {
     const text = plainText(inner);
     let id = slugify(text) || 'section';
     for (let n = 2; used.has(id); n++) id = `${slugify(text)}-${n}`;
