@@ -1,0 +1,35 @@
+# API + MongoDB for Coolify (or any Docker host). Secrets come from the environment:
+# set them in Coolify's environment variables, never in this file.
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "8080:8080"
+    environment:
+      Portfolio__Mongo__ConnectionString: "mongodb://${MONGO_APP_USER}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=admin"
+      Portfolio__Mongo__Database: "portfolio"
+      Portfolio__Security__JwtSigningKey: "${JWT_SIGNING_KEY}"
+      Portfolio__Security__EncryptionKey: "${ENCRYPTION_KEY}"
+      Portfolio__Security__SetupToken: "${SETUP_TOKEN:-}"
+      Portfolio__Security__AllowedOrigins__0: "https://dhucar.in"
+      Portfolio__Security__IsCloudflareTrusted: "true"
+      Portfolio__Passkeys__RpId: "dhucar.in"
+      Portfolio__Passkeys__Origins__0: "https://dhucar.in"
+      Portfolio__Site__RevalidateUrl: "https://dhucar.in/api/revalidate"
+      Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    # Not published: only the api container can reach it.
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_APP_USER}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_APP_PASSWORD}"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

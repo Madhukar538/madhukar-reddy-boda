@@ -1,0 +1,16 @@
+namespace Dhucar.Portfolio.Properties.Models;
+
+/*
+ * Author Name     :  Boda Madhukar Reddy
+ * Create Date     :  26 Sep 2026
+ * Modified Date   :
+ * Modified Reason :
+ * Layer           :  Properties
+ * Modified By     :
+ * Description     :  Deletes an item by id.
+ */
+public class DeleteItemRequestDTO
+{
+    /// <summary>Item id or slug.</summary>
+    public string Id { get; set; } = string.Empty;
+}

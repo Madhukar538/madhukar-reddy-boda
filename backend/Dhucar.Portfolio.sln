@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4C9BC722-FC66-42C0-AA48-A9B807023753}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.Api", "src\Dhucar.Portfolio.Api\Dhucar.Portfolio.Api.csproj", "{BF325D02-46B4-4A49-A986-C690F6F443CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.BusinessLogic", "src\Dhucar.Portfolio.BusinessLogic\Dhucar.Portfolio.BusinessLogic.csproj", "{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.Common", "src\Dhucar.Portfolio.Common\Dhucar.Portfolio.Common.csproj", "{054F6E16-0835-49FE-A2AF-1CF5852CC861}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.DataAccess", "src\Dhucar.Portfolio.DataAccess\Dhucar.Portfolio.DataAccess.csproj", "{AAF9392F-3E32-42A7-8427-D710BC8BCEDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.Properties", "src\Dhucar.Portfolio.Properties\Dhucar.Portfolio.Properties.csproj", "{78607B34-8AC9-4DEB-8D72-7C486E70DD4D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7B00FDF6-30FB-4FA0-A3B7-63A002DC6699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dhucar.Portfolio.Tests", "tests\Dhucar.Portfolio.Tests\Dhucar.Portfolio.Tests.csproj", "{499FB03B-0FA6-47D2-92CA-D07932AB590C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF325D02-46B4-4A49-A986-C690F6F443CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF325D02-46B4-4A49-A986-C690F6F443CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF325D02-46B4-4A49-A986-C690F6F443CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF325D02-46B4-4A49-A986-C690F6F443CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054F6E16-0835-49FE-A2AF-1CF5852CC861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054F6E16-0835-49FE-A2AF-1CF5852CC861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054F6E16-0835-49FE-A2AF-1CF5852CC861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054F6E16-0835-49FE-A2AF-1CF5852CC861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAF9392F-3E32-42A7-8427-D710BC8BCEDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAF9392F-3E32-42A7-8427-D710BC8BCEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAF9392F-3E32-42A7-8427-D710BC8BCEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAF9392F-3E32-42A7-8427-D710BC8BCEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78607B34-8AC9-4DEB-8D72-7C486E70DD4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78607B34-8AC9-4DEB-8D72-7C486E70DD4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78607B34-8AC9-4DEB-8D72-7C486E70DD4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78607B34-8AC9-4DEB-8D72-7C486E70DD4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499FB03B-0FA6-47D2-92CA-D07932AB590C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499FB03B-0FA6-47D2-92CA-D07932AB590C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499FB03B-0FA6-47D2-92CA-D07932AB590C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499FB03B-0FA6-47D2-92CA-D07932AB590C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BF325D02-46B4-4A49-A986-C690F6F443CB} = {4C9BC722-FC66-42C0-AA48-A9B807023753}
+		{5B16EAFA-FFE0-4B22-800D-D1E1B7DC2CD9} = {4C9BC722-FC66-42C0-AA48-A9B807023753}
+		{054F6E16-0835-49FE-A2AF-1CF5852CC861} = {4C9BC722-FC66-42C0-AA48-A9B807023753}
+		{AAF9392F-3E32-42A7-8427-D710BC8BCEDB} = {4C9BC722-FC66-42C0-AA48-A9B807023753}
+		{78607B34-8AC9-4DEB-8D72-7C486E70DD4D} = {4C9BC722-FC66-42C0-AA48-A9B807023753}
+		{499FB03B-0FA6-47D2-92CA-D07932AB590C} = {7B00FDF6-30FB-4FA0-A3B7-63A002DC6699}
+	EndGlobalSection
+EndGlobal
