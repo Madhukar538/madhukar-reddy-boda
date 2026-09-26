@@ -5,9 +5,13 @@ services:
     build: .
     restart: unless-stopped
     depends_on:
-      - mongo
-    ports:
-      - "8080:8080"
+      mongo:
+        condition: service_healthy
+    # Internal only: reach it through the Cloudflare Tunnel (Coolify's proxy or
+    # cloudflared on this network). Publishing a host port would bypass
+    # Cloudflare, and IsCloudflareTrusted would then let callers fake their IP.
+    expose:
+      - "8080"
     environment:
       Portfolio__Mongo__ConnectionString: "mongodb://${MONGO_APP_USER}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=admin"
       Portfolio__Mongo__Database: "portfolio"
@@ -28,6 +32,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${MONGO_APP_USER}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_APP_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
     volumes:
       - mongo-data:/data/db
 
