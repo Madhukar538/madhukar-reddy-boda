@@ -51,6 +51,7 @@ function formatTicket(id: string, report: BugReport, priority: Priority, reasons
   ];
   if (report.stack) lines.push(`<b>Stack:</b> ${e(report.stack)}`);
   if (report.link) lines.push(`<b>Link:</b> ${e(report.link)}`);
+  if (report.page) lines.push(`<b>Filed from:</b> ${e(report.page)} (genie)`);
   lines.push(`<b>Triage:</b> ${e(reasons.join(', '))}`);
   // Telegram caps messages at 4096 characters.
   const text = lines.join('\n');

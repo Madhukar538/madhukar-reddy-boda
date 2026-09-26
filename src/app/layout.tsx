@@ -14,6 +14,7 @@ import { HoverPreview } from '@/components/vault/hover-preview';
 import { siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { TrackingBeacon } from '@/components/tracking-beacon';
+import { GenieLauncher } from '@/components/genie/genie-launcher';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -79,6 +80,7 @@ export default async function RootLayout({
             <QuickSwitcher />
             <HoverPreview />
             <TrackingBeacon />
+            <GenieLauncher email={profile.email} />
           </OsModeProvider>
           </MotionProvider>
         </ThemeProvider>
