@@ -9,6 +9,7 @@ import sql from 'highlight.js/lib/languages/sql';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
 import type { HLJSApi, Language } from 'highlight.js';
 import { blogs, countWords, type BlogPost } from '@/data/blogs';
+import { CALLOUT_KINDS, calloutIcon, type CalloutKind } from '@/components/vault/callout-icons';
 
 /**
  * Server-side blog helpers: ordering, topics, related posts, and turning a
@@ -126,17 +127,42 @@ function linkMentions(html: string, tags: string[]) {
     .join('');
 }
 
+/**
+ * Obsidian callouts: a blockquote whose first paragraph starts with
+ * [!type] Title becomes a callout box. [!type]- / [!type]+ make it
+ * foldable (collapsed / expanded), as in Obsidian.
+ */
+function renderCallouts(html: string) {
+  return html.replace(
+    /<blockquote>\s*<p>\[!([a-z]+)\]([+-]?)\s*([\s\S]*?)<\/p>([\s\S]*?)<\/blockquote>/g,
+    (_, type: string, fold: string, rawTitle: string, rest: string) => {
+      const kind: CalloutKind = (CALLOUT_KINDS as readonly string[]).includes(type) ? (type as CalloutKind) : 'note';
+      // Title is the first line; anything after a <br> belongs to the body.
+      const [title, ...more] = rawTitle.split(/<br\s*\/?>/);
+      const heading = `${calloutIcon(kind)}<span>${title.trim() || kind.charAt(0).toUpperCase() + kind.slice(1)}</span>`;
+      const body = `${more.length ? `<p>${more.join('<br>')}</p>` : ''}${rest}`.trim();
+      const content = body ? `<div class="callout-content">${body}</div>` : '';
+      return fold
+        ? `<details class="callout" data-callout="${kind}"${fold === '+' ? ' open' : ''}><summary class="callout-title">${heading}</summary>${content}</details>`
+        : `<div class="callout" data-callout="${kind}"><div class="callout-title">${heading}</div>${content}</div>`;
+    }
+  );
+}
+
 export function renderPost(post: BlogPost): RenderedPost {
   const toc: TocItem[] = [];
   const used = new Set<string>();
 
-  let html = linkMentions(post.content, post.tags).replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level: string, inner: string) => {
+  let html = renderCallouts(linkMentions(post.content, post.tags)).replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level: string, inner: string) => {
     const text = plainText(inner);
     let id = slugify(text) || 'section';
     for (let n = 2; used.has(id); n++) id = `${slugify(text)}-${n}`;
     used.add(id);
     toc.push({ id, text, level: Number(level) as 2 | 3 });
-    return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to this section">#</a>${inner}</h${level}>`;
+    // h2 sections can be folded, as in Obsidian (wired up in reader-chrome.tsx).
+    const fold =
+      level === '2' ? '<button type="button" class="fold-toggle" aria-expanded="true" aria-label="Fold section"></button>' : '';
+    return `<h${level} id="${id}">${fold}<a class="heading-anchor" href="#${id}" aria-label="Link to this section">#</a>${inner}</h${level}>`;
   });
 
   // Code blocks carry class="language-x"; the rest are ASCII diagrams or plain text.

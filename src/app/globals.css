@@ -659,6 +659,148 @@
 }
 .vault-tag:hover { background: hsl(var(--primary) / 0.2); }
 
+/* Obsidian callouts (components/vault/callout.tsx, and > [!type] blocks in posts). */
+.callout {
+  --callout: var(--primary);
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: hsl(var(--callout) / 0.1);
+  border: 1px solid hsl(var(--callout) / 0.22);
+}
+.callout[data-callout='abstract'],
+.callout[data-callout='tip'] { --callout: var(--sys-teal); }
+.callout[data-callout='success'] { --callout: var(--sys-green); }
+.callout[data-callout='question'],
+.callout[data-callout='warning'] { --callout: var(--sys-orange); }
+.callout[data-callout='danger'] { --callout: 0 84% 60%; }
+.callout[data-callout='example'] { --callout: var(--sys-purple); }
+.callout[data-callout='quote'] { --callout: var(--muted-foreground); }
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: hsl(var(--callout));
+}
+.callout-icon { width: 1.05rem; height: 1.05rem; flex-shrink: 0; }
+.callout-content { margin-top: 0.4rem; color: hsl(var(--foreground) / 0.85); }
+.callout-content > :first-child { margin-top: 0; }
+.callout-content > :last-child { margin-bottom: 0; }
+details.callout > summary { cursor: pointer; list-style: none; }
+details.callout > summary::-webkit-details-marker { display: none; }
+details.callout > summary::after { content: '›'; margin-left: auto; transition: transform 0.2s; }
+details.callout[open] > summary::after { transform: rotate(90deg); }
+.article-body .callout { margin: 1.5rem 0; font-style: normal; }
+
+/* Foldable post sections (fold arrow on each h2, see reader-chrome.tsx). */
+.article-body h2 { position: relative; }
+.article-body h2 .heading-anchor { left: auto; right: -1.1em; padding: 0 0 0 0.3em; }
+.fold-toggle {
+  position: absolute;
+  left: -1.65rem;
+  top: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: -0.65rem;
+  border-radius: 0.35rem;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.2s, background-color 0.15s;
+  background: no-repeat center / 0.8rem
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.article-body h2:hover .fold-toggle,
+.fold-toggle:focus-visible,
+.is-folded .fold-toggle { opacity: 1; }
+.fold-toggle:hover { background-color: hsl(var(--foreground) / 0.08); }
+.is-folded .fold-toggle { transform: rotate(-90deg); }
+/* Touch screens have no hover, and no room in the left margin: show it inline. */
+@media (hover: none), (max-width: 767px) {
+  .fold-toggle { position: static; display: inline-block; vertical-align: middle; margin: 0 0.35rem 0 0; opacity: 0.6; }
+}
+
+/* Obsidian's status bar on post pages. */
+.vault-statusbar {
+  background: hsl(var(--glass-bg) / 0.85);
+  border: 1px solid hsl(var(--foreground) / 0.1);
+  border-bottom: 0;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Obsidian's file explorer (components/vault/file-explorer.tsx). */
+.vault-folder > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 500;
+  color: hsl(var(--foreground) / 0.9);
+}
+.vault-folder > summary::-webkit-details-marker { display: none; }
+.vault-folder > summary::before {
+  content: '';
+  width: 0.7rem;
+  height: 0.7rem;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  transform: rotate(-90deg);
+  background: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.vault-folder[open] > summary::before { transform: none; }
+.vault-folder > summary:hover,
+.vault-file:hover { background: hsl(var(--foreground) / 0.06); }
+.vault-folder-body {
+  margin-left: 0.85rem;
+  padding-left: 0.35rem;
+  border-left: 1px solid hsl(var(--foreground) / 0.1);
+}
+.vault-file {
+  display: flex;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.45rem;
+  color: hsl(var(--foreground) / 0.7);
+}
+.vault-file:hover { color: hsl(var(--foreground)); }
+
+/* Rolling headline words (components/vault/rolling-text.tsx): four words,
+   plus the first again so the loop restarts without a jump. */
+.rolling {
+  display: inline-grid;
+  vertical-align: bottom;
+  height: 1.15em;
+  overflow: hidden;
+  /* Keep descenders (g, y, p) inside the clip. */
+  padding-bottom: 0.08em;
+  box-sizing: content-box;
+}
+.rolling-sizer,
+.rolling-track { grid-area: 1 / 1; }
+.rolling-sizer { visibility: hidden; white-space: nowrap; }
+.rolling-track {
+  display: flex;
+  flex-direction: column;
+  animation: rolling 11s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.rolling-word {
+  display: block;
+  /* Solid accent, not the clipped gradient: gradient text is costly to repaint every frame. */
+  color: hsl(var(--primary));
+  height: 1.15em;
+  line-height: 1.15em;
+  white-space: nowrap;
+}
+@keyframes rolling {
+  0%, 20% { transform: translateY(0); }
+  25%, 45% { transform: translateY(-1.15em); }
+  50%, 70% { transform: translateY(-2.3em); }
+  75%, 95% { transform: translateY(-3.45em); }
+  100% { transform: translateY(-4.6em); }
+}
+
 /* Page entrance (app/template.tsx): runs from first paint, no JS needed.
    Movement only: content that starts at opacity 0 isn't counted as painted,
    which would push Largest Contentful Paint back. */
@@ -673,6 +815,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .page-enter { animation: none; }
+  .rolling-track { animation: none; }
   .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
   /* The track holds the list twice for a seamless loop; show it once when static. */
   .marquee-track > [aria-hidden='true'] { display: none; }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, ChevronDown, TrendingUp } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
+import { Callout } from '@/components/vault/callout';
 import { clientProjects, keyProjects, type ProjectCard } from '@/data/profile';
 import { anchorId } from '@/lib/utils';
 
@@ -19,10 +20,9 @@ function FeaturedCard({ project }: { project: ProjectCard }) {
       <h3 className="text-xl font-bold tracking-tight text-foreground leading-snug mb-2">{project.title}</h3>
       <p className="text-[15px] text-muted-foreground leading-relaxed flex-1 mb-5">{project.description}</p>
       {project.outcome && (
-        <p className="glass-inset mb-5 flex items-start gap-2.5 p-3.5 text-sm font-medium text-foreground leading-snug">
-          <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--sys-green))]" />
+        <Callout kind="success" title="Outcome" className="mb-5 text-sm leading-snug">
           {project.outcome}
-        </p>
+        </Callout>
       )}
       <div className="flex flex-wrap gap-1.5">
         {project.tech.map((tech) => (
