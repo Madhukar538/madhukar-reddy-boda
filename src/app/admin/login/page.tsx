@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Fingerprint, KeyRound, Loader2 } from 'lucide-react';
+import { ArrowLeft, Fingerprint, KeyRound, Loader2, Smartphone } from 'lucide-react';
 import { apiCall, errorMessage } from '@/lib/admin/api';
 import { getPasskey, isPasskeyCancelled, isPasskeySupported } from '@/lib/admin/webauthn';
 import type { AuthToken, MfaChallenge, PasskeyOptions } from '@/lib/admin/types';
@@ -19,7 +19,7 @@ function SignIn() {
   const next = safeNext(useSearchParams().get('next'));
 
   const [step, setStep] = useState<'password' | 'code'>('password');
-  const [busy, setBusy] = useState<'passkey' | 'password' | 'code' | null>(null);
+  const [busy, setBusy] = useState<'passkey' | 'phone' | 'password' | 'code' | null>(null);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,12 +35,12 @@ function SignIn() {
 
   const finish = (token: AuthToken) => signIn(token);
 
-  const withPasskey = async () => {
+  const withPasskey = async (fromPhone = false) => {
     setError('');
-    setBusy('passkey');
+    setBusy(fromPhone ? 'phone' : 'passkey');
     try {
       const { challengeId, options } = await apiCall<PasskeyOptions>('PasskeyLoginOptions');
-      const credential = await getPasskey(options);
+      const credential = await getPasskey(options, { fromPhone });
       finish(await apiCall<AuthToken>('PasskeyLogin', { challengeId, credential }));
     } catch (e) {
       if (!isPasskeyCancelled(e)) setError(errorMessage(e));
@@ -94,10 +94,18 @@ function SignIn() {
           <>
             {passkeys && (
               <>
-                <button type="button" onClick={withPasskey} disabled={busy !== null} className="tinted-button w-full justify-center !py-3">
+                <button type="button" onClick={() => withPasskey()} disabled={busy !== null} className="tinted-button w-full justify-center !py-3">
                   {busy === 'passkey' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
                   Sign in with a passkey
                 </button>
+                {/* On a computer: sign in with the passkey saved on your phone, by scanning a QR code. */}
+                <button type="button" onClick={() => withPasskey(true)} disabled={busy !== null} className={`${secondaryButton} hidden w-full sm:flex`}>
+                  {busy === 'phone' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Smartphone className="h-4 w-4" />}
+                  Use a passkey on your phone
+                </button>
+                <p className="hidden text-center text-xs text-muted-foreground sm:block">
+                  Shows a QR code to scan with your iPhone or Android. Bluetooth must be on for both.
+                </p>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-foreground/10" />
                   or with your password
