@@ -636,6 +636,29 @@
   to { transform: translateX(-50%); }
 }
 
+/* Obsidian-style [[wikilinks]] inside posts (see linkMentions in lib/blog.ts). */
+.article-body a.wikilink {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  border-bottom: 1px dashed hsl(var(--primary) / 0.45);
+}
+.article-body a.wikilink::before { content: '[['; opacity: 0.35; }
+.article-body a.wikilink::after { content: ']]'; opacity: 0.35; }
+.article-body a.wikilink:hover { border-bottom-style: solid; }
+
+/* Obsidian's #tag pills in the Properties panel. */
+.vault-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.8rem;
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+  transition: background-color 0.15s;
+}
+.vault-tag:hover { background: hsl(var(--primary) / 0.2); }
+
 /* Page entrance (app/template.tsx): runs from first paint, no JS needed.
    Movement only: content that starts at opacity 0 isn't counted as painted,
    which would push Largest Contentful Paint back. */

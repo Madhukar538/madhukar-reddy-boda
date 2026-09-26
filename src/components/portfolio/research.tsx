@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { m } from 'framer-motion';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
-import { cn } from '@/lib/utils';
+import { anchorId, cn } from '@/lib/utils';
 import { rdProjects, type Status } from '@/data/profile';
 
 
@@ -70,7 +70,7 @@ export function Research() {
         {visible.map((project) => {
           const status = statusChip[project.status];
           return (
-            <div key={project.title} className="glass glass-interactive p-5 flex flex-col">
+            <div key={project.title} id={anchorId(project.title)} className="glass glass-interactive p-5 flex flex-col scroll-mt-28">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--sys-purple)/0.14)] text-[hsl(var(--sys-purple))]">
                   <FlaskConical className="h-[1.1rem] w-[1.1rem]" />

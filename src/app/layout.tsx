@@ -9,6 +9,8 @@ import { LiquidWallpaper } from '@/components/liquid-wallpaper';
 import { Footer } from '@/components/portfolio/footer';
 import { OsModeProvider } from '@/components/os/os-mode';
 import { MotionProvider } from '@/components/motion-provider';
+import { QuickSwitcher } from '@/components/vault/quick-switcher';
+import { HoverPreview } from '@/components/vault/hover-preview';
 import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
@@ -71,6 +73,8 @@ export default function RootLayout({
             </main>
             <Footer />
             <Toaster />
+            <QuickSwitcher />
+            <HoverPreview />
           </OsModeProvider>
           </MotionProvider>
         </ThemeProvider>

@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Settings2, Tags, X } from 'lucide-react';
+import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
+import { openQuickSwitcher } from '@/lib/vault-client';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -108,6 +109,16 @@ export function Navbar() {
           <div className="h-5 w-px bg-foreground/10" />
 
           <div className="flex items-center">
+            <button
+              type="button"
+              onClick={openQuickSwitcher}
+              aria-label="Search notes (⌘K)"
+              title="Search notes (⌘K)"
+              className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground"
+            >
+              <Search className="h-[1.05rem] w-[1.05rem]" />
+              <kbd className="rounded px-1 text-[10px] font-medium text-muted-foreground ring-1 ring-foreground/15">⌘K</kbd>
+            </button>
             <OsModeToggle />
             <ThemeSwitcher />
             <ThemeToggle />
@@ -160,6 +171,17 @@ export function Navbar() {
                   transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                   className="glass glass-strong glass-bar glass-pill absolute bottom-full right-0 mb-2 flex flex-col items-center p-1 origin-bottom"
                 >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setControlsOpen(false);
+                      openQuickSwitcher();
+                    }}
+                    aria-label="Search notes"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90"
+                  >
+                    <Search className="h-[1.05rem] w-[1.05rem]" />
+                  </button>
                   <OsModeToggle />
                   <ThemeSwitcher />
                   <ThemeToggle />

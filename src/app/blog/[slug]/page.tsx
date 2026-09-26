@@ -1,14 +1,18 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowLeft, ArrowRight, Bug, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bug } from 'lucide-react';
 import { AuthorCard } from '@/components/portfolio/author-card';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
 import { diagrams } from '@/data/diagrams';
 import { ReaderChrome } from '@/components/blog/reader-chrome';
 import { ShareButtons } from '@/components/blog/share-buttons';
 import { PostCard } from '@/components/blog/post-card';
-import { adjacentPosts, getPost, isoDate, posts, relatedPosts, renderPost, siteUrl, slugify } from '@/lib/blog';
+import { adjacentPosts, getPost, isoDate, posts, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
+import { localGraph, postLinks } from '@/lib/vault';
+import { Properties } from '@/components/vault/properties';
+import { LinkedMentions } from '@/components/vault/linked-mentions';
+import { LocalGraphLazy } from '@/components/vault/local-graph-lazy';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -48,6 +52,7 @@ export default async function BlogPost({ params }: Props) {
   const diagram = diagrams[post.slug];
   const related = relatedPosts(post);
   const { newer, older } = adjacentPosts(post);
+  const links = postLinks(post);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -77,28 +82,9 @@ export default async function BlogPost({ params }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] items-start">
         <article className="glass p-6 md:p-10 min-w-0">
-          <header className="mb-8 space-y-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <Link href={`/topics/${slugify(post.category)}`} className="chip chip-accent">
-                {post.category}
-              </Link>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                <time dateTime={isoDate(post)}>{post.date}</time>
-              </span>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" />
-                {post.readTime}
-              </span>
-            </div>
+          <header className="mb-8 space-y-5">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">{post.title}</h1>
-            <div className="flex flex-wrap gap-1.5">
-              {post.tags.map((tag) => (
-                <Link key={tag} href={`/topics/${slugify(tag)}`} className="chip hover:text-foreground transition-colors">
-                  {tag}
-                </Link>
-              ))}
-            </div>
+            <Properties post={post} words={words} links={links.backlinks.length + links.mentions.length + links.outgoing.length} />
           </header>
 
           {diagram && <ArchitectureDiagram diagram={diagram} />}
@@ -106,6 +92,8 @@ export default async function BlogPost({ params }: Props) {
           <div className="article-body border-t border-foreground/10 pt-8" dangerouslySetInnerHTML={{ __html: html }} />
 
           <footer className="mt-12 space-y-8">
+            <LinkedMentions {...links} />
+
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-foreground/10 pt-6">
               <p className="text-sm font-semibold text-foreground">Found this useful? Share it.</p>
               <ShareButtons title={post.title} />
@@ -131,6 +119,7 @@ export default async function BlogPost({ params }: Props) {
 
         <aside className="lg:sticky lg:top-28 space-y-4">
           <ReaderChrome toc={toc} words={words} />
+          <LocalGraphLazy graph={localGraph(post.slug)} />
         </aside>
       </div>
 

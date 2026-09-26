@@ -1,5 +1,6 @@
 import { blogs } from '@/data/blogs';
 import { keyProjects, rdProjects } from '@/data/profile';
+import { anchorId } from '@/lib/utils';
 
 /**
  * Builds the knowledge graph from the shared portfolio data:
@@ -60,14 +61,14 @@ export function buildKnowledgeGraph(minTechLinks = 2): KnowledgeGraph {
 
   keyProjects.forEach((p) =>
     addItem(
-      { id: `project:${slug(p.title)}`, type: 'project', label: p.title, description: p.description, href: '/projects', meta: 'Key project' },
+      { id: `project:${slug(p.title)}`, type: 'project', label: p.title, description: p.description, href: `/projects#${anchorId(p.title)}`, meta: 'Key project' },
       p.tech
     )
   );
 
   rdProjects.forEach((p) =>
     addItem(
-      { id: `lab:${slug(p.title)}`, type: 'lab', label: p.title, description: p.description, href: '/lab', meta: `Lab · ${p.status}` },
+      { id: `lab:${slug(p.title)}`, type: 'lab', label: p.title, description: p.description, href: `/lab#${anchorId(p.title)}`, meta: `Lab · ${p.status}` },
       p.tech
     )
   );

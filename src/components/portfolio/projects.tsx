@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown, TrendingUp } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { clientProjects, keyProjects, type ProjectCard } from '@/data/profile';
+import { anchorId } from '@/lib/utils';
 
 function WriteUp({ slug }: { slug: string }) {
   return (
@@ -14,7 +15,7 @@ function WriteUp({ slug }: { slug: string }) {
 
 function FeaturedCard({ project }: { project: ProjectCard }) {
   return (
-    <article className="glass glass-interactive flex flex-col p-6 md:p-7">
+    <article id={anchorId(project.title)} className="glass glass-interactive flex flex-col p-6 md:p-7 scroll-mt-28">
       <h3 className="text-xl font-bold tracking-tight text-foreground leading-snug mb-2">{project.title}</h3>
       <p className="text-[15px] text-muted-foreground leading-relaxed flex-1 mb-5">{project.description}</p>
       {project.outcome && (
@@ -35,7 +36,7 @@ function FeaturedCard({ project }: { project: ProjectCard }) {
 
 function CompactCard({ project }: { project: ProjectCard }) {
   return (
-    <article className="glass glass-interactive flex flex-col p-5">
+    <article id={anchorId(project.title)} className="glass glass-interactive flex flex-col p-5 scroll-mt-28">
       <h3 className="text-[15px] font-semibold text-foreground mb-1 leading-snug">{project.title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-3">{project.description}</p>
       <div className="flex flex-wrap gap-1.5">
@@ -71,7 +72,7 @@ export function Projects() {
       <p className="mb-3 text-sm font-semibold text-foreground/70">E-commerce portals &amp; integrations</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         {clientProjects.map((project) => (
-          <article key={project.id} className="glass p-5 md:p-6 flex flex-col">
+          <article key={project.id} id={anchorId(project.title)} className="glass p-5 md:p-6 flex flex-col scroll-mt-28">
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
               <h3 className="text-lg font-bold text-foreground">{project.title}</h3>
               <span className="text-xs tabular-nums text-muted-foreground">{project.duration}</span>
