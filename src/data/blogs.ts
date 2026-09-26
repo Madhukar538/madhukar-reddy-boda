@@ -75,7 +75,7 @@ finally
 {
     Directory.Delete(workDir, recursive: true);   // nothing left on disk, even on failure
 }</pre>
-      <p>Three small decisions keep this robust. The temp directory has a GUID in its name, so overlapping runs can never collide. Cleanup sits in <code>finally</code>, so a failed run leaves nothing behind. And a missing branch returns "skip this repository" instead of an exception, so one misconfigured repo doesn't cancel the whole sync.</p>
+      <blockquote><p>[!tip] Three small decisions keep this robust</p><p>The temp directory has a GUID in its name, so overlapping runs can never collide. Cleanup sits in <code>finally</code>, so a failed run leaves nothing behind. And a missing branch returns "skip this repository" instead of an exception, so one misconfigured repo doesn't cancel the whole sync.</p></blockquote>
 
       <h2>4. Step 2: Understanding the Code with Roslyn</h2>
       <p>Regexes can find the word <code>class</code>. Roslyn, the C# compiler as a library, knows what every identifier <em>binds to</em>. The analyzer loads each solution through <code>MSBuildWorkspace</code>, compiles each project, and walks every document:</p>
@@ -529,12 +529,12 @@ public void UpdateConfig(ConfigData newConfig)
     _config = newConfig;
     Console.WriteLine($"Service {_serviceId} updated: Interval={_config.Interval} ms, Config={_config.CustomValue}");
 }</pre>
-      <p>Three details make it work:</p>
+      <blockquote><p>[!tip] Three details make it work</p>
       <ul>
         <li><strong>Cancellation instead of flags.</strong> The loop checks <code>_cts.Token.IsCancellationRequested</code>, and the same token is passed to <code>Task.Delay</code>, so <code>Stop()</code> also interrupts a worker that is in the middle of waiting.</li>
         <li><strong>Config is read on every pass.</strong> <code>UpdateConfig</code> just replaces <code>_config</code>. The loop reads <code>_config</code> each time round, so the next pass picks up the new value and interval.</li>
         <li><strong>Async, not threads.</strong> While a worker waits it holds no thread, so hundreds of workers cost almost nothing when idle.</li>
-      </ul>
+      </ul></blockquote>
 
       <h2>4. The Manager: BackgroundServiceManager</h2>
       <p>The manager owns all workers in a <code>ConcurrentDictionary</code> keyed by id. Each entry stores the worker together with its current config, so <code>LIST</code> can report settings without asking every worker.</p>
@@ -720,7 +720,7 @@ resource "cloudflare_dns_record" "wildcard" {
       </ul>
 
       <h2>6. The Result</h2>
-      <p>This blog post is the test. I committed it to the portfolio repo, pushed to <code>main</code>, and GitHub's webhook told Coolify to rebuild. With a health check on <code>/</code>, the old container keeps serving until the new one is healthy, so the deploy has no downtime. Grafana and n8n run alongside it as one-click services on their own subdomains.</p>
+      <blockquote><p>[!success] This blog post is the test</p><p>I committed it to the portfolio repo, pushed to <code>main</code>, and GitHub's webhook told Coolify to rebuild. With a health check on <code>/</code>, the old container keeps serving until the new one is healthy, so the deploy has no downtime. Grafana and n8n run alongside it as one-click services on their own subdomains.</p></blockquote>
 
       <h2>7. Honest Limitations</h2>
       <ul>
@@ -773,7 +773,7 @@ Dashboard           Portainer CE             Rancher / Lens / k9s</pre>
         <li>Leaves more RAM for the apps, which matters most at 8 GB per node.</li>
         <li>Uses the same container images K3s would, so migrating later is a change of commands, not a rewrite.</li>
       </ul>
-      <p><strong>When to move to K3s:</strong> at 20+ services, when you need CPU/memory-based autoscaling (Swarm can't do this natively), or when you need fine-grained scheduling, secrets or network policies.</p>
+      <blockquote><p>[!question] When to move to K3s</p><p>At 20+ services, when you need CPU/memory-based autoscaling (Swarm can't do this natively), or when you need fine-grained scheduling, secrets or network policies.</p></blockquote>
 
       <h2>5. The Build Order</h2>
       <pre>
@@ -837,10 +837,11 @@ rolling image update -> zero downtime</pre>
         <li><code>export const dynamicParams = true</code> lets an unknown slug render on demand (then cache) instead of returning a 404.</li>
         <li>The backend checks whether the slug existed before writing. For creates and deletes it sets <code>listingChanged: true</code>, which also expires <code>all-pages</code>, so the new page appears in the navigation.</li>
       </ul>
-      <p>Deletes surfaced a real bug: a missing page threw a raw error, and Next.js turned that into a <strong>500</strong>. The fix is to treat an API 404 as "not found", return <code>null</code> and call <code>notFound()</code>. An API that's actually broken should still throw and surface as a 500.</p>
+      <blockquote><p>[!danger] Deletes surfaced a real bug</p><p>A missing page threw a raw error, and Next.js turned that into a <strong>500</strong>. The fix is to treat an API 404 as "not found", return <code>null</code> and call <code>notFound()</code>. An API that's actually broken should still throw and surface as a 500.</p></blockquote>
 
       <h2>4. Trap #1: Dev Mode Lies About Caching</h2>
-      <p><code>next dev</code> doesn't honour the fetch cache the way production does. I disabled the webhook entirely, edited content in .NET, and the dev server still showed the change instantly. That makes it look as if revalidation isn't needed. Only <code>next build &amp;&amp; next start</code> shows real caching. <strong>Always validate this pattern against a production build.</strong></p>
+      <p><code>next dev</code> doesn't honour the fetch cache the way production does. I disabled the webhook entirely, edited content in .NET, and the dev server still showed the change instantly. That makes it look as if revalidation isn't needed. Only <code>next build &amp;&amp; next start</code> shows real caching.</p>
+      <blockquote><p>[!warning] Always validate this pattern against a production build.</p></blockquote>
 
       <h2>5. Trap #2: Next.js 16 Changed <code>revalidateTag</code></h2>
       <p>The single-argument <code>revalidateTag(tag)</code> from most tutorials is deprecated in Next.js 16. It now takes a second argument:</p>
@@ -850,7 +851,7 @@ revalidateTag('page-home', { expire: 0 });
 
 // stale-while-revalidate semantics
 revalidateTag('page-home', 'max');</pre>
-      <p><code>create-next-app@latest</code> installed a version far newer than the tutorials assume. When an API behaves oddly, check the docs bundled in <code>node_modules/next/dist/docs/</code> before trusting remembered examples.</p>
+      <blockquote><p>[!tip] Check the bundled docs</p><p><code>create-next-app@latest</code> installed a version far newer than the tutorials assume. When an API behaves oddly, check the docs bundled in <code>node_modules/next/dist/docs/</code> before trusting remembered examples.</p></blockquote>
 
       <h2>6. Takeaways</h2>
       <ul>
@@ -906,7 +907,7 @@ score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
 
       <h2>5. Multi-Intent Queries</h2>
       <p>"red card case and gold tone watch under 5000" is two searches. Splitting on commas and a standalone "and" (while protecting "between X and Y" and "12,000") lets each clause run the <em>entire</em> pipeline with its own price and filters. Otherwise the watch clause's category filter would starve the card-case clause.</p>
-      <p>The reverse case matters too. In "black and blue watches", "black" is only a modifier. Clauses that contain nothing but a colour, brand or gender word get merged into their neighbour, so they don't trigger a catalog-wide search for "black".</p>
+      <blockquote><p>[!example] The reverse case matters too</p><p>In "black and blue watches", "black" is only a modifier. Clauses that contain nothing but a colour, brand or gender word get merged into their neighbour, so they don't trigger a catalog-wide search for "black".</p></blockquote>
 
       <h2>6. The Details That Make It Feel Right</h2>
       <ul>
@@ -959,7 +960,7 @@ other overhead                  ~500 ms</pre>
 
       <h2>3. Finding #1: The LLM Call Cascade</h2>
       <p>The SQL path made its calls in sequence: classify intent, re-derive intent, discover tables, analyse the schema, generate SQL, validate SQL. That's <strong>7-8 LLM calls per request</strong> where 2-3 would do. The step that re-derived intent was redundant, because the classifier had already decided the question was a SQL question.</p>
-      <p><strong>Plan:</strong> a single generation prompt with the relevant schema inlined, which analyses, generates and validates in one pass. It's the simplest architecture, the easiest to debug, and worth an estimated 8-12 seconds. The risk is SQL accuracy, so it ships behind a feature flag and gets A/B tested on 20+ reference questions.</p>
+      <blockquote><p>[!note] Plan</p><p>A single generation prompt with the relevant schema inlined, which analyses, generates and validates in one pass. It's the simplest architecture, the easiest to debug, and worth an estimated 8-12 seconds. The risk is SQL accuracy, so it ships behind a feature flag and gets A/B tested on 20+ reference questions.</p></blockquote>
 
       <h2>4. Finding #2: Streaming That Wasn't</h2>
       <p>Responses were re-chunked into 20-character pieces with a 15 ms pause between each. A 2,000-character answer means 100 chunks, or <strong>1.5 seconds of pure delay</strong>, added to a model that already streams natively. The fix is to forward tokens as they arrive.</p>
@@ -1026,7 +1027,7 @@ public ReadOnlySpan&lt;char&gt; ExtractToken(ReadOnlySpan&lt;char&gt; header) {
 }</pre>
 
       <h2>3. Results and Metrics</h2>
-      <p>After deploying these optimizations, load tests run via k6 showed a drop in p99 latency from 180ms to 42ms. Heap allocations per request dropped from 14KB to under 200 bytes. This not only improved user experience but also slashed our container resource requirements by half.</p>
+      <blockquote><p>[!success] p99 latency: 180 ms → 42 ms</p><p>After deploying these optimizations, load tests run via k6 showed a drop in p99 latency from 180ms to 42ms. Heap allocations per request dropped from 14KB to under 200 bytes. This not only improved user experience but also slashed our container resource requirements by half.</p></blockquote>
     `
   },
   {
@@ -1070,7 +1071,7 @@ export default function () {
 }</pre>
 
       <h2>Enforcing SLAs using Thresholds</h2>
-      <p>Using k6's <code>thresholds</code> feature, we can configure our CI/CD pipelines to fail the build automatically if p99 latency exceeds 200ms or if the error rate climbs above 1% during tests. This acts as an automated quality gate.</p>
+      <blockquote><p>[!tip] An automated quality gate</p><p>Using k6's <code>thresholds</code> feature, we can configure our CI/CD pipelines to fail the build automatically if p99 latency exceeds 200ms or if the error rate climbs above 1% during tests. This acts as an automated quality gate.</p></blockquote>
     `
   },
   {
@@ -1092,7 +1093,7 @@ export default function () {
       </ul>
 
       <h2>2. Optimizing Chunking and Context Windows</h2>
-      <p>One of the largest hurdles was preventing LLM hallucinations. We solved this by implementing parent-document retrieval. We store small chunks (100 tokens) for search, but return the parent document (500 tokens) to the LLM to preserve surrounding context. This improved accuracy by 35%.</p>
+      <blockquote><p>[!tip] Search small chunks, return the parent document</p><p>One of the largest hurdles was preventing LLM hallucinations. We solved this by implementing parent-document retrieval. We store small chunks (100 tokens) for search, but return the parent document (500 tokens) to the LLM to preserve surrounding context. This improved accuracy by 35%.</p></blockquote>
 
       <h2>3. Results</h2>
       <p>The developer assistant now answers natural language questions like 'How do I initialize the auth client?' within 3 seconds, citing exact source links. This has dramatically improved onboarding speed for new developers.</p>

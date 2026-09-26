@@ -766,6 +766,25 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
 }
 .vault-file:hover { color: hsl(var(--foreground)); }
 
+/* Draggable blog marquee (components/blog/blog-marquee.tsx). */
+.blog-marquee {
+  /* Vertical swipes still scroll the page; horizontal ones drag the strip. */
+  touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.blog-marquee[data-dragging] { cursor: grabbing; }
+.blog-marquee[data-dragging] .marquee-card { pointer-events: none; }
+/* Solid tint rather than backdrop blur: moving blurred cards is costly without a GPU. */
+.marquee-card {
+  border-radius: 1.25rem;
+  background: hsl(var(--glass-bg) / 0.78);
+  border: 1px solid hsl(var(--foreground) / 0.1);
+  box-shadow: 0 8px 24px -12px hsl(0 0% 0% / 0.35);
+  transition: border-color 0.2s;
+}
+.marquee-card:hover { border-color: hsl(var(--primary) / 0.45); }
+
 /* Rolling headline words (components/vault/rolling-text.tsx): four words,
    plus the first again so the loop restarts without a jump. */
 .rolling {
