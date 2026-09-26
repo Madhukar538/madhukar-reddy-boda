@@ -135,6 +135,6 @@ Swagger UI is available at `/swagger` in Development only.
 
 ## Deploy (Coolify)
 
-`docker-compose.yml` runs the API and MongoDB 7. MongoDB is on the private network only, with authentication on. Set `MONGO_APP_USER`, `MONGO_APP_PASSWORD`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. Route `api.dhucar.in` to port 8080 through the Cloudflare Tunnel.
+`docker-compose.yml` runs the API and MongoDB 7. MongoDB is on the private network only, with authentication on. Set `MONGO_APP_USER`, `MONGO_APP_PASSWORD`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
 
 On first start the API creates its indexes and imports `seed/content.json` into any empty collection. It never overwrites existing data. Regenerate the seed from the site with `npx tsx --tsconfig tsconfig.json scripts/export-content.ts`.
