@@ -5,6 +5,7 @@ import { ArrowRight, Bug, Rss } from 'lucide-react';
 import { BlogIndex } from '@/components/blog/blog-index';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
+import { getContent } from '@/lib/content';
 import { RollingText } from '@/components/vault/rolling-text';
 
 export const metadata: Metadata = {
@@ -14,8 +15,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  const topics = allTopics();
+export default async function Home() {
+  const { posts } = await getContent();
+  const topics = allTopics(posts);
 
   return (
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
@@ -53,7 +55,7 @@ export default function Home() {
         </div>
       </header>
 
-      <BlogIndex posts={summaries()} />
+      <BlogIndex posts={summaries(posts)} />
 
       {/* Topics */}
       <section aria-labelledby="topics-heading" className="mt-14 md:mt-20">

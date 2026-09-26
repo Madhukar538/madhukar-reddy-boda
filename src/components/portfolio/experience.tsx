@@ -1,11 +1,12 @@
 import { Briefcase, Calendar, MapPin } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
-import { clientProjects, experience } from '@/data/profile';
+import type { ClientProject } from '@/data/profile';
+import type { Experience as ExperienceData } from '@/lib/content';
 
 // Year a client engagement started, for ordering the timeline.
 const startYear = (duration: string) => Number(duration.match(/\d{4}/)?.[0] ?? 0);
 
-export function Experience() {
+export function Experience({ experience, clientProjects }: { experience: ExperienceData; clientProjects: ClientProject[] }) {
   const timeline = [...clientProjects].sort((a, b) => startYear(b.duration) - startYear(a.duration));
 
   return (

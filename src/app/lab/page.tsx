@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Research } from '@/components/portfolio/research';
+import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'R&D Lab — Boda Madhukar Reddy',
   description: 'Experiments in load testing, AI code review, RAG, IoT predictive maintenance, encryption, messaging and gRPC.',
 };
 
-export default function LabPage() {
+export default async function LabPage() {
+  const { rdProjects } = await getContent();
   return (
     <PageShell
       eyebrow="R&D Lab"
       title="Experiments & explorations."
       description="Where ideas get pressure-tested before they reach production."
     >
-      <Research />
+      <Research rdProjects={rdProjects} />
     </PageShell>
   );
 }

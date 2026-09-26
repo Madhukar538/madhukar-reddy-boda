@@ -1,4 +1,5 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import { getContent } from '@/lib/content';
 import { createPortfolioServer } from '@/lib/mcp-server';
 
 // MCP endpoint (Streamable HTTP, stateless). Each POST gets a fresh server
@@ -28,7 +29,7 @@ function siteUrl(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const server = createPortfolioServer(siteUrl(request));
+  const server = createPortfolioServer(siteUrl(request), await getContent());
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
     enableJsonResponse: true,

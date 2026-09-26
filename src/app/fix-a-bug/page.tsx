@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { BugProcess, BugReportForm } from '@/components/portfolio/bug-report-form';
+import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Fix a bug — Boda Madhukar Reddy',
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
     'Stuck on a bug, a slow API or an architecture question? Describe it and it becomes a triaged ticket on my phone.',
 };
 
-export default function FixABugPage() {
+export default async function FixABugPage() {
+  const { profile } = await getContent();
   return (
     <PageShell
       eyebrow="Hire me for a bug"
@@ -17,7 +19,7 @@ export default function FixABugPage() {
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_18rem] items-start">
         <BugReportForm />
-        <BugProcess />
+        <BugProcess email={profile.email} />
       </div>
     </PageShell>
   );

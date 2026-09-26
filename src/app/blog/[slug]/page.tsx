@@ -8,7 +8,8 @@ import { diagrams } from '@/data/diagrams';
 import { ReaderChrome } from '@/components/blog/reader-chrome';
 import { ShareButtons } from '@/components/blog/share-buttons';
 import { PostCard } from '@/components/blog/post-card';
-import { adjacentPosts, getPost, isoDate, posts, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
+import { adjacentPosts, getPost, isoDate, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
+import { getContent } from '@/lib/content';
 import { localGraph, postLinks } from '@/lib/vault';
 import { Properties } from '@/components/vault/properties';
 import { LinkedMentions } from '@/components/vault/linked-mentions';
@@ -19,7 +20,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = getPost((await getContent()).posts, slug);
   if (!post) return { title: 'Post not found' };
   return {
     title: `${post.title} — Boda Madhukar Reddy`,
@@ -40,20 +41,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export function generateStaticParams() {
-  return posts.map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  return (await getContent()).posts.map((post) => ({ slug: post.slug }));
 }
 
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const content = await getContent();
+  const post = getPost(content.posts, slug);
   if (!post) notFound();
 
   const { html, toc, words } = renderPost(post);
   const diagram = diagrams[post.slug];
-  const related = relatedPosts(post);
-  const { newer, older } = adjacentPosts(post);
-  const links = postLinks(post);
+  const related = relatedPosts(content.posts, post);
+  const { newer, older } = adjacentPosts(content.posts, post);
+  const links = postLinks(content, post);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -119,7 +121,7 @@ export default async function BlogPost({ params }: Props) {
 
         <aside className="lg:sticky lg:top-28 space-y-4">
           <ReaderChrome toc={toc} words={words} backlinks={links.backlinks.length + links.mentions.length} />
-          <LocalGraphLazy graph={localGraph(post.slug)} />
+          <LocalGraphLazy graph={localGraph(content, post.slug)} />
         </aside>
       </div>
 

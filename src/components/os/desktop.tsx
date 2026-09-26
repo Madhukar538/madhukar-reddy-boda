@@ -7,7 +7,6 @@ import { ChevronLeft, LogOut, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LiquidLens } from '@/components/liquid-lens';
-import { keyProjects, rdProjects } from '@/data/profile';
 import { APPS, appById, type AppDef, type AppId, type OsData } from './apps';
 
 type Win = {
@@ -114,10 +113,10 @@ function Spotlight({ data, onClose, onPick }: { data: OsData; onClose: () => voi
     () => [
       ...APPS.map((a) => ({ label: a.name, hint: 'App', app: a.id })),
       ...data.posts.map((p) => ({ label: p.title, hint: 'Blog post', app: 'reader' as AppId, payload: p.slug })),
-      ...keyProjects.map((p) => ({ label: p.title, hint: 'Project', app: 'projects' as AppId })),
-      ...rdProjects.map((p) => ({ label: p.title, hint: `Lab · ${p.status}`, app: 'lab' as AppId })),
+      ...data.content.keyProjects.map((p) => ({ label: p.title, hint: 'Project', app: 'projects' as AppId })),
+      ...data.content.rdProjects.map((p) => ({ label: p.title, hint: `Lab · ${p.status}`, app: 'lab' as AppId })),
     ],
-    [data.posts]
+    [data]
   );
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();

@@ -109,6 +109,18 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 The `/admin` pages in the Next.js site will drive these steps; they come in the next PR.
 
+## Connecting the site
+
+Set these on the Next.js app (see `.env.example`):
+
+| Variable | Notes |
+|---|---|
+| `API_URL` | Server-side base URL, e.g. `https://api.dhucar.in`. Without it the site uses its built-in content. |
+| `NEXT_PUBLIC_API_URL` | Same URL, for the page-view beacon. Needed at build time. |
+| `REVALIDATE_SECRET` | Same value as `Portfolio__Site__RevalidateSecret`. |
+
+Content is cached in Next's data cache under the tags `posts`, `projects` and `profile`. After every change the API calls `/api/revalidate`, which checks the signature and timestamp and refreshes only those tags, so edits appear on the next request. The cache also refreshes hourly in case a webhook is missed. If the API can't be reached, pages keep their last good content, or fall back to the built-in content.
+
 ## Run and test
 
 ```bash

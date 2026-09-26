@@ -6,7 +6,7 @@ import { m } from 'framer-motion';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { anchorId, cn } from '@/lib/utils';
-import { rdProjects, type Status } from '@/data/profile';
+import type { Experiment, Status } from '@/data/profile';
 
 
 const statusChip: Record<Status, { className: string; label: string }> = {
@@ -24,7 +24,7 @@ const filters: { id: 'ALL' | Status; label: string }[] = [
   { id: 'RESEARCH', label: 'Research' },
 ];
 
-export function Research() {
+export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
   const [filter, setFilter] = useState<'ALL' | Status>('ALL');
   // Experiments with a full write-up lead: they're the strongest evidence.
   const visible = (filter === 'ALL' ? rdProjects : rdProjects.filter((p) => p.status === filter))

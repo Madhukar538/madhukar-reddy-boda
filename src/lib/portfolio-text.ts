@@ -1,4 +1,4 @@
-import { blogs, type BlogPost } from '@/data/blogs';
+import type { BlogPost } from '@/data/blogs';
 
 /** Blog HTML → readable Markdown-ish text for AI clients and llms.txt. */
 export function htmlToText(html: string): string {
@@ -57,11 +57,11 @@ const tokenize = (text: string) =>
  * Small field-weighted keyword search over the blog. Title and tag matches
  * count most, then the excerpt, then the body.
  */
-export function searchBlog(query: string, limit = 5) {
+export function searchBlog(posts: BlogPost[], query: string, limit = 5) {
   const terms = Array.from(new Set(tokenize(query)));
   if (terms.length === 0) return [];
 
-  return blogs
+  return posts
     .map((post) => {
       const fields: [string[], number][] = [
         [tokenize(post.title), 5],

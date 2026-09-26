@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { clientProjects, keyProjects, rdProjects, type Status } from '@/data/profile';
-import { posts } from '@/lib/blog';
+import type { Status } from '@/data/profile';
+import type { SiteContent } from '@/lib/content';
 import { anchorId } from '@/lib/utils';
 
 type File = { title: string; href: string };
@@ -43,7 +43,8 @@ function Files({ files }: { files: File[] }) {
  * Obsidian's file explorer: the whole site as a vault of folders and notes.
  * Native <details> folders, so it works without JavaScript.
  */
-export function FileExplorer() {
+export function FileExplorer({ content }: { content: SiteContent }) {
+  const { posts, keyProjects, clientProjects, rdProjects } = content;
   const categories = [...new Set(posts.map((p) => p.category))];
   const project = (p: { title: string }) => ({ title: p.title, href: `/projects#${anchorId(p.title)}` });
 

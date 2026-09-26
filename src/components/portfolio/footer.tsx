@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import { OsModeToggle } from '@/components/os/os-mode';
-import { profile, socialLinks } from '@/data/profile';
+import type { Profile, SocialLink } from '@/lib/content';
 
 const pages = [
   { href: '/', label: 'Blog' },
@@ -17,12 +17,11 @@ const pages = [
 
 const icons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
 
-const socials = [
-  { href: `mailto:${profile.email}`, icon: Mail, label: 'Email' },
-  ...socialLinks.map(({ network, href }) => ({ href, icon: icons[network], label: network })),
-];
-
-export function Footer() {
+export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks: SocialLink[] }) {
+  const socials = [
+    { href: `mailto:${profile.email}`, icon: Mail, label: 'Email' },
+    ...socialLinks.map(({ network, href }) => ({ href, icon: icons[network], label: network })),
+  ];
   const currentYear = new Date().getFullYear();
   return (
     // Bottom padding on mobile keeps the footer clear of the floating tab bar.

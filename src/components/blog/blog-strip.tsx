@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { posts } from '@/lib/blog';
+import type { BlogPost } from '@/data/blogs';
 import { BlogMarquee } from './blog-marquee';
 
 /** "From the blog" section: every post in a draggable marquee, newest first. */
-export function BlogStrip({ className }: { className?: string }) {
+export function BlogStrip({ posts, className }: { posts: BlogPost[]; className?: string }) {
   const items = posts.map(({ slug, title, excerpt, date, readTime, category }) => ({ slug, title, excerpt, date, readTime, category }));
   return (
     <section aria-labelledby="blog-strip-heading" className={className}>

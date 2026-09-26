@@ -1,15 +1,7 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 // The MCP SDK validates with zod 4; the rest of the app still uses zod 3.
 import { z } from 'zod4';
-import { blogs } from '@/data/blogs';
-import {
-  education,
-  experience,
-  keyProjects,
-  profile,
-  rdProjects,
-  skillCategories,
-} from '@/data/profile';
+import type { Profile, SiteContent } from '@/lib/content';
 import { postToText, searchBlog } from '@/lib/portfolio-text';
 
 /**
@@ -25,7 +17,7 @@ const text = (value: string) => ({ content: [{ type: 'text' as const, text: valu
 
 const readOnly = { readOnlyHint: true, openWorldHint: false } as const;
 
-function contact() {
+function contact(profile: Profile) {
   return {
     name: profile.name,
     title: profile.title,
@@ -38,7 +30,8 @@ function contact() {
   };
 }
 
-export function createPortfolioServer(siteUrl: string) {
+export function createPortfolioServer(siteUrl: string, content: SiteContent) {
+  const { posts: blogs, profile, experience, education, skillCategories, keyProjects, rdProjects } = content;
   const server = new McpServer(
     { name: 'boda-madhukar-reddy-portfolio', version: '1.0.0' },
     {
@@ -58,7 +51,7 @@ export function createPortfolioServer(siteUrl: string) {
     },
     async () =>
       json({
-        ...contact(),
+        ...contact(profile),
         summary: profile.summary,
         education: `${education.degree}, ${education.institution}`,
         resume_pdf: `${siteUrl}/resume.pdf`,
@@ -151,7 +144,7 @@ export function createPortfolioServer(siteUrl: string) {
       annotations: readOnly,
     },
     async ({ query, limit }) => {
-      const results = searchBlog(query, limit).map((r) => ({ ...r, url: `${siteUrl}${r.url}` }));
+      const results = searchBlog(blogs, query, limit).map((r) => ({ ...r, url: `${siteUrl}${r.url}` }));
       return json({ query, count: results.length, results });
     }
   );
@@ -207,7 +200,7 @@ export function createPortfolioServer(siteUrl: string) {
         {
           uri: uri.href,
           mimeType: 'application/json',
-          text: JSON.stringify({ ...contact(), summary: profile.summary, experience, skills: skillCategories, education }, null, 2),
+          text: JSON.stringify({ ...contact(profile), summary: profile.summary, experience, skills: skillCategories, education }, null, 2),
         },
       ],
     })

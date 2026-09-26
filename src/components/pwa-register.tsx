@@ -24,6 +24,8 @@ export function PWARegister() {
 
     let registration: ServiceWorkerRegistration | undefined;
     let reloading = false;
+    // A first install also claims the page; only a replaced worker needs a reload.
+    const hadController = Boolean(navigator.serviceWorker.controller);
 
     const trackInstalling = (worker: ServiceWorker | null) => {
       worker?.addEventListener('statechange', () => {
@@ -35,7 +37,7 @@ export function PWARegister() {
     };
 
     const onControllerChange = () => {
-      if (reloading) return;
+      if (reloading || !hadController) return;
       reloading = true;
       window.location.reload();
     };

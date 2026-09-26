@@ -12,6 +12,8 @@ import { MotionProvider } from '@/components/motion-provider';
 import { QuickSwitcher } from '@/components/vault/quick-switcher';
 import { HoverPreview } from '@/components/vault/hover-preview';
 import { siteUrl } from '@/lib/blog';
+import { getContent } from '@/lib/content';
+import { TrackingBeacon } from '@/components/tracking-beacon';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -46,11 +48,12 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', vari
 // Applies the saved accent tint before first paint to avoid a color flash.
 const accentScript = `try{var a=localStorage.getItem('portfolio-accent');if(a&&a!=='blue')document.documentElement.setAttribute('data-accent',a)}catch(e){}`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { profile, socialLinks } = await getContent();
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
@@ -71,10 +74,11 @@ export default function RootLayout({
             <main className="relative z-0 min-h-[70dvh]">
               {children}
             </main>
-            <Footer />
+            <Footer profile={profile} socialLinks={socialLinks} />
             <Toaster />
             <QuickSwitcher />
             <HoverPreview />
+            <TrackingBeacon />
           </OsModeProvider>
           </MotionProvider>
         </ThemeProvider>

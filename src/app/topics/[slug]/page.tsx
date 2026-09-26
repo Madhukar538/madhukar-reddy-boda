@@ -5,21 +5,26 @@ import { ArrowLeft } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { PostCard } from '@/components/blog/post-card';
 import { allTopics, postsForTopic } from '@/lib/blog';
+import { getContent } from '@/lib/content';
 
 type Props = { params: Promise<{ slug: string }> };
 
-const findTopic = (slug: string) => allTopics().find((t) => t.slug === slug);
+const findTopic = async (slug: string) => {
+  const { posts } = await getContent();
+  const topic = allTopics(posts).find((t) => t.slug === slug);
+  return topic && { ...topic, posts: postsForTopic(posts, topic.slug) };
+};
 
-export function generateStaticParams() {
-  return allTopics().map((t) => ({ slug: t.slug }));
+export async function generateStaticParams() {
+  return allTopics((await getContent()).posts).map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const topic = findTopic((await params).slug);
+  const topic = await findTopic((await params).slug);
   if (!topic) return { title: 'Topic not found' };
   return {
     title: `${topic.name} — Boda Madhukar Reddy`,
-    description: `Posts about ${topic.name}: ${postsForTopic(topic.slug)
+    description: `Posts about ${topic.name}: ${topic.posts
       .map((p) => p.title)
       .join('; ')}`.slice(0, 300),
     alternates: { canonical: `/topics/${topic.slug}` },
@@ -27,9 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function TopicPage({ params }: Props) {
-  const topic = findTopic((await params).slug);
+  const topic = await findTopic((await params).slug);
   if (!topic) notFound();
-  const list = postsForTopic(topic.slug);
+  const list = topic.posts;
 
   return (
     <PageShell
