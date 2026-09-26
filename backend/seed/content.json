@@ -1,0 +1,969 @@
+{
+  "posts": [
+    {
+      "slug": "ai-development-workflow-obsidian-mcp-skills",
+      "title": "Memory, Reach and Habits: How I Use an Obsidian Vault, MCP and Skills to Ship Production-Grade Code",
+      "excerpt": "AI assistants write code quickly but know nothing about my systems. My workflow gives them three things: an Obsidian vault as memory, MCP servers as reach, and Skills as habits. Then nothing ships until it's measured.",
+      "content": "<p class=\"lead\">An AI assistant can write a controller in seconds. What it can't do on its own is know why we chose one database per tenant, how a failed deploy was fixed last month, or what every API response in our house style looks like. Most \"the AI wrote bad code\" moments are really missing context. My workflow is built around closing that gap: an <strong>Obsidian vault</strong> as the assistant's memory, <strong>MCP servers</strong> as its reach into my systems, and <strong>Skills</strong> as its habits. Then one rule on top: nothing ships until it has been measured.</p>\n\n      <h2>1. The Problem: Speed Without Context</h2>\n      <p>Assistants are fast and fluent, and that makes their gaps easy to miss. Left alone, they invent conventions, forget decisions made three weeks ago and declare a fix done because it compiles. Production-grade work needs three things a model doesn't bring with it:</p>\n      <ul>\n        <li><strong>Context:</strong> the decisions, trade-offs and incidents behind the code.</li>\n        <li><strong>Conventions:</strong> how things are done here, applied every time rather than when remembered.</li>\n        <li><strong>Proof:</strong> evidence that a change works, from a build, a test or a measurement.</li>\n      </ul>\n\n      <h2>2. The Stack at a Glance</h2>\n      <pre>\nObsidian vault ─▶ Obsidian MCP server ──┐\n (ADRs, runbooks,                        │\n  project notes, prompts)                │\n                                         ├──▶ Claude · Claude Code · Antigravity\nCode + SQL Server ─▶ code-intel MCP ─────┤            │\n                                         │            ▼\nSkills (house style, doc formats) ───────┘   branch ─▶ build ─▶ test ─▶ measure ─▶ PR\n                                                                             │\n                                  vault updated (ADR, runbook) ◀── merge ◀───┘</pre>\n\n      <h2>3. The Vault: Memory</h2>\n      <p>My Obsidian vault is where decisions live. It has four kinds of notes, and each one answers a different question an assistant would otherwise guess at:</p>\n      <ul>\n        <li><strong>Architecture notes and ADRs</strong> answer <em>why is it built like this?</em> One note per decision: the context, the options, what we chose and what it costs.</li>\n        <li><strong>Runbooks and incidents</strong> answer <em>what went wrong before?</em> Deploy steps, production fixes and post-mortems.</li>\n        <li><strong>Project and R&amp;D notes</strong> answer <em>what exists and how does it connect?</em> One note per project or experiment, linked by the technologies they share.</li>\n        <li><strong>Prompts and AI context</strong> answer <em>how should the assistant work here?</em> Reusable prompts, conventions and the context I hand to every session.</li>\n      </ul>\n      <p>Short, consistently shaped notes matter more than long ones. A decision note in this shape is easy for a person to skim and easy for a model to use:</p>\n      <pre class=\"language-markdown\">\n# ADR: One database per workspace\nStatus: accepted\nContext: tenants must never see each other's data; removing a tenant must be trivial\nDecision: each workspace gets its own database, named after the workspace\nConsequences: + isolation by construction, + delete = drop database\n              - one provisioning step per new workspace\nLinks: [[MongoDB]] [[Multi-tenancy]] [[MCP server for code intelligence]]</pre>\n      <blockquote><p>[!tip] Link notes by technology</p><p>Links are what turn a folder of notes into a map. The <a href=\"/graph\">knowledge graph</a> on this site is modelled on the vault's graph view: projects, experiments and posts connected through the technologies they share.</p></blockquote>\n\n      <h2>4. MCP: Reach</h2>\n      <p>The Model Context Protocol is how the assistant reaches that memory and my systems without me pasting anything. Three servers do most of the work:</p>\n      <ul>\n        <li><strong>Obsidian MCP server:</strong> the assistant searches and reads the vault directly. \"Check the ADRs before changing tenant storage\" becomes something it can actually do.</li>\n        <li><strong>Code-intelligence MCP server:</strong> the server I built that maps C# solutions with Roslyn and SQL Server schemas through catalogue views, exposed as 40+ tools. It answers \"who calls this stored procedure?\" from facts instead of guesses. The <a href=\"/blog/mcp-server-code-database-intelligence\">full write-up is here</a>.</li>\n        <li><strong>This portfolio's own MCP endpoint:</strong> the same idea pointed outwards. Any MCP client can <a href=\"/ai\">query my projects and posts</a>.</li>\n      </ul>\n      <blockquote><p>[!warning] Reach is not permission</p><p>An MCP server can read far more than a task needs. Scope each one to what it serves, keep secrets out of notes, and treat anything an assistant reads from outside as data, not instructions.</p></blockquote>\n\n      <h2>5. Skills: Habits</h2>\n      <p>A convention that lives only in a senior developer's head gets applied when someone remembers it. A Skill packages it so the assistant applies it every time it's relevant.</p>\n      <ul>\n        <li><strong>My .NET API skill</strong> encodes our house style for Web APIs: Controller, business layer, data layer and DTOs; convention-based dependency injection; structured logging; global exception handling; JWT authentication; and one uniform response envelope. \"Add an endpoint\" now produces code that matches the rest of the codebase instead of a generic tutorial.</li>\n        <li><strong>Document skills</strong> for PDF, Word, Excel and PowerPoint handle the non-code side: specs, reports and client documents, in formats people actually open.</li>\n      </ul>\n      <blockquote><p>[!note] Next skills</p><p>The vault already holds the raw material for more: runbooks that can become deployment checklists, and incident notes that can become a review checklist for the mistakes we have already made once.</p></blockquote>\n\n      <h2>6. The Tools</h2>\n      <ul>\n        <li><strong>Claude</strong>, with MCP servers and Skills attached, for design, research and writing: reading the vault, querying the code map, drafting ADRs.</li>\n        <li><strong>Claude Code</strong> for changes to a repository: it works on a branch, runs the build, the type checker and the tests, and opens a pull request.</li>\n        <li><strong>Antigravity</strong> for agent-driven work inside the editor.</li>\n      </ul>\n      <p>The tools matter less than what they are connected to. The same model is a different assistant with the vault, the code map and the house style behind it.</p>\n\n      <h2>7. Production-Grade Means Measured</h2>\n      <p>A case study from this site. PageSpeed Insights scored the pages poorly on mobile. The workflow was: measure, find the cause, change one thing, measure again, and compare against <code>main</code>.</p>\n      <ul>\n        <li><strong>Measure:</strong> Lighthouse with mobile settings showed about <strong>25 seconds of Total Blocking Time</strong> on every page.</li>\n        <li><strong>Find the cause:</strong> a WebGL fluid background redrew every frame from page load. With it switched off, the home page went from 48 to 83.</li>\n        <li><strong>Fix, then re-measure:</strong> start the effect on the first interaction, paint content without waiting for JavaScript, self-host fonts and remove a 100 KB inlined image. Blocking time dropped to a few hundred milliseconds across the site.</li>\n        <li><strong>Check the claim:</strong> Lighthouse varies by about five points run to run, so every later feature was compared against <code>main</code> in alternating runs, and browser tests confirmed it behaved the same afterwards.</li>\n      </ul>\n      <blockquote><p>[!danger] The first fix isn't always a fix</p><p>One \"optimisation\", putting an animated element on its own compositor layer, made the score worse on a phone without a GPU. Only a measurement caught it, and it was reverted. An assistant that says \"this should be faster\" has made a prediction, not a result.</p></blockquote>\n\n      <h2>8. The Loop</h2>\n      <ol>\n        <li>Write down the decision or the problem in the vault.</li>\n        <li>The assistant reads the relevant notes through MCP, and the code map for the parts of the system involved.</li>\n        <li>Skills shape the change so it matches the house style.</li>\n        <li>The agent implements it on a branch and proves it: types, build, tests, and a measurement where performance is involved.</li>\n        <li>Review and merge the pull request.</li>\n        <li>Update the vault: a new ADR, a runbook step, or an incident note. The next session starts with more context than this one did.</li>\n      </ol>\n\n      <h2>9. Takeaways</h2>\n      <ul>\n        <li>Most bad AI output is missing context. Give the assistant <strong>memory</strong> (a vault), <strong>reach</strong> (MCP) and <strong>habits</strong> (Skills).</li>\n        <li>Keep notes short, consistently shaped and linked. Structure is what makes them usable by a model.</li>\n        <li>Encode conventions once as a Skill instead of repeating them in every prompt.</li>\n        <li>Production-grade means measured: build, test, and compare against a baseline before claiming anything.</li>\n        <li>Close the loop. Every merged change should leave the vault a little smarter.</li>\n      </ul>",
+      "date": "September 26, 2026",
+      "category": "Artificial Intelligence",
+      "tags": [
+        "MCP",
+        "Obsidian",
+        "Claude Code",
+        "Skills",
+        "Performance"
+      ]
+    },
+    {
+      "slug": "mcp-server-code-database-intelligence",
+      "title": "Giving AI Assistants a Map of Your Codebase: An MCP Server for C# Code and SQL Server Schemas",
+      "excerpt": "How I built a Model Context Protocol server that analyses C# solutions with Roslyn and SQL Server schemas through catalogue views, stores a structured map in MongoDB per workspace, and exposes it to AI assistants as 40+ tools.",
+      "content": "<p class=\"lead\">AI coding assistants are great with the file you have open and poor at answering questions about a 40-project solution they have never seen: \"Who calls this stored procedure?\", \"Which tables does cancelling an order touch?\", \"What does this DTO look like?\". This post walks through an MCP server I built to fix that. It reads C# solutions with Roslyn and SQL Server schemas through system views, stores a structured map of both in MongoDB, and exposes that map to any AI assistant as more than 40 Model Context Protocol tools.</p>\n\n      <h2>1. The Problem: Context, Not Intelligence</h2>\n      <p>A language model can reason about code perfectly well. What it lacks in a large legacy system is the <em>map</em>: which class lives in which project, which methods call which stored procedures, which tables those procedures read and write. Pasting files into a chat doesn't scale, and plain text search misses what a name <em>means</em>. <code>Order</code> the class, <code>Order</code> the table and <code>order</code> the variable all look the same to grep.</p>\n      <p>The approach: <strong>precompute the map once, keep it fresh on a schedule, and let the assistant query it</strong> instead of guessing. The Model Context Protocol (MCP) is the standard way to plug that kind of query surface into Claude, Copilot, Cursor or any other MCP client.</p>\n\n      <h2>2. Architecture at a Glance</h2>\n      <pre>\nSource repositories ──┐\n                       ├──▶ Sync worker ──▶ Roslyn analyzer ────────┐\n SQL Server database ──┘   (per workspace)  Schema extractor ───────┤\n                                                                    ▼\n                                                   MongoDB (one database per workspace)\n                                                                    │\n AI assistant ◀──── MCP endpoint /{workspace}/mcp ◀─── tool executor ┘</pre>\n      <ul>\n        <li><strong>Sync worker</strong>: a background service that, per workspace and on a schedule, downloads the source, analyses it and extracts the database schema.</li>\n        <li><strong>Roslyn analyzer</strong>: turns every class and method into structured metadata: signatures, dependencies, stored procedures used, complexity and documentation.</li>\n        <li><strong>Schema extractor</strong>: reads tables, columns, keys, indexes and stored procedures from SQL Server's catalogue views.</li>\n        <li><strong>MongoDB</strong>: one database per workspace, holding classes, methods, method source, tables and stored procedures.</li>\n        <li><strong>MCP endpoint</strong>: JSON-RPC over HTTP at <code>/{workspace}/mcp</code>, backed by a single tool executor.</li>\n        <li><strong>Blazor dashboard</strong>: workspaces, sync status and live logs for whoever operates it.</li>\n      </ul>\n\n      <h2>3. Step 1: Fetching Source Without a Working Copy</h2>\n      <p>The server never keeps a clone. Each sync asks the Git host's REST API for the repository's full item list (optionally on a specific branch), then downloads every file into a directory created for that run only:</p>\n      <pre class=\"language-csharp\">\n// 1. List every item in the repository (optionally on a given branch)\nvar itemsUrl = $\"{baseUrl}/repositories/{repoId}/items\"\n             + $\"?scopePath=/&amp;recursionLevel=Full{branchFilter}\";\n\n// 2. Download each file into a throwaway directory for this sync run\nforeach (var item in items.Where(i =&gt; !i.IsFolder))\n{\n    var localPath = Path.Combine(repoDir, item.Path.TrimStart('/'));\n    Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);\n    var bytes = await http.GetByteArrayAsync(FileUrl(repoId, item.Path));\n    await File.WriteAllBytesAsync(localPath, bytes);\n}</pre>\n      <pre class=\"language-csharp\">\nvar workDir = Path.Combine(Path.GetTempPath(), $\"code-sync_{Guid.NewGuid():N}\");\nDirectory.CreateDirectory(workDir);\ntry\n{\n    // download → analyze → extract schema → save\n}\nfinally\n{\n    Directory.Delete(workDir, recursive: true);   // nothing left on disk, even on failure\n}</pre>\n      <blockquote><p>[!tip] Three small decisions keep this robust</p><p>The temp directory has a GUID in its name, so overlapping runs can never collide. Cleanup sits in <code>finally</code>, so a failed run leaves nothing behind. And a missing branch returns \"skip this repository\" instead of an exception, so one misconfigured repo doesn't cancel the whole sync.</p></blockquote>\n\n      <h2>4. Step 2: Understanding the Code with Roslyn</h2>\n      <p>Regexes can find the word <code>class</code>. Roslyn, the C# compiler as a library, knows what every identifier <em>binds to</em>. The analyzer loads each solution through <code>MSBuildWorkspace</code>, compiles each project, and walks every document:</p>\n      <pre class=\"language-csharp\">\n// Once per process: point Roslyn at an installed MSBuild\nif (!MSBuildLocator.IsRegistered)\n    MSBuildLocator.RegisterDefaults();\n\nvar workspace = MSBuildWorkspace.Create();\nworkspace.WorkspaceFailed += (_, e) =&gt; logger.LogWarning(e.Diagnostic.Message);\n\nforeach (var slnPath in Directory.GetFiles(sourceDir, \"*.sln\", SearchOption.AllDirectories))\n{\n    var solution = await workspace.OpenSolutionAsync(slnPath);\n    foreach (var project in solution.Projects)\n    {\n        if (await project.GetCompilationAsync() is null) continue;\n\n        foreach (var document in project.Documents.Where(d =&gt; d.FilePath!.EndsWith(\".cs\")))\n        {\n            var root  = await document.GetSyntaxRootAsync();      // what the code says\n            var model = await document.GetSemanticModelAsync();   // what it means\n            foreach (var cls in root!.DescendantNodes().OfType&lt;ClassDeclarationSyntax&gt;())\n                results.Add(Describe(cls, model!, project, slnPath));\n        }\n    }\n}</pre>\n      <p>The key distinction is <strong>syntax tree vs semantic model</strong>. The syntax tree is the shape of the text: this is a class declaration, that is a method call. The semantic model is what the compiler concluded: this identifier is the type <code>OrderRepository</code> from the <code>Shop.Data</code> assembly. Almost everything useful below comes from the semantic model.</p>\n\n      <h3>What gets extracted per class</h3>\n      <p>Each class becomes one document with its methods nested inside. The ID combines namespace, class, project and file, so the same class name in two projects stays distinct:</p>\n      <pre class=\"language-json\">\n{\n  \"_id\": \"Shop.Orders.OrderService@Shop.Orders:OrderService.cs\",\n  \"className\": \"OrderService\",\n  \"namespace\": \"Shop.Orders\",\n  \"project\": \"Shop.Orders\",\n  \"solution\": \"Shop.sln\",\n  \"layer\": \"Application\",\n  \"type\": \"Service\",\n  \"documentation\": \"Creates, prices and cancels orders.\",\n  \"baseTypes\": [\"IOrderService\"],\n  \"dependencies\": [\n    { \"target\": \"OrderRepository\", \"project\": \"Shop.Data\", \"referenceType\": \"ProjectReference\" }\n  ],\n  \"methods\": [\n    {\n      \"methodName\": \"CancelOrderAsync\",\n      \"returnType\": \"Task&lt;bool&gt;\",\n      \"parameters\": [{ \"name\": \"orderId\", \"type\": \"int\" }],\n      \"storedProcedures\": [\"usp_CancelOrder\"],\n      \"cyclomaticComplexity\": 4,\n      \"linesOfCode\": 21\n    }\n  ]\n}</pre>\n\n      <h3>Dependencies from the semantic model</h3>\n      <p>For every identifier in a class, ask the semantic model which type it refers to. Framework types are skipped, and only types defined in the solution's own projects are kept, labelled as same-project or cross-project references:</p>\n      <pre class=\"language-csharp\">\nforeach (var id in cls.DescendantNodes().OfType&lt;IdentifierNameSyntax&gt;())\n{\n    // Ask the semantic model what this name actually refers to\n    if (model.GetSymbolInfo(id).Symbol is not INamedTypeSymbol type) continue;\n    if (type.ContainingNamespace?.ToString().StartsWith(\"System\") == true) continue;\n\n    // Keep only types that live in this solution's own projects\n    var owner = solution.Projects.FirstOrDefault(p =&gt; p.AssemblyName == type.ContainingAssembly?.Name);\n    if (owner is null) continue;\n\n    deps.TryAdd($\"{type.Name}:{owner.Name}\", new DependencyInfo\n    {\n        Target = type.Name,\n        Project = owner.Name,\n        ReferenceType = owner.AssemblyName == model.Compilation.Assembly.Name\n            ? \"SameProject\" : \"ProjectReference\",\n    });\n}</pre>\n      <p>That turns \"what does this class depend on?\" into an exact answer across project boundaries, which plain text search cannot give.</p>\n\n      <h3>Stored procedures, found where they are named</h3>\n      <p>In data-heavy .NET code, stored procedure names usually appear as string literals passed to <code>SqlCommand</code> or Dapper. Scanning each method's string literals for procedure-style names links C# methods to database logic, and that link powers tools like \"who calls this procedure?\":</p>\n      <pre class=\"language-csharp\">\nvar names = method.DescendantNodes()\n    .OfType&lt;LiteralExpressionSyntax&gt;()\n    .Where(l =&gt; l.IsKind(SyntaxKind.StringLiteralExpression))\n    .Select(l =&gt; l.Token.ValueText)\n    .Where(s =&gt; Regex.IsMatch(s, @\"^(sp_|usp_|proc_)[A-Za-z0-9_]+$\", RegexOptions.IgnoreCase))\n    .Distinct();</pre>\n\n      <h3>Complexity and size</h3>\n      <p>Cyclomatic complexity is 1 plus the number of decision points. With a syntax tree that is a count of node types. Lines of code skip blanks and comments. Together they let an assistant answer \"where are the riskiest methods?\":</p>\n      <pre class=\"language-csharp\">\nint complexity = 1\n    + method.DescendantNodes().OfType&lt;IfStatementSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;WhileStatementSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;ForStatementSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;ForEachStatementSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;CaseSwitchLabelSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;CatchClauseSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;ConditionalExpressionSyntax&gt;().Count()\n    + method.DescendantNodes().OfType&lt;BinaryExpressionSyntax&gt;()\n          .Count(b =&gt; b.IsKind(SyntaxKind.LogicalAndExpression) || b.IsKind(SyntaxKind.LogicalOrExpression));</pre>\n\n      <h3>Documentation, layer and type</h3>\n      <p>XML doc comments come from the symbol (<code>GetDocumentationCommentXml()</code>) with the <code>&lt;summary&gt;</code> extracted. Layer and type are inferred from conventions: namespaces containing <code>.Api</code>, <code>.Application</code>, <code>.Infrastructure</code> or <code>.Domain</code>, and class names ending in <code>Controller</code>, <code>Service</code>, <code>Repository</code>, <code>Dto</code> or <code>Request</code>. Cheap heuristics, but they make questions like \"list the infrastructure classes in project X\" possible.</p>\n\n      <h3>Method source, stored separately</h3>\n      <p>The full source of every method is saved in its own collection, keyed by file and method name. Metadata documents stay small and fast to scan, and <code>get_method_source</code> can still hand the assistant the exact code when it needs it, instead of the assistant guessing at an implementation from its signature.</p>\n\n      <h2>5. Step 3: Reading the Database Schema</h2>\n      <p>SQL Server describes itself. <code>INFORMATION_SCHEMA.TABLES</code>, <code>COLUMNS</code>, <code>ROUTINES</code> and <code>PARAMETERS</code> give tables, columns, procedure definitions and parameters. The <code>sys.*</code> catalogue views fill in what the standard views don't cover, such as foreign keys and indexes:</p>\n      <pre class=\"language-sql\">\nSELECT fk.name  AS ForeignKey,\n       c.name   AS ColumnName,\n       rt.name  AS ReferencedTable,\n       rc.name  AS ReferencedColumn\nFROM sys.foreign_keys fk\nJOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id\nJOIN sys.columns c  ON fkc.parent_object_id = c.object_id  AND fkc.parent_column_id = c.column_id\nJOIN sys.tables  t  ON fk.parent_object_id = t.object_id\nJOIN sys.tables  rt ON fk.referenced_object_id = rt.object_id\nJOIN sys.columns rc ON fkc.referenced_object_id = rc.object_id AND fkc.referenced_column_id = rc.column_id\nWHERE t.name = @TableName;</pre>\n      <p>With foreign keys and procedure definitions stored next to the code metadata, the assistant can follow a feature end to end: controller → service → stored procedure → tables → related tables.</p>\n\n      <h2>6. Step 4: Storing the Map in MongoDB</h2>\n      <p>Code metadata is naturally nested (class → methods → parameters) and its shape changes as the analyzer learns new tricks, so a document store fits better than a relational schema. Every write is an <strong>idempotent upsert</strong> keyed on a natural identity: class ID for classes, schema plus name for tables and procedures. Re-running a sync updates in place instead of duplicating:</p>\n      <pre class=\"language-csharp\">\nvar ops = tables.Select(t =&gt; new ReplaceOneModel&lt;TableSchema&gt;(\n    Builders&lt;TableSchema&gt;.Filter.And(\n        Builders&lt;TableSchema&gt;.Filter.Eq(x =&gt; x.Schema, t.Schema),\n        Builders&lt;TableSchema&gt;.Filter.Eq(x =&gt; x.TableName, t.TableName)),\n    t) { IsUpsert = true });\n\nawait collection.BulkWriteAsync(ops);   // one round trip, safe to re-run</pre>\n      <p>One ordering detail matters: class metadata is saved <em>before</em> the database step runs. If the SQL server is unreachable, the code map is still updated, and a partial sync beats an all-or-nothing one.</p>\n\n      <h2>7. Multi-Tenancy: One Server, Many Workspaces</h2>\n      <p>One deployment serves several independent codebases. Each <strong>workspace</strong> is a document describing what to sync and how often:</p>\n      <pre class=\"language-json\">\n{\n  \"name\": \"shop-platform\",              // also the MongoDB database name\n  \"repositories\": [\"shop-api\", \"shop-admin\"],\n  \"branch\": \"main\",\n  \"dbConnectionString\": \"Server=…;Database=ShopDb;…\",\n  \"dbName\": \"ShopDb\",\n  \"syncFrequencyMinutes\": 240,\n  \"status\": \"Pending\",                  // Pending → Active → Pending | Failed | Disabled\n  \"lastRunUtc\": \"2026-09-23T04:00:00Z\",\n  \"nextRunUtc\": \"2026-09-23T08:00:00Z\"\n}</pre>\n      <p>Each workspace gets its <strong>own MongoDB database</strong>, named after the workspace, so data never mixes and removing a workspace is a single drop. A provisioner creates the database and its collections the first time a workspace syncs.</p>\n      <p>At request time a scoped <code>TenantProvider</code> carries the workspace name taken from the URL, and every Mongo access resolves its database through it:</p>\n      <pre class=\"language-csharp\">\npublic class TenantProvider : ITenantProvider   // registered as Scoped\n{\n    public string? DatabaseName { get; set; }\n}\n\npublic IMongoDatabase GetDatabase() =&gt;\n    _client.GetDatabase(_tenant.DatabaseName ?? _settings.DefaultDatabase);\n\n[HttpPost(\"{workspace}/mcp\")]\npublic async Task Mcp(string workspace)\n{\n    _tenant.DatabaseName = workspace;   // every query in this request now targets that workspace\n    …\n}</pre>\n      <p>The MCP URL itself selects the workspace: <code>https://host/shop-platform/mcp</code> and <code>https://host/billing/mcp</code> are two different code maps behind the same server.</p>\n\n      <h2>8. Scheduling Syncs</h2>\n      <p>A single <code>BackgroundService</code> wakes every minute, finds workspaces that are due, and runs them one by one with a small state machine: <em>Pending → Active → Pending</em>, or <em>Failed</em> on error, with <em>Disabled</em> to pause one:</p>\n      <pre class=\"language-csharp\">\nprotected override async Task ExecuteAsync(CancellationToken stoppingToken)\n{\n    while (!stoppingToken.IsCancellationRequested)\n    {\n        using var scope = _scopeFactory.CreateScope();\n        var configs = await scope.ServiceProvider\n            .GetRequiredService&lt;IWorkspaceConfigService&gt;().GetAllAsync();\n\n        foreach (var cfg in configs.Where(c =&gt; c.Status != Status.Disabled\n                                            &amp;&amp; (c.NextRunUtc is null || c.NextRunUtc &lt;= DateTime.UtcNow)))\n        {\n            try\n            {\n                await MarkAsync(cfg, Status.Active);\n                await _provisioner.ProvisionAsync(cfg);          // create database + collections if new\n                await RunSyncForWorkspaceAsync(cfg, stoppingToken);\n                cfg.LastRunUtc = DateTime.UtcNow;\n                cfg.NextRunUtc = cfg.LastRunUtc.Value.AddMinutes(cfg.SyncFrequencyMinutes);\n                await MarkAsync(cfg, Status.Pending);\n            }\n            catch (Exception ex)\n            {\n                await MarkAsync(cfg, Status.Failed);             // one bad workspace doesn't stop the others\n                _logger.LogError(ex, \"Workspace {Name} failed\", cfg.Name);\n            }\n        }\n\n        await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);\n    }\n}</pre>\n\n      <h3>An isolated container per sync</h3>\n      <p>The subtle part: each workspace has its own repositories, access token and source database, but the sync services read their settings through <code>IOptions&lt;T&gt;</code>. Rather than mutate app-wide singletons (and race with the next workspace), each run builds a <strong>fresh, short-lived DI container</strong> with that workspace's options baked in:</p>\n      <pre class=\"language-csharp\">\nvar services = new ServiceCollection();\nservices.AddLogging();\nservices.AddSingleton(Options.Create(new RepositorySettings\n{\n    Repositories = cfg.Repositories,\n    Branch = cfg.Branch,\n    AccessToken = cfg.AccessToken ?? defaults.AccessToken,\n}));\nservices.AddSingleton(Options.Create(new DatabaseSettings\n{\n    ConnectionString = cfg.DbConnectionString,     // source SQL database\n    Databases = [cfg.DbName],\n}));\nservices.AddSingleton(Options.Create(new MongoDbSettings\n{\n    ConnectionString = defaults.MongoConnectionString,\n    DatabaseName = cfg.Name,                       // destination: this workspace's database\n}));\nservices.AddScoped&lt;ICodeAnalyzerService, CodeAnalyzerService&gt;();\nservices.AddScoped&lt;ISchemaExtractorService, SchemaExtractorService&gt;();\nservices.AddScoped&lt;IMetadataSyncService, MetadataSyncService&gt;();\n// …the rest of the sync pipeline\n\nusing var provider = services.BuildServiceProvider();\nawait provider.GetRequiredService&lt;IMetadataSyncService&gt;().SyncAsync(ct);</pre>\n      <p>The pipeline code stays unaware of tenants: it just reads its options. The container is disposed when the run ends, taking the per-workspace credentials with it.</p>\n\n      <h2>9. Speaking MCP</h2>\n      <p>MCP is JSON-RPC 2.0. A client sends <code>initialize</code> to learn the server's capabilities, <code>tools/list</code> to discover tools with their JSON Schemas, and <code>tools/call</code> to run one. The endpoint accepts POSTs and answers in the Streamable HTTP style as server-sent events, with standard JSON-RPC error codes (<code>-32700</code> parse error, <code>-32601</code> unknown method, <code>-32603</code> internal error):</p>\n      <pre class=\"language-csharp\">\nswitch (request.Method)\n{\n    case \"initialize\":\n        await Send(new { protocolVersion = \"2024-11-05\",\n                         capabilities = new { tools = new { } },\n                         serverInfo = new { name = \"code-intelligence\", version = \"1.0.0\" } });\n        break;\n\n    case \"tools/list\":\n        await Send(new { tools = ToolDefinitions.GetAll()\n            .Select(t =&gt; new { name = t.Name, description = t.Description, inputSchema = t.InputSchema }) });\n        break;\n\n    case \"tools/call\":\n        var result = await _executor.ExecuteAsync(toolName, args);\n        // MCP wants a content array; the structured result travels as JSON text\n        await Send(new { content = new[] { new { type = \"text\", text = JsonSerializer.Serialize(result) } } });\n        break;\n\n    default:\n        await SendError(-32601, $\"Unknown method: {request.Method}\");\n        break;\n}</pre>\n\n      <h3>Tools as data</h3>\n      <p>Each tool is declared once, with a name, a description written for the model and a JSON Schema for its arguments. The descriptions matter more than they look: they are the only documentation the assistant reads before choosing a tool.</p>\n      <pre class=\"language-csharp\">\nnew ToolDefinition(\n    \"find_method\",\n    \"Search for methods across all classes\",\n    Schema(new()\n    {\n        [\"methodName\"] = (\"string\",  \"The name of the method to find\"),\n        [\"className\"]  = (\"string\",  \"Filter by class name\"),\n        [\"limit\"]      = (\"integer\", \"Max results to return (default 50)\"),\n    }))</pre>\n      <p>A single executor maps tool names to handlers with a <code>switch</code> expression:</p>\n      <pre class=\"language-csharp\">\npublic Task&lt;object&gt; ExecuteAsync(string tool, Dictionary&lt;string, object&gt; args) =&gt; tool switch\n{\n    \"find_class\"                      =&gt; FindClassAsync(args),\n    \"find_method\"                     =&gt; FindMethodAsync(args),\n    \"get_method_source\"               =&gt; GetMethodSourceAsync(args),\n    \"search_stored_procedures\"        =&gt; SearchStoredProceduresAsync(args),\n    \"get_class_dependencies\"          =&gt; GetClassDependenciesAsync(args),\n    \"get_table_schema\"                =&gt; GetTableSchemaAsync(args),\n    \"get_table_relationships\"         =&gt; GetTableRelationshipsAsync(args),\n    \"find_stored_procedures_by_table\" =&gt; FindStoredProceduresByTableAsync(args),\n    \"class_count_by_layer\"            =&gt; ClassCountByLayerAsync(args),\n    // …40-odd more\n    _ =&gt; throw new InvalidOperationException($\"Unknown tool: {tool}\"),\n};</pre>\n      <p>The catalogue is grouped by the questions developers actually ask:</p>\n      <ul>\n        <li><strong>Search:</strong> <code>find_class</code>, <code>find_method</code>, <code>find_dto</code>, <code>search_by_namespace</code>, <code>search_class_name</code>.</li>\n        <li><strong>Method analysis:</strong> <code>get_method_signature</code>, <code>get_method_source</code>, <code>list_class_methods</code>, <code>find_methods_by_return_type</code>, <code>trace_method_calls</code>.</li>\n        <li><strong>Structure:</strong> <code>get_project_structure</code>, <code>get_layer_analysis</code>, <code>list_solutions</code>, <code>list_projects</code>, <code>get_class_dependencies</code>.</li>\n        <li><strong>Database:</strong> <code>get_table_schema</code>, <code>get_table_relationships</code>, <code>get_table_foreign_keys</code>, <code>get_stored_procedure</code>, <code>get_sp_parameters</code>, <code>find_stored_procedures_by_table</code>.</li>\n        <li><strong>Code ↔ database:</strong> <code>search_stored_procedures</code> finds the C# methods that call a procedure.</li>\n        <li><strong>Statistics:</strong> <code>count_classes</code>, <code>class_count_by_layer</code>, <code>top_classes_by_method_count</code>, <code>top_tables_by_size</code>.</li>\n      </ul>\n      <p>Arguments arrive as <code>JsonElement</code>s or primitives depending on the client, so handlers read them tolerantly (accepting either form, with sensible defaults such as a 50-result limit) instead of failing on a type mismatch.</p>\n\n      <h3>What it looks like in use</h3>\n      <pre>\nYou:        Which methods call usp_CancelOrder, and what does that procedure touch?\n\nAssistant → search_stored_procedures { \"storedProcName\": \"usp_CancelOrder\" }\n          ← OrderService.CancelOrderAsync, AdminOrderController.ForceCancel\nAssistant → get_stored_procedure     { \"name\": \"usp_CancelOrder\" }\n          ← definition + parameters (@OrderId int, @Reason nvarchar(200))\nAssistant → get_table_relationships  { \"tableName\": \"Orders\" }\n          ← FK Orders.CustomerId → Customers.Id, OrderLines.OrderId → Orders.Id\n\nAssistant:  Two callers use it… it updates Orders and OrderLines, so cancelling\n            also affects any report that joins OrderLines. Here is the method source…</pre>\n      <p>Three small, precise tool calls replace pasting a dozen files into the chat, and the answer is grounded in what the compiler and the database actually say.</p>\n\n      <h2>10. Operating It</h2>\n      <h3>Settings in MongoDB, with a file fallback</h3>\n      <p>Repository credentials, database connections and access keys can change without a redeploy. A tiny custom <code>IOptions&lt;T&gt;</code> starts with the value from <code>appsettings.json</code> and is overwritten from MongoDB at startup if a stored value exists, so every service keeps using ordinary options injection:</p>\n      <pre class=\"language-csharp\">\npublic class MongoOptionsProvider&lt;T&gt; : IOptions&lt;T&gt; where T : class, new()\n{\n    private T? _value;\n    public MongoOptionsProvider(T fallback) =&gt; _value = fallback;   // from appsettings.json\n    public void SetValue(T? value) { if (value != null) _value = value; }\n    public T Value =&gt; _value ?? new T();\n}\n\n// Program.cs: register with the appsettings value, then overwrite from MongoDB at startup\nvar repoSettings = new MongoOptionsProvider&lt;RepositorySettings&gt;(\n    builder.Configuration.GetSection(\"Repositories\").Get&lt;RepositorySettings&gt;() ?? new());\nbuilder.Services.AddSingleton&lt;IOptions&lt;RepositorySettings&gt;&gt;(repoSettings);\n…\nrepoSettings.SetValue(await settingsService.GetRepositorySettingsAsync());</pre>\n      <p>The settings API masks secrets on read: passwords in connection strings are replaced with asterisks, and access keys show only their first four characters.</p>\n\n      <h3>Live logs in the dashboard</h3>\n      <p>A sync over a big solution takes minutes, and watching it helps. A custom Serilog sink raises an event for every log line; the Blazor Server dashboard subscribes and appends lines as they arrive, with no polling and no extra infrastructure:</p>\n      <pre class=\"language-csharp\">\npublic class LogSink(LogStreamingService stream) : ILogEventSink\n{\n    public void Emit(LogEvent e) =&gt;\n        stream.Broadcast($\"[{e.Timestamp:HH:mm:ss}] [{e.Level.ToString()[..3].ToUpper()}] {e.RenderMessage()}\");\n}\n\npublic class LogStreamingService\n{\n    public event Action&lt;string&gt;? OnLogReceived;\n    public void Broadcast(string line) =&gt; OnLogReceived?.Invoke(line);\n}\n\n// Program.cs\nLog.Logger = new LoggerConfiguration()\n    .WriteTo.Console()\n    .WriteTo.Sink(new LogSink(logStreaming))   // the dashboard subscribes to OnLogReceived\n    .WriteTo.File(\"logs/sync-.log\", rollingInterval: RollingInterval.Day)\n    .CreateLogger();</pre>\n      <p>A singleton status service does the same for sync state (running, last duration, classes, tables and procedures found, next run), raising <code>OnChange</code> so the dashboard re-renders the moment a sync starts or finishes.</p>\n\n      <h3>Access</h3>\n      <p>The dashboard uses cookie authentication with access keys that can be managed at runtime, and a small middleware logs each request's client IP (honouring <code>X-Forwarded-For</code>), user agent and an optional device header for auditing.</p>\n\n      <h2>11. What's Next</h2>\n      <ul>\n        <li><strong>A true call graph.</strong> Class-level dependencies are exact today. Resolving every invocation inside each method (Roslyn's <code>SymbolFinder</code> can do this) would make \"who calls this method?\" as precise as \"what does this class use?\".</li>\n        <li><strong>Semantic search.</strong> Embedding method source and documentation next to the structured metadata would add \"find the code that handles refunds\" alongside exact-name lookups: RAG over code, grounded by the same map.</li>\n        <li><strong>Incremental syncs.</strong> Re-analysing only the files changed since the last commit instead of the whole solution.</li>\n        <li><strong>Secrets at rest.</strong> Encrypting stored tokens and connection strings, or moving them to a secret store.</li>\n      </ul>\n\n      <h2>12. Takeaways</h2>\n      <ul>\n        <li><strong>Give assistants a map, not a pile of files.</strong> Precomputed, structured metadata beats pasting code into a prompt.</li>\n        <li><strong>Use the compiler.</strong> Roslyn's semantic model answers \"what does this refer to?\" exactly; text search can only guess.</li>\n        <li><strong>Link code to data.</strong> Connecting methods to stored procedures to tables is where the biggest questions get answered.</li>\n        <li><strong>Make syncs idempotent and partial-failure tolerant.</strong> Upserts, a temp directory per run, per-repository error isolation, and saving code before touching the database.</li>\n        <li><strong>Isolate tenants by construction.</strong> A database per workspace, a scoped tenant from the URL, and a fresh DI container per sync.</li>\n      </ul>",
+      "date": "September 23, 2026",
+      "category": "Artificial Intelligence",
+      "tags": [
+        "MCP",
+        "Roslyn",
+        ".NET Core",
+        "MongoDB",
+        "SQL Server"
+      ]
+    },
+    {
+      "slug": "dotnet-dynamic-background-service-manager",
+      "title": "A Dynamic Background Service Manager in .NET 8: Start, Update and Stop Workers at Runtime",
+      "excerpt": "How a small .NET 8 console app runs any number of named background workers, each with its own interval and config, and lets you start, retune and stop them while it runs, using async loops, CancellationToken and a ConcurrentDictionary.",
+      "content": "<p class=\"lead\">Most .NET background work is fixed when the app starts: you register a <code>BackgroundService</code> and it runs until shutdown. This project takes a different approach: a small .NET 8 console app that starts, reconfigures and stops any number of named background workers <strong>while it is running</strong>, from simple typed commands.</p>\n\n      <h2>1. What It Does</h2>\n      <p>The app prints a prompt and accepts five commands:</p>\n      <ul>\n        <li><code>START &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> starts a new worker that runs every <em>interval</em> milliseconds with its own config value.</li>\n        <li><code>UPDATE &lt;id&gt; &lt;interval-ms&gt; &lt;config&gt;</code> changes a running worker's interval and config without restarting it.</li>\n        <li><code>STOP &lt;id&gt;</code> cancels one worker.</li>\n        <li><code>LIST</code> shows every running worker and its current settings.</li>\n        <li><code>EXIT</code> quits.</li>\n      </ul>\n      <p>That makes the number and pace of workers <em>data</em>, not code, which suits per-tenant pollers, sync jobs you switch on and off, or scheduled tasks whose frequency changes at runtime.</p>\n\n      <h2>2. How the Code Is Organised</h2>\n      <p>Three files, each with one job:</p>\n      <pre>\nService&amp;Instances/\n├── Program.cs          console loop: reads and parses commands\n├── Service.cs          MyBackgroundService + ConfigData: one worker\n└── ServiceManager.cs   BackgroundServiceManager: owns all workers</pre>\n\n      <h2>3. The Worker: MyBackgroundService</h2>\n      <p>Each worker carries its settings in a small <code>ConfigData</code> class: how often to run, and a custom value standing in for whatever real settings a job would need.</p>\n      <pre class=\"language-csharp\">\npublic class ConfigData\n{\n    public int Interval { get; set; } = 5000;  // Default interval in milliseconds\n    public string CustomValue { get; set; } = \"DefaultConfig\";\n}</pre>\n      <p>The worker itself is an async loop. It does its work (here, a log line), then waits for the interval with <code>Task.Delay</code>, and repeats until its <code>CancellationTokenSource</code> is cancelled:</p>\n      <pre class=\"language-csharp\">\nprivate CancellationTokenSource _cts;\nprivate string _serviceId;\nprivate ConfigData _config;\n\npublic MyBackgroundService(string serviceId, ConfigData config)\n{\n    _serviceId = serviceId;\n    _config = config;\n    _cts = new CancellationTokenSource();\n}\n\npublic async Task StartAsync()\n{\n    Console.WriteLine($\"Service {_serviceId} started. Interval: {_config.Interval} ms, Config: {_config.CustomValue}\");\n\n    while (!_cts.Token.IsCancellationRequested)\n    {\n        Console.WriteLine($\"Service {_serviceId} is running with config: {_config.CustomValue}\");\n        await Task.Delay(_config.Interval, _cts.Token);\n    }\n\n    Console.WriteLine($\"Service {_serviceId} stopped.\");\n}\n\npublic void Stop()\n{\n    _cts.Cancel();\n}\n\npublic void UpdateConfig(ConfigData newConfig)\n{\n    _config = newConfig;\n    Console.WriteLine($\"Service {_serviceId} updated: Interval={_config.Interval} ms, Config={_config.CustomValue}\");\n}</pre>\n      <blockquote><p>[!tip] Three details make it work</p>\n      <ul>\n        <li><strong>Cancellation instead of flags.</strong> The loop checks <code>_cts.Token.IsCancellationRequested</code>, and the same token is passed to <code>Task.Delay</code>, so <code>Stop()</code> also interrupts a worker that is in the middle of waiting.</li>\n        <li><strong>Config is read on every pass.</strong> <code>UpdateConfig</code> just replaces <code>_config</code>. The loop reads <code>_config</code> each time round, so the next pass picks up the new value and interval.</li>\n        <li><strong>Async, not threads.</strong> While a worker waits it holds no thread, so hundreds of workers cost almost nothing when idle.</li>\n      </ul></blockquote>\n\n      <h2>4. The Manager: BackgroundServiceManager</h2>\n      <p>The manager owns all workers in a <code>ConcurrentDictionary</code> keyed by id. Each entry stores the worker together with its current config, so <code>LIST</code> can report settings without asking every worker.</p>\n      <pre class=\"language-csharp\">\npublic class BackgroundServiceManager\n{\n    private readonly ConcurrentDictionary&lt;string, (MyBackgroundService, ConfigData)&gt; _services;\n\n    public BackgroundServiceManager()\n    {\n        _services = new ConcurrentDictionary&lt;string, (MyBackgroundService, ConfigData)&gt;();\n    }\n\n    public string StartService(string serviceId, ConfigData config)\n    {\n        if (_services.ContainsKey(serviceId))\n        {\n            return $\"Service {serviceId} is already running.\";\n        }\n\n        var service = new MyBackgroundService(serviceId, config);\n        _services.TryAdd(serviceId, (service, config));\n\n        Task.Run(() =&gt; service.StartAsync());\n\n        return $\"Service {serviceId} started.\";\n    }\n\n    public string StopService(string serviceId)\n    {\n        if (_services.TryRemove(serviceId, out var serviceTuple))\n        {\n            serviceTuple.Item1.Stop();\n            return $\"Service {serviceId} stopped.\";\n        }\n\n        return $\"Service {serviceId} not found.\";\n    }\n\n    public string UpdateServiceConfig(string serviceId, ConfigData newConfig)\n    {\n        if (_services.TryGetValue(serviceId, out var serviceTuple))\n        {\n            serviceTuple.Item1.UpdateConfig(newConfig);\n            _services[serviceId] = (serviceTuple.Item1, newConfig); // Update config in dictionary\n            return $\"Service {serviceId} updated with new config.\";\n        }\n\n        return $\"Service {serviceId} not found.\";\n    }\n\n    public Dictionary&lt;string, ConfigData&gt; GetRunningServices()\n    {\n        return _services.ToDictionary(k =&gt; k.Key, v =&gt; v.Value.Item2);\n    }\n}</pre>\n      <ul>\n        <li><strong>StartService</strong> refuses a duplicate id, creates the worker, records it, and starts its loop on the thread pool with <code>Task.Run</code>. It returns straight away, so the prompt stays responsive.</li>\n        <li><strong>StopService</strong> removes the entry and cancels the worker in one step with <code>TryRemove</code>.</li>\n        <li><strong>UpdateServiceConfig</strong> pushes the new config into the running worker and updates the stored copy.</li>\n        <li><strong>GetRunningServices</strong> returns a snapshot, a plain dictionary copy, so the caller can loop over it while workers are added or removed.</li>\n      </ul>\n\n      <h2>5. The Command Loop</h2>\n      <p><code>Program.cs</code> reads a line, splits it on spaces and switches on the first word. Each branch validates its arguments and calls the manager. Here is <code>START</code>:</p>\n      <pre class=\"language-csharp\">\ncase \"START\":\n    if (parts.Length &lt; 4)\n    {\n        Console.WriteLine(\"Usage: START &lt;ServiceID&gt; &lt;Interval(ms)&gt; &lt;ConfigValue&gt;\");\n        break;\n    }\n\n    string serviceId = parts[1];\n    if (!int.TryParse(parts[2], out int interval))\n    {\n        Console.WriteLine(\"Invalid interval.\");\n        break;\n    }\n\n    string configValue = parts[3];\n    ConfigData config = new ConfigData { Interval = interval, CustomValue = configValue };\n    Console.WriteLine(serviceManager.StartService(serviceId, config));\n    break;</pre>\n      <p>A typical session:</p>\n      <pre>\nDynamic Background Service Manager\nAvailable Commands: START &lt;id&gt; &lt;interval&gt; &lt;config&gt;, STOP &lt;id&gt;, UPDATE &lt;id&gt; &lt;interval&gt; &lt;config&gt;, LIST, EXIT\n\nEnter command: START a 1000 hello\nService a started.\nService a started. Interval: 1000 ms, Config: hello\nService a is running with config: hello\nService a is running with config: hello\n\nEnter command: UPDATE a 200 fast\nService a updated: Interval=200 ms, Config=fast\nService a updated with new config.\nService a is running with config: fast\nService a is running with config: fast\n\nEnter command: LIST\nRunning Services:\n- a: Interval=200, Config=fast\n\nEnter command: STOP a\nService a stopped.</pre>\n\n      <h2>6. Taking It Further</h2>\n      <p>The console is only one front end. Ideas for a production version:</p>\n      <ul>\n        <li><strong>Expose it as an API.</strong> Register <code>BackgroundServiceManager</code> as a singleton in ASP.NET Core and map <code>POST</code>, <code>PUT</code>, <code>DELETE</code> and <code>GET</code> endpoints to start, update, stop and list, so other systems can control workers.</li>\n        <li><strong>Stop cleanly on shutdown.</strong> An <code>IHostedService</code> can stop every worker when the app exits, and the manager can keep each worker's task so a stop can wait for it to finish.</li>\n        <li><strong>Apply updates immediately.</strong> A new interval takes effect after the current wait ends; cancelling the current <code>Task.Delay</code> with a second \"wake\" token applies it at once.</li>\n        <li><strong>Treat stopping as normal.</strong> <code>Task.Delay</code> throws <code>OperationCanceledException</code> when cancelled; catching it (with cleanup in <code>finally</code>) lets the worker log its own \"stopped\" line.</li>\n        <li><strong>Guard concurrent starts.</strong> Using the return value of <code>TryAdd</code> as the duplicate check keeps two simultaneous <code>START</code>s from both launching a worker.</li>\n        <li><strong>Persist the workers.</strong> Save ids and configs to a database so workers come back after a restart.</li>\n      </ul>",
+      "date": "September 23, 2026",
+      "category": "Software Architecture",
+      "tags": [
+        ".NET Core",
+        "C#",
+        "Background Services",
+        "Concurrency",
+        "Async"
+      ]
+    },
+    {
+      "slug": "turning-my-macbook-into-a-self-hosted-paas",
+      "title": "How I Turned My MacBook into a Self-Hosted Vercel with Coolify, Cloudflare Tunnel & Terraform",
+      "excerpt": "An 8 GB M1 MacBook, a domain, and zero open router ports: building a git-push-to-deploy platform at home, and the six things that broke along the way.",
+      "content": "<p class=\"lead\">I wanted a place to host demo apps and APIs the way Vercel does it: push to GitHub, get a live HTTPS URL. Instead of paying for a platform, I turned a 2020 M1 MacBook Pro (8 GB RAM) into one. The site you are reading right now is served from that laptop. Here is the architecture, the build, and the problems I hit on the way.</p>\n\n      <h2>1. What the Mac Can (and Can't) Do</h2>\n      <p>My first idea was to run LLMs on it. With 8 GB of unified memory, that was never going to work: the models I use are 18 to 21 GB. What an M1 is great at is the lightweight part of a platform: a build server, a reverse proxy, a handful of Next.js and .NET containers, and a couple of databases. Heavy AI inference stays on a separate GPU box.</p>\n\n      <h2>2. The Architecture</h2>\n      <pre>\ngit push ──▶ GitHub webhook ──▶ Coolify (Linux VM on the Mac)\n                                   │  builds image, rolls out container\n                                   ▼\nBrowser ─▶ app.mydomain ─▶ Cloudflare edge (HTTPS) ─▶ Tunnel ─▶ Traefik ─▶ container\n\nTerraform ──▶ Cloudflare API  (tunnel, DNS, routing rules)\n          └─▶ Coolify API     (projects, apps, databases, services)</pre>\n      <ul>\n        <li><strong>Colima</strong> runs a lightweight Ubuntu VM (4 CPU / 4 GB) because Coolify needs Linux.</li>\n        <li><strong>Coolify</strong> is the open-source Heroku/Vercel alternative: GitHub integration, Nixpacks/Dockerfile builds, one-click databases, rolling deploys with health checks.</li>\n        <li><strong>Cloudflare Tunnel</strong> makes an outbound-only connection to Cloudflare. No port forwarding, no static IP, free HTTPS, and my home IP is never exposed.</li>\n        <li><strong>Terraform</strong> describes the whole thing as code: the tunnel, a wildcard DNS record, and every app.</li>\n      </ul>\n\n      <h2>3. Wildcard Routing: One Rule for Every App</h2>\n      <p>The trick that makes it feel like a PaaS is a single wildcard DNS record pointing at the tunnel, with the tunnel sending everything to Coolify's Traefik proxy. Traefik routes by hostname, so a new app just needs a domain in Coolify. No DNS or Cloudflare changes, ever.</p>\n      <pre class=\"language-hcl\">\nresource \"cloudflare_dns_record\" \"wildcard\" {\n  zone_id = var.cloudflare_zone_id\n  name    = \"*.mydomain.com\"\n  type    = \"CNAME\"\n  content = \"TUNNEL_ID.cfargotunnel.com\"\n  proxied = true\n}\n\n# Tunnel ingress: every subdomain goes to Traefik\n{ hostname = \"*.mydomain.com\", service = \"http://coolify-proxy:80\" }</pre>\n      <p>Apps themselves are Terraform resources too. The community Coolify provider can't create applications, so I drive Coolify's REST API with the generic <code>restapi</code> provider. Adding a site is now one map entry and a <code>terraform apply</code>.</p>\n\n      <h2>4. Six Things That Broke (and the Fixes)</h2>\n      <ul>\n        <li><strong>Coolify couldn't SSH into its own server.</strong> It connects to <code>host.docker.internal</code>, but under Colima that name points at the Mac, not the Linux VM. Pointing the server at the VM's Docker gateway IP fixed it.</li>\n        <li><strong>Every <code>https://</code> domain became a redirect loop or a 404.</strong> The tunnel talks plain HTTP to Traefik while Cloudflare terminates TLS. An <code>https://</code> domain in Coolify makes Traefik redirect HTTP to HTTPS forever. Rule of thumb: always <code>http://app.domain:PORT</code> in Coolify; the visitor still gets HTTPS from Cloudflare.</li>\n        <li><strong>The apex domain wouldn't route.</strong> <code>*.domain</code> does not match <code>domain</code> itself. The bare domain needs its own DNS record and tunnel rule.</li>\n        <li><strong>An n8n worker crash-looped with NOAUTH.</strong> Enabling \"Connect to Predefined Network\" attached it to Coolify's internal network, where the hostname <code>redis</code> also belongs to Coolify's own password-protected Redis. Turning that setting off restored isolation and fixed the crash.</li>\n        <li><strong>Terraform updates broke deployments.</strong> Coolify's create endpoint stores a GitHub repo as <code>owner/repo</code>, but its PATCH endpoint stores whatever you send and later prefixes <code>github.com</code> again. Sending the short form on update fixed it. I only found this because I redeployed right after a Terraform change.</li>\n        <li><strong>\"The site is down\" (it wasn't).</strong> My router cached the domain's empty answer from the minutes when DNS was mid-migration. The whole internet could see the site except my own Wi-Fi. Negative DNS caching is real.</li>\n      </ul>\n\n      <h2>5. Security on a Home Server</h2>\n      <ul>\n        <li><strong>No inbound ports</strong>: the tunnel only makes outbound connections.</li>\n        <li><strong>Webhook-only exposure</strong>: GitHub reaches a hostname that forwards only the <code>/webhooks/</code> path to Coolify; everything else returns 404. Each webhook is signed with a secret.</li>\n        <li><strong>The admin dashboard</strong> requires a password plus TOTP 2FA, and its REST API is blocked at the tunnel (API tokens bypass 2FA). Terraform uses the API over localhost only.</li>\n        <li><strong>Tools with root-level Docker access</strong> (Portainer) stay bound to localhost, not the internet.</li>\n        <li><strong>Secrets</strong> live in the macOS Keychain and are passed to Terraform as environment variables, never in files.</li>\n        <li><strong>Nightly backups</strong> of Coolify's database, encryption key and SSH keys go to the Mac's disk, outside the VM, with 14-day retention.</li>\n      </ul>\n\n      <h2>6. The Result</h2>\n      <blockquote><p>[!success] This blog post is the test</p><p>I committed it to the portfolio repo, pushed to <code>main</code>, and GitHub's webhook told Coolify to rebuild. With a health check on <code>/</code>, the old container keeps serving until the new one is healthy, so the deploy has no downtime. Grafana and n8n run alongside it as one-click services on their own subdomains.</p></blockquote>\n\n      <h2>7. Honest Limitations</h2>\n      <ul>\n        <li>It's a laptop: if it sleeps or loses power, the sites go down. Fine for demos, not for production.</li>\n        <li>8 GB is tight. Builds are the peak, so I keep concurrent builds to one.</li>\n        <li>The same Terraform code can later point at a small cloud VM with almost no changes. That is the real win of doing it as code from day one.</li>\n      </ul>",
+      "date": "September 23, 2026",
+      "category": "DevOps",
+      "tags": [
+        "Coolify",
+        "Cloudflare Tunnel",
+        "Terraform",
+        "Self-Hosting",
+        "Docker"
+      ]
+    },
+    {
+      "slug": "homelab-vmss-docker-swarm-vs-k3s",
+      "title": "Building a VMSS-Style Cluster from 10 Mini PCs: Why I'm Starting with Docker Swarm, Not K3s",
+      "excerpt": "Ten 13th-gen machines with 8 GB RAM each, a zero-dollar software budget, and no Kubernetes experience. Here's the research, the trade-offs, and the build order I settled on.",
+      "content": "<p class=\"lead\">Azure VM Scale Sets are great: a pool of machines that restarts failed instances, balances load and rolls out updates for you. I had ten physical machines sitting on a desk and wanted the same behaviour, with nothing but free tools. This post is the research and the decision.</p>\n\n      <h2>1. The Hardware and the Constraint</h2>\n      <ul>\n        <li><strong>10 machines</strong>, each a 13th-gen Intel CPU. About 130 cores in total.</li>\n        <li><strong>8 GB RAM per node</strong>. About 80 GB across the cluster, which turns out to be the constraint that drives every decision.</li>\n        <li><strong>$0 software budget</strong> and <strong>zero Kubernetes experience</strong>.</li>\n      </ul>\n      <p>The goal was VMSS-like behaviour: auto-restart on failure, load balancing, rolling updates and work spread across all ten nodes.</p>\n\n      <h2>2. The Foundation Is the Same Either Way</h2>\n      <p><strong>Proxmox VE</strong> goes on every node first. It clusters the machines, gives you a web UI for all ten, and lets you carve up VMs if you need them. Two things matter more than anything else here:</p>\n      <ul>\n        <li><strong>Static IPs</strong> for every node (as DHCP reservations). Dynamic addresses make nodes lose each other after a reboot.</li>\n        <li><strong>A managed switch</strong>. An unmanaged one works for Swarm but blocks the VLAN features you'll want later.</li>\n      </ul>\n      <p>At 8 GB per node, Ceph is out; it wants far more memory than that. One node serving <strong>NFS</strong> for shared storage is the practical replacement.</p>\n\n      <h2>3. The Two Contenders</h2>\n      <pre>\n                    Docker Swarm             K3s (lightweight Kubernetes)\nSetup time          ~30 minutes              ~2-3 hours (with troubleshooting)\nRAM per node        ~1.5 GB with services    ~3.5 GB with services\nAutoscaling         manual or scripted       automatic (HPA)\nLearning curve      you already know Docker  YAML, networking, controllers\nDashboard           Portainer CE             Rancher / Lens / k9s</pre>\n      <p>Both give you what VMSS gives you: rescheduling when a node dies, a routing mesh or service load balancer, and zero-downtime rolling updates. The differences are overhead, autoscaling and how much there is to learn.</p>\n\n      <h2>4. The Verdict: Swarm First, K3s Later</h2>\n      <p>Starting with full Kubernetes with no experience means spending most of your time debugging YAML and cluster networking rather than running workloads. With zero services deployed, Kubernetes adds no value yet. Docker Swarm:</p>\n      <ul>\n        <li>Is built into Docker, so the only new commands are <code>docker swarm init</code> and <code>docker service create</code>.</li>\n        <li>Leaves more RAM for the apps, which matters most at 8 GB per node.</li>\n        <li>Uses the same container images K3s would, so migrating later is a change of commands, not a rewrite.</li>\n      </ul>\n      <blockquote><p>[!question] When to move to K3s</p><p>At 20+ services, when you need CPU/memory-based autoscaling (Swarm can't do this natively), or when you need fine-grained scheduling, secrets or network policies.</p></blockquote>\n\n      <h2>5. The Build Order</h2>\n      <pre>\n# Phase 1 - foundation\nstatic IPs + Wake-on-LAN -> Proxmox VE on all 10 nodes\n\n# Phase 2 - cluster + storage\npvecm create my-cluster        # node 1\npvecm add &lt;node-1-ip&gt;         # nodes 2-10\nNFS export on node 10, mounted on nodes 1-9\n\n# Phase 3 - Swarm\ndocker swarm init              # node 1\n3 managers (odd number for quorum), 7 workers\ndocker service create --name test --replicas 5 nginx\nPortainer for the dashboard\n\n# Phase 4 - prove it\nunplug a worker -> service recovers\n10 replicas -> one per node\nrolling image update -> zero downtime</pre>\n\n      <h2>6. Takeaways</h2>\n      <ul>\n        <li>Pick the orchestrator by what you'll <em>run</em>, not by what's on job listings. The simpler tool you understand beats the powerful one you're fighting.</li>\n        <li>Memory per node, not total cores, decides the storage and orchestration stack.</li>\n        <li>Keep a migration path open. Containers are the portable layer; the orchestrator is swappable.</li>\n      </ul>",
+      "date": "August 24, 2026",
+      "category": "DevOps",
+      "tags": [
+        "Docker Swarm",
+        "K3s",
+        "Proxmox",
+        "Homelab",
+        "Kubernetes"
+      ]
+    },
+    {
+      "slug": "nextjs-dotnet-on-demand-isr",
+      "title": "Static Pages, Fresh Content: On-Demand ISR Between Next.js 16 and a .NET API",
+      "excerpt": "Zero API calls per page view, and content that updates the moment an editor saves. A hands-on proof of concept with tag-based revalidation driven by .NET webhooks, plus two traps I hit along the way.",
+      "content": "<p class=\"lead\">A server-rendered Next.js site backed by a .NET API usually calls that API on every page view, even when the content hasn't changed in days. I wanted static-file speed with CMS-level freshness and no rebuilds. This POC proves it with tag-based on-demand ISR (Incremental Static Regeneration), triggered by webhooks from .NET.</p>\n\n      <h2>1. The Architecture</h2>\n      <pre>\n.NET Core API ──▶ Next.js (build) ──▶ static HTML cache ──▶ users (no API call)\n      │                                      ▲\n      └──── POST /api/revalidate ────────────┘\n          (fired by .NET the instant content changes)</pre>\n      <ul>\n        <li>Every content page (<code>/[slug]</code>) tags its fetch with <code>page-{slug}</code>. The home listing uses <code>all-pages</code>.</li>\n        <li>After every create, update or delete, .NET sends a signed webhook naming exactly which tags to invalidate.</li>\n        <li>The revalidate route checks a shared secret (401 otherwise) and expires only those tags.</li>\n      </ul>\n\n      <h2>2. What Actually Happens, Request by Request</h2>\n      <p><strong>Steady state.</strong> <code>/home</code> is prerendered at build time. I hit it five times against a production server and the .NET log didn't grow by a single line. Zero backend calls.</p>\n      <p><strong>An editor saves.</strong> .NET updates the record, then fires a webhook: <code>{ slug: \"home\", listingChanged: false }</code>. Next.js marks <code>page-home</code> expired. Nothing is fetched yet.</p>\n      <p><strong>The next visitor.</strong> That one request does a single live fetch, renders fresh HTML and re-caches it. Every visitor after that gets the cached page again. That's <strong>one backend call per content change</strong>, not one per visitor.</p>\n\n      <h2>3. New Pages and Deleted Pages</h2>\n      <p><code>generateStaticParams()</code> only knows slugs that existed at build time. Two small pieces cover the rest:</p>\n      <ul>\n        <li><code>export const dynamicParams = true</code> lets an unknown slug render on demand (then cache) instead of returning a 404.</li>\n        <li>The backend checks whether the slug existed before writing. For creates and deletes it sets <code>listingChanged: true</code>, which also expires <code>all-pages</code>, so the new page appears in the navigation.</li>\n      </ul>\n      <blockquote><p>[!danger] Deletes surfaced a real bug</p><p>A missing page threw a raw error, and Next.js turned that into a <strong>500</strong>. The fix is to treat an API 404 as \"not found\", return <code>null</code> and call <code>notFound()</code>. An API that's actually broken should still throw and surface as a 500.</p></blockquote>\n\n      <h2>4. Trap #1: Dev Mode Lies About Caching</h2>\n      <p><code>next dev</code> doesn't honour the fetch cache the way production does. I disabled the webhook entirely, edited content in .NET, and the dev server still showed the change instantly. That makes it look as if revalidation isn't needed. Only <code>next build &amp;&amp; next start</code> shows real caching.</p>\n      <blockquote><p>[!warning] Always validate this pattern against a production build.</p></blockquote>\n\n      <h2>5. Trap #2: Next.js 16 Changed <code>revalidateTag</code></h2>\n      <p>The single-argument <code>revalidateTag(tag)</code> from most tutorials is deprecated in Next.js 16. It now takes a second argument:</p>\n      <pre class=\"language-typescript\">\n// expire immediately: what a synchronous \"content saved\" webhook wants\nrevalidateTag('page-home', { expire: 0 });\n\n// stale-while-revalidate semantics\nrevalidateTag('page-home', 'max');</pre>\n      <blockquote><p>[!tip] Check the bundled docs</p><p><code>create-next-app@latest</code> installed a version far newer than the tutorials assume. When an API behaves oddly, check the docs bundled in <code>node_modules/next/dist/docs/</code> before trusting remembered examples.</p></blockquote>\n\n      <h2>6. Takeaways</h2>\n      <ul>\n        <li>Tag-based ISR gives static-site cost with CMS freshness, and the backend decides exactly what goes stale.</li>\n        <li>Fire the webhook from the write path, and sign it.</li>\n        <li>Handle \"created\" and \"deleted\" explicitly. They're the cases that break listings and error pages.</li>\n        <li>Test caching behaviour only against production builds.</li>\n      </ul>",
+      "date": "August 22, 2026",
+      "category": "Software Architecture",
+      "tags": [
+        "Next.js",
+        ".NET Core",
+        "ISR",
+        "Caching",
+        "Webhooks"
+      ]
+    },
+    {
+      "slug": "hybrid-search-solr-bm25-vector-rrf",
+      "title": "Hybrid Product Search on Solr 9: BM25 + Vectors + Reciprocal Rank Fusion in .NET",
+      "excerpt": "Keyword search misses meaning; vector search misses exact terms. Fusing both with RRF, adding rule-based query understanding and running embeddings in-process gave a search that handles \"red card case and gold tone watch under 5000\".",
+      "content": "<p class=\"lead\">E-commerce search fails in two opposite ways. BM25 keyword search can't tell that \"evening wristwatch\" and \"dress watch\" mean the same thing. Pure vector search happily returns \"something watch-like\" when the shopper typed an exact SKU. This R&amp;D engine runs both and fuses the results, on a Solr 9 core of about 540 real catalog products, without touching the production search path.</p>\n\n      <h2>1. The Pipeline</h2>\n      <pre>\nquery ─▶ SKU short-circuit ─▶ split into item clauses ─▶ for each clause:\n   ├─ price phrase parser        (under / between / ~ / 12k)\n   ├─ rule-based NLU             (brand, category, colour, size, badge, type)\n   ├─ fuzzy fallback             (Solr ~2 edit distance on *_text fields)\n   ├─ in-process ONNX embedding  (all-MiniLM-L6-v2, 384 dims)\n   ├─ BM25 keyword search        (edismax)\n   ├─ kNN vector search          ({!knn f=vector topK=N})\n   └─ RRF fusion\n─▶ merge clauses ─▶ de-dup by style ─▶ page ─▶ UI view model</pre>\n\n      <h2>2. Reciprocal Rank Fusion</h2>\n      <p>BM25 scores and cosine similarities live on different scales, so you can't just add them. RRF ignores scores and uses only rank positions:</p>\n      <pre>\nscore(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>\n      <p>A product ranked well by <em>both</em> retrievers rises to the top. One found by only one retriever still gets a fair share. The same primitive powers the \"similar products\" endpoint, where it fuses vector similarity with Solr's MoreLikeThis.</p>\n\n      <h2>3. Embeddings Without an API Call</h2>\n      <ul>\n        <li><strong>all-MiniLM-L6-v2</strong> in ONNX format, run in-process with <code>Microsoft.ML.OnnxRuntime</code>, tokenised with <code>FastBertTokenizer</code>.</li>\n        <li>Mean-pooled and L2-normalised into a 384-dimensional vector. The query is embedded live; product vectors are precomputed and stored in Solr.</li>\n        <li>No network hop and no per-query cost for an external embedding API.</li>\n      </ul>\n\n      <h2>4. Query Understanding Without an LLM</h2>\n      <p>The NLU is deterministic and explainable: lexicon lookup and regex against a <strong>live vocabulary</strong>. A <code>BackgroundService</code> refreshes the real distinct values in the index (brands, colours, categories and so on) every five minutes using Solr facet queries. When the catalog changes, the parser updates without a redeploy.</p>\n      <ul>\n        <li><strong>Typos:</strong> \"Fossle\" resolves via Solr's native fuzzy operator. A curated stop-word list (~60 words) stops common English words from being offered as fuzzy matches.</li>\n        <li><strong>Synonyms live in Solr</strong>, not in C# dictionaries. Gender and size moved to <code>*_text</code> fields backed by <code>synonyms.txt</code>.</li>\n        <li><strong>Prices:</strong> \"under X\", \"between X and Y\", reversed phrasing, \"~X\" (±10%), \"12,000\" and \"12k\".</li>\n      </ul>\n\n      <h2>5. Multi-Intent Queries</h2>\n      <p>\"red card case and gold tone watch under 5000\" is two searches. Splitting on commas and a standalone \"and\" (while protecting \"between X and Y\" and \"12,000\") lets each clause run the <em>entire</em> pipeline with its own price and filters. Otherwise the watch clause's category filter would starve the card-case clause.</p>\n      <blockquote><p>[!example] The reverse case matters too</p><p>In \"black and blue watches\", \"black\" is only a modifier. Clauses that contain nothing but a colour, brand or gender word get merged into their neighbour, so they don't trigger a catalog-wide search for \"black\".</p></blockquote>\n\n      <h2>6. The Details That Make It Feel Right</h2>\n      <ul>\n        <li><strong>Style-level de-dup:</strong> the same style in three colours shows once, with its colour swatches harvested through Solr collapse + expand.</li>\n        <li><strong>Phrase proximity</strong> (<code>pf2</code>) reranks adjacent-word matches above bag-of-words hits.</li>\n        <li><strong>Business signals</strong> (rating, sale count, availability) as an edismax boost function that nudges relevance but doesn't override it.</li>\n        <li><strong>Embedded SKUs</strong> (\"watch FS6121\") are forced to position one.</li>\n        <li><strong>Autosuggest</strong> through Solr's Suggester component for fast prefix and infix matches.</li>\n      </ul>\n\n      <h2>7. Takeaways</h2>\n      <ul>\n        <li>Hybrid beats either retriever alone, and RRF is the simplest fusion that works without score calibration.</li>\n        <li>You don't need an LLM for query understanding in a bounded domain. A live vocabulary and good rules are faster, cheaper and explainable.</li>\n        <li>Push linguistics (synonyms, fuzziness, suggesters) into the search engine, and keep the application code for orchestration.</li>\n      </ul>",
+      "date": "August 14, 2026",
+      "category": "Software Architecture",
+      "tags": [
+        "Solr",
+        "Vector Search",
+        "RRF",
+        "ONNX",
+        ".NET Core"
+      ]
+    },
+    {
+      "slug": "rag-chatbot-latency-audit",
+      "title": "Why Our RAG Chatbot Took 40 Seconds to Answer, and the Plan to Make It 70% Faster",
+      "excerpt": "An end-to-end audit of a multi-tenant .NET RAG chatbot found 7-8 LLM calls per request, a duplicate vector search and 1.5 seconds of artificial streaming delay. Here's where the time went and the fix plan.",
+      "content": "<p class=\"lead\">We're building a multi-tenant RAG chatbot platform on .NET 10: an embeddable widget, SignalR streaming, pgvector retrieval, a text-to-SQL agent, MCP tools and episodic memory. It worked, but a data question took 30-40 seconds. I audited the whole request path to find out why.</p>\n\n      <h2>1. The Platform in One Picture</h2>\n      <pre>\nNext.js admin portal  |  embeddable JS widget (iframe)\n              │  REST + SignalR\n              ▼\n   ASP.NET Core gateway (.NET 10) ─ Semantic Kernel agents\n     │           │           │          │          │\n pgvector    RabbitMQ      Redis     MongoDB    mem0 (Qdrant)\n (RAG)     (ingestion)  (cache +    (chat +    (long-term\n                        backplane)   audit)     memory)</pre>\n      <p>Heavy work (document ingestion and audit logging) goes through RabbitMQ consumers, so the gateway stays non-blocking. Vectors are namespaced per tenant.</p>\n\n      <h2>2. Where 40 Seconds Went</h2>\n      <p>For a SQL-style question, roughly 12-15 seconds is unavoidable LLM and database work. The other ~13 seconds was waste:</p>\n      <pre>\nnested SQL LLM calls           ~8000 ms   ◀ biggest win\nredundant intent re-parsing    ~2000 ms\nartificial streaming delay     ~1500 ms\nduplicate vector search         ~300 ms\nredundant kernel clones         ~300 ms\nother overhead                  ~500 ms</pre>\n\n      <h2>3. Finding #1: The LLM Call Cascade</h2>\n      <p>The SQL path made its calls in sequence: classify intent, re-derive intent, discover tables, analyse the schema, generate SQL, validate SQL. That's <strong>7-8 LLM calls per request</strong> where 2-3 would do. The step that re-derived intent was redundant, because the classifier had already decided the question was a SQL question.</p>\n      <blockquote><p>[!note] Plan</p><p>A single generation prompt with the relevant schema inlined, which analyses, generates and validates in one pass. It's the simplest architecture, the easiest to debug, and worth an estimated 8-12 seconds. The risk is SQL accuracy, so it ships behind a feature flag and gets A/B tested on 20+ reference questions.</p></blockquote>\n\n      <h2>4. Finding #2: Streaming That Wasn't</h2>\n      <p>Responses were re-chunked into 20-character pieces with a 15 ms pause between each. A 2,000-character answer means 100 chunks, or <strong>1.5 seconds of pure delay</strong>, added to a model that already streams natively. The fix is to forward tokens as they arrive.</p>\n\n      <h2>5. Finding #3: Doing the Same Work Twice</h2>\n      <ul>\n        <li><strong>Duplicate vector search:</strong> two services ran the same schema-context search on every request. Search once, pass the result down.</li>\n        <li><strong>Kernel cloning:</strong> the Semantic Kernel instance was cloned 3-4 times per request, each clone creating a new client connection (50-100 ms each). Reuse the base kernel and attach plugins per step.</li>\n        <li><strong>MCP connections:</strong> a new connection per request (300-800 ms). Cache them in a <code>ConcurrentDictionary</code> keyed by server and URL, and dispose them deterministically when config changes.</li>\n      </ul>\n\n      <h2>6. The Reliability Checklist That Came With It</h2>\n      <p>Performance audits find correctness problems too. These are the checks I now run on any multi-tenant AI backend:</p>\n      <ul>\n        <li><strong>Every cache key includes the tenant ID.</strong> Anything else is a cross-tenant data leak waiting to happen.</li>\n        <li><strong>No fire-and-forget without retries.</strong> Background ingestion needs retries and visibility, or data goes missing silently.</li>\n        <li><strong>Invalidate caches per tenant.</strong> A global flush makes every tenant rebuild at once.</li>\n        <li><strong>Put a bound on in-process caches</strong>, and make disposal ownership explicit for pooled clients.</li>\n      </ul>\n\n      <h2>7. The Plan</h2>\n      <pre>\nWeek 1    quick wins: streaming, duplicate search, kernel reuse, MCP pooling\n          target: 30-40 s ─▶ 20-25 s\nWeek 2-3  single-shot SQL, cached intent, parallel pipeline steps\n          target: ─▶ 8-12 s\nWeek 3-4  tenant isolation, retries, per-tenant invalidation, latency dashboards</pre>\n\n      <h2>8. Takeaways</h2>\n      <ul>\n        <li>In LLM apps, <strong>count the calls</strong> before tuning anything else. Sequential calls dominate latency.</li>\n        <li>Don't simulate streaming on top of a model that already streams.</li>\n        <li>Measure first: this audit turned \"the chatbot is slow\" into a ranked list of 12 fixes with estimated savings.</li>\n      </ul>",
+      "date": "July 17, 2026",
+      "category": "Artificial Intelligence",
+      "tags": [
+        "RAG",
+        "LLMs",
+        "Semantic Kernel",
+        "Performance",
+        ".NET Core"
+      ]
+    },
+    {
+      "slug": "dotnet-performance-tuning-api-throughput",
+      "title": "Deep-Dive: .NET Core API Performance Tuning & Memory Optimization",
+      "excerpt": "Learn how we reduced latency by 40% and optimized GC pressure in high-throughput .NET Core microservices.",
+      "content": "<p class=\"lead\">In high-throughput microservices, CPU utilization and Garbage Collector (GC) pauses are often the silent killers of low-latency SLAs. Recently, we undertook a migration and optimization effort on a core API endpoint handling over 15,000 requests per second. Here is the engineering breakdown of how we achieved a 40% reduction in response latency.</p>\n      \n      <h2>1. The Problem: Gen 0/1 GC Spikes</h2>\n      <p>Through detailed memory profiling using dotnet-dump and PerfView, we identified that our primary bottleneck was GC collection pauses. Specifically, large amounts of short-lived objects were being allocated per request, causing frequent Generation 0 and Generation 1 Garbage Collections that paused thread execution.</p>\n      \n      <h2>2. The Fix: Structs, ArrayPool, and Span&lt;T&gt;</h2>\n      <p>We systematically refactored the request pipeline to reduce heap allocations:</p>\n      <ul>\n        <li><strong>ArrayPool & MemoryPool:</strong> Instead of allocating new byte arrays for body deserialization on every request, we leased arrays from <code>ArrayPool&lt;byte&gt;.Shared</code> and returned them immediately after processing.</li>\n        <li><strong>Span&lt;T&gt; and ReadOnlySpan&lt;T&gt;:</strong> We converted string slicing operations into zero-allocation spans. This prevented millions of string allocations per minute.</li>\n        <li><strong>ValueTask:</strong> Asynchronous methods that frequently complete synchronously were changed from returning <code>Task&lt;T&gt;</code> to <code>ValueTask&lt;T&gt;</code>, eliminating Task object allocations.</li>\n      </ul>\n\n      <pre class=\"language-csharp\">\n// Zero-allocation parsing snippet\npublic ReadOnlySpan&lt;char&gt; ExtractToken(ReadOnlySpan&lt;char&gt; header) {\n    int index = header.IndexOf(\"Bearer \");\n    if (index == -1) return ReadOnlySpan&lt;char&gt;.Empty;\n    return header.Slice(index + 7);\n}</pre>\n\n      <h2>3. Results and Metrics</h2>\n      <blockquote><p>[!success] p99 latency: 180 ms → 42 ms</p><p>After deploying these optimizations, load tests run via k6 showed a drop in p99 latency from 180ms to 42ms. Heap allocations per request dropped from 14KB to under 200 bytes. This not only improved user experience but also slashed our container resource requirements by half.</p></blockquote>",
+      "date": "May 20, 2026",
+      "category": "Software Architecture",
+      "tags": [
+        ".NET Core",
+        "Performance",
+        "GC Optimization",
+        "APIs"
+      ]
+    },
+    {
+      "slug": "load-testing-microservices-k6-grafana",
+      "title": "Designing Repeatable Load Testing Suites with k6 and Grafana",
+      "excerpt": "A guide to building a continuous load testing pipeline to detect latency regressions before code reaches staging.",
+      "content": "<p class=\"lead\">Observability isn't just about production logs; it starts with proactive performance assertion. Setting up a repeatable load testing suite allows engineering teams to catch architectural bottlenecks before code goes live.</p>\n      \n      <h2>Why k6 for Modern API Platforms?</h2>\n      <p>k6 stands out because it is developer-centric. Written in Go, it allows developers to write load test scripts in JavaScript, making it simple to version-control performance test cases right alongside the application codebase.</p>\n\n      <h2>Integrating k6 with Grafana InfluxDB</h2>\n      <p>To make the metrics digestible, we stream k6 test results directly to an InfluxDB instance, which is visualized in real-time on a customized Grafana dashboard. This provides instantaneous visual feedback on:</p>\n      <ul>\n        <li>Request Rates (RPS) and HTTP Failure Rates.</li>\n        <li>Response Latency percentiles (p50, p95, p99).</li>\n        <li>System utilization (Memory/CPU of the target services).</li>\n      </ul>\n\n      <pre class=\"language-javascript\">\n// Example k6 test scenario script\nimport http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  stages: [\n    { duration: '30s', target: 100 }, // ramp up to 100 users\n    { duration: '1m', target: 100 },  // stay at 100 users\n    { duration: '10s', target: 0 },    // ramp down to 0 users\n  ],\n};\n\nexport default function () {\n  const res = http.get('http://localhost:9002/api/health');\n  check(res, { 'status is 200': (r) => r.status === 200 });\n  sleep(1);\n}</pre>\n\n      <h2>Enforcing SLAs using Thresholds</h2>\n      <blockquote><p>[!tip] An automated quality gate</p><p>Using k6's <code>thresholds</code> feature, we can configure our CI/CD pipelines to fail the build automatically if p99 latency exceeds 200ms or if the error rate climbs above 1% during tests. This acts as an automated quality gate.</p></blockquote>",
+      "date": "April 15, 2026",
+      "category": "Observability",
+      "tags": [
+        "k6",
+        "Grafana",
+        "Load Testing",
+        "DevOps"
+      ]
+    },
+    {
+      "slug": "building-rag-pipeline-internal-documentation",
+      "title": "Building an Advanced RAG Pipeline for Developer Knowledge Discovery",
+      "excerpt": "How we leveraged LangChain and vector databases to build a context-aware search engine for internal APIs.",
+      "content": "<p class=\"lead\">Finding documentation across multiple Slack channels, Confluence pages, and markdown repositories is a major developer friction point. We built an internal Retrieval-Augmented Generation (RAG) system to solve this.</p>\n      \n      <h2>1. The Architecture</h2>\n      <p>Our RAG pipeline is built using LangChain and a localized vector database. The process follows a classic ingestion and retrieval architecture:</p>\n      <ul>\n        <li><strong>Ingestion:</strong> Scripts crawl markdown documents, split text into chunks using recursive character text splitters, and generate semantic embeddings using HuggingFace models.</li>\n        <li><strong>Storage:</strong> Embeddings are stored in a vector database for rapid semantic retrieval.</li>\n        <li><strong>Generation:</strong> When a developer asks a question, the vector database returns the top 3 most relevant documents, which are passed to the LLM as context to formulate a response.</li>\n      </ul>\n\n      <h2>2. Optimizing Chunking and Context Windows</h2>\n      <blockquote><p>[!tip] Search small chunks, return the parent document</p><p>One of the largest hurdles was preventing LLM hallucinations. We solved this by implementing parent-document retrieval. We store small chunks (100 tokens) for search, but return the parent document (500 tokens) to the LLM to preserve surrounding context. This improved accuracy by 35%.</p></blockquote>\n\n      <h2>3. Results</h2>\n      <p>The developer assistant now answers natural language questions like 'How do I initialize the auth client?' within 3 seconds, citing exact source links. This has dramatically improved onboarding speed for new developers.</p>",
+      "date": "March 10, 2026",
+      "category": "Artificial Intelligence",
+      "tags": [
+        "RAG",
+        "LangChain",
+        "Vector DB",
+        "LLMs"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "multi-tenant-ai-chatbot-platform",
+      "kind": "key",
+      "title": "Multi-Tenant AI Chatbot Platform",
+      "description": "Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.",
+      "tech": [
+        ".NET 10",
+        "Semantic Kernel",
+        "pgvector",
+        "RabbitMQ",
+        "Next.js 16"
+      ],
+      "post": "rag-chatbot-latency-audit",
+      "isFeatured": true,
+      "outcome": "Latency audit traced 40 s answers to 7–8 LLM calls per request; the fix plan targets ~70% faster replies.",
+      "sortOrder": 0
+    },
+    {
+      "id": "offline-first-procurement-inspection-app",
+      "kind": "key",
+      "title": "Offline-First Procurement & Inspection App",
+      "description": "Next.js PWA plus Android shell for field procurement: one storage interface over Android SQLite and IndexedDB, master-data sync, and a transactional outbox that replays actions when back online.",
+      "tech": [
+        "Next.js",
+        ".NET",
+        "SQLite",
+        "IndexedDB",
+        "Android"
+      ],
+      "post": "",
+      "isFeatured": true,
+      "outcome": "",
+      "sortOrder": 1
+    },
+    {
+      "id": "uptime-incident-management-platform",
+      "kind": "key",
+      "title": "Uptime & Incident Management Platform",
+      "description": "Uptime Kuma as a headless check engine behind a custom .NET 10 API and React admin: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.",
+      "tech": [
+        ".NET 10",
+        "Uptime Kuma",
+        "React Router",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "post": "",
+      "isFeatured": true,
+      "outcome": "",
+      "sortOrder": 2
+    },
+    {
+      "id": "real-time-iot-data-platform",
+      "kind": "key",
+      "title": "Real-Time IoT Data Platform",
+      "description": "Built a .NET system with auto MQTT listener management, Cassandra storage, and fault-tolerant recovery for 24/7 IoT data processing.",
+      "tech": [
+        ".NET",
+        "MQTT",
+        "Cassandra",
+        "Bg Services",
+        "Solr"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 3
+    },
+    {
+      "id": "custom-intellisense-extension",
+      "kind": "key",
+      "title": "Custom IntelliSense Extension",
+      "description": "Built a Visual Studio plugin to enhance IntelliSense with internal framework awareness, providing smart completions and navigation aids for proprietary codebases.",
+      "tech": [
+        "Visual Studio Extensibility"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 4
+    },
+    {
+      "id": "outlook-reminder-plugin",
+      "kind": "key",
+      "title": "Outlook Reminder Plugin",
+      "description": "Developed a lightweight Outlook add-in to schedule contextual follow-ups directly from emails, improving task tracking.",
+      "tech": [
+        "Office Add-in",
+        "JavaScript",
+        "HTML",
+        "Outlook API"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 5
+    },
+    {
+      "id": "modular-video-conferencing-system",
+      "kind": "key",
+      "title": "Modular Video Conferencing System",
+      "description": "Engineered a plug-and-play video calling platform supporting multi-user sessions with live signaling and user-state awareness for enterprise systems.",
+      "tech": [
+        "WebRTC",
+        "SignalR",
+        "Angular",
+        "Node.js",
+        ".NET"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 6
+    },
+    {
+      "id": "faceauth-with-liveness-detection",
+      "kind": "key",
+      "title": "FaceAuth with Liveness Detection",
+      "description": "Implemented facial recognition using OpenCV with adjustable thresholding and added spoof-prevention via real-time liveness detection.",
+      "tech": [
+        "OpenCV",
+        ".NET",
+        "Angular"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 7
+    },
+    {
+      "id": "context-aware-support-chatbot",
+      "kind": "key",
+      "title": "Context-Aware Support Chatbot",
+      "description": "Created an NLP-based chatbot to handle ticket creation via dynamic input collection, reducing support workload by automating API calls.",
+      "tech": [
+        "Python",
+        "FastAPI",
+        "LangChain",
+        "LLM"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 8
+    },
+    {
+      "id": "document-rag-system",
+      "kind": "key",
+      "title": "Document RAG System",
+      "description": "Designed a caching layer using action filters and in-memory persistence to accelerate dashboard data delivery, with configurable TTLs and tiered caching.",
+      "tech": [
+        ".NET",
+        "Memory Cache",
+        "Filters",
+        "SQL Server"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 9
+    },
+    {
+      "id": "pwbassistant-nuget-package",
+      "kind": "key",
+      "title": "PWBAssistant NuGet Package",
+      "description": "Authored NuGet package (v0.3.0) for advanced, automated table scraping from web pages using Playwright automation.",
+      "tech": [
+        "NuGet",
+        "Playwright",
+        ".NET"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 10
+    },
+    {
+      "id": "fossil-india",
+      "kind": "client",
+      "title": "Fossil India",
+      "description": "Led migration from Angular to Next.js with focus on performance, security, and feature parity.",
+      "tech": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "CSS Modules"
+      ],
+      "client": "Fossil India",
+      "role": "Lead Architect (Migration)",
+      "duration": "2023 – 2024",
+      "url": "",
+      "responsibilities": [
+        "Defined migration strategy and phased rollout for minimal disruption.",
+        "Implemented performance optimizations (lazy hydration, dynamic imports, image and font optimizations).",
+        "Established nonce-based CSP and secure headers for production environments.",
+        "Coordinated SEO, metadata mapping and QA verification for organic ranking preservation."
+      ],
+      "sortOrder": 11
+    },
+    {
+      "id": "jockey",
+      "kind": "client",
+      "title": "Jockey",
+      "description": "Developed features for one of India's leading E-commerce portals, contributing to various modules across the platform.",
+      "tech": [
+        "AngularJs",
+        "Web API",
+        "ADO.Net",
+        "C#",
+        "ASP.Net",
+        "SQL Server",
+        "Solr",
+        "WCF",
+        "Windows Services"
+      ],
+      "client": "Jockey (Page industries ltd, Bangalore)",
+      "role": "Software Development Team Lead",
+      "duration": "Jan 2021 – May 2023",
+      "url": "https://www.jockey.in/",
+      "responsibilities": [
+        "Administrator Facing Application: Developed Order Management, SAP, and HR Mantra modules, plus Return/Refund Automation and reporting.",
+        "CRM: Built the user complaint management system to handle the lifecycle of customer issues.",
+        "SAP Communication Channel: Developed data sync between the E-commerce app and SAP using web and windows services.",
+        "Partner Order Management: Created modules to manage the order process flow for partners.",
+        "Interacted with clients, prepared requirement documents, and provided production support.",
+        "Managed releases via DevOps and coordinated with the testing team."
+      ],
+      "sortOrder": 12
+    },
+    {
+      "id": "manyavar",
+      "kind": "client",
+      "title": "Manyavar",
+      "description": "Contributed to the development of the Manyavar e-commerce site, a major platform in the ethnic wear market.",
+      "tech": [
+        "AngularJs",
+        "Web API",
+        "ADO.Net",
+        "C#",
+        "ASP.Net",
+        "SQL Server",
+        "Solr",
+        "WCF",
+        "Windows Services"
+      ],
+      "client": "Vedant Fashion Limited",
+      "role": "Software Development Team Member",
+      "duration": "Jun 2021 – Jan 2022",
+      "url": "https://www.manyavar.com/",
+      "responsibilities": [
+        "Focused on backend development for the Administrator-facing CMS.",
+        "Contributed to various modules to enhance the platform's functionality and performance.",
+        "Worked within a team to deliver features for a high-traffic e-commerce website."
+      ],
+      "sortOrder": 13
+    },
+    {
+      "id": "luxcozi",
+      "kind": "client",
+      "title": "LuxCozi",
+      "description": "Contributed to the development of the LuxCozi e-commerce site, a major platform in the ethnic wear market.",
+      "tech": [
+        "AngularJs",
+        "Web API",
+        "ADO.Net",
+        "C#",
+        "ASP.Net",
+        "SQL Server",
+        "Solr",
+        "WCF",
+        "Windows Services"
+      ],
+      "client": "LuxCozi",
+      "role": "Software Development Team Lead",
+      "duration": "Jun 2021 – Jan 2022",
+      "url": "https://www.luxcozi.com/",
+      "responsibilities": [
+        "Focused on backend development for the Administrator-facing CMS.",
+        "Contributed to various modules to enhance the platform's functionality and performance.",
+        "Worked within a team to deliver features for a high-traffic e-commerce website."
+      ],
+      "sortOrder": 14
+    },
+    {
+      "id": "speedo",
+      "kind": "client",
+      "title": "Speedo",
+      "description": "Led development efforts for the Speedo e-commerce platform, focusing on core administrative and customer-facing features.",
+      "tech": [
+        "AngularJs",
+        "Web API",
+        "ADO.Net",
+        "C#",
+        "ASP.Net",
+        "SQL Server",
+        "Solr",
+        "WCF",
+        "Windows Services"
+      ],
+      "client": "Speedo",
+      "role": "Software Development Team Lead",
+      "duration": "July 2019 – Jun 2021",
+      "url": "https://www.speedo.in/",
+      "responsibilities": [
+        "Administrator Facing Application: Involved in developing major modules like Order Management and Reports.",
+        "CRM: Developed the User complaint management system to raise, process, and close complaints.",
+        "Partner Order Management: Developed a module to maintain the order process flow.",
+        "Understood client requirements and provided production support.",
+        "Coordinated with testing teams and prepared release notes for UAT and Production deployments."
+      ],
+      "sortOrder": 15
+    },
+    {
+      "id": "hybrid-product-search-bm25-vector-rrf",
+      "kind": "lab",
+      "title": "Hybrid Product Search (BM25 + Vector + RRF)",
+      "description": "Solr 9 engine fusing keyword and kNN vector results with Reciprocal Rank Fusion. In-process ONNX embeddings, rule-based NLU over a live catalog vocabulary, typo tolerance, price parsing and multi-item queries.",
+      "tech": [
+        "Solr 9",
+        "ONNX Runtime",
+        "MiniLM",
+        "RRF",
+        ".NET"
+      ],
+      "post": "hybrid-search-solr-bm25-vector-rrf",
+      "status": "POC",
+      "sortOrder": 16
+    },
+    {
+      "id": "on-demand-isr-next-js-16-net",
+      "kind": "lab",
+      "title": "On-Demand ISR: Next.js 16 + .NET",
+      "description": "Static pages with zero API calls per view, kept fresh by signed webhooks from .NET that expire exact cache tags. Handles new and deleted pages without a rebuild.",
+      "tech": [
+        "Next.js 16",
+        "ASP.NET Core",
+        "ISR",
+        "Webhooks"
+      ],
+      "post": "nextjs-dotnet-on-demand-isr",
+      "status": "POC",
+      "sortOrder": 17
+    },
+    {
+      "id": "mcp-server-for-code-database-intelligence",
+      "kind": "lab",
+      "title": "MCP Server for Code & Database Intelligence",
+      "description": "Gives AI assistants a map of large C# codebases: Roslyn analyses whole solutions (classes, methods, dependencies, stored procedures used, complexity) and SQL Server catalogue views supply tables, keys and procedures. Scheduled per-workspace syncs store it in MongoDB, exposed as 40+ MCP tools with a Blazor dashboard and live logs.",
+      "tech": [
+        "MCP",
+        "Roslyn",
+        ".NET",
+        "MongoDB",
+        "SQL Server",
+        "Blazor"
+      ],
+      "post": "mcp-server-code-database-intelligence",
+      "status": "WIP",
+      "sortOrder": 18
+    },
+    {
+      "id": "self-hosted-web-analytics",
+      "kind": "lab",
+      "title": "Self-Hosted Web Analytics",
+      "description": "Google Analytics replacement for an e-commerce site: a drop-in JS tracker, ASP.NET Core ingestion API, ClickHouse event store and Grafana dashboards, with natural-language querying planned.",
+      "tech": [
+        "ClickHouse",
+        "ASP.NET Core",
+        "Grafana",
+        "JavaScript"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 19
+    },
+    {
+      "id": "mongodb-query-tuning-for-a-meeting-platform",
+      "kind": "lab",
+      "title": "MongoDB Query Tuning for a Meeting Platform",
+      "description": "Compound and unique indexes on the conversations collection turned full collection scans into index scans. User-conversation queries dropped from 500–2000 ms to 5–50 ms.",
+      "tech": [
+        "MongoDB",
+        "Indexing",
+        "Performance"
+      ],
+      "post": "",
+      "status": "SHIPPED",
+      "sortOrder": 20
+    },
+    {
+      "id": "voice-ivr-agent-over-rag",
+      "kind": "lab",
+      "title": "Voice / IVR Agent over RAG",
+      "description": "Fully self-hosted voice loop in front of the existing chatbot: Silero VAD, streaming whisper.cpp, Piper TTS and Pipecat orchestration, with Asterisk for SIP telephony.",
+      "tech": [
+        "Pipecat",
+        "whisper.cpp",
+        "Piper",
+        "Asterisk"
+      ],
+      "post": "",
+      "status": "RESEARCH",
+      "sortOrder": 21
+    },
+    {
+      "id": "in-browser-llm-inference-with-webllm",
+      "kind": "lab",
+      "title": "In-Browser LLM Inference with WebLLM",
+      "description": "Run small models (Qwen2.5 1.5B, Phi-3 mini, SmolLM2) in the browser via WebGPU as a \"local mode\" for the chatbot, optionally grounded by backend vector search.",
+      "tech": [
+        "WebLLM",
+        "WebGPU",
+        "Next.js"
+      ],
+      "post": "",
+      "status": "RESEARCH",
+      "sortOrder": 22
+    },
+    {
+      "id": "image-table-extraction-with-document-ai",
+      "kind": "lab",
+      "title": "Image & Table Extraction with Document AI",
+      "description": "Proofs of concept extracting structured data from scanned documents: Google Document AI table parsing in .NET, and a Gemini vision-model web app with a Next.js front end.",
+      "tech": [
+        "Document AI",
+        "Gemini VLM",
+        ".NET",
+        "Next.js"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 23
+    },
+    {
+      "id": "10-node-bare-metal-vmss-cluster",
+      "kind": "lab",
+      "title": "10-Node Bare-Metal \"VMSS\" Cluster",
+      "description": "Design for a VMSS-style cluster on ten 8 GB mini PCs: Proxmox, NFS shared storage and Docker Swarm now, with a path to K3s once autoscaling is needed.",
+      "tech": [
+        "Proxmox",
+        "Docker Swarm",
+        "K3s",
+        "NFS"
+      ],
+      "post": "homelab-vmss-docker-swarm-vs-k3s",
+      "status": "RESEARCH",
+      "sortOrder": 24
+    },
+    {
+      "id": "legacy-jquery-site-next-js-static-export",
+      "kind": "lab",
+      "title": "Legacy jQuery Site → Next.js Static Export",
+      "description": "Lift-and-shift of a jQuery + jsrender site into Next.js with output: export, keeping the CSS, behaviour and URLs byte-identical, converted in parallel page batches.",
+      "tech": [
+        "Next.js",
+        "jQuery",
+        "Static Export",
+        "IIS"
+      ],
+      "post": "",
+      "status": "WIP",
+      "sortOrder": 25
+    },
+    {
+      "id": "custom-roslyn-analyzer",
+      "kind": "lab",
+      "title": "Custom Roslyn Analyzer",
+      "description": "Build-time C# diagnostics enforcing house rules: no Console.WriteLine in favour of a logger, camelCase locals and a null-check heuristic.",
+      "tech": [
+        "Roslyn",
+        "C#",
+        ".NET 8"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 26
+    },
+    {
+      "id": "api-load-testing-observability",
+      "kind": "lab",
+      "title": "API Load Testing & Observability",
+      "description": "Designed repeatable k6 suites for critical APIs wired into Grafana dashboards to validate SLAs and guide capacity planning.",
+      "tech": [
+        "k6",
+        "Grafana",
+        "InfluxDB",
+        "SLA"
+      ],
+      "post": "load-testing-microservices-k6-grafana",
+      "status": "SHIPPED",
+      "sortOrder": 27
+    },
+    {
+      "id": "pdf-generation-from-html-in-c",
+      "kind": "lab",
+      "title": "PDF Generation from HTML in C#",
+      "description": "Production solution for generating PDFs from HTML using PuppeteerSharp and iTextSharp with pixel-accurate rendering.",
+      "tech": [
+        "C#",
+        "PuppeteerSharp",
+        "iTextSharp"
+      ],
+      "post": "",
+      "status": "SHIPPED",
+      "sortOrder": 28
+    },
+    {
+      "id": "ai-code-review-assistant",
+      "kind": "lab",
+      "title": "AI Code Review Assistant",
+      "description": "CI/CD-integrated tool using a custom LLM to review PRs for quality, style and potential bugs, cutting manual review time by 30%.",
+      "tech": [
+        "LLM",
+        "FastAPI",
+        "Python",
+        "Docker",
+        "CI/CD"
+      ],
+      "post": "",
+      "status": "SHIPPED",
+      "sortOrder": 29
+    },
+    {
+      "id": "iot-predictive-maintenance-poc",
+      "kind": "lab",
+      "title": "IoT Predictive Maintenance PoC",
+      "description": "Industrial IoT PoC predicting equipment failures via sensor data + ML using MQTT ingestion and .NET backend analysis.",
+      "tech": [
+        "IoT",
+        ".NET",
+        "MQTT",
+        "ML",
+        "Azure"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 30
+    },
+    {
+      "id": "advanced-rag-for-internal-docs",
+      "kind": "lab",
+      "title": "Advanced RAG for Internal Docs",
+      "description": "RAG pipeline for internal docs: developers query in natural language and get precise answers with source links.",
+      "tech": [
+        "RAG",
+        "LangChain",
+        "Vector DB",
+        "Transformers"
+      ],
+      "post": "building-rag-pipeline-internal-documentation",
+      "status": "SHIPPED",
+      "sortOrder": 31
+    },
+    {
+      "id": "end-to-end-encryption-layer",
+      "kind": "lab",
+      "title": "End-to-End Encryption Layer",
+      "description": "Document sharing system with E2EE ensuring only authorized users access sensitive data via secure cryptographic protocols.",
+      "tech": [
+        "E2EE",
+        "Cryptography",
+        "Secure Protocols"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 32
+    },
+    {
+      "id": "rabbitmq-microservices-bus",
+      "kind": "lab",
+      "title": "RabbitMQ Microservices Bus",
+      "description": "Async messaging layer using RabbitMQ for reliable service-to-service communication with dead-letter queues and retries.",
+      "tech": [
+        "RabbitMQ",
+        "Microservices",
+        "Docker"
+      ],
+      "post": "",
+      "status": "SHIPPED",
+      "sortOrder": 33
+    },
+    {
+      "id": "grpc-service-mesh",
+      "kind": "lab",
+      "title": "gRPC Service Mesh",
+      "description": "High-performance inter-service communication using gRPC with Protocol Buffers for strongly-typed microservice contracts.",
+      "tech": [
+        "gRPC",
+        "Protobuf",
+        "Docker"
+      ],
+      "post": "",
+      "status": "POC",
+      "sortOrder": 34
+    }
+  ],
+  "profile": {
+    "name": "Boda Madhukar Reddy",
+    "title": "Software Architect",
+    "company": "Revalsys Technologies",
+    "location": "Hyderabad, India",
+    "email": "madhukarreddyboda538@gmail.com",
+    "phone": "+91 95731 53479",
+    "phoneHref": "tel:+919573153479",
+    "github": "https://github.com/Madhukar538",
+    "linkedin": "",
+    "twitter": "",
+    "summary": "Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. Production-first: diagnose fast, fix right, prevent recurrence.",
+    "skillCategories": [
+      {
+        "title": "Languages",
+        "color": "green",
+        "skills": [
+          "C#",
+          "TypeScript",
+          "JavaScript",
+          "Python",
+          "SQL",
+          "C"
+        ]
+      },
+      {
+        "title": "Backend",
+        "color": "cyan",
+        "skills": [
+          ".NET 10 / ASP.NET Core",
+          "Web API & MVC",
+          "Background & Worker Services",
+          "Blazor",
+          "Node.js",
+          "FastAPI"
+        ]
+      },
+      {
+        "title": "Frontend & Mobile",
+        "color": "amber",
+        "skills": [
+          "Next.js 16 (App Router, ISR)",
+          "React 19",
+          "Angular",
+          "Tailwind CSS",
+          "React Native",
+          "Offline-first PWA"
+        ]
+      },
+      {
+        "title": "AI & LLMs",
+        "color": "green",
+        "skills": [
+          "RAG",
+          "Semantic Kernel",
+          "MCP (Model Context Protocol)",
+          "Ollama · Qwen3 · Gemma",
+          "LiteLLM",
+          "mem0",
+          "LangChain",
+          "ONNX Runtime",
+          "Gemini VLM",
+          "Document AI",
+          "WebLLM",
+          "whisper.cpp · Piper",
+          "OpenCV"
+        ]
+      },
+      {
+        "title": "Search & Vectors",
+        "color": "cyan",
+        "skills": [
+          "Solr 9 (kNN, Suggester, MLT)",
+          "Hybrid BM25 + Vector (RRF)",
+          "pgvector",
+          "Qdrant",
+          "Embeddings"
+        ]
+      },
+      {
+        "title": "Data & Caching",
+        "color": "amber",
+        "skills": [
+          "SQL Server",
+          "PostgreSQL",
+          "MongoDB",
+          "ClickHouse",
+          "SQLite · IndexedDB",
+          "Redis",
+          "Memcached",
+          "EF Core",
+          "Dapper",
+          "ADO.NET"
+        ]
+      },
+      {
+        "title": "Messaging & Realtime",
+        "color": "green",
+        "skills": [
+          "RabbitMQ",
+          "SignalR",
+          "gRPC",
+          "MQTT",
+          "WebRTC",
+          "Socket.IO",
+          "Firebase (FCM)"
+        ]
+      },
+      {
+        "title": "DevOps & Infrastructure",
+        "color": "cyan",
+        "skills": [
+          "Docker",
+          "Docker Swarm",
+          "K3s",
+          "Proxmox",
+          "Coolify",
+          "Cloudflare Tunnel",
+          "Terraform",
+          "Azure",
+          "Azure DevOps / TFS",
+          "IIS"
+        ]
+      },
+      {
+        "title": "Observability & Quality",
+        "color": "amber",
+        "skills": [
+          "k6",
+          "Grafana",
+          "Uptime Kuma",
+          "Load Testing & SLAs",
+          "Playwright",
+          "Roslyn Analyzers",
+          "Postman"
+        ]
+      }
+    ],
+    "experience": {
+      "title": "Software Architect",
+      "company": "Revalsys Technologies",
+      "duration": "2021 – Present",
+      "location": "Hyderabad, IN",
+      "type": "Full-time",
+      "highlights": [
+        {
+          "label": "Performance",
+          "value": "k6 + Grafana suites · validated SLAs · capacity planning"
+        },
+        {
+          "label": "AI platforms",
+          "value": "Multi-tenant RAG · MCP servers · hybrid vector search · self-hosted LLMs"
+        },
+        {
+          "label": "Architecture",
+          "value": "Modernized .NET stacks · offline-first apps · observability-first"
+        }
+      ],
+      "groups": [
+        {
+          "label": "AI platforms",
+          "items": [
+            "Architecting a multi-tenant RAG chatbot platform on .NET 10: Semantic Kernel agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.",
+            "Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.",
+            "Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.",
+            "Run AI workloads on self-hosted LLMs (Ollama on an in-house GPU server), with no cloud AI dependency.",
+            "Integrated AI/ML workflows — NLP chatbots, RAG systems, code review automation."
+          ]
+        },
+        {
+          "label": "Performance & tooling",
+          "items": [
+            "Tuned MongoDB indexes for the meeting platform, cutting conversation queries from 500–2000 ms to 5–50 ms.",
+            "Built internal Code Review tool — reduced PR cycle time by 30%.",
+            "Developed document processing and complex third-party integration pipelines."
+          ]
+        },
+        {
+          "label": "Architecture & R&D",
+          "items": [
+            "Building an offline-first procurement and inspection app (Next.js PWA + Android SQLite) with outbox-based sync.",
+            "Building an uptime and incident-management platform on Uptime Kuma with a .NET API, push alerts and ticketing.",
+            "Led .NET-based R&D projects for rapid prototyping and system innovation.",
+            "Migrated legacy systems to modern .NET hybrid architectures.",
+            "Built PoCs for IoT (MQTT), debugging tools, and context-aware assistants.",
+            "Created RDLC Application for internal workflow, end-to-end requirement to delivery."
+          ]
+        },
+        {
+          "label": "Client delivery",
+          "items": [
+            "Led ONDC (Open Network for Digital Commerce) integration.",
+            "E-commerce: Jockey, Speedo, Manyavar, LuxCozi (Angular + .NET).",
+            "RevalERP · RevalHRM · RevalCRM · RevalCMS · RevalPOS · RevalInventory · RevalProject · RevalSales.",
+            "Reval Meet — video conferencing platform (WebRTC + SignalR + Node.js)."
+          ]
+        }
+      ]
+    },
+    "education": {
+      "degree": "B.Sc in Computer Science",
+      "institution": "Satavahana University",
+      "location": "Karimnagar, Telangana",
+      "description": "Graduated with a Bachelor of Science degree, focusing on core computer science principles, data structures, algorithms, and software development fundamentals."
+    }
+  }
+}

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dhucar.Portfolio.DataAccess\Dhucar.Portfolio.DataAccess.csproj" />
+    <ProjectReference Include="..\Dhucar.Portfolio.Properties\Dhucar.Portfolio.Properties.csproj" />
+    <ProjectReference Include="..\Dhucar.Portfolio.Common\Dhucar.Portfolio.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fido2" Version="4.1.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Scrutor" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dhucar.Portfolio.BusinessLogic\Dhucar.Portfolio.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Dhucar.Portfolio.DataAccess\Dhucar.Portfolio.DataAccess.csproj" />
+    <ProjectReference Include="..\Dhucar.Portfolio.Properties\Dhucar.Portfolio.Properties.csproj" />
+    <ProjectReference Include="..\Dhucar.Portfolio.Common\Dhucar.Portfolio.Common.csproj" />
+  </ItemGroup>
+
+</Project>
