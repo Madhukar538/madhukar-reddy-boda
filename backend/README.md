@@ -144,7 +144,7 @@ Swagger UI is available at `/swagger` in Development only.
 
 ## Deploy (Coolify)
 
-`docker-compose.yml` runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+`docker-compose.yaml` (Coolify's default name) runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
 
 **Atlas checklist**
 
