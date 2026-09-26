@@ -18,6 +18,110 @@ export const readTime = (html: string) => `${Math.max(1, Math.round(countWords(h
 
 const posts: Omit<BlogPost, 'readTime'>[] = [
   {
+    slug: "ai-development-workflow-obsidian-mcp-skills",
+    title: "Memory, Reach and Habits: How I Use an Obsidian Vault, MCP and Skills to Ship Production-Grade Code",
+    excerpt: "AI assistants write code quickly but know nothing about my systems. My workflow gives them three things: an Obsidian vault as memory, MCP servers as reach, and Skills as habits. Then nothing ships until it's measured.",
+    date: "September 26, 2026",
+    category: "Artificial Intelligence",
+    tags: ["MCP", "Obsidian", "Claude Code", "Skills", "Performance"],
+    content: `
+      <p class="lead">An AI assistant can write a controller in seconds. What it can't do on its own is know why we chose one database per tenant, how a failed deploy was fixed last month, or what every API response in our house style looks like. Most "the AI wrote bad code" moments are really missing context. My workflow is built around closing that gap: an <strong>Obsidian vault</strong> as the assistant's memory, <strong>MCP servers</strong> as its reach into my systems, and <strong>Skills</strong> as its habits. Then one rule on top: nothing ships until it has been measured.</p>
+
+      <h2>1. The Problem: Speed Without Context</h2>
+      <p>Assistants are fast and fluent, and that makes their gaps easy to miss. Left alone, they invent conventions, forget decisions made three weeks ago and declare a fix done because it compiles. Production-grade work needs three things a model doesn't bring with it:</p>
+      <ul>
+        <li><strong>Context:</strong> the decisions, trade-offs and incidents behind the code.</li>
+        <li><strong>Conventions:</strong> how things are done here, applied every time rather than when remembered.</li>
+        <li><strong>Proof:</strong> evidence that a change works, from a build, a test or a measurement.</li>
+      </ul>
+
+      <h2>2. The Stack at a Glance</h2>
+      <pre>
+Obsidian vault ─▶ Obsidian MCP server ──┐
+ (ADRs, runbooks,                        │
+  project notes, prompts)                │
+                                         ├──▶ Claude · Claude Code · Antigravity
+Code + SQL Server ─▶ code-intel MCP ─────┤            │
+                                         │            ▼
+Skills (house style, doc formats) ───────┘   branch ─▶ build ─▶ test ─▶ measure ─▶ PR
+                                                                             │
+                                  vault updated (ADR, runbook) ◀── merge ◀───┘</pre>
+
+      <h2>3. The Vault: Memory</h2>
+      <p>My Obsidian vault is where decisions live. It has four kinds of notes, and each one answers a different question an assistant would otherwise guess at:</p>
+      <ul>
+        <li><strong>Architecture notes and ADRs</strong> answer <em>why is it built like this?</em> One note per decision: the context, the options, what we chose and what it costs.</li>
+        <li><strong>Runbooks and incidents</strong> answer <em>what went wrong before?</em> Deploy steps, production fixes and post-mortems.</li>
+        <li><strong>Project and R&amp;D notes</strong> answer <em>what exists and how does it connect?</em> One note per project or experiment, linked by the technologies they share.</li>
+        <li><strong>Prompts and AI context</strong> answer <em>how should the assistant work here?</em> Reusable prompts, conventions and the context I hand to every session.</li>
+      </ul>
+      <p>Short, consistently shaped notes matter more than long ones. A decision note in this shape is easy for a person to skim and easy for a model to use:</p>
+      <pre class="language-markdown">
+# ADR: One database per workspace
+Status: accepted
+Context: tenants must never see each other's data; removing a tenant must be trivial
+Decision: each workspace gets its own database, named after the workspace
+Consequences: + isolation by construction, + delete = drop database
+              - one provisioning step per new workspace
+Links: [[MongoDB]] [[Multi-tenancy]] [[MCP server for code intelligence]]</pre>
+      <blockquote><p>[!tip] Link notes by technology</p><p>Links are what turn a folder of notes into a map. The <a href="/graph">knowledge graph</a> on this site is modelled on the vault's graph view: projects, experiments and posts connected through the technologies they share.</p></blockquote>
+
+      <h2>4. MCP: Reach</h2>
+      <p>The Model Context Protocol is how the assistant reaches that memory and my systems without me pasting anything. Three servers do most of the work:</p>
+      <ul>
+        <li><strong>Obsidian MCP server:</strong> the assistant searches and reads the vault directly. "Check the ADRs before changing tenant storage" becomes something it can actually do.</li>
+        <li><strong>Code-intelligence MCP server:</strong> the server I built that maps C# solutions with Roslyn and SQL Server schemas through catalogue views, exposed as 40+ tools. It answers "who calls this stored procedure?" from facts instead of guesses. The <a href="/blog/mcp-server-code-database-intelligence">full write-up is here</a>.</li>
+        <li><strong>This portfolio's own MCP endpoint:</strong> the same idea pointed outwards. Any MCP client can <a href="/ai">query my projects and posts</a>.</li>
+      </ul>
+      <blockquote><p>[!warning] Reach is not permission</p><p>An MCP server can read far more than a task needs. Scope each one to what it serves, keep secrets out of notes, and treat anything an assistant reads from outside as data, not instructions.</p></blockquote>
+
+      <h2>5. Skills: Habits</h2>
+      <p>A convention that lives only in a senior developer's head gets applied when someone remembers it. A Skill packages it so the assistant applies it every time it's relevant.</p>
+      <ul>
+        <li><strong>My .NET API skill</strong> encodes our house style for Web APIs: Controller, business layer, data layer and DTOs; convention-based dependency injection; structured logging; global exception handling; JWT authentication; and one uniform response envelope. "Add an endpoint" now produces code that matches the rest of the codebase instead of a generic tutorial.</li>
+        <li><strong>Document skills</strong> for PDF, Word, Excel and PowerPoint handle the non-code side: specs, reports and client documents, in formats people actually open.</li>
+      </ul>
+      <blockquote><p>[!note] Next skills</p><p>The vault already holds the raw material for more: runbooks that can become deployment checklists, and incident notes that can become a review checklist for the mistakes we have already made once.</p></blockquote>
+
+      <h2>6. The Tools</h2>
+      <ul>
+        <li><strong>Claude</strong>, with MCP servers and Skills attached, for design, research and writing: reading the vault, querying the code map, drafting ADRs.</li>
+        <li><strong>Claude Code</strong> for changes to a repository: it works on a branch, runs the build, the type checker and the tests, and opens a pull request.</li>
+        <li><strong>Antigravity</strong> for agent-driven work inside the editor.</li>
+      </ul>
+      <p>The tools matter less than what they are connected to. The same model is a different assistant with the vault, the code map and the house style behind it.</p>
+
+      <h2>7. Production-Grade Means Measured</h2>
+      <p>A case study from this site. PageSpeed Insights scored the pages poorly on mobile. The workflow was: measure, find the cause, change one thing, measure again, and compare against <code>main</code>.</p>
+      <ul>
+        <li><strong>Measure:</strong> Lighthouse with mobile settings showed about <strong>25 seconds of Total Blocking Time</strong> on every page.</li>
+        <li><strong>Find the cause:</strong> a WebGL fluid background redrew every frame from page load. With it switched off, the home page went from 48 to 83.</li>
+        <li><strong>Fix, then re-measure:</strong> start the effect on the first interaction, paint content without waiting for JavaScript, self-host fonts and remove a 100 KB inlined image. Blocking time dropped to a few hundred milliseconds across the site.</li>
+        <li><strong>Check the claim:</strong> Lighthouse varies by about five points run to run, so every later feature was compared against <code>main</code> in alternating runs, and browser tests confirmed it behaved the same afterwards.</li>
+      </ul>
+      <blockquote><p>[!danger] The first fix isn't always a fix</p><p>One "optimisation", putting an animated element on its own compositor layer, made the score worse on a phone without a GPU. Only a measurement caught it, and it was reverted. An assistant that says "this should be faster" has made a prediction, not a result.</p></blockquote>
+
+      <h2>8. The Loop</h2>
+      <ol>
+        <li>Write down the decision or the problem in the vault.</li>
+        <li>The assistant reads the relevant notes through MCP, and the code map for the parts of the system involved.</li>
+        <li>Skills shape the change so it matches the house style.</li>
+        <li>The agent implements it on a branch and proves it: types, build, tests, and a measurement where performance is involved.</li>
+        <li>Review and merge the pull request.</li>
+        <li>Update the vault: a new ADR, a runbook step, or an incident note. The next session starts with more context than this one did.</li>
+      </ol>
+
+      <h2>9. Takeaways</h2>
+      <ul>
+        <li>Most bad AI output is missing context. Give the assistant <strong>memory</strong> (a vault), <strong>reach</strong> (MCP) and <strong>habits</strong> (Skills).</li>
+        <li>Keep notes short, consistently shaped and linked. Structure is what makes them usable by a model.</li>
+        <li>Encode conventions once as a Skill instead of repeating them in every prompt.</li>
+        <li>Production-grade means measured: build, test, and compare against a baseline before claiming anything.</li>
+        <li>Close the loop. Every merged change should leave the vault a little smarter.</li>
+      </ul>
+    `
+  },
+  {
     slug: "mcp-server-code-database-intelligence",
     title: "Giving AI Assistants a Map of Your Codebase: An MCP Server for C# Code and SQL Server Schemas",
     excerpt: "How I built a Model Context Protocol server that analyses C# solutions with Roslyn and SQL Server schemas through catalogue views, stores a structured map in MongoDB per workspace, and exposes it to AI assistants as 40+ tools.",

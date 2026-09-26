@@ -7,6 +7,7 @@ import bash from 'highlight.js/lib/languages/bash';
 import yaml from 'highlight.js/lib/languages/yaml';
 import sql from 'highlight.js/lib/languages/sql';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import markdown from 'highlight.js/lib/languages/markdown';
 import type { HLJSApi, Language } from 'highlight.js';
 import { blogs, countWords, type BlogPost } from '@/data/blogs';
 import { CALLOUT_KINDS, calloutIcon, type CalloutKind } from '@/components/vault/callout-icons';
@@ -39,7 +40,7 @@ const hcl = (hljs: HLJSApi): Language => ({
   ],
 });
 
-const LANGUAGES = { csharp, javascript, typescript, json, bash, yaml, sql, dockerfile, hcl };
+const LANGUAGES = { csharp, javascript, typescript, json, bash, yaml, sql, dockerfile, markdown, hcl };
 for (const [name, lang] of Object.entries(LANGUAGES)) hljs.registerLanguage(name, lang);
 
 const LABELS: Record<string, string> = {
@@ -52,6 +53,7 @@ const LABELS: Record<string, string> = {
   sql: 'SQL',
   hcl: 'Terraform',
   dockerfile: 'Dockerfile',
+  markdown: 'Markdown',
 };
 
 export type TocItem = { id: string; text: string; level: 2 | 3 };
