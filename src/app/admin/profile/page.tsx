@@ -6,7 +6,7 @@ import { errorMessage } from '@/lib/admin/api';
 import type { Profile, SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
-import { SaveBar, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
+import { SaveBar, ensureRefreshed, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
 import { Field, Notice, Panel, Spinner, fieldClass, splitLines, splitList } from '@/components/admin/ui';
 
 // Lists are edited as text (comma- or line-separated) and split on save,
@@ -59,7 +59,7 @@ function ListItem({ index, count, onMove, onRemove, children }: { index: number;
 const addButton = 'inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline';
 
 function ProfileEditor() {
-  const { call } = useAdmin();
+  const { call, refreshSite } = useAdmin();
   const [original, setOriginal] = useState<Form | null>(null);
   const [form, setForm] = useState<Form | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -100,7 +100,7 @@ function ProfileEditor() {
     try {
       const result = await call<SaveResult>('SaveProfile', { profile: fromForm(form) });
       setOriginal(form);
-      setStatus({ kind: 'success', text: savedMessage(result) });
+      setStatus({ kind: 'success', text: savedMessage(await ensureRefreshed(result, ['profile'], refreshSite)) });
     } catch (e) {
       setStatus({ kind: 'error', text: errorMessage(e) });
     } finally {

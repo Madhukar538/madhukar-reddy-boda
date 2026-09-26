@@ -9,7 +9,7 @@ import { errorMessage } from '@/lib/admin/api';
 import type { Post, SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
-import { SaveBar, setFlash, takeFlash, fromInputDate, savedMessage, toInputDate, useLeaveGuard, type Status } from '@/components/admin/editor';
+import { SaveBar, ensureRefreshed, setFlash, takeFlash, fromInputDate, savedMessage, toInputDate, useLeaveGuard, type Status } from '@/components/admin/editor';
 import { Field, Notice, Spinner, fieldClass, splitList } from '@/components/admin/ui';
 
 type Form = { slug: string; title: string; excerpt: string; content: string; date: string; category: string; tags: string; isPublished: boolean };
@@ -46,7 +46,7 @@ table{border-collapse:collapse}td,th{border:1px solid rgba(127,127,127,.3);paddi
 
 function Editor({ slug }: { slug: string }) {
   const isNew = slug === 'new';
-  const { call } = useAdmin();
+  const { call, refreshSite } = useAdmin();
   const router = useRouter();
   const [original, setOriginal] = useState<Form | null>(isNew ? EMPTY : null);
   const [form, setForm] = useState<Form>(EMPTY);
@@ -93,9 +93,10 @@ function Editor({ slug }: { slug: string }) {
         isPublished: form.isPublished,
       });
       setOriginal(form);
-      setStatus({ kind: 'success', text: savedMessage(result) });
+      const refreshed = await ensureRefreshed(result, ['posts', `post:${result.id}`], refreshSite);
+      setStatus({ kind: 'success', text: savedMessage(refreshed) });
       if (isNew) {
-        setFlash({ kind: 'success', text: savedMessage(result) });
+        setFlash({ kind: 'success', text: savedMessage(refreshed) });
         router.replace(`/admin/posts/${result.id}`);
       }
     } catch (e) {
@@ -109,7 +110,8 @@ function Editor({ slug }: { slug: string }) {
     if (!window.confirm(`Delete “${form.title}”? This can't be undone.`)) return;
     setBusy('delete');
     try {
-      await call('DeletePost', { id: slug });
+      const result = await call<SaveResult | null>('DeletePost', { id: slug });
+      await ensureRefreshed(result, ['posts', `post:${slug}`], refreshSite);
       setOriginal(form); // nothing left to lose
       router.replace('/admin/posts');
     } catch (e) {
