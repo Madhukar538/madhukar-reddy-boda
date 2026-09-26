@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // The admin can't be framed (clickjacking) and leaks no referrer.
+        source: '/admin/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+        ],
+      },
+      {
         // Never let the HTTP cache serve an old service worker.
         source: '/sw.js',
         headers: [

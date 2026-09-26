@@ -101,13 +101,22 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 ## First-time setup
 
-1. Deploy with `SetupToken` set.
-2. Call `SetupAdmin` with the token, your email and a password of 12+ characters. Add the returned `otpAuthUri` (or `totpSecret`) to an authenticator app.
-3. Call `ConfirmTotpSetup` with the enrolment token and a current code. Store the 10 recovery codes offline.
-4. Remove `SetupToken` and redeploy.
-5. Sign in (`Login` → `VerifyMfa`) and register a passkey (`PasskeyRegisterOptions` → `PasskeyRegister`).
+1. Deploy the API with `SETUP_TOKEN` set, and the site with `NEXT_PUBLIC_API_URL` pointing at it.
+2. Open `https://dhucar.in/admin/setup` and enter the setup token, your email and a password of 12+ characters.
+3. Scan the QR code with an authenticator app and confirm with a code. Save the 10 recovery codes offline.
+4. Remove `SETUP_TOKEN` from the API and redeploy it.
+5. Sign in at `/admin/login` and add a passkey under **Security**. From then on, sign in with the passkey.
 
-The `/admin` pages in the Next.js site will drive these steps; they come in the next PR.
+## The admin pages
+
+`/admin` is part of the Next.js site. It is a static shell that loads everything from this API after sign-in. It is never indexed and never tracked, and it can't be framed.
+
+- **Traffic:** page views and visitors for the last 7, 30 or 90 days, top pages and referrers, devices and countries.
+- **Posts** and **Projects:** create, edit, hide or delete. Saving refreshes the live site within seconds. Post HTML is previewed in a sandboxed frame with scripts off, and sanitised by the API on save.
+- **Profile:** name, links, tech stack, current role and education.
+- **Security:** passkeys, recovery codes, sign out everywhere, and the activity log. Removing a passkey or creating new recovery codes needs a current authenticator code.
+
+The access token is kept in memory only. The session renews itself through the HttpOnly refresh cookie, one tab at a time (Web Locks), so rotating refresh tokens never trip reuse detection. The site and the API must share a registrable domain (`dhucar.in` and `api.dhucar.in`), because the refresh cookie is `SameSite=Strict`.
 
 ## Connecting the site
 
