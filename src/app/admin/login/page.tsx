@@ -3,10 +3,10 @@
 import { Suspense, useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Fingerprint, KeyRound, Loader2, Smartphone } from 'lucide-react';
+import { ArrowLeft, Fingerprint, KeyRound, Loader2 } from 'lucide-react';
 import { apiCall, errorMessage } from '@/lib/admin/api';
 import { getPasskey, isPasskeyCancelled, isPasskeySupported } from '@/lib/admin/webauthn';
-import type { AuthToken, MfaChallenge, PasskeyOptions } from '@/lib/admin/types';
+import type { AuthToken, MfaChallenge, PasskeyOptions, SignInOptions } from '@/lib/admin/types';
 import { useAdmin } from '@/components/admin/session';
 import { Field, Notice, Spinner, fieldClass, secondaryButton } from '@/components/admin/ui';
 
@@ -19,7 +19,7 @@ function SignIn() {
   const next = safeNext(useSearchParams().get('next'));
 
   const [step, setStep] = useState<'password' | 'code'>('password');
-  const [busy, setBusy] = useState<'passkey' | 'phone' | 'password' | 'code' | null>(null);
+  const [busy, setBusy] = useState<'passkey' | 'password' | 'code' | null>(null);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,20 +27,32 @@ function SignIn() {
   const [code, setCode] = useState('');
   const [useRecovery, setUseRecovery] = useState(false);
   const [passkeys, setPasskeys] = useState(false);
+  // Off when the owner has switched the admin to passkey-only in the database.
+  const [passwordAllowed, setPasswordAllowed] = useState(true);
+  // The setup link only appears while setup can actually run.
+  const [setupAvailable, setSetupAvailable] = useState(false);
 
   useEffect(() => setPasskeys(isPasskeySupported()), []);
+  useEffect(() => {
+    apiCall<SignInOptions>('GetSignInOptions')
+      .then((o) => {
+        setPasswordAllowed(o.isPasswordLoginEnabled);
+        setSetupAvailable(o.isSetupAvailable);
+      })
+      .catch(() => {}); // If this can't be checked, keep the form; the API still enforces the switch.
+  }, []);
   useEffect(() => {
     if (status === 'signed-in') router.replace(next);
   }, [status, next, router]);
 
   const finish = (token: AuthToken) => signIn(token);
 
-  const withPasskey = async (fromPhone = false) => {
+  const withPasskey = async () => {
     setError('');
-    setBusy(fromPhone ? 'phone' : 'passkey');
+    setBusy('passkey');
     try {
       const { challengeId, options } = await apiCall<PasskeyOptions>('PasskeyLoginOptions');
-      const credential = await getPasskey(options, { fromPhone });
+      const credential = await getPasskey(options);
       finish(await apiCall<AuthToken>('PasskeyLogin', { challengeId, credential }));
     } catch (e) {
       if (!isPasskeyCancelled(e)) setError(errorMessage(e));
@@ -94,25 +106,21 @@ function SignIn() {
           <>
             {passkeys && (
               <>
-                <button type="button" onClick={() => withPasskey()} disabled={busy !== null} className="tinted-button w-full justify-center !py-3">
+                <button type="button" onClick={withPasskey} disabled={busy !== null} className="tinted-button w-full justify-center !py-3">
                   {busy === 'passkey' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
                   Sign in with a passkey
                 </button>
-                {/* On a computer: sign in with the passkey saved on your phone, by scanning a QR code. */}
-                <button type="button" onClick={() => withPasskey(true)} disabled={busy !== null} className={`${secondaryButton} hidden w-full sm:flex`}>
-                  {busy === 'phone' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Smartphone className="h-4 w-4" />}
-                  Use a passkey on your phone
-                </button>
-                <p className="hidden text-center text-xs text-muted-foreground sm:block">
-                  Shows a QR code to scan with your iPhone or Android. Bluetooth must be on for both.
-                </p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="h-px flex-1 bg-foreground/10" />
-                  or with your password
-                  <span className="h-px flex-1 bg-foreground/10" />
-                </div>
+                {passwordAllowed && (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="h-px flex-1 bg-foreground/10" />
+                    or with your password
+                    <span className="h-px flex-1 bg-foreground/10" />
+                  </div>
+                )}
               </>
             )}
+            {!passwordAllowed && !passkeys && <Notice>This admin signs in with a passkey only, and this browser doesn&apos;t support passkeys. Try a current Chrome, Safari, Edge or Firefox.</Notice>}
+            {passwordAllowed && (
             <form onSubmit={withPassword} className="space-y-4">
               <Field label="Email">
                 <input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={fieldClass} />
@@ -125,6 +133,7 @@ function SignIn() {
                 Continue
               </button>
             </form>
+            )}
           </>
         ) : (
           <form onSubmit={withCode} className="space-y-4">
@@ -162,9 +171,11 @@ function SignIn() {
         )}
       </div>
 
-      <p className="mt-5 text-center text-sm text-muted-foreground">
-        First time here? <Link href="/admin/setup" className="font-medium text-primary hover:underline">Set up the admin account</Link>
-      </p>
+      {setupAvailable && (
+        <p className="mt-5 text-center text-sm text-muted-foreground">
+          First time here? <Link href="/admin/setup" className="font-medium text-primary hover:underline">Set up the admin account</Link>
+        </p>
+      )}
     </div>
   );
 }

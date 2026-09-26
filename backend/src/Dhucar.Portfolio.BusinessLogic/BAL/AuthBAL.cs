@@ -16,16 +16,17 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  26 Sep 2026
+ * Modified Reason :  Passkey-only switch (settings/security.IsPasswordLoginEnabled).
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Admin setup and sign-in: password plus TOTP (or a recovery code), lockout, recovery codes and step-up checks.
  */
 public class AuthBAL(
     UserDAL userDAL,
     ChallengeDAL challengeDAL,
     PasskeyDAL passkeyDAL,
+    SettingsDAL settingsDAL,
     PasswordService passwordService,
     TotpService totpService,
     SecretProtector secretProtector,
@@ -41,6 +42,7 @@ public class AuthBAL(
     private const string AdminUserId = "admin";
     private const string TotpIssuer = "dhucar.in";
     private const string InvalidCredentials = "Invalid email or password.";
+    private const string PasswordLoginOff = "Password sign-in is turned off. Sign in with your passkey.";
     private readonly SecuritySettings _security = options.Value.Security;
 
     //****************************************************************************************************
@@ -218,13 +220,14 @@ public class AuthBAL(
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   objAPIRequest
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   26 Sep 2026
+    // Modified Reason       :   Passkey-only switch (settings/security.IsPasswordLoginEnabled).
     // Return Values         :   Response
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    26 Sep 2026       Passkey-only switch
     //****************************************************************************************************
     /// <summary>
     /// <c>Login : </c> First factor: checks the password and returns a short-lived MFA token.
@@ -234,6 +237,12 @@ public class AuthBAL(
         Response<object> objResponse = new Response<object>();
         try
         {
+            // Checked before the account lookup, so it says nothing about which emails exist.
+            if (!await IsPasswordLoginAllowed())
+            {
+                await auditBAL.Write("login.password-disabled", false, string.Empty, NormalizeEmail(objAPIRequest.Email), string.Empty);
+                return Fail(objResponse, ErrorCode.Forbidden, PasswordLoginOff);
+            }
             string email = NormalizeEmail(objAPIRequest.Email);
             string password = objAPIRequest.Password ?? string.Empty;
             if (email.Length == 0 || password.Length == 0 || password.Length > 128)
@@ -291,13 +300,14 @@ public class AuthBAL(
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   objAPIRequest
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   26 Sep 2026
+    // Modified Reason       :   Passkey-only switch (settings/security.IsPasswordLoginEnabled).
     // Return Values         :   Response
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    26 Sep 2026       Passkey-only switch
     //****************************************************************************************************
     /// <summary>
     /// <c>VerifyMfa : </c> Second factor: a TOTP code or a single-use recovery code; starts the session.
@@ -307,6 +317,11 @@ public class AuthBAL(
         Response<object> objResponse = new Response<object>();
         try
         {
+            // A sign-in started before the switch was turned off can't be finished after it.
+            if (!await IsPasswordLoginAllowed())
+            {
+                return Fail(objResponse, ErrorCode.Forbidden, PasswordLoginOff);
+            }
             (string UserId, string ChallengeId)? claims = await tokenService.ValidatePurposeToken(objAPIRequest.MfaToken, "mfa");
             if (claims == null || await challengeDAL.PeekChallengeDB(claims.Value.ChallengeId, "mfa") == null)
             {
@@ -365,8 +380,8 @@ public class AuthBAL(
 
     //****************************************************************************************************
     // Layer                 :   BusinessLogic
-    // Method Name           :   GetCurrentAdmin
-    // Method Description    :   Returns the signed-in admin's account summary.
+    // Method Name           :   GetSignInOptions
+    // Method Description    :   Tells the sign-in page which methods are on and whether setup is still open, so it hides what doesn't apply.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   none
@@ -377,6 +392,52 @@ public class AuthBAL(
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetSignInOptions : </c> Tells the sign-in page which methods are on and whether setup is still open, so it hides what doesn't apply.
+    /// </summary>
+    public async Task<Response<object>> GetSignInOptions()
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            AdminUserDocument? admin = await userDAL.GetUserByIdDB(AdminUserId);
+            objResponse.Data = new SignInOptionsDTO
+            {
+                IsPasswordLoginEnabled = await IsPasswordLoginAllowed(),
+                IsSetupAvailable = _security.SetupToken.Length >= 32 && (admin == null || !admin.IsTotpConfirmed),
+            };
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetSignInOptions", string.Empty, nameof(GetSignInOptions));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetCurrentAdmin
+    // Method Description    :   Returns the signed-in admin's account summary.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   26 Sep 2026
+    // Input Parameters      :   none
+    // Modified Date         :   26 Sep 2026
+    // Modified Reason       :   Passkey-only switch (settings/security.IsPasswordLoginEnabled).
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    26 Sep 2026       Reports the passkey-only switch
     //****************************************************************************************************
     /// <summary>
     /// <c>GetCurrentAdmin : </c> Returns the signed-in admin's account summary.
@@ -392,12 +453,15 @@ public class AuthBAL(
                 return Fail(objResponse, ErrorCode.Unauthorized, "Not signed in.");
             }
             List<PasskeyDocument> passkeys = await passkeyDAL.GetPasskeysByUserDB(user.Id);
+            SecuritySettingsDocument settings = await settingsDAL.GetSecuritySettingsDB();
             objResponse.Data = new AdminInfoDTO
             {
                 Email = user.Email,
                 LastLoginAt = user.LastLoginAt,
                 PasskeyCount = passkeys.Count,
                 RecoveryCodesLeft = user.RecoveryCodeHashes.Count,
+                IsPasswordLoginEnabled = settings.IsPasswordLoginEnabled,
+                IsPasswordLoginAllowed = settings.IsPasswordLoginEnabled || passkeys.Count == 0,
             };
             objResponse.ReturnCode = (int)ErrorCode.Success;
             objResponse.ReturnMessage = "Success.";
@@ -501,6 +565,14 @@ public class AuthBAL(
     {
         string secret = secretProtector.Unprotect(user.TotpSecretProtected);
         return totpService.Verify(secret, code, user.LastTotpStep, out long step) && await userDAL.ClaimTotpStepDB(user.Id, step);
+    }
+
+    // The owner's database switch, except that it never applies while no passkey exists:
+    // turning passwords off with nothing to replace them would lock the admin out.
+    private async Task<bool> IsPasswordLoginAllowed()
+    {
+        SecuritySettingsDocument settings = await settingsDAL.GetSecuritySettingsDB();
+        return settings.IsPasswordLoginEnabled || await passkeyDAL.CountPasskeysDB() == 0;
     }
 
     private static bool IsLockedOut(AdminUserDocument user)

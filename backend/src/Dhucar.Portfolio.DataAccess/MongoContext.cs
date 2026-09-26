@@ -59,6 +59,9 @@ public class MongoContext
     /// <summary>Daily visitor-hash salts.</summary>
     public IMongoCollection<DailySaltDocument> DailySalts => Database.GetCollection<DailySaltDocument>("dailySalts");
 
+    /// <summary>Owner-edited switches (one document, _id "security").</summary>
+    public IMongoCollection<SecuritySettingsDocument> Settings => Database.GetCollection<SecuritySettingsDocument>("settings");
+
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   EnsureIndexes

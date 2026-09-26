@@ -16,7 +16,22 @@ export type RecoveryCodes = { recoveryCodes: string[] };
 
 export type PasskeyOptions = { challengeId: string; options: Record<string, unknown> };
 
-export type AdminInfo = { email: string; lastLoginAt: string | null; passkeyCount: number; recoveryCodesLeft: number };
+export type AdminInfo = {
+  email: string;
+  lastLoginAt: string | null;
+  passkeyCount: number;
+  recoveryCodesLeft: number;
+  /** The database switch settings/security.IsPasswordLoginEnabled. */
+  isPasswordLoginEnabled: boolean;
+  /** Whether password sign-in works now (the switch is ignored while no passkey exists). */
+  isPasswordLoginAllowed: boolean;
+};
+
+export type SignInOptions = {
+  isPasswordLoginEnabled: boolean;
+  /** True only while first-time setup can still run (a setup token is set and no admin exists yet). */
+  isSetupAvailable: boolean;
+};
 
 export type Passkey = { id: string; name: string; createdAt: string; lastUsedAt: string | null; isBackedUp: boolean };
 
