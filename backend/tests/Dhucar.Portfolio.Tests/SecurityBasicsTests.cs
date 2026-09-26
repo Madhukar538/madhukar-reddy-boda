@@ -64,6 +64,21 @@ public class SecurityBasicsTests
     }
 
     [Fact]
+    public async Task Session_refresh_is_not_held_to_the_sign_in_limit()
+    {
+        // The admin renews its session on every page load; a few reloads must not lock it out.
+        using ApiFactory factory = new(new() { ["Portfolio:Security:AuthRequestsPerMinute"] = "3" });
+        HttpClient client = factory.CreateApiClient();
+        Dictionary<string, string> csrf = new() { ["X-Requested-With"] = "dhucar-admin" };
+        List<HttpStatusCode> statuses = new();
+        for (int attempt = 0; attempt < 6; attempt++)
+        {
+            statuses.Add((await client.Post("RefreshToken", headers: csrf)).Status);
+        }
+        Assert.All(statuses, status => Assert.Equal(HttpStatusCode.Unauthorized, status));
+    }
+
+    [Fact]
     public void Startup_refuses_weak_configuration()
     {
         using ApiFactory factory = new(new() { ["Portfolio:Security:JwtSigningKey"] = Convert.ToBase64String(new byte[8]) });

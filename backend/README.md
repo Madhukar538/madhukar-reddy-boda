@@ -90,7 +90,7 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 | Variable | Notes |
 |---|---|
-| `Portfolio__Mongo__ConnectionString` | Use a MongoDB user limited to this database. |
+| `Portfolio__Mongo__ConnectionString` | The MongoDB Atlas connection string (`mongodb+srv://…`). Use a database user limited to `readWrite` on the `portfolio` database. |
 | `Portfolio__Security__JwtSigningKey` | `openssl rand -base64 48` |
 | `Portfolio__Security__EncryptionKey` | exactly 32 bytes: `openssl rand -base64 32` |
 | `Portfolio__Security__SetupToken` | `openssl rand -hex 32`, only until the admin is enrolled |
@@ -101,13 +101,22 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 ## First-time setup
 
-1. Deploy with `SetupToken` set.
-2. Call `SetupAdmin` with the token, your email and a password of 12+ characters. Add the returned `otpAuthUri` (or `totpSecret`) to an authenticator app.
-3. Call `ConfirmTotpSetup` with the enrolment token and a current code. Store the 10 recovery codes offline.
-4. Remove `SetupToken` and redeploy.
-5. Sign in (`Login` → `VerifyMfa`) and register a passkey (`PasskeyRegisterOptions` → `PasskeyRegister`).
+1. Deploy the API with `SETUP_TOKEN` set, and the site with `NEXT_PUBLIC_API_URL` pointing at it.
+2. Open `https://dhucar.in/admin/setup` and enter the setup token, your email and a password of 12+ characters.
+3. Scan the QR code with an authenticator app and confirm with a code. Save the 10 recovery codes offline.
+4. Remove `SETUP_TOKEN` from the API and redeploy it.
+5. Sign in at `/admin/login` and add a passkey under **Security**. From then on, sign in with the passkey.
 
-The `/admin` pages in the Next.js site will drive these steps; they come in the next PR.
+## The admin pages
+
+`/admin` is part of the Next.js site. It is a static shell that loads everything from this API after sign-in. It is never indexed and never tracked, and it can't be framed.
+
+- **Traffic:** page views and visitors for the last 7, 30 or 90 days, top pages and referrers, devices and countries.
+- **Posts** and **Projects:** create, edit, hide or delete. Saving refreshes the live site within seconds. Post HTML is previewed in a sandboxed frame with scripts off, and sanitised by the API on save.
+- **Profile:** name, links, tech stack, current role and education.
+- **Security:** passkeys, recovery codes, sign out everywhere, and the activity log. Removing a passkey or creating new recovery codes needs a current authenticator code.
+
+The access token is kept in memory only. The session renews itself through the HttpOnly refresh cookie, one tab at a time (Web Locks), so rotating refresh tokens never trip reuse detection. The site and the API must share a registrable domain (`dhucar.in` and `api.dhucar.in`), because the refresh cookie is `SameSite=Strict`.
 
 ## Connecting the site
 
@@ -135,6 +144,13 @@ Swagger UI is available at `/swagger` in Development only.
 
 ## Deploy (Coolify)
 
-`docker-compose.yml` runs the API and MongoDB 7. MongoDB is on the private network only, with authentication on. Set `MONGO_APP_USER`, `MONGO_APP_PASSWORD`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+`docker-compose.yml` runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+
+**Atlas checklist**
+
+- **Network Access:** add your Coolify server's public IP. Avoid `0.0.0.0/0`, which lets anyone on the internet try your database password.
+- **Database Access:** give the API its own user with the built-in role `readWrite` on the `portfolio` database only, not `atlasAdmin` or "read and write to any database". Use a long generated password. Characters like `@ : / ?` in it must be URL-encoded in the connection string.
+- The API creates its indexes and imports `seed/content.json` into empty collections on first start. It never overwrites existing data.
+- Atlas encrypts connections with TLS and data at rest, and the free tier has no automatic backups. Export the `portfolio` database now and then (`mongodump`), or use a paid tier with backups.
 
 On first start the API creates its indexes and imports `seed/content.json` into any empty collection. It never overwrites existing data. Regenerate the seed from the site with `npx tsx --tsconfig tsconfig.json scripts/export-content.ts`.

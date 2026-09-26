@@ -130,12 +130,20 @@ function toProjects(list: ApiProject[]) {
   };
 }
 
+const SKILL_COLORS = ['green', 'cyan', 'amber'];
+
 function toProfile(p: ApiProfile) {
   const profile: Profile = {
     name: p.name, title: p.title, company: p.company, location: p.location, email: p.email, phone: p.phone,
     phoneHref: p.phoneHref, github: p.github, linkedin: p.linkedin ?? '', twitter: p.twitter ?? '', summary: p.summary,
   };
-  return { profile, socialLinks: socialLinksOf(profile), skillCategories: p.skillCategories, experience: p.experience, education: p.education };
+  // Only colours the site has styles for; anything else falls back to the default.
+  const skillCategories = p.skillCategories.map(({ title, skills, color }) => ({
+    title,
+    skills,
+    color: SKILL_COLORS.includes(color as never) ? (color as SkillCategory['color']) : undefined,
+  }));
+  return { profile, socialLinks: socialLinksOf(profile), skillCategories, experience: p.experience, education: p.education };
 }
 
 /** All site content for this request (deduplicated per render). */

@@ -1,19 +1,18 @@
-# API + MongoDB for Coolify (or any Docker host). Secrets come from the environment:
-# set them in Coolify's environment variables, never in this file.
+# Portfolio API for Coolify (or any Docker host). The database is MongoDB Atlas.
+# Secrets come from the environment: set them in Coolify's environment
+# variables, never in this file.
 services:
   api:
     build: .
     restart: unless-stopped
-    depends_on:
-      mongo:
-        condition: service_healthy
     # Internal only: reach it through the Cloudflare Tunnel (Coolify's proxy or
     # cloudflared on this network). Publishing a host port would bypass
     # Cloudflare, and IsCloudflareTrusted would then let callers fake their IP.
     expose:
       - "8080"
     environment:
-      Portfolio__Mongo__ConnectionString: "mongodb://${MONGO_APP_USER}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=admin"
+      # The Atlas connection string, e.g. mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/?appName=Cluster0
+      Portfolio__Mongo__ConnectionString: "${MONGO_CONNECTION_STRING}"
       Portfolio__Mongo__Database: "portfolio"
       Portfolio__Security__JwtSigningKey: "${JWT_SIGNING_KEY}"
       Portfolio__Security__EncryptionKey: "${ENCRYPTION_KEY}"
@@ -24,22 +23,3 @@ services:
       Portfolio__Passkeys__Origins__0: "https://dhucar.in"
       Portfolio__Site__RevalidateUrl: "https://dhucar.in/api/revalidate"
       Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
-
-  mongo:
-    image: mongo:7
-    restart: unless-stopped
-    # Not published: only the api container can reach it.
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "${MONGO_APP_USER}"
-      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_APP_PASSWORD}"
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
-    volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
