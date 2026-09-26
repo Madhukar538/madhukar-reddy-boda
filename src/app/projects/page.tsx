@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Projects } from '@/components/portfolio/projects';
+import { BlogStrip } from '@/components/blog/blog-strip';
 
 export const metadata: Metadata = {
   title: 'Projects — Boda Madhukar Reddy',
@@ -17,6 +18,8 @@ export default function ProjectsPage() {
       description="Systems built from scratch, plus the e-commerce portals and integrations I've led."
     >
       <Projects />
+
+      <BlogStrip className="mt-14" />
 
       <Link href="/lab" className="group glass glass-interactive mt-8 flex items-center gap-4 p-5 md:p-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--sys-purple)/0.15)] text-[hsl(var(--sys-purple))]">
