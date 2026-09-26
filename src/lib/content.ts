@@ -81,11 +81,12 @@ async function callApi<T>(action: string): Promise<T> {
   return json.data;
 }
 
-// Cached per tag; a failed call throws, so a fallback is never cached. The hourly
-// revalidate is a safety net in case a webhook is missed.
-const loadPosts = unstable_cache(() => callApi<ApiPost[]>('GetPosts'), ['api', 'posts'], { tags: ['posts'], revalidate: 3600 });
-const loadProjects = unstable_cache(() => callApi<ApiProject[]>('GetProjects'), ['api', 'projects'], { tags: ['projects'], revalidate: 3600 });
-const loadProfile = unstable_cache(() => callApi<ApiProfile>('GetProfile'), ['api', 'profile'], { tags: ['profile'], revalidate: 3600 });
+// Cached per tag; a failed call throws, so a fallback is never cached. Saves refresh
+// the cache at once (app/api/revalidate); the 5-minute expiry is only a safety net.
+const SAFETY_REFRESH_SECONDS = 300;
+const loadPosts = unstable_cache(() => callApi<ApiPost[]>('GetPosts'), ['api', 'posts'], { tags: ['posts'], revalidate: SAFETY_REFRESH_SECONDS });
+const loadProjects = unstable_cache(() => callApi<ApiProject[]>('GetProjects'), ['api', 'projects'], { tags: ['projects'], revalidate: SAFETY_REFRESH_SECONDS });
+const loadProfile = unstable_cache(() => callApi<ApiProfile>('GetProfile'), ['api', 'profile'], { tags: ['profile'], revalidate: SAFETY_REFRESH_SECONDS });
 
 // Warn once per section until it recovers, not once per page.
 const failing = new Set<string>();

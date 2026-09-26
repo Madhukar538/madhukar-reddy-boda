@@ -8,7 +8,7 @@ import { errorMessage } from '@/lib/admin/api';
 import { KIND_LABELS, LAB_STATUSES, type Post, type Project, type ProjectKind, type SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
-import { SaveBar, setFlash, takeFlash, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
+import { SaveBar, ensureRefreshed, setFlash, takeFlash, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
 import { Field, Notice, Spinner, fieldClass, splitLines, splitList } from '@/components/admin/ui';
 
 type Form = Omit<Project, 'tech' | 'responsibilities' | 'updatedAt'> & { tech: string; responsibilities: string };
@@ -22,7 +22,7 @@ const toForm = (p: Project): Form => ({ ...EMPTY, ...p, status: p.status || 'WIP
 
 function Editor({ id }: { id: string }) {
   const isNew = id === 'new';
-  const { call } = useAdmin();
+  const { call, refreshSite } = useAdmin();
   const router = useRouter();
   const [original, setOriginal] = useState<Form | null>(isNew ? EMPTY : null);
   const [form, setForm] = useState<Form>(EMPTY);
@@ -80,9 +80,10 @@ function Editor({ id }: { id: string }) {
       const saved = { ...form, id: result.id };
       setOriginal(saved);
       setForm(saved);
-      setStatus({ kind: 'success', text: savedMessage(result) });
+      const refreshed = await ensureRefreshed(result, ['projects'], refreshSite);
+      setStatus({ kind: 'success', text: savedMessage(refreshed) });
       if (isNew) {
-        setFlash({ kind: 'success', text: savedMessage(result) });
+        setFlash({ kind: 'success', text: savedMessage(refreshed) });
         router.replace(`/admin/projects/${result.id}`);
       }
     } catch (e) {
@@ -96,7 +97,8 @@ function Editor({ id }: { id: string }) {
     if (!window.confirm(`Delete “${form.title}”? This can't be undone.`)) return;
     setBusy('delete');
     try {
-      await call('DeleteProject', { id });
+      const result = await call<SaveResult | null>('DeleteProject', { id });
+      await ensureRefreshed(result, ['projects'], refreshSite);
       setOriginal(form);
       router.replace('/admin/projects');
     } catch (e) {

@@ -27,6 +27,8 @@ type AdminSession = {
   /** Call an admin endpoint with the current token, renewing it once if it has expired. */
   call: <T>(action: string, body?: object) => Promise<T>;
   signIn: (token: AuthToken) => void;
+  /** Refresh the live site's cached content now (fallback for when the API's own call didn't get through). */
+  refreshSite: (tags: string[]) => Promise<boolean>;
   signOut: (everywhere?: boolean) => Promise<void>;
 };
 
@@ -116,6 +118,22 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
     [renew]
   );
 
+  const refreshSite = useCallback(async (tags: string[]) => {
+    const current = tokenRef.current;
+    if (!current) return false;
+    try {
+      const response = await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${current.accessToken}` },
+        body: JSON.stringify({ tags }),
+        cache: 'no-store',
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }, []);
+
   const signOut = useCallback(
     async (everywhere = false) => {
       const current = tokenRef.current;
@@ -141,9 +159,10 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
       recoveryCodesLeft: token?.recoveryCodesLeft ?? 0,
       call,
       signIn: apply,
+      refreshSite,
       signOut,
     }),
-    [status, error, token, call, apply, signOut, renew]
+    [status, error, token, call, apply, refreshSite, signOut, renew]
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

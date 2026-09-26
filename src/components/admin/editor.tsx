@@ -15,10 +15,12 @@ export function useLeaveGuard(dirty: boolean) {
   }, [dirty]);
 }
 
-export const savedMessage = (result: SaveResult) =>
-  result.isRevalidated
-    ? 'Saved. The site has been refreshed.'
-    : "Saved. The site didn't confirm the refresh, so it will update within the hour.";
+/** True once the live site has refreshed: by the API's own call, or else by asking the site directly. */
+export const ensureRefreshed = async (result: SaveResult | null, tags: string[], refreshSite: (tags: string[]) => Promise<boolean>) =>
+  (result?.isRevalidated ?? false) || (await refreshSite(tags));
+
+export const savedMessage = (refreshed: boolean) =>
+  refreshed ? 'Saved. The site has been refreshed.' : "Saved. The site couldn't be refreshed right now, so it will show within 5 minutes.";
 
 export type Status = { kind: 'error' | 'success'; text: string } | null;
 

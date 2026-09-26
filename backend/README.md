@@ -128,7 +128,7 @@ Set these on the Next.js app (see `.env.example`):
 | `NEXT_PUBLIC_API_URL` | Same URL, for the page-view beacon. Needed at build time. |
 | `REVALIDATE_SECRET` | Same value as `Portfolio__Site__RevalidateSecret`. |
 
-Content is cached in Next's data cache under the tags `posts`, `projects` and `profile`. After every change the API calls `/api/revalidate`, which checks the signature and timestamp and refreshes only those tags, so edits appear on the next request. The cache also refreshes hourly in case a webhook is missed. If the API can't be reached, pages keep their last good content, or fall back to the built-in content.
+Content is cached in Next's data cache under the tags `posts`, `projects` and `profile`. After every change the API calls `/api/revalidate`, which checks the signature and timestamp and refreshes only those tags, so edits appear on the next request. If that call doesn't get through (a secret mismatch, or a firewall in front of the site), the API logs `Site refresh refused` with the site's answer, and the admin page asks the site to refresh directly, proving itself with the admin's access token, which the site checks with the API. As a last safety net the cache also expires every 5 minutes. If the API can't be reached, pages keep their last good content, or fall back to the built-in content.
 
 ## Run and test
 
