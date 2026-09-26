@@ -60,6 +60,8 @@ All endpoints are `POST /api/{Name}` with a JSON body and return `{ returnCode, 
 - Sign-in endpoints are limited to 10 requests per minute per IP, with separate limits for admin, public and tracking traffic.
 - An unknown email takes as long as a wrong password, and gets the same message.
 
+**Passkey-only switch.** The document `settings` → `{ _id: "security" }` holds `IsPasswordLoginEnabled`. The API creates it on first start, with the value `true`. Set it to `false` by hand (for example in MongoDB Atlas → Browse Collections) and email + password + code sign-in stops at once: the sign-in page shows only the passkey button, and the API refuses `Login` and `VerifyMfa`. Set it back to `true` to allow passwords again. It is read on every request, so no restart is needed. While no passkey is registered the switch is ignored, so the admin can't be locked out.
+
 **Step-up.** Deleting a passkey or regenerating recovery codes needs a fresh authenticator code.
 
 **Bootstrap.** There is no default admin. Setup requires a one-time `SetupToken` (at least 32 characters) from the environment. Remove it once the admin is enrolled; with it unset, setup is disabled.

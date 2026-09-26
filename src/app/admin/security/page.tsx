@@ -186,6 +186,25 @@ function Security() {
         </div>
       </Panel>
 
+      <Panel title="Password sign-in" description="Turned on or off by hand in the database, so nobody can change it from a browser.">
+        <div className="space-y-3 text-sm">
+          <p className="flex items-center gap-2">
+            <span className={cn('h-2 w-2 rounded-full', info.isPasswordLoginAllowed ? 'bg-[hsl(var(--sys-orange))]' : 'bg-primary')} aria-hidden />
+            {info.isPasswordLoginAllowed ? (
+              <span><strong>On.</strong> You can sign in with a passkey, or with your email, password and authenticator code.</span>
+            ) : (
+              <span><strong>Off.</strong> Only passkeys can sign in.</span>
+            )}
+          </p>
+          {!info.isPasswordLoginEnabled && info.passkeyCount === 0 && (
+            <Notice>It&apos;s switched off in the database, but stays on until you add a passkey, so you can&apos;t be locked out.</Notice>
+          )}
+          <p className="text-muted-foreground">
+            To change it: MongoDB Atlas → Browse Collections → <code>portfolio</code> → <code>settings</code> → the document with <code>_id: &quot;security&quot;</code> → set <code>IsPasswordLoginEnabled</code> to <code>false</code> (passkey only) or <code>true</code>. It applies straight away.
+          </p>
+        </div>
+      </Panel>
+
       <Panel title="Recovery codes" description="Single-use codes for signing in if you lose your authenticator. Creating new ones cancels the old ones.">
         {codesMsg && <div className="mb-3"><Notice kind={codesMsg.kind}>{codesMsg.text}</Notice></div>}
         {codes.length > 0 ? (

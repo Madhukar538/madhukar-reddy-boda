@@ -132,4 +132,27 @@ public class PasskeyDAL(MongoContext context)
         DeleteResult result = await context.Passkeys.DeleteOneAsync(x => x.Id == credentialId && x.UserId == userId);
         return result.DeletedCount == 1;
     }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   CountPasskeysDB
+    // Method Description    :   Number of registered passkeys (the site has one admin).
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   26 Sep 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   long
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>CountPasskeysDB : </c> Number of registered passkeys (the site has one admin).
+    /// </summary>
+    public async Task<long> CountPasskeysDB()
+    {
+        return await context.Passkeys.CountDocumentsAsync(FilterDefinition<PasskeyDocument>.Empty);
+    }
 }

@@ -4,8 +4,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { apiCall, errorMessage } from '@/lib/admin/api';
-import type { RecoveryCodes, SetupResult } from '@/lib/admin/types';
-import { Field, Notice, fieldClass } from '@/components/admin/ui';
+import type { RecoveryCodes, SetupResult, SignInOptions } from '@/lib/admin/types';
+import { Field, Notice, Spinner, fieldClass } from '@/components/admin/ui';
 import { RecoveryCodeList } from '@/components/admin/recovery-codes';
 
 /**
@@ -30,6 +30,14 @@ export default function SetupPage() {
   const [code, setCode] = useState('');
   const [codes, setCodes] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  // null while checking; false once the admin exists (or no setup token is configured).
+  const [available, setAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    apiCall<SignInOptions>('GetSignInOptions')
+      .then((o) => setAvailable(o.isSetupAvailable))
+      .catch(() => setAvailable(true)); // Can't check: show the form; the API still refuses setup when it's closed.
+  }, []);
 
   // The QR code is drawn in the browser; the secret never goes anywhere else.
   useEffect(() => {
@@ -75,6 +83,23 @@ export default function SetupPage() {
       setStep(2);
     }).finally(() => setCode(''));
   };
+
+  // Keep showing the steps once setup has started, even though the admin now exists.
+  if (step === 0 && available === null) return <Spinner />;
+  if (step === 0 && !available) {
+    return (
+      <div className="mx-auto max-w-lg">
+        <p className="eyebrow">Admin</p>
+        <h1 className="mb-6 text-4xl font-bold tracking-tight">Already set up</h1>
+        <div className="glass space-y-4 p-6">
+          <p className="text-sm text-muted-foreground">The admin account already exists, so setup is closed.</p>
+          <Link href="/admin/login" className="tinted-button w-full justify-center !py-2.5">
+            Go to sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-lg">

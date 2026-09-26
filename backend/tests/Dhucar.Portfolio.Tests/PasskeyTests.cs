@@ -6,7 +6,7 @@ namespace Dhucar.Portfolio.Tests;
 
 public class PasskeyTests
 {
-    private static async Task<(AdminSession Session, SoftwareAuthenticator Authenticator)> Registered(ApiFactory factory)
+    internal static async Task<(AdminSession Session, SoftwareAuthenticator Authenticator)> Registered(ApiFactory factory)
     {
         AdminSession session = await AdminSession.SignedIn(factory);
         SoftwareAuthenticator authenticator = new("dhucar.in", ApiFactory.Origin);

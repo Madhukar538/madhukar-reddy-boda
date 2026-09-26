@@ -59,18 +59,12 @@ export async function createPasskey(options: Record<string, unknown>) {
   };
 }
 
-/**
- * `fromPhone` asks the browser to go straight to "use a phone" (a QR code to
- * scan with the phone holding the passkey) instead of the computer's own
- * options. Browsers that don't know the hint ignore it and show their usual picker.
- */
-export async function getPasskey(options: Record<string, unknown>, { fromPhone = false } = {}) {
+export async function getPasskey(options: Record<string, unknown>) {
   const json = withoutNulls(options) as Record<string, unknown> & { challenge: string };
   const publicKey = {
     ...json,
     challenge: toBuffer(json.challenge),
     allowCredentials: descriptors(json.allowCredentials),
-    ...(fromPhone ? { hints: ['hybrid'] } : {}),
   } as unknown as PublicKeyCredentialRequestOptions;
 
   const credential = (await navigator.credentials.get({ publicKey })) as PublicKeyCredential | null;
