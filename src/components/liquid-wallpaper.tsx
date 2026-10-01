@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { FluidBackground } from './fluid-background';
+import { useDesignStyle } from '@/lib/design-style';
 
 /**
  * Vivid, slowly drifting backdrop that the glass surfaces refract,
@@ -10,8 +11,13 @@ import { FluidBackground } from './fluid-background';
  * element is under the cursor.
  */
 export function LiquidWallpaper() {
+  // The soft look has a solid surface: the CSS hides the blobs, and the WebGL
+  // fluid and pointer tracking don't run at all.
+  const [style] = useDesignStyle();
+  const isGlass = style === 'glass';
+
   useEffect(() => {
-    if (!window.matchMedia('(hover: hover)').matches) return;
+    if (!isGlass || !window.matchMedia('(hover: hover)').matches) return;
 
     let frame = 0;
     const onMove = (e: PointerEvent) => {
@@ -30,7 +36,7 @@ export function LiquidWallpaper() {
       cancelAnimationFrame(frame);
       document.removeEventListener('pointermove', onMove);
     };
-  }, []);
+  }, [isGlass]);
 
   return (
     <div className="liquid-wallpaper" aria-hidden="true">
@@ -38,7 +44,7 @@ export function LiquidWallpaper() {
       <div className="blob blob-b" />
       <div className="blob blob-c" />
       <div className="blob blob-d" />
-      <FluidBackground />
+      {isGlass && <FluidBackground />}
     </div>
   );
 }

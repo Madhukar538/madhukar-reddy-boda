@@ -4,6 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { m, AnimatePresence } from 'framer-motion';
+import { useDesignStyle, type DesignStyle } from '@/lib/design-style';
+
+const LOOKS: { id: DesignStyle; label: string; hint: string }[] = [
+  { id: 'soft', label: 'Soft', hint: 'Neumorphism' },
+  { id: 'glass', label: 'Glass', hint: 'Liquid glass' },
+];
 
 type AccentOption = {
   id: string;
@@ -34,6 +40,7 @@ function applyAccent(id: string) {
 export function ThemeSwitcher() {
   const [current, setCurrent] = useState('blue');
   const [open, setOpen] = useState(false);
+  const [look, setLook] = useDesignStyle();
 
   useEffect(() => {
     let saved = 'blue';
@@ -62,7 +69,7 @@ export function ThemeSwitcher() {
         type="button"
         onClick={() => setOpen(!open)}
         className="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-foreground/10 active:scale-90"
-        aria-label="Choose accent color"
+        aria-label="Look and accent color"
         aria-expanded={open}
       >
         <span
@@ -83,9 +90,41 @@ export function ThemeSwitcher() {
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-              className="glass glass-strong absolute right-0 bottom-full mb-3 lg:bottom-auto lg:top-full lg:mt-3 z-50 w-48 p-2 origin-bottom-right lg:origin-top-right"
+              className="glass glass-strong absolute right-0 bottom-full mb-3 lg:bottom-auto lg:top-full lg:mt-3 z-50 w-52 p-2 origin-bottom-right lg:origin-top-right"
               style={{ ['--glass-radius' as string]: '1.25rem' }}
             >
+              <p className="px-2.5 pt-1 pb-2 text-[11px] font-semibold text-muted-foreground">Look</p>
+              <div role="radiogroup" aria-label="Look" className="mb-2 grid grid-cols-2 gap-1.5 px-1">
+                {LOOKS.map((option) => {
+                  const isSelected = look === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      onClick={() => setLook(option.id)}
+                      className={cn(
+                        'flex flex-col items-center gap-1.5 rounded-xl px-2 py-2.5 text-xs transition-colors duration-150',
+                        isSelected ? 'bg-foreground/10 text-foreground' : 'text-foreground/80 hover:bg-foreground/5'
+                      )}
+                    >
+                      {/* A tiny preview of each look. */}
+                      <span
+                        aria-hidden
+                        className={cn(
+                          'h-6 w-10 rounded-lg',
+                          option.id === 'soft'
+                            ? 'bg-[#e3e6ec] shadow-[3px_3px_6px_rgba(120,130,150,0.55),-3px_-3px_6px_rgba(255,255,255,0.9)]'
+                            : 'bg-gradient-to-br from-sky-300/70 via-fuchsia-300/60 to-amber-200/70 ring-1 ring-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]'
+                        )}
+                      />
+                      <span className="font-semibold">{option.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{option.hint}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <p className="px-2.5 pt-1 pb-2 text-[11px] font-semibold text-muted-foreground">
                 Accent Color
               </p>

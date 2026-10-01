@@ -74,7 +74,7 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
           )}
         </label>
 
-        <div className="-mx-4 px-4 overflow-x-auto md:mx-0 md:px-0">
+        <div className="-mx-4 -my-4 px-4 py-4 overflow-x-auto md:-mx-4 md:px-4">
           <div className="glass glass-pill inline-flex items-center p-1">
             {categories.map((cat) => (
               <button

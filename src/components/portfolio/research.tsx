@@ -58,7 +58,7 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
                   />
                 )}
                 <span className="relative">
-                  {label} <span className="opacity-60 tabular-nums">{count}</span>
+                  {label} <span className="font-normal tabular-nums">{count}</span>
                 </span>
               </button>
             );

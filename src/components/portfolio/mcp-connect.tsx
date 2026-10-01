@@ -83,7 +83,7 @@ export function McpConnect() {
       <Section id="connect" title="Connect" comment="Works with any MCP client">
         <div className="glass p-5 md:p-6 space-y-4">
           <p className="text-[15px] text-foreground/85">
-            Endpoint: <code className="rounded-md bg-foreground/10 px-1.5 py-0.5 text-sm text-primary">{endpoint}</code>{' '}
+            Endpoint: <code className="rounded-md bg-foreground/10 px-1.5 py-0.5 font-mono text-sm text-foreground">{endpoint}</code>{' '}
             <span className="text-muted-foreground">(Streamable HTTP · read-only · no auth)</span>
           </p>
           <div className="grid gap-3 md:grid-cols-2">
