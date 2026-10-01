@@ -1010,7 +1010,7 @@ html:not([data-style='glass']) :is(.chip-accent, .chip-green, .chip-orange, .chi
 
 /* The primary button keeps its colour (it has to read as the action) on a soft base. */
 html:not([data-style='glass']) .tinted-button {
-  background: linear-gradient(145deg, hsl(var(--primary) / 0.92), hsl(var(--primary)));
+  background: hsl(var(--primary));
   box-shadow: var(--soft-raised-sm), inset 0 1px 0 rgb(255 255 255 / 0.25);
 }
 html:not([data-style='glass']) .tinted-button:hover {
@@ -1072,13 +1072,12 @@ html.dark:not([data-style='glass']) { --primary-foreground: 222 30% 8%; --accent
 
 /* Contrast on the soft surface: the active nav item is pressed in rather than
    darkened, accent chips drop their tint (the text colour carries the accent),
-   and the featured card loses its decorative glow, which sat behind text. */
+   (the featured card's decorative glow is hidden with the other glows below). */
 html:not([data-style='glass']) .nav-active-pill {
   background: transparent;
   box-shadow: var(--soft-pressed-sm);
 }
 html:not([data-style='glass']) .chip-accent { background: hsl(var(--soft-bg)); }
-html:not([data-style='glass']) .card-glow { display: none; }
 
 /* Post content on the soft surface. Text sits on the plain surface colour,
    where every accent passes 4.5:1, rather than on tinted or darkened patches. */
@@ -1137,4 +1136,16 @@ html:not([data-style='glass']) :is(.hljs-comment, .hljs-quote) { color: hsl(var(
 /* Dark soft: the keyword pink sits just under 4.5:1 on the code surface, so lift it toward the (light) text colour. */
 html.dark:not([data-style='glass']) :is(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword) {
   color: color-mix(in srgb, hsl(var(--sys-pink)) 80%, hsl(var(--foreground)));
+}
+
+/* Plain colours only: no glows or gradients anywhere in the soft look. */
+html:not([data-style='glass']) :is(.card-glow, .avatar-glow) { display: none; }
+html:not([data-style='glass']) :is(.genie-button, .genie-orb) {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+html:not([data-style='glass']) .text-gradient {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: hsl(var(--primary));
 }

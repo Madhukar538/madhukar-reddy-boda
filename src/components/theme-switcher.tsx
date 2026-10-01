@@ -75,7 +75,10 @@ export function ThemeSwitcher() {
         <span
           className="h-4 w-4 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_0_0_2px_hsl(var(--background)/0.6)]"
           style={{
-            background: `conic-gradient(from 180deg, ${accents.map((a) => a.swatch).join(', ')}, ${accents[0].swatch})`,
+            background:
+              look === 'glass'
+                ? `conic-gradient(from 180deg, ${accents.map((a) => a.swatch).join(', ')}, ${accents[0].swatch})`
+                : 'hsl(var(--primary))',
           }}
         />
         <span className="sr-only">Current accent: {active.label}</span>
