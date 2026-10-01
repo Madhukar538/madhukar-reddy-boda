@@ -36,8 +36,9 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f2f2f7' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0c' },
+    // The soft look's surface colours (globals.css --soft-bg), so the browser bar matches the page.
+    { media: '(prefers-color-scheme: light)', color: '#e3e6ec' },
+    { media: '(prefers-color-scheme: dark)', color: '#212329' },
   ],
 };
 
@@ -46,8 +47,8 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-int
 // Code blocks only, so it isn't preloaded on every page.
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
-// Applies the saved accent tint before first paint to avoid a color flash.
-const accentScript = `try{var a=localStorage.getItem('portfolio-accent');if(a&&a!=='blue')document.documentElement.setAttribute('data-accent',a)}catch(e){}`;
+// Applies the saved accent tint and look (soft is the default; "glass" is opt-in) before first paint, so neither flashes.
+const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent');if(a&&a!=='blue')d.setAttribute('data-accent',a);if(localStorage.getItem('portfolio-style')==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
 
 export default async function RootLayout({
   children,

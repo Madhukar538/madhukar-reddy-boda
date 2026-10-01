@@ -155,7 +155,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
         <div className="mx-auto hidden w-full max-w-sm lg:block">
           <div className="glass p-6 text-center">
             <div className="relative mx-auto mb-5 w-fit">
-              <div className="absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />
+              <div className="avatar-glow absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />
               <div className="relative rounded-full p-1.5 glass glass-pill">
                 <Image
                   src="/madhukar.png"

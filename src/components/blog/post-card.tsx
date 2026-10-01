@@ -18,7 +18,7 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
     <Link href={`/blog/${post.slug}`} className={cn('group block h-full', className)}>
       <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-9' : 'p-5 md:p-6')}>
         {featured && (
-          <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl !z-0" />
+          <div aria-hidden className="card-glow pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl !z-0" />
         )}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {featured && <span className="chip chip-accent">Latest</span>}

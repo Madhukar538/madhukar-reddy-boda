@@ -96,7 +96,7 @@ export function Navbar() {
                   {isActive && (
                     <m.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
+                      className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
@@ -146,7 +146,7 @@ export function Navbar() {
                 {isActive && (
                   <m.span
                     layoutId="mobile-pill"
-                    className="absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+                    className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { useDesignStyle } from '@/lib/design-style';
 
 /**
  * Liquid Glass refraction for a glass surface.
@@ -50,7 +51,13 @@ function displacementMap(w: number, h: number, r: number, bezel: number) {
 
 type Size = { w: number; h: number; r: number };
 
+/** Only the glass look refracts; the soft look has nothing behind its surfaces to bend. */
 export function LiquidLens({ strength = 48 }: { strength?: number }) {
+  const [style] = useDesignStyle();
+  return style === 'glass' ? <Lens strength={strength} /> : null;
+}
+
+function Lens({ strength }: { strength: number }) {
   const anchorRef = useRef<HTMLSpanElement>(null);
   // useId can contain characters like ':' or '«»'; keep url(#id) references safe.
   const id = `lens-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;

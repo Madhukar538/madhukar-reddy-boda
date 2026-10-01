@@ -259,7 +259,7 @@ export function KnowledgeGraphView({ graph }: { graph: KnowledgeGraph }) {
                 className={cn('chip transition-opacity', off && 'opacity-40')}
               >
                 <span className="h-2 w-2 rounded-full" style={{ background: `hsl(${TYPE_STYLE[t].color})` }} />
-                {TYPE_STYLE[t].label} <span className="opacity-60 tabular-nums">{counts[t]}</span>
+                {TYPE_STYLE[t].label} <span className="font-normal tabular-nums">{counts[t]}</span>
               </button>
             );
           })}

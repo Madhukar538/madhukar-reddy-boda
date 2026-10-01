@@ -72,13 +72,13 @@ export function Section({ id, title, children, className, comment, data }: Secti
                 onClick={() => setViewMode(mode)}
                 className={cn(
                   'relative px-3.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full transition-colors duration-200',
-                  viewMode === mode ? 'text-foreground' : 'text-foreground/55 hover:text-foreground'
+                  viewMode === mode ? 'text-foreground' : 'text-foreground/70 hover:text-foreground'
                 )}
               >
                 {viewMode === mode && (
                   <m.span
                     layoutId={`segment-${id}`}
-                    className="absolute inset-0 rounded-full bg-background/80 dark:bg-foreground/15 shadow-[0_1px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.3)]"
+                    className="nav-active-pill absolute inset-0 rounded-full bg-background/80 dark:bg-foreground/15 shadow-[0_1px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.3)]"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   />
                 )}
