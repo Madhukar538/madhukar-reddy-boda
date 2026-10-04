@@ -37,7 +37,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: [
     // The soft look's surface colours (globals.css --soft-bg), so the browser bar matches the page.
-    { media: '(prefers-color-scheme: light)', color: '#e3e6ec' },
+    { media: '(prefers-color-scheme: light)', color: '#dadee7' },
     { media: '(prefers-color-scheme: dark)', color: '#212329' },
   ],
 };

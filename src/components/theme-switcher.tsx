@@ -118,7 +118,7 @@ export function ThemeSwitcher() {
                         className={cn(
                           'h-6 w-10 rounded-lg',
                           option.id === 'soft'
-                            ? 'bg-[#e3e6ec] shadow-[3px_3px_6px_rgba(120,130,150,0.55),-3px_-3px_6px_rgba(255,255,255,0.9)]'
+                            ? 'bg-[#dadee7] shadow-[3px_3px_6px_rgba(120,130,150,0.55),-3px_-3px_6px_rgba(255,255,255,0.9)]'
                             : 'bg-gradient-to-br from-sky-300/70 via-fuchsia-300/60 to-amber-200/70 ring-1 ring-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]'
                         )}
                       />
