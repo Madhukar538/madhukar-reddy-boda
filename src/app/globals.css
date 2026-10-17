@@ -914,6 +914,14 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
   0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
   30% { transform: translateY(-4px); opacity: 1; }
 }
+/* Midnight: a deep midnight-blue bubble with a dark shadow. It doesn't follow the accent
+   (a light accent like Graphite made it a pale, glaring ball on the dark page). */
+html:not([data-style]) :is(.genie-button, .genie-orb) { background: hsl(222 72% 40%); }
+html:not([data-style]) .genie-button {
+  box-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+html:not([data-style]) .genie-button::after { border-color: hsl(217 90% 62% / 0.35); }
+html:not([data-style]) .genie-orb { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); }
 /* Desktop mode has its own chrome, and print has none. */
 html[data-os-mode='on'] .genie-root { display: none; }
 @media print { .genie-root { display: none; } }
@@ -1110,4 +1118,22 @@ main h1 { view-transition-name: page-title; }
 }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* ============================================================
+   READING (app/blog/[slug]) — phones read edge to edge: the article
+   card's padding and frame would cost a fifth of the line length.
+   ============================================================ */
+@media (max-width: 767px) {
+  .article-shell.glass {
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding: 0;
+    border-radius: 0;
+  }
+  .article-shell.glass::before, .article-shell.glass::after { content: none; }
+  /* The contents pill floats over body text, so it is nearly opaque. */
+  .glass.reader-pill { --glass-alpha-strong: 0.94; }
 }

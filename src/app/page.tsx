@@ -9,6 +9,7 @@ import { allTopics, summaries } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { RollingText } from '@/components/vault/rolling-text';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
+import { HeroIdentity } from '@/components/portfolio/hero-identity';
 
 export const metadata: Metadata = {
   alternates: {
@@ -36,7 +37,7 @@ export default async function Home() {
             <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
           </span>
         </Link>
-        <p className="portrait-only eyebrow">Boda Madhukar Reddy · Software Architect, Hyderabad</p>
+        <HeroIdentity />
         <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
           Notes from building{' '}
           <RollingText className="rolling-line" words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}

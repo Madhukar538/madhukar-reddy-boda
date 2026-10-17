@@ -90,7 +90,7 @@ export default async function BlogPost({ params }: Props) {
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] items-start">
-        <article className="glass p-6 md:p-10 min-w-0">
+        <article className="article-shell glass p-6 md:p-10 min-w-0">
           <header className="mb-8 space-y-5">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">{post.title}</h1>
             <Properties post={post} words={words} links={links.backlinks.length + links.mentions.length + links.outgoing.length} />
