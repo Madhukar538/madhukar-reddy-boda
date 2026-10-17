@@ -28,7 +28,7 @@ export function Summary() {
           </p>
           <p>
             <span className="font-semibold text-foreground">AI — </span>
-            RAG · Semantic Kernel · MCP servers · hybrid vector search · self-hosted LLMs (Ollama)
+            RAG · Semantic Kernel · Microsoft Agent Framework · MCP servers · hybrid vector search · self-hosted LLMs (Ollama)
           </p>
           <p>
             <span className="font-semibold text-foreground">Approach — </span>

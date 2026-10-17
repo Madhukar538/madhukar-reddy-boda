@@ -294,7 +294,10 @@
     box-shadow: inset 0 0 0 0.5px hsl(var(--foreground) / 0.1);
     transition: background-color 0.2s ease, color 0.2s ease;
     max-width: 100%;
-    overflow-wrap: anywhere;
+    /* Wrap between words only, and only when a tag is wider than its row.
+       (overflow-wrap: anywhere let flex rows squeeze tags into one letter per line.) */
+    flex-shrink: 0;
+    overflow-wrap: break-word;
   }
 
   .chip:hover {

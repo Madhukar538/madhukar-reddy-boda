@@ -56,7 +56,7 @@ export const skillCategories: SkillCategory[] = [
   {
     title: 'AI & LLMs',
     color: 'green',
-    skills: ['RAG', 'Semantic Kernel', 'MCP (Model Context Protocol)', 'Ollama · Qwen3 · Gemma', 'LiteLLM', 'mem0', 'LangChain', 'ONNX Runtime', 'Gemini VLM', 'Document AI', 'WebLLM', 'whisper.cpp · Piper', 'OpenCV'],
+    skills: ['RAG', 'Semantic Kernel', 'Microsoft Agent Framework', 'MCP (Model Context Protocol)', 'Ollama · Qwen3 · Gemma', 'LiteLLM', 'mem0', 'LangChain', 'ONNX Runtime', 'Gemini VLM', 'Document AI', 'WebLLM', 'whisper.cpp · Piper', 'OpenCV'],
   },
   {
     title: 'Search & Vectors',

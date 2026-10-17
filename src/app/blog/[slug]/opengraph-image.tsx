@@ -3,7 +3,7 @@ import { getContent } from '@/lib/content';
 import { OG_SIZE, ogCard } from '@/lib/og-card';
 
 export const size = OG_SIZE;
-export const contentType = 'image/png';
+export const contentType = 'image/jpeg';
 export const alt = 'Blog post by Boda Madhukar Reddy';
 
 export async function generateStaticParams() {

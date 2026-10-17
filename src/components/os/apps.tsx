@@ -188,7 +188,7 @@ function TerminalApp({ data, open, exit }: AppContext) {
           `                  Role: ${profile.title}`,
           `                  Uptime: ${new Date().getFullYear() - 2021}+ yrs at ${profile.company}`,
           '                  Shell: .NET 10 · Next.js 16',
-          '                  AI: RAG · MCP · Semantic Kernel',
+          '                  AI: RAG · MCP · Semantic Kernel · Agent Framework',
           `                  Projects: ${keyProjects.length} key · ${rdProjects.length} lab`,
           `                  Posts: ${data.posts.length}`,
         ].join('\n');
