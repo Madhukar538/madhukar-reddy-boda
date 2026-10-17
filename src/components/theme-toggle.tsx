@@ -17,7 +17,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
-        'relative flex h-9 w-9 items-center justify-center rounded-full text-foreground/80',
+        'theme-toggle relative flex h-9 w-9 items-center justify-center rounded-full text-foreground/80',
         'transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90',
         className
       )}

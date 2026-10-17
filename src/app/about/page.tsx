@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { HomeHero } from '@/components/portfolio/home-hero';
+import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
@@ -16,6 +17,8 @@ export default async function AboutPage() {
   const content = await getContent();
   const { posts } = content;
   return (
+    <>
+    <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <HomeHero
         content={{
@@ -40,5 +43,6 @@ export default async function AboutPage() {
         <Education education={content.education} />
       </div>
     </div>
+    </>
   );
 }

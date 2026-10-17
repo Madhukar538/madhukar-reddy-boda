@@ -94,10 +94,10 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
+      <section className="portrait-offset grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
         <div className="space-y-6 text-center lg:text-left">
           {/* Phones: a compact identity row, since the profile card is desktop-only. */}
-          <div className="flex items-center justify-center gap-3 lg:hidden">
+          <div className="portrait-alt flex items-center justify-center gap-3 lg:hidden">
             <Image src="/madhukar.png" alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
             <span className="text-left text-sm leading-tight">
               <span className="block font-semibold text-foreground">{profile.name}</span>
@@ -148,7 +148,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
         </div>
 
         {/* Profile card */}
-        <div className="mx-auto hidden w-full max-w-sm lg:block">
+        <div className="portrait-alt mx-auto hidden w-full max-w-sm lg:block">
           <div className="glass p-6 text-center">
             <div className="relative mx-auto mb-5 w-fit">
               <div className="avatar-glow absolute -inset-4 rounded-full bg-primary/30 blur-2xl" />

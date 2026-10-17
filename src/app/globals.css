@@ -922,14 +922,13 @@ html[data-os-mode='on'] .genie-root { display: none; }
 }
 
 /* ============================================================
-   SOFT UI (neumorphism) — the default look
+   SOFT UI (neumorphism) — <html data-style="soft">
    One flat surface colour; everything is moulded from it with a
    light shadow on the top-left and a dark one on the bottom-right.
    Raised = sits on the surface, pressed = sunk into it.
-   Applies unless <html data-style="glass"> (the Liquid Glass look,
-   chosen in the display controls), so it needs no JavaScript.
+   Chosen in the display controls; Midnight (no attribute) is the default.
    ============================================================ */
-html:not([data-style='glass']) {
+html[data-style='soft'] {
   --soft-bg: 222 20% 88%;
   --soft-hi: 0 0% 100%;
   --soft-hi-alpha: 1;
@@ -950,7 +949,7 @@ html:not([data-style='glass']) {
   --muted-foreground: 222 10% 36%;
 }
 
-html.dark:not([data-style='glass']) {
+html.dark[data-style='soft'] {
   --soft-bg: 225 14% 15%;
   --soft-hi: 225 14% 26%;
   --soft-hi-alpha: 0.9;
@@ -960,94 +959,94 @@ html.dark:not([data-style='glass']) {
 }
 
 /* No animated wallpaper behind a solid surface. */
-html:not([data-style='glass']) .liquid-wallpaper { display: none; }
+html[data-style='soft'] .liquid-wallpaper { display: none; }
 
 /* Cards, panels and bars: raised from the surface. */
-html:not([data-style='glass']) .glass,
-html:not([data-style='glass']) .glass-strong,
-html:not([data-style='glass']) .glass-effect {
+html[data-style='soft'] .glass,
+html[data-style='soft'] .glass-strong,
+html[data-style='soft'] .glass-effect {
   background: hsl(var(--soft-bg));
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: var(--soft-raised);
 }
-html:not([data-style='glass']) .glass::before,
-html:not([data-style='glass']) .glass-interactive::after { content: none; }
+html[data-style='soft'] .glass::before,
+html[data-style='soft'] .glass-interactive::after { content: none; }
 
 /* Pills (navigation, small buttons) sit closer to the surface. */
-html:not([data-style='glass']) .glass.glass-pill { box-shadow: var(--soft-raised-sm); }
+html[data-style='soft'] .glass.glass-pill { box-shadow: var(--soft-raised-sm); }
 
 /* Fixed chrome floats over scrolling content, so it gets a deeper shadow. */
-html:not([data-style='glass']) .glass.glass-bar { box-shadow: var(--soft-raised-lg); }
+html[data-style='soft'] .glass.glass-bar { box-shadow: var(--soft-raised-lg); }
 
 /* Nested surfaces: pressed into their card. */
-html:not([data-style='glass']) .glass-inset {
+html[data-style='soft'] .glass-inset {
   background: hsl(var(--soft-bg));
   box-shadow: var(--soft-pressed);
 }
 
 /* Interactive cards rise a little on hover and press in when tapped. */
-html:not([data-style='glass']) .glass-interactive {
+html[data-style='soft'] .glass-interactive {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 @media (hover: hover) {
-  html:not([data-style='glass']) .glass-interactive:hover {
+  html[data-style='soft'] .glass-interactive:hover {
     transform: translateY(-2px);
     box-shadow: var(--soft-raised-lg);
   }
-  html:not([data-style='glass']) .glass.glass-pill.glass-interactive:hover { box-shadow: var(--soft-raised); }
+  html[data-style='soft'] .glass.glass-pill.glass-interactive:hover { box-shadow: var(--soft-raised); }
 }
-html:not([data-style='glass']) .glass-interactive:active {
+html[data-style='soft'] .glass-interactive:active {
   transform: none;
   box-shadow: var(--soft-pressed);
 }
 
 /* Chips: flat labels with a hairline edge. Only things you press are raised,
    so cards keep a clear depth and rows of tags don't turn into visual noise. */
-html:not([data-style='glass']) :is(.chip, .chip-accent, .chip-green, .chip-orange, .chip-teal, .chip-purple) {
+html[data-style='soft'] :is(.chip, .chip-accent, .chip-green, .chip-orange, .chip-teal, .chip-purple) {
   background: transparent;
   box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.13);
 }
-html:not([data-style='glass']) :is(a, button) > .chip:hover,
-html:not([data-style='glass']) a.chip:hover { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5); }
+html[data-style='soft'] :is(a, button) > .chip:hover,
+html[data-style='soft'] a.chip:hover { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5); }
 
 /* The primary button keeps its colour (it has to read as the action) on a soft base. */
-html:not([data-style='glass']) .tinted-button {
+html[data-style='soft'] .tinted-button {
   background: hsl(var(--primary));
   box-shadow: var(--soft-raised-sm), inset 0 1px 0 rgb(255 255 255 / 0.25);
 }
-html:not([data-style='glass']) .tinted-button:hover {
+html[data-style='soft'] .tinted-button:hover {
   filter: none;
   transform: translateY(-1px);
   box-shadow: var(--soft-raised), inset 0 1px 0 rgb(255 255 255 / 0.25);
 }
-html:not([data-style='glass']) .tinted-button:active {
+html[data-style='soft'] .tinted-button:active {
   transform: none;
   box-shadow: inset 2px 2px 6px rgb(0 0 0 / 0.25), inset -2px -2px 6px rgb(255 255 255 / 0.15);
 }
 
 /* High-contrast preference: shadows alone are too faint, so add an outline. */
 @media (prefers-contrast: more) {
-  html:not([data-style='glass']) :is(.glass, .glass-inset, .chip) {
+  html[data-style='soft'] :is(.glass, .glass-inset, .chip) {
     outline: 1px solid hsl(var(--foreground) / 0.35);
     outline-offset: -1px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-style='glass']) .glass-interactive:hover { transform: none; }
+  html[data-style='soft'] .glass-interactive:hover { transform: none; }
 }
 
 /* Custom surfaces that don't use .glass. */
-html:not([data-style='glass']) .marquee-card {
+html[data-style='soft'] .marquee-card {
   background: hsl(var(--soft-bg));
   border-color: transparent;
   box-shadow: var(--soft-raised-sm);
   transition: box-shadow 0.25s ease;
 }
-html:not([data-style='glass']) .marquee-card:hover { border-color: transparent; box-shadow: var(--soft-raised); }
+html[data-style='soft'] .marquee-card:hover { border-color: transparent; box-shadow: var(--soft-raised); }
 /* The strip clips its overflow, so leave room for the cards' shadows. */
-html:not([data-style='glass']) .blog-marquee { padding-block: 2rem; }
-html:not([data-style='glass']) .vault-statusbar {
+html[data-style='soft'] .blog-marquee { padding-block: 2rem; }
+html[data-style='soft'] .vault-statusbar {
   background: hsl(var(--soft-bg));
   border-color: transparent;
   -webkit-backdrop-filter: none;
@@ -1058,59 +1057,59 @@ html:not([data-style='glass']) .vault-statusbar {
 /* Accent shades for the soft surface, each checked at 4.5:1 or better, both as
    text on the surface and as the label colour on a filled button. Light mode
    needs deeper tones than glass; dark mode needs dark labels on accent buttons. */
-html:not([data-style='glass']):not([data-accent]) { --primary: 211 100% 36%; }
-html:not([data-style='glass'])[data-accent='purple'] { --primary: 287 65% 42%; }
-html:not([data-style='glass'])[data-accent='pink'] { --primary: 349 90% 38%; }
-html:not([data-style='glass'])[data-accent='orange'] { --primary: 28 100% 29%; }
-html:not([data-style='glass'])[data-accent='green'] { --primary: 135 65% 25%; }
-html:not([data-style='glass'])[data-accent='graphite'] { --primary: 240 4% 38%; }
-html.dark:not([data-style='glass']):not([data-accent]) { --primary: 210 100% 60%; }
-html.dark:not([data-style='glass'])[data-accent='purple'] { --primary: 285 85% 65%; }
-html.dark:not([data-style='glass'])[data-accent='pink'] { --primary: 349 100% 66%; }
-html.dark:not([data-style='glass'])[data-accent='orange'] { --primary: 36 100% 52%; }
-html.dark:not([data-style='glass'])[data-accent='green'] { --primary: 135 64% 50%; }
-html.dark:not([data-style='glass'])[data-accent='graphite'] { --primary: 240 3% 62%; }
-html:not([data-style='glass']) { --accent: var(--primary); --ring: var(--primary); }
-html.dark:not([data-style='glass']) { --primary-foreground: 222 30% 8%; --accent-foreground: 222 30% 8%; }
+html[data-style='soft']:not([data-accent]) { --primary: 211 100% 36%; }
+html[data-style='soft'][data-accent='purple'] { --primary: 287 65% 42%; }
+html[data-style='soft'][data-accent='pink'] { --primary: 349 90% 38%; }
+html[data-style='soft'][data-accent='orange'] { --primary: 28 100% 29%; }
+html[data-style='soft'][data-accent='green'] { --primary: 135 65% 25%; }
+html[data-style='soft'][data-accent='graphite'] { --primary: 240 4% 38%; }
+html.dark[data-style='soft']:not([data-accent]) { --primary: 210 100% 60%; }
+html.dark[data-style='soft'][data-accent='purple'] { --primary: 285 85% 65%; }
+html.dark[data-style='soft'][data-accent='pink'] { --primary: 349 100% 66%; }
+html.dark[data-style='soft'][data-accent='orange'] { --primary: 36 100% 52%; }
+html.dark[data-style='soft'][data-accent='green'] { --primary: 135 64% 50%; }
+html.dark[data-style='soft'][data-accent='graphite'] { --primary: 240 3% 62%; }
+html[data-style='soft'] { --accent: var(--primary); --ring: var(--primary); }
+html.dark[data-style='soft'] { --primary-foreground: 222 30% 8%; --accent-foreground: 222 30% 8%; }
 
 /* Contrast on the soft surface: the active nav item is pressed in rather than
    darkened, accent chips drop their tint (the text colour carries the accent),
    (the featured card's decorative glow is hidden with the other glows below). */
-html:not([data-style='glass']) .nav-active-pill {
+html[data-style='soft'] .nav-active-pill {
   background: transparent;
   box-shadow: var(--soft-pressed-sm);
 }
-html:not([data-style='glass']) .chip-accent { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45); }
+html[data-style='soft'] .chip-accent { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45); }
 
 /* Post content on the soft surface. Text sits on the plain surface colour,
    where every accent passes 4.5:1, rather than on tinted or darkened patches. */
-html:not([data-style='glass']) .vault-tag {
+html[data-style='soft'] .vault-tag {
   background: transparent;
   box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.35);
   transition: box-shadow 0.15s;
 }
-html:not([data-style='glass']) .vault-tag:hover { background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.7); }
-html:not([data-style='glass']) .article-body :not(pre) > code {
+html[data-style='soft'] .vault-tag:hover { background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.7); }
+html[data-style='soft'] .article-body :not(pre) > code {
   background: transparent;
   box-shadow: var(--soft-pressed-sm);
 }
-html:not([data-style='glass']) .article-body .code-block {
+html[data-style='soft'] .article-body .code-block {
   background: hsl(var(--soft-bg));
   box-shadow: var(--soft-pressed);
 }
 /* Callouts: a pressed well with a coloured edge; the title colour is mixed toward
    the text colour just enough to pass (plain text colour where color-mix is unsupported). */
-html:not([data-style='glass']) .callout {
+html[data-style='soft'] .callout {
   background: hsl(var(--soft-bg));
   border: 0;
   border-left: 3px solid hsl(var(--callout));
   box-shadow: var(--soft-pressed);
 }
-html:not([data-style='glass']) .callout-title {
+html[data-style='soft'] .callout-title {
   color: hsl(var(--foreground));
   color: color-mix(in srgb, hsl(var(--callout)) 42%, hsl(var(--foreground)));
 }
-html.dark:not([data-style='glass']) .callout-title {
+html.dark[data-style='soft'] .callout-title {
   color: color-mix(in srgb, hsl(var(--callout)) 75%, hsl(var(--foreground)));
 }
 
@@ -1118,7 +1117,7 @@ html.dark:not([data-style='glass']) .callout-title {
    light soft surface, mixed toward the text colour just enough to pass 4.5:1.
    Each colour is named: inside a color rule, currentColor would be the parent's.
    Browsers without color-mix keep the original colours. Comments get stronger too. */
-html:not(.dark):not([data-style='glass']) {
+html:not(.dark)[data-style='soft'] {
   --soft-ink-pink: color-mix(in srgb, hsl(var(--sys-pink)) 42%, hsl(var(--foreground)));
   --soft-ink-green: color-mix(in srgb, hsl(var(--sys-green)) 42%, hsl(var(--foreground)));
   --soft-ink-string: color-mix(in srgb, hsl(135 55% 36%) 50%, hsl(var(--foreground)));
@@ -1126,28 +1125,28 @@ html:not(.dark):not([data-style='glass']) {
   --soft-ink-purple: color-mix(in srgb, hsl(var(--sys-purple)) 42%, hsl(var(--foreground)));
   --soft-ink-teal: color-mix(in srgb, hsl(var(--sys-teal)) 42%, hsl(var(--foreground)));
 }
-html:not(.dark):not([data-style='glass']) .chip-green { color: var(--soft-ink-green); }
-html:not(.dark):not([data-style='glass']) .chip-orange { color: var(--soft-ink-orange); }
-html:not(.dark):not([data-style='glass']) .chip-teal { color: var(--soft-ink-teal); }
-html:not(.dark):not([data-style='glass']) .chip-purple { color: var(--soft-ink-purple); }
-html:not(.dark):not([data-style='glass']) :is(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword) { color: var(--soft-ink-pink); }
-html:not(.dark):not([data-style='glass']) :is(.hljs-string, .hljs-regexp, .hljs-template-string, .hljs-addition) { color: var(--soft-ink-string); }
-html:not(.dark):not([data-style='glass']) :is(.hljs-number, .hljs-literal, .hljs-symbol, .hljs-variable.language_) { color: var(--soft-ink-orange); }
-html:not(.dark):not([data-style='glass']) :is(.hljs-type, .hljs-params, .hljs-attr, .hljs-property, .hljs-attribute) { color: var(--soft-ink-purple); }
-html:not(.dark):not([data-style='glass']) :is(.hljs-meta, .hljs-doctag, .hljs-tag) { color: var(--soft-ink-teal); }
-html:not([data-style='glass']) :is(.hljs-comment, .hljs-quote) { color: hsl(var(--foreground) / 0.7); }
+html:not(.dark)[data-style='soft'] .chip-green { color: var(--soft-ink-green); }
+html:not(.dark)[data-style='soft'] .chip-orange { color: var(--soft-ink-orange); }
+html:not(.dark)[data-style='soft'] .chip-teal { color: var(--soft-ink-teal); }
+html:not(.dark)[data-style='soft'] .chip-purple { color: var(--soft-ink-purple); }
+html:not(.dark)[data-style='soft'] :is(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword) { color: var(--soft-ink-pink); }
+html:not(.dark)[data-style='soft'] :is(.hljs-string, .hljs-regexp, .hljs-template-string, .hljs-addition) { color: var(--soft-ink-string); }
+html:not(.dark)[data-style='soft'] :is(.hljs-number, .hljs-literal, .hljs-symbol, .hljs-variable.language_) { color: var(--soft-ink-orange); }
+html:not(.dark)[data-style='soft'] :is(.hljs-type, .hljs-params, .hljs-attr, .hljs-property, .hljs-attribute) { color: var(--soft-ink-purple); }
+html:not(.dark)[data-style='soft'] :is(.hljs-meta, .hljs-doctag, .hljs-tag) { color: var(--soft-ink-teal); }
+html[data-style='soft'] :is(.hljs-comment, .hljs-quote) { color: hsl(var(--foreground) / 0.7); }
 /* Dark soft: the keyword pink sits just under 4.5:1 on the code surface, so lift it toward the (light) text colour. */
-html.dark:not([data-style='glass']) :is(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword) {
+html.dark[data-style='soft'] :is(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword) {
   color: color-mix(in srgb, hsl(var(--sys-pink)) 80%, hsl(var(--foreground)));
 }
 
-/* Plain colours only: no glows or gradients anywhere in the soft look. */
-html:not([data-style='glass']) :is(.card-glow, .avatar-glow) { display: none; }
-html:not([data-style='glass']) :is(.genie-button, .genie-orb) {
+/* Plain colours only: no glows or gradients in the soft look. */
+html[data-style='soft'] :is(.card-glow, .avatar-glow) { display: none; }
+html[data-style='soft'] :is(.genie-button, .genie-orb) {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
-html:not([data-style='glass']) .text-gradient {
+html[data-style='soft'] .text-gradient {
   background: none;
   -webkit-text-fill-color: currentColor;
   color: hsl(var(--primary));
@@ -1158,4 +1157,93 @@ html .glass.bento-accent,
 html:not([data-style='glass']) .glass.bento-accent {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
+}
+
+/* ============================================================
+   MIDNIGHT — the default look (<html> without data-style)
+   The Liquid Glass material, always dark: deep navy, cool drifting
+   light behind frosted panels, one cyan accent, and the portrait
+   backdrop on Home and About. The theme is forced to dark while it
+   is active (components/midnight-dark.tsx and the pre-paint script).
+   ============================================================ */
+html:not([data-style]) {
+  color-scheme: dark;
+  --background: 224 45% 5%;
+  --foreground: 214 30% 96%;
+  --card: 224 38% 9%;
+  --card-foreground: 214 30% 96%;
+  --popover: 224 38% 10%;
+  --popover-foreground: 214 30% 96%;
+  --secondary: 224 30% 14%;
+  --secondary-foreground: 214 30% 96%;
+  --muted: 224 30% 13%;
+  --muted-foreground: 218 18% 72%;
+  --border: 222 26% 20%;
+  --input: 222 26% 20%;
+  --primary: 192 95% 55%;
+  --primary-foreground: 224 50% 6%;
+  --accent: var(--primary);
+  --accent-foreground: 224 50% 6%;
+  --ring: var(--primary);
+
+  /* Frosted navy glass with a faint cool rim. */
+  --glass-bg: 224 40% 13%;
+  --glass-alpha: 0.42;
+  --glass-alpha-strong: 0.7;
+  --glass-stroke: 200 90% 85%;
+  --glass-stroke-alpha: 0.2;
+  --glass-shadow: 0 18px 50px -18px rgb(0 0 0 / 0.75), 0 2px 8px -2px rgb(0 0 0 / 0.45);
+  --glass-specular: rgb(200 235 255 / 0.22);
+  --glass-inner-glow: rgb(200 235 255 / 0.05);
+
+  /* Cool light drifting behind the glass: cyan, indigo, violet, deep teal. */
+  --blob-a: 192 95% 45%;
+  --blob-b: 232 80% 50%;
+  --blob-c: 262 70% 50%;
+  --blob-d: 200 90% 35%;
+  --blob-opacity: 0.32;
+}
+html:not([data-style])[data-accent='purple'] { --primary: 270 90% 74%; --blob-a: 270 80% 55%; }
+html:not([data-style])[data-accent='pink'] { --primary: 340 95% 72%; --blob-a: 340 80% 55%; }
+html:not([data-style])[data-accent='orange'] { --primary: 32 100% 60%; --blob-a: 32 90% 50%; }
+html:not([data-style])[data-accent='green'] { --primary: 150 70% 52%; --blob-a: 150 70% 40%; }
+html:not([data-style])[data-accent='graphite'] { --primary: 220 12% 74%; --blob-a: 220 15% 45%; }
+html:not([data-style]) .glass-inset {
+  background: hsl(224 45% 6% / 0.55);
+  box-shadow: inset 0 0 0 1px hsl(200 90% 85% / 0.1);
+}
+html:not([data-style]) .nav-active-pill { background: hsl(var(--foreground) / 0.12); }
+
+/* Midnight is dark-only, so the light/dark switch is hidden. */
+html:not([data-style]) .theme-toggle { display: none; }
+
+/* The portrait backdrop (components/portfolio/portrait-backdrop.tsx): only in Midnight.
+   The photo is a cut-out (transparent background), so it sits straight on the page;
+   a transparency mask fades the bottom of the shirt. */
+.portrait-backdrop, .portrait-only { display: none; }
+html:not([data-style]) :is(.portrait-backdrop, .portrait-only) { display: block; }
+html:not([data-style]) .portrait-alt { display: none; }
+.portrait-frame {
+  position: relative;
+  height: 58svh;
+  /* The cut-out photo has no background; only the bottom of the shirt fades away. */
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 40%);
+}
+/* A little dimmer, so the face sits in the dark page rather than glowing on it. No rim. */
+.portrait-frame img { filter: brightness(0.86); }
+/* Phones: the headline starts where the photo fades out. */
+html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
+@media (min-width: 1024px) {
+  .portrait-frame {
+    margin-left: auto;
+    width: min(46rem, 54vw);
+    height: min(100svh, 60rem);
+    /* Fade the bottom and the cut-off left shoulder, so the photo has no hard edge. */
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
+    mask-composite: intersect;
+  }
+  html:not([data-style]) .portrait-offset { padding-top: 0; }
 }

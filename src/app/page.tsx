@@ -8,6 +8,7 @@ import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { RollingText } from '@/components/vault/rolling-text';
+import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 
 export const metadata: Metadata = {
   alternates: {
@@ -21,31 +22,39 @@ export default async function Home() {
   const topics = allTopics(posts);
 
   return (
+    <>
+    <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
-      {/* Intro */}
-      <header className="mb-10 md:mb-14 grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
-        <div className="space-y-4 max-w-3xl">
-          <Link href="/about" className="group inline-flex items-center gap-3">
-            <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" priority />
-            <span className="text-sm leading-tight">
-              <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
-              <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
-            </span>
+      {/* Intro. In Midnight the portrait sits to the right (or above, on phones). */}
+      <header className="portrait-offset mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem]">
+        <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-3">
+          <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" priority />
+          <span className="text-sm leading-tight">
+            <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
+            <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
+          </span>
+        </Link>
+        <p className="portrait-only eyebrow">Boda Madhukar Reddy · Software Architect, Hyderabad</p>
+        <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
+          Notes from building{' '}
+          <RollingText className="rolling-line" words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
+          systems.
+        </h1>
+        <p className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
+          Field notes on .NET performance, self-hosted AI (RAG, MCP, hybrid search), load testing and homelab
+          infrastructure. Written from real production work.
+        </p>
+        <div className="flex flex-wrap gap-2.5 pt-1">
+          <Link href="/projects" className="tinted-button !px-5 !py-2.5">
+            See my work
+            <ArrowRight className="h-4 w-4" />
           </Link>
-          <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl font-bold tracking-tight text-foreground">
-            Notes from building{' '}
-            <RollingText className="rolling-line" words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
-            systems.
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-            Field notes on .NET performance, self-hosted AI (RAG, MCP, hybrid search), load testing and homelab
-            infrastructure. Written from real production work.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2.5 md:justify-end">
-          <a href="/rss.xml" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium">
+          <Link href="/about" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium">
+            About me
+          </Link>
+          <a href="/rss.xml" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium">
             <Rss className="h-4 w-4 text-[hsl(var(--sys-orange))]" />
             RSS
           </a>
@@ -86,5 +95,6 @@ export default async function Home() {
       </section>
 
     </div>
+    </>
   );
 }
