@@ -284,6 +284,10 @@ function Wallpaper() {
       <div className="blob blob-b" />
       <div className="blob blob-c" />
       <div className="blob blob-d" />
+      {/* The portrait, centred: the same cut-out as the Midnight hero, fading out at the shoulders. */}
+      <div className="os-portrait">
+        <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 768px) 60vh, 90vw" className="object-contain object-bottom" />
+      </div>
     </div>
   );
 }

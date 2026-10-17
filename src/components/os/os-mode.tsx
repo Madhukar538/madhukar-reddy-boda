@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
+import { CHUNK_ERROR, reloadForNewBuild } from '@/lib/chunk-reload';
 import { Monitor } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { OsData } from './apps';
@@ -20,7 +21,17 @@ const OsModeContext = createContext<OsMode>({ enabled: false, setEnabled: () => 
 export const useOsMode = () => useContext(OsModeContext);
 
 // Loaded on demand only.
-const PortfolioOS = dynamic(() => import('./desktop').then((m) => m.PortfolioOS), { ssr: false });
+const PortfolioOS = dynamic(
+  () =>
+    import('./desktop')
+      .then((m) => m.PortfolioOS)
+      .catch((error) => {
+        // A page from the previous deploy asks for a file that is gone: load the current build.
+        if (CHUNK_ERROR.test(`${error?.name} ${error?.message}`)) reloadForNewBuild();
+        throw error;
+      }),
+  { ssr: false }
+);
 
 export function OsModeProvider({ children }: { children: ReactNode }) {
   const [enabled, setEnabledState] = useState(false);

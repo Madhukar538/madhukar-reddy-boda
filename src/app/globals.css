@@ -1166,3 +1166,18 @@ html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { backgrou
 @media (max-width: 640px) {
   .chips-few > :nth-child(n+4) { display: none; }
 }
+
+/* Desktop mode wallpaper: the portrait centred on the screen. */
+.os-portrait {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(90vw, 62vh);
+  height: 82vh;
+  opacity: 0.9;
+  filter: brightness(0.85);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+  pointer-events: none;
+}
