@@ -96,7 +96,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
     <div>
       {/* ── Hero ── */}
       <section className="portrait-offset grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] pb-12 md:pb-16">
-        <div className="space-y-6 text-center lg:text-left">
+        <div className="min-w-0 space-y-6 text-center lg:text-left">
           {/* Phones: a compact identity row, since the profile card is desktop-only. */}
           <div className="portrait-alt flex items-center justify-center gap-3 lg:hidden">
             <Image src="/madhukar.png" alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
@@ -122,7 +122,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
             </Link>
           </div>
 
-          <h1 className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
+          <h1 className="text-[clamp(1.85rem,10vw,2.6rem)] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
             Architecting{' '}
             <RollingText className="rolling-line mx-auto lg:mx-0" words={['fast, observable', 'high-throughput', 'self-hosted AI', 'load-tested']} />{' '}
             systems.

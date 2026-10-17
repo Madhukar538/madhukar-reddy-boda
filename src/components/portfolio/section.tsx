@@ -71,7 +71,7 @@ export function Section({ id, title, children, className, comment, data }: Secti
                 aria-selected={viewMode === mode}
                 onClick={() => setViewMode(mode)}
                 className={cn(
-                  'relative px-3.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full transition-colors duration-200',
+                  'tap relative px-3.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full transition-colors duration-200',
                   viewMode === mode ? 'text-foreground' : 'text-foreground/70 hover:text-foreground'
                 )}
               >

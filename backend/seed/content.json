@@ -815,6 +815,7 @@
         "skills": [
           "RAG",
           "Semantic Kernel",
+          "Microsoft Agent Framework",
           "MCP (Model Context Protocol)",
           "Ollama · Qwen3 · Gemma",
           "LiteLLM",

@@ -12,6 +12,8 @@ import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 
 export const metadata: Metadata = {
+  // og:url for link previews (WhatsApp, LinkedIn); page-level openGraph replaces the layout's, so it is repeated.
+  openGraph: { type: 'website', url: '/', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
   alternates: {
     canonical: '/',
     types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
@@ -38,7 +40,7 @@ export default async function Home() {
           </span>
         </Link>
         <HeroIdentity />
-        <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
+        <h1 className="text-[clamp(1.85rem,10vw,2.4rem)] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
           Notes from building{' '}
           <RollingText className="rolling-line" words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
           systems.
@@ -73,7 +75,7 @@ export default async function Home() {
             <p className="eyebrow">Browse</p>
             <h2 id="topics-heading" className="text-2xl md:text-3xl font-bold tracking-tight">Topics</h2>
           </div>
-          <Link href="/topics" className="flex items-center gap-1 text-sm font-semibold text-primary">
+          <Link href="/topics" className="tap flex items-center gap-1 text-sm font-semibold text-primary">
             All topics <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
