@@ -837,7 +837,9 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) {
   .page-enter { animation: none; }
   .rolling-track { animation: none; }
-  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+  .marquee-track { animation: none; flex-wrap: wrap; width: auto; padding-inline: 1.25rem; }
+  /* Static and wrapped, so no edge fade (it would clip the first and last chips). */
+  .marquee { -webkit-mask-image: none; mask-image: none; }
   /* The track holds the list twice for a seamless loop; show it once when static. */
   .marquee-track > [aria-hidden='true'] { display: none; }
 }
@@ -1149,4 +1151,11 @@ html:not([data-style='glass']) .text-gradient {
   background: none;
   -webkit-text-fill-color: currentColor;
   color: hsl(var(--primary));
+}
+
+/* The accent tile in the home bento: filled with the accent colour in both looks. */
+html .glass.bento-accent,
+html:not([data-style='glass']) .glass.bento-accent {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }

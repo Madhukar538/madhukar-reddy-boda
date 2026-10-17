@@ -53,7 +53,10 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
 
   return (
     <section aria-labelledby="posts-heading" className="space-y-6">
-      <h2 id="posts-heading" className="sr-only">Posts</h2>
+      <div>
+        <p className="eyebrow">From the blog</p>
+        <h2 id="posts-heading" className="text-2xl md:text-3xl font-bold tracking-tight">Latest writing</h2>
+      </div>
       <div className="flex flex-col md:flex-row md:items-center gap-3">
         <label className="glass glass-pill flex flex-1 items-center gap-2.5 px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary">
           <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
