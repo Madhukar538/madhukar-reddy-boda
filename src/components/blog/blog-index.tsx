@@ -50,6 +50,9 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
 
   const unfiltered = !terms.length && category === 'All';
   const [lead, ...rest] = results;
+  // Unfiltered: the lead plus four cards, then the older posts as a compact list.
+  const cards = rest.slice(0, 4);
+  const older = rest.slice(4);
 
   return (
     <section aria-labelledby="posts-heading" className="space-y-6">
@@ -126,10 +129,25 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
         <div className="space-y-4">
           <PostCard post={lead} featured />
           <div className="grid gap-5 md:gap-6 md:grid-cols-2">
-            {rest.map((p) => (
+            {cards.map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
           </div>
+          {older.length > 0 && (
+            <div className="glass mt-2 p-2 md:p-3">
+              <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">More posts</p>
+              <ul className="divide-y divide-foreground/10">
+                {older.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/blog/${p.slug}`} className="group flex items-baseline gap-4 rounded-xl px-3 py-3.5 hover:bg-foreground/5 transition-colors">
+                      <span className="flex-1 font-semibold leading-snug text-foreground group-hover:text-primary transition-colors">{p.title}</span>
+                      <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{p.date.replace(/,? \d{4}$/, '')}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid gap-5 md:gap-6 md:grid-cols-2">

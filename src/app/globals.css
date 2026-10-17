@@ -1158,3 +1158,11 @@ main h1 { view-transition-name: page-title; }
 html:not([data-style]) .glass.bento-accent { background: hsl(222 72% 40%); color: #fff; }
 html:not([data-style]) .glass.bento-accent * { color: #fff; }
 html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { background: rgb(255 255 255 / 0.14); }
+
+/* Swipeable rows (About skills on phones): no scrollbar, momentum scroll. */
+.skill-row { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.skill-row::-webkit-scrollbar { display: none; }
+/* Phones: three tags per card are enough to place it; the rest add height, not meaning. */
+@media (max-width: 640px) {
+  .chips-few > :nth-child(n+4) { display: none; }
+}

@@ -35,18 +35,19 @@ const iconTint = {
 export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }) {
   return (
     <Section id="skills" title="Tech Stack" comment="Skills and technologies" data={skillCategories}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5 md:gap-6">
         {skillCategories.map(({ title, skills, color = 'green' }) => {
           const Icon = icons[title] ?? Code2;
           return (
-          <div key={title} className="glass glass-interactive p-5">
-            <div className="flex items-center gap-3 mb-4">
+          <div key={title} className="cs-reveal glass p-5 max-sm:p-4">
+            <div className="flex items-center gap-3 mb-4 max-sm:mb-3">
               <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconTint[color]}`}>
                 <Icon className="h-[1.1rem] w-[1.1rem]" />
               </span>
               <span className="text-[15px] font-semibold text-foreground">{title}</span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            {/* Phones: one swipeable row per group instead of a tall block of tags. */}
+            <div className="skill-row flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1">
               {skills.map((skill) => (
                 <span key={skill} className="chip">
                   {skill}
