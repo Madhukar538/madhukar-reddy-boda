@@ -926,17 +926,17 @@ html[data-os-mode='on'] .genie-root { display: none; }
    chosen in the display controls), so it needs no JavaScript.
    ============================================================ */
 html:not([data-style='glass']) {
-  --soft-bg: 222 18% 91%;
+  --soft-bg: 222 20% 88%;
   --soft-hi: 0 0% 100%;
-  --soft-hi-alpha: 0.85;
-  --soft-lo: 222 22% 68%;
-  --soft-lo-alpha: 0.55;
-  --soft-raised: 8px 8px 18px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -8px -8px 18px hsl(var(--soft-hi) / var(--soft-hi-alpha));
-  --soft-raised-lg: 12px 12px 28px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -12px -12px 28px hsl(var(--soft-hi) / var(--soft-hi-alpha));
-  --soft-raised-sm: 4px 4px 9px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -4px -4px 9px hsl(var(--soft-hi) / var(--soft-hi-alpha));
-  --soft-raised-xs: 2px 2px 5px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -2px -2px 5px hsl(var(--soft-hi) / var(--soft-hi-alpha));
-  --soft-pressed: inset 4px 4px 9px hsl(var(--soft-lo) / var(--soft-lo-alpha)), inset -4px -4px 9px hsl(var(--soft-hi) / var(--soft-hi-alpha));
-  --soft-pressed-sm: inset 2px 2px 5px hsl(var(--soft-lo) / var(--soft-lo-alpha)), inset -2px -2px 5px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-hi-alpha: 1;
+  --soft-lo: 222 26% 56%;
+  --soft-lo-alpha: 0.8;
+  --soft-raised: 12px 12px 26px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -12px -12px 26px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-raised-lg: 18px 18px 40px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -18px -18px 40px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-raised-sm: 6px 6px 13px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -6px -6px 13px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-raised-xs: 3px 3px 7px hsl(var(--soft-lo) / var(--soft-lo-alpha)), -3px -3px 7px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-pressed: inset 6px 6px 12px hsl(var(--soft-lo) / var(--soft-lo-alpha)), inset -6px -6px 12px hsl(var(--soft-hi) / var(--soft-hi-alpha));
+  --soft-pressed-sm: inset 3px 3px 7px hsl(var(--soft-lo) / var(--soft-lo-alpha)), inset -3px -3px 7px hsl(var(--soft-hi) / var(--soft-hi-alpha));
 
   /* The page, cards and popovers all share the one surface colour. */
   --background: var(--soft-bg);
@@ -948,10 +948,10 @@ html:not([data-style='glass']) {
 
 html.dark:not([data-style='glass']) {
   --soft-bg: 225 14% 15%;
-  --soft-hi: 225 14% 24%;
-  --soft-hi-alpha: 0.7;
-  --soft-lo: 225 30% 4%;
-  --soft-lo-alpha: 0.7;
+  --soft-hi: 225 14% 26%;
+  --soft-hi-alpha: 0.9;
+  --soft-lo: 225 30% 3%;
+  --soft-lo-alpha: 0.95;
   --muted-foreground: 225 8% 66%;
 }
 
@@ -1043,7 +1043,7 @@ html:not([data-style='glass']) .marquee-card {
 }
 html:not([data-style='glass']) .marquee-card:hover { border-color: transparent; box-shadow: var(--soft-raised); }
 /* The strip clips its overflow, so leave room for the cards' shadows. */
-html:not([data-style='glass']) .blog-marquee { padding-block: 1.25rem; }
+html:not([data-style='glass']) .blog-marquee { padding-block: 2rem; }
 html:not([data-style='glass']) .vault-statusbar {
   background: hsl(var(--soft-bg));
   border-color: transparent;
@@ -1055,11 +1055,11 @@ html:not([data-style='glass']) .vault-statusbar {
 /* Accent shades for the soft surface, each checked at 4.5:1 or better, both as
    text on the surface and as the label colour on a filled button. Light mode
    needs deeper tones than glass; dark mode needs dark labels on accent buttons. */
-html:not([data-style='glass']):not([data-accent]) { --primary: 211 100% 40%; }
+html:not([data-style='glass']):not([data-accent]) { --primary: 211 100% 36%; }
 html:not([data-style='glass'])[data-accent='purple'] { --primary: 287 65% 42%; }
-html:not([data-style='glass'])[data-accent='pink'] { --primary: 349 90% 41%; }
-html:not([data-style='glass'])[data-accent='orange'] { --primary: 28 100% 32%; }
-html:not([data-style='glass'])[data-accent='green'] { --primary: 135 65% 27%; }
+html:not([data-style='glass'])[data-accent='pink'] { --primary: 349 90% 38%; }
+html:not([data-style='glass'])[data-accent='orange'] { --primary: 28 100% 29%; }
+html:not([data-style='glass'])[data-accent='green'] { --primary: 135 65% 25%; }
 html:not([data-style='glass'])[data-accent='graphite'] { --primary: 240 4% 38%; }
 html.dark:not([data-style='glass']):not([data-accent]) { --primary: 210 100% 60%; }
 html.dark:not([data-style='glass'])[data-accent='purple'] { --primary: 285 85% 65%; }
@@ -1105,7 +1105,7 @@ html:not([data-style='glass']) .callout {
 }
 html:not([data-style='glass']) .callout-title {
   color: hsl(var(--foreground));
-  color: color-mix(in srgb, hsl(var(--callout)) 50%, hsl(var(--foreground)));
+  color: color-mix(in srgb, hsl(var(--callout)) 42%, hsl(var(--foreground)));
 }
 html.dark:not([data-style='glass']) .callout-title {
   color: color-mix(in srgb, hsl(var(--callout)) 75%, hsl(var(--foreground)));
@@ -1116,12 +1116,12 @@ html.dark:not([data-style='glass']) .callout-title {
    Each colour is named: inside a color rule, currentColor would be the parent's.
    Browsers without color-mix keep the original colours. Comments get stronger too. */
 html:not(.dark):not([data-style='glass']) {
-  --soft-ink-pink: color-mix(in srgb, hsl(var(--sys-pink)) 50%, hsl(var(--foreground)));
-  --soft-ink-green: color-mix(in srgb, hsl(var(--sys-green)) 50%, hsl(var(--foreground)));
-  --soft-ink-string: color-mix(in srgb, hsl(135 55% 36%) 60%, hsl(var(--foreground)));
-  --soft-ink-orange: color-mix(in srgb, hsl(var(--sys-orange)) 50%, hsl(var(--foreground)));
-  --soft-ink-purple: color-mix(in srgb, hsl(var(--sys-purple)) 50%, hsl(var(--foreground)));
-  --soft-ink-teal: color-mix(in srgb, hsl(var(--sys-teal)) 50%, hsl(var(--foreground)));
+  --soft-ink-pink: color-mix(in srgb, hsl(var(--sys-pink)) 42%, hsl(var(--foreground)));
+  --soft-ink-green: color-mix(in srgb, hsl(var(--sys-green)) 42%, hsl(var(--foreground)));
+  --soft-ink-string: color-mix(in srgb, hsl(135 55% 36%) 50%, hsl(var(--foreground)));
+  --soft-ink-orange: color-mix(in srgb, hsl(var(--sys-orange)) 42%, hsl(var(--foreground)));
+  --soft-ink-purple: color-mix(in srgb, hsl(var(--sys-purple)) 42%, hsl(var(--foreground)));
+  --soft-ink-teal: color-mix(in srgb, hsl(var(--sys-teal)) 42%, hsl(var(--foreground)));
 }
 html:not(.dark):not([data-style='glass']) .chip-green { color: var(--soft-ink-green); }
 html:not(.dark):not([data-style='glass']) .chip-orange { color: var(--soft-ink-orange); }
