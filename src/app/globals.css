@@ -1226,12 +1226,30 @@ html:not([data-style]) .portrait-alt { display: none; }
 .portrait-frame {
   position: relative;
   height: 58svh;
+  container-type: inline-size;
+}
+/* The depth effect: the name sits behind the photo, high enough that the hair covers its middle. */
+.portrait-word {
+  position: absolute;
+  inset-inline: 0;
+  top: 7%;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 16.5cqw;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: hsl(var(--foreground) / 0.92);
+}
+.portrait-photo {
+  position: absolute;
+  inset: 0;
   /* The cut-out photo has no background; only the bottom of the shirt fades away. */
   -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
   mask-image: linear-gradient(to top, transparent 0%, #000 40%);
 }
 /* A little dimmer, so the face sits in the dark page rather than glowing on it. No rim. */
-.portrait-frame img { filter: brightness(0.86); }
+.portrait-photo img { filter: brightness(0.86); }
 /* Phones: the headline starts where the photo fades out. */
 html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
 @media (min-width: 1024px) {
@@ -1239,6 +1257,9 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     margin-left: auto;
     width: min(46rem, 54vw);
     height: min(100svh, 60rem);
+  }
+  .portrait-word { top: 9%; }
+  .portrait-photo {
     /* Fade the bottom and the cut-off left shoulder, so the photo has no hard edge. */
     -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
     -webkit-mask-composite: source-in;
