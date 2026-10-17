@@ -1286,3 +1286,59 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
+
+/* ============================================================
+   EXPERIENCE (components/portfolio/experience.tsx) — scroll-driven.
+   Without scroll timelines or with reduced motion, everything is
+   simply shown complete: full line, lit dots, final numbers.
+   ============================================================ */
+@property --xp-n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+.xp-count { --xp-n: var(--xp-target); counter-reset: xp var(--xp-n); }
+.xp-count::before { content: counter(xp); }
+.xp-dot { background: hsl(var(--primary)); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .xp-count {
+      animation: xp-count linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 45%;
+    }
+    .xp-line {
+      animation: xp-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 40% exit 60%;
+    }
+    .xp-dot {
+      animation: xp-dot linear both;
+      animation-timeline: view();
+      animation-range: entry 70% cover 40%;
+    }
+  }
+}
+@keyframes xp-count { from { --xp-n: 0; } to { --xp-n: var(--xp-target); } }
+@keyframes xp-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes xp-dot {
+  from { background: hsl(var(--foreground) / 0.25); transform: scale(0.7); }
+  to { background: hsl(var(--primary)); transform: scale(1); }
+}
+
+/* ============================================================
+   PAGE TRANSITIONS (components/view-transitions.tsx)
+   The whole page cross-fades; the menu stays put; the portrait and
+   the page title glide to their new place and size.
+   ============================================================ */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.28s; }
+.vt-nav { view-transition-name: site-nav; }
+.vt-tabbar { view-transition-name: site-tabbar; }
+.portrait-frame { view-transition-name: portrait; }
+main h1 { view-transition-name: page-title; }
+::view-transition-group(portrait),
+::view-transition-group(page-title) { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+/* The entrance slide would fight the transition, so it only runs without one. */
+@supports (view-transition-name: none) {
+  .page-enter { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

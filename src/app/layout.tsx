@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { MidnightDark } from '@/components/midnight-dark';
+import { ViewTransitions } from '@/components/view-transitions';
 import { Navbar } from '@/components/portfolio/navbar';
 import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
@@ -96,6 +97,7 @@ export default async function RootLayout({
         >
           <script dangerouslySetInnerHTML={{ __html: midnightDarkScript }} />
           <MidnightDark />
+          <ViewTransitions />
           <MotionProvider>
           <OsModeProvider>
             <LiquidWallpaper />
