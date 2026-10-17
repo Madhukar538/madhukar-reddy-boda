@@ -57,7 +57,7 @@ export function Navbar() {
   return (
     <>
       {/* ── Desktop floating glass capsule ── */}
-      <header className="hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none">
+      <header className="vt-nav hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none">
         <div
           className={cn(
             'glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
@@ -126,7 +126,7 @@ export function Navbar() {
       </header>
 
       {/* ── Mobile / tablet floating tab bar ── */}
-      <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
+      <div className="vt-tabbar lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
         {/* No LiquidLens here: its refraction keeps the text behind the bar sharp, which fights the labels. */}
         <nav className="glass glass-strong glass-bar glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
           {tabLinks.map((link) => {
