@@ -14,6 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 import { stack } from '@/data/stack';
 import type { SiteContent } from '@/lib/content';
+import { caseStudyFor } from '@/data/case-studies';
 
 export type BentoContent = Pick<SiteContent, 'experience' | 'keyProjects' | 'rdProjects'> & {
   postCount: number;
@@ -51,6 +52,7 @@ const label = 'pr-6 text-xs font-semibold uppercase tracking-[0.12em] text-muted
 export function HomeBento({ content }: { content: BentoContent }) {
   const { experience, keyProjects, rdProjects, postCount, topicCount } = content;
   const featured = keyProjects.find((p) => p.featured && p.outcome) ?? keyProjects.find((p) => p.featured) ?? keyProjects[0];
+  const study = featured ? caseStudyFor(featured.title) : undefined;
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
   const startYear = Number(experience.duration.match(/\d{4}/)?.[0] ?? 2021);
   const years = new Date().getFullYear() - startYear;
@@ -62,7 +64,7 @@ export function HomeBento({ content }: { content: BentoContent }) {
         {/* Featured project: the biggest tile, with its measured result. */}
         {featured && (
           <Tile
-            href={featured.post ? `/blog/${featured.post}` : '/projects'}
+            href={study ? `/projects/${study.slug}` : featured.post ? `/blog/${featured.post}` : '/projects'}
             label={`Featured project: ${featured.title}`}
             className="col-span-2 lg:row-span-2 md:p-8"
           >
@@ -87,7 +89,7 @@ export function HomeBento({ content }: { content: BentoContent }) {
                 ))}
               </div>
               <span className="flex items-center gap-1.5 text-sm font-semibold text-primary">
-                {featured.post ? 'Read the case study' : 'See all projects'}
+                {study ? 'Read the case study' : featured.post ? 'Read the write-up' : 'See all projects'}
                 <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </div>

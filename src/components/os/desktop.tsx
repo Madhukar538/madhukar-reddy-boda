@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { ChevronLeft, LogOut, Search } from 'lucide-react';
@@ -456,7 +457,7 @@ function Desktop({ data, onExit }: { data: OsData; onExit: () => void }) {
       {/* Menu bar */}
       <div className="glass glass-strong fixed inset-x-0 top-0 z-[300] flex select-none items-center gap-4 px-4 text-[13px]" style={{ height: MENU_H, ['--glass-radius' as string]: '0' }}>
         <LiquidLens strength={20} />
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">MR</span>
+        <Image src="/icons/icon-192.png" alt="" width={20} height={20} className="h-5 w-5 rounded-full" />
         <span className="font-semibold text-foreground">{focused ? appById(focused.id).name : 'Finder'}</span>
         <span className="hidden text-foreground/70 lg:inline">madhukar-os</span>
         <div className="ml-auto flex items-center gap-3 text-foreground/85">

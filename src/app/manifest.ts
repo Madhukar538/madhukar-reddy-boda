@@ -7,19 +7,13 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Portfolio of Boda Madhukar Reddy, Software Architect specializing in .NET and AI platforms.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f2f2f7',
-    theme_color: '#0a84ff',
+    // Midnight, the default look, so the splash screen and title bar match the site.
+    background_color: '#070a12',
+    theme_color: '#070a12',
     icons: [
-      {
-        src: '/icon.png',
-        sizes: '64x64',
-        type: 'image/png',
-      },
-      {
-        src: '/madhukar.png',
-        sizes: '240x240',
-        type: 'image/png',
-      },
+      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
 }

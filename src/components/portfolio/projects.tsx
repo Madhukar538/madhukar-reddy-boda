@@ -5,6 +5,7 @@ import { Section } from '@/components/portfolio/section';
 import { Callout } from '@/components/vault/callout';
 import type { ClientProject, ProjectCard } from '@/data/profile';
 import { anchorId } from '@/lib/utils';
+import { caseStudyFor } from '@/data/case-studies';
 
 function WriteUp({ slug }: { slug: string }) {
   return (
@@ -15,7 +16,17 @@ function WriteUp({ slug }: { slug: string }) {
   );
 }
 
+function CaseStudyLink({ slug }: { slug: string }) {
+  return (
+    <Link href={`/projects/${slug}`} className="group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary">
+      Read the case study
+      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
 function FeaturedCard({ project }: { project: ProjectCard }) {
+  const study = caseStudyFor(project.title);
   return (
     <article id={anchorId(project.title)} className="glass glass-interactive flex flex-col p-6 md:p-7 scroll-mt-28">
       <h3 className="text-xl font-bold tracking-tight text-foreground leading-snug mb-2">{project.title}</h3>
@@ -30,7 +41,7 @@ function FeaturedCard({ project }: { project: ProjectCard }) {
           <span key={tech} className="chip">{tech}</span>
         ))}
       </div>
-      {project.post && <WriteUp slug={project.post} />}
+      {study ? <CaseStudyLink slug={study.slug} /> : project.post && <WriteUp slug={project.post} />}
     </article>
   );
 }

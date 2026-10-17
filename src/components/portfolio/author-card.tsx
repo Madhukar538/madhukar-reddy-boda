@@ -1,10 +1,10 @@
+import Image from 'next/image';
+
 export function AuthorCard() {
   return (
     <div className="glass-inset p-5">
       <div className="flex items-start gap-4">
-        <div className="h-12 w-12 shrink-0 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
-          MR
-        </div>
+        <Image src="/icons/icon-192.png" alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-full ring-1 ring-foreground/15" />
         <div className="space-y-1">
           <p className="text-[15px] font-semibold text-foreground">Boda Madhukar Reddy</p>
           <p className="text-sm font-medium text-primary">Software Architect @ Revalsys Technologies</p>

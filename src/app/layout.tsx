@@ -27,10 +27,8 @@ export const metadata: Metadata = {
   },
   openGraph: { type: 'website', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
   twitter: { card: 'summary_large_image' },
-  // The favicon comes from app/icon.png (64px); the full photo is only for home-screen icons.
-  icons: {
-    apple: '/madhukar.png',
-  },
+  // Icons come from app/favicon.ico, app/icon.png and app/apple-icon.png, and the
+  // manifest's from public/icons: all the same portrait on the Midnight navy.
 };
 
 export const viewport: Viewport = {
@@ -49,8 +47,8 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-int
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
 // Applies the saved accent tint and look before first paint, so neither flashes.
-// Midnight (no data-style) is the default and is always dark.
-const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent'),s=localStorage.getItem('portfolio-style');if(a&&a!=='blue')d.setAttribute('data-accent',a);if(s==='glass'||s==='soft')d.setAttribute('data-style',s)}catch(e){}`;
+// Midnight (no data-style) is the default look and is always dark; Graphite is the default accent.
+const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent')||'graphite',s=localStorage.getItem('portfolio-style');if(a!=='blue')d.setAttribute('data-accent',a);if(s==='glass'||s==='soft')d.setAttribute('data-style',s)}catch(e){}`;
 // Runs after next-themes' own script, which may have set a light theme.
 const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
 
@@ -60,10 +58,34 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { profile, socialLinks } = await getContent();
+  const base = siteUrl();
+  // Who the site is about, for search engines: the same portrait as the icons.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        '@id': `${base}/#person`,
+        name: profile.name,
+        jobTitle: profile.title,
+        url: base,
+        image: `${base}/icons/icon-512.png`,
+        sameAs: socialLinks.map((l) => l.href),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${base}/#website`,
+        name: 'Boda Madhukar Reddy',
+        url: base,
+        author: { '@id': `${base}/#person` },
+      },
+    ],
+  };
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: accentScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       </head>
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
         <ThemeProvider

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
@@ -68,9 +69,7 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
-              MR
-            </span>
+            <Image src="/icons/icon-192.png" alt="" width={28} height={28} className="h-7 w-7 rounded-full ring-1 ring-foreground/15" />
             Madhukar
           </Link>
 

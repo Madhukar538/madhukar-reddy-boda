@@ -1,8 +1,13 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
+
+// The same portrait icon as the favicon and the PWA, inlined so the card needs no request.
+const portrait = `data:image/png;base64,${readFileSync(join(process.cwd(), 'public/icons/icon-192.png')).toString('base64')}`;
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-/** Shared 1200×630 social card: glassy panel over the site's gradient wallpaper. */
+/** Shared 1200×630 social card: a glass panel on the Midnight navy, signed with the portrait. */
 export function ogCard({ eyebrow, title, meta }: { eyebrow: string; title: string; meta: string }) {
   return new ImageResponse(
     (
@@ -12,9 +17,9 @@ export function ogCard({ eyebrow, title, meta }: { eyebrow: string; title: strin
           height: '100%',
           display: 'flex',
           padding: 56,
-          backgroundColor: '#0a0a0c',
+          backgroundColor: '#070a12',
           backgroundImage:
-            'radial-gradient(circle at 12% 18%, #0a84ff 0%, transparent 45%), radial-gradient(circle at 88% 12%, #bf5af2 0%, transparent 42%), radial-gradient(circle at 80% 95%, #ff9f0a 0%, transparent 40%), radial-gradient(circle at 20% 100%, #32ade6 0%, transparent 40%)',
+            'radial-gradient(circle at 12% 18%, #1e4fd6 0%, transparent 45%), radial-gradient(circle at 88% 12%, #3b2f9e 0%, transparent 42%), radial-gradient(circle at 80% 95%, #0c4a6e 0%, transparent 40%), radial-gradient(circle at 20% 100%, #1e3a8a 0%, transparent 40%)',
         }}
       >
         <div
@@ -60,22 +65,8 @@ export function ogCard({ eyebrow, title, meta }: { eyebrow: string; title: strin
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 26, color: 'rgba(255,255,255,0.7)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  width: 52,
-                  height: 52,
-                  borderRadius: 999,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: '#0a84ff',
-                  color: 'white',
-                  fontWeight: 700,
-                  fontSize: 22,
-                }}
-              >
-                MR
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={portrait} width={56} height={56} alt="" style={{ borderRadius: 999, border: '2px solid rgba(255,255,255,0.35)' }} />
               <span style={{ color: 'white', fontWeight: 600 }}>Boda Madhukar Reddy</span>
             </div>
             <span>{meta}</span>
