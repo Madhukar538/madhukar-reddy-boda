@@ -18,8 +18,9 @@ export function ogCard({ eyebrow, title, meta }: { eyebrow: string; title: strin
           display: 'flex',
           padding: 56,
           backgroundColor: '#070a12',
-          backgroundImage:
-            'radial-gradient(circle at 12% 18%, #1e4fd6 0%, transparent 45%), radial-gradient(circle at 88% 12%, #3b2f9e 0%, transparent 42%), radial-gradient(circle at 80% 95%, #0c4a6e 0%, transparent 40%), radial-gradient(circle at 20% 100%, #1e3a8a 0%, transparent 40%)',
+          // One gentle gradient only: big radial glows compress badly, and WhatsApp drops
+          // preview images much over ~300 KB.
+          backgroundImage: 'linear-gradient(135deg, #0f1d3d 0%, #070a12 60%)',
         }}
       >
         <div

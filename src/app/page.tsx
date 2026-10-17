@@ -12,6 +12,8 @@ import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 
 export const metadata: Metadata = {
+  // og:url for link previews (WhatsApp, LinkedIn); page-level openGraph replaces the layout's, so it is repeated.
+  openGraph: { type: 'website', url: '/', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
   alternates: {
     canonical: '/',
     types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
