@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Bug, Rss } from 'lucide-react';
+import { ArrowRight, Rss } from 'lucide-react';
 import { BlogIndex } from '@/components/blog/blog-index';
+import { HomeBento } from '@/components/blog/home-bento';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
 import { getContent } from '@/lib/content';
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const { posts } = await getContent();
+  const { posts, experience, keyProjects, rdProjects } = await getContent();
   const topics = allTopics(posts);
 
   return (
@@ -44,16 +45,14 @@ export default async function Home() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5 md:justify-end">
-          <Link href="/fix-a-bug" className="tinted-button !px-4 !py-2">
-            <Bug className="h-4 w-4" />
-            Stuck on a bug?
-          </Link>
           <a href="/rss.xml" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium">
             <Rss className="h-4 w-4 text-[hsl(var(--sys-orange))]" />
             RSS
           </a>
         </div>
       </header>
+
+      <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
 
       <BlogIndex posts={summaries(posts)} />
 
@@ -86,28 +85,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* About strip */}
-      <section className="mt-14 md:mt-20 glass p-6 md:p-8 grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
-        <div className="space-y-1.5">
-          <p className="eyebrow">Who writes this</p>
-          <p className="text-lg md:text-xl font-semibold text-foreground">
-            I design high-throughput .NET APIs and self-hosted AI platforms, and I load-test everything.
-          </p>
-          <p className="text-muted-foreground">Working at Revalsys, and open to fixing bugs and giving solutions.</p>
-        </div>
-        <div className="flex flex-wrap gap-2.5">
-          <Link href="/about" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium">
-            About me
-          </Link>
-          <Link href="/projects" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2 text-sm font-medium">
-            Projects
-          </Link>
-          <Link href="/fix-a-bug" className="tinted-button !px-4 !py-2">
-            Fix a bug
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

@@ -25,12 +25,8 @@ import { cn } from '@/lib/utils';
 import { RollingText } from '@/components/vault/rolling-text';
 import { useOsMode } from '@/components/os/os-mode';
 import type { SiteContent } from '@/lib/content';
+import { stack } from '@/data/stack';
 
-const stack = [
-  'C#', '.NET 10', 'TypeScript', 'Next.js 16', 'React 19', 'Semantic Kernel', 'MCP', 'RAG',
-  'Ollama', 'pgvector', 'Solr 9', 'SQL Server', 'PostgreSQL', 'MongoDB', 'ClickHouse', 'Redis',
-  'RabbitMQ', 'SignalR', 'gRPC', 'k6', 'Grafana', 'Docker', 'K3s', 'Terraform', 'Playwright',
-];
 
 const socialIcons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
 
