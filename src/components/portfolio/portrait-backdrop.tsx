@@ -15,6 +15,7 @@ export function PortraitBackdrop() {
           alt=""
           fill
           priority
+          quality={60}
           sizes="(min-width: 1024px) 720px, 100vw"
           className="object-cover object-[50%_20%]"
         />
