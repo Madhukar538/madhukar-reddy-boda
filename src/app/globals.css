@@ -1218,25 +1218,20 @@ html:not([data-style]) .nav-active-pill { background: hsl(var(--foreground) / 0.
 html:not([data-style]) .theme-toggle { display: none; }
 
 /* The portrait backdrop (components/portfolio/portrait-backdrop.tsx): only in Midnight.
-   A transparency mask (not a colour gradient) fades the photo's edges, so its dark
-   studio background melts into the page; a cool tint matches it to the palette. */
+   The photo is a cut-out (transparent background), so it sits straight on the page;
+   a transparency mask fades the bottom of the shirt. */
 .portrait-backdrop, .portrait-only { display: none; }
 html:not([data-style]) :is(.portrait-backdrop, .portrait-only) { display: block; }
 html:not([data-style]) .portrait-alt { display: none; }
 .portrait-frame {
   position: relative;
   height: 58svh;
-  -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 34%, #000 48%, transparent 100%);
-  mask-image: radial-gradient(ellipse 72% 70% at 50% 34%, #000 48%, transparent 100%);
+  /* The cut-out photo has no background; only the bottom of the shirt fades away. */
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 40%);
 }
-.portrait-frame::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: hsl(220 70% 22%);
-  mix-blend-mode: soft-light;
-  opacity: 0.55;
-}
+/* A faint cool rim separates the black hair and shirt from the navy page. */
+.portrait-frame img { filter: drop-shadow(0 0 28px hsl(var(--primary) / 0.22)); }
 /* Phones: the headline starts where the photo fades out. */
 html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
 @media (min-width: 1024px) {
@@ -1244,8 +1239,11 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     margin-left: auto;
     width: min(46rem, 54vw);
     height: min(100svh, 60rem);
-    -webkit-mask-image: radial-gradient(ellipse 62% 58% at 55% 34%, #000 52%, transparent 100%);
-    mask-image: radial-gradient(ellipse 62% 58% at 55% 34%, #000 52%, transparent 100%);
+    /* Fade the bottom and the cut-off left shoulder, so the photo has no hard edge. */
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
+    mask-composite: intersect;
   }
   html:not([data-style]) .portrait-offset { padding-top: 0; }
 }

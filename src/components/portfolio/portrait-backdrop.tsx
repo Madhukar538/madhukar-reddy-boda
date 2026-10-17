@@ -11,7 +11,7 @@ export function PortraitBackdrop() {
     <div aria-hidden className="portrait-backdrop pointer-events-none absolute inset-x-0 top-0 -z-10 overflow-hidden">
       <div className="portrait-frame">
         <Image
-          src="/portrait.webp"
+          src="/portrait-cutout.webp"
           alt=""
           fill
           priority
