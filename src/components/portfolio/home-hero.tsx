@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RollingText } from '@/components/vault/rolling-text';
-import { useOsMode } from '@/components/os/os-mode';
+import { OS_MODE_AVAILABLE, useOsMode } from '@/components/os/os-mode';
 import type { SiteContent } from '@/lib/content';
 import { stack } from '@/data/stack';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
@@ -68,6 +68,7 @@ function Tile({
 
 function HeroOsButton() {
   const { setEnabled } = useOsMode();
+  if (!OS_MODE_AVAILABLE) return null;
   return (
     <button type="button" onClick={() => setEnabled(true)} className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
       <Monitor className="h-4 w-4 text-primary" />

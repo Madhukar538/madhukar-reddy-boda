@@ -4,7 +4,6 @@ import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
-import { BlogStrip } from '@/components/blog/blog-strip';
 import { allTopics } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 
@@ -36,7 +35,6 @@ export default async function AboutPage() {
           updated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         }}
       />
-      <BlogStrip posts={posts} className="mt-14 md:mt-20" />
       <div className="mt-14 md:mt-20">
         <Summary />
         <Skills skillCategories={content.skillCategories} />

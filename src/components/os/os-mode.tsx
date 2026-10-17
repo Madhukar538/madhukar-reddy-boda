@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
+import { CHUNK_ERROR, reloadForNewBuild } from '@/lib/chunk-reload';
 import { Monitor } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { OsData } from './apps';
@@ -13,6 +14,9 @@ import type { OsData } from './apps';
 
 const STORAGE_KEY = 'portfolio-os-mode';
 
+/** Desktop mode is switched off for now: no toggles, and a saved "on" is ignored. Set to true to bring it back. */
+export const OS_MODE_AVAILABLE = false;
+
 type OsMode = { enabled: boolean; setEnabled: (on: boolean) => void };
 
 const OsModeContext = createContext<OsMode>({ enabled: false, setEnabled: () => {} });
@@ -20,7 +24,17 @@ const OsModeContext = createContext<OsMode>({ enabled: false, setEnabled: () => 
 export const useOsMode = () => useContext(OsModeContext);
 
 // Loaded on demand only.
-const PortfolioOS = dynamic(() => import('./desktop').then((m) => m.PortfolioOS), { ssr: false });
+const PortfolioOS = dynamic(
+  () =>
+    import('./desktop')
+      .then((m) => m.PortfolioOS)
+      .catch((error) => {
+        // A page from the previous deploy asks for a file that is gone: load the current build.
+        if (CHUNK_ERROR.test(`${error?.name} ${error?.message}`)) reloadForNewBuild();
+        throw error;
+      }),
+  { ssr: false }
+);
 
 export function OsModeProvider({ children }: { children: ReactNode }) {
   const [enabled, setEnabledState] = useState(false);
@@ -28,11 +42,13 @@ export function OsModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(STORAGE_KEY) === 'on') setEnabledState(true);
+      if (!OS_MODE_AVAILABLE) localStorage.removeItem(STORAGE_KEY);
+      else if (localStorage.getItem(STORAGE_KEY) === 'on') setEnabledState(true);
     } catch {}
   }, []);
 
   const setEnabled = useCallback((on: boolean) => {
+    if (on && !OS_MODE_AVAILABLE) return;
     setEnabledState(on);
     try {
       localStorage.setItem(STORAGE_KEY, on ? 'on' : 'off');
@@ -69,6 +85,7 @@ export function OsModeProvider({ children }: { children: ReactNode }) {
 /** Icon button (nav) or text link (footer, hero) that switches desktop mode on or off. */
 export function OsModeToggle({ variant = 'icon', className }: { variant?: 'icon' | 'link'; className?: string }) {
   const { enabled, setEnabled } = useOsMode();
+  if (!OS_MODE_AVAILABLE) return null;
   const label = enabled ? 'Exit desktop mode' : 'Desktop mode';
 
   if (variant === 'link') {

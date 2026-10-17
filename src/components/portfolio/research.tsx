@@ -53,7 +53,7 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
                 {isActive && (
                   <m.span
                     layoutId="lab-filter"
-                    className="absolute inset-0 rounded-full bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_14px_-4px_hsl(var(--primary)/0.6)]"
+                    className="absolute inset-0 rounded-full bg-primary"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   />
                 )}
@@ -70,9 +70,9 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
         {visible.map((project) => {
           const status = statusChip[project.status];
           return (
-            <div key={project.title} id={anchorId(project.title)} className="glass glass-interactive p-5 flex flex-col scroll-mt-28">
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--sys-purple)/0.14)] text-[hsl(var(--sys-purple))]">
+            <div key={project.title} id={anchorId(project.title)} className="cs-reveal glass glass-interactive p-5 md:p-6 flex flex-col scroll-mt-28">
+              <div className="flex items-center justify-between gap-3 mb-4 max-sm:mb-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--sys-purple)/0.14)] text-[hsl(var(--sys-purple))] max-sm:hidden">
                   <FlaskConical className="h-[1.1rem] w-[1.1rem]" />
                 </span>
                 <span className={status.className}>{status.label}</span>
@@ -80,10 +80,10 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
               <h3 className="text-[17px] font-semibold text-foreground mb-1.5 leading-snug">
                 {project.title}
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">
+              <p className="text-[15px] text-muted-foreground leading-relaxed mb-4 flex-1 line-clamp-3 sm:line-clamp-none">
                 {project.description}
               </p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="chips-few flex flex-wrap gap-1.5">
                 {project.tech.map((t) => (
                   <span key={t} className="chip">{t}</span>
                 ))}

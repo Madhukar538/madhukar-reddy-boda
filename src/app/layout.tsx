@@ -14,6 +14,7 @@ import { MotionProvider } from '@/components/motion-provider';
 import { QuickSwitcher } from '@/components/vault/quick-switcher';
 import { HoverPreview } from '@/components/vault/hover-preview';
 import { siteUrl } from '@/lib/blog';
+import { chunkReloadScript } from '@/lib/chunk-reload';
 import { getContent } from '@/lib/content';
 import { TrackingBeacon } from '@/components/tracking-beacon';
 import { GenieLauncher } from '@/components/genie/genie-launcher';
@@ -86,6 +87,7 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: accentScript }} />
+        <script dangerouslySetInnerHTML={{ __html: chunkReloadScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       </head>
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
