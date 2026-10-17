@@ -11,15 +11,13 @@ import { useDesignStyle } from '@/lib/design-style';
  * element is under the cursor.
  */
 export function LiquidWallpaper() {
-  // The soft look has a solid surface: the CSS hides the blobs and nothing runs.
-  // Midnight keeps the CSS blobs and the pointer highlight; only Glass adds the
+  // Both looks use the CSS blobs and the pointer highlight; only Glass adds the
   // WebGL fluid.
   const [style] = useDesignStyle();
   const isGlass = style === 'glass';
-  const hasGlassMaterial = style !== 'soft';
 
   useEffect(() => {
-    if (!hasGlassMaterial || !window.matchMedia('(hover: hover)').matches) return;
+    if (!window.matchMedia('(hover: hover)').matches) return;
 
     let frame = 0;
     const onMove = (e: PointerEvent) => {
@@ -38,7 +36,7 @@ export function LiquidWallpaper() {
       cancelAnimationFrame(frame);
       document.removeEventListener('pointermove', onMove);
     };
-  }, [hasGlassMaterial]);
+  }, []);
 
   return (
     <div className="liquid-wallpaper" aria-hidden="true">

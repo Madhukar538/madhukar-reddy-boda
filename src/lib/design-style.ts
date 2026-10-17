@@ -3,21 +3,21 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * The site's look: midnight (dark, the default), soft (neumorphism) or glass
- * (the original Liquid Glass). The choice is stored per browser and applied to
- * <html> as data-style="soft" | "glass" before first paint (see the inline
- * script in app/layout). No attribute means midnight, so the default needs no
- * JavaScript.
+ * The site's look: midnight (dark, the default) or glass (the original Liquid
+ * Glass). The choice is stored per browser and applied to <html> as
+ * data-style="glass" before first paint (see the inline script in app/layout).
+ * No attribute means midnight, so the default needs no JavaScript. A stored
+ * "soft" (a look that has been removed) falls back to midnight.
  */
 
-export type DesignStyle = 'midnight' | 'soft' | 'glass';
+export type DesignStyle = 'midnight' | 'glass';
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 
 const read = (): DesignStyle => {
   if (typeof document === 'undefined') return 'midnight';
   const style = document.documentElement.dataset.style;
-  return style === 'glass' || style === 'soft' ? style : 'midnight';
+  return style === 'glass' ? 'glass' : 'midnight';
 };
 
 export function applyDesignStyle(style: DesignStyle) {

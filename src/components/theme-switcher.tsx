@@ -8,7 +8,6 @@ import { useDesignStyle, type DesignStyle } from '@/lib/design-style';
 
 const LOOKS: { id: DesignStyle; label: string; hint: string }[] = [
   { id: 'midnight', label: 'Midnight', hint: 'Dark' },
-  { id: 'soft', label: 'Soft', hint: 'Neumorphism' },
   { id: 'glass', label: 'Glass', hint: 'Liquid glass' },
 ];
 
@@ -96,11 +95,11 @@ export function ThemeSwitcher() {
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-              className="glass glass-strong absolute right-0 bottom-full mb-3 lg:bottom-auto lg:top-full lg:mt-3 z-50 w-64 p-2 origin-bottom-right lg:origin-top-right"
+              className="glass glass-strong absolute right-0 bottom-full mb-3 lg:bottom-auto lg:top-full lg:mt-3 z-50 w-56 p-2 origin-bottom-right lg:origin-top-right"
               style={{ ['--glass-radius' as string]: '1.25rem' }}
             >
               <p className="px-2.5 pt-1 pb-2 text-[11px] font-semibold text-muted-foreground">Look</p>
-              <div role="radiogroup" aria-label="Look" className="mb-2 grid grid-cols-3 gap-1.5 px-1">
+              <div role="radiogroup" aria-label="Look" className="mb-2 grid grid-cols-2 gap-1.5 px-1">
                 {LOOKS.map((option) => {
                   const isSelected = look === option.id;
                   return (
@@ -122,8 +121,6 @@ export function ThemeSwitcher() {
                           'h-6 w-10 rounded-lg',
                           option.id === 'midnight'
                             ? 'bg-[#0b1220] ring-1 ring-[#22d3ee]/50'
-                            : option.id === 'soft'
-                            ? 'bg-[#dadee7] shadow-[3px_3px_6px_rgba(120,130,150,0.55),-3px_-3px_6px_rgba(255,255,255,0.9)]'
                             : 'bg-gradient-to-br from-sky-300/70 via-fuchsia-300/60 to-amber-200/70 ring-1 ring-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]'
                         )}
                       />
