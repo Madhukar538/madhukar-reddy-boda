@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
+import { MidnightDark } from '@/components/midnight-dark';
 import { Navbar } from '@/components/portfolio/navbar';
 import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
@@ -36,9 +37,9 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    // The soft look's surface colours (globals.css --soft-bg), so the browser bar matches the page.
-    { media: '(prefers-color-scheme: light)', color: '#dadee7' },
-    { media: '(prefers-color-scheme: dark)', color: '#212329' },
+    // Midnight's page colour (the default look is always dark), so the browser bar matches.
+    { media: '(prefers-color-scheme: light)', color: '#070a12' },
+    { media: '(prefers-color-scheme: dark)', color: '#070a12' },
   ],
 };
 
@@ -47,8 +48,11 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-int
 // Code blocks only, so it isn't preloaded on every page.
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
-// Applies the saved accent tint and look (soft is the default; "glass" is opt-in) before first paint, so neither flashes.
-const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent');if(a&&a!=='blue')d.setAttribute('data-accent',a);if(localStorage.getItem('portfolio-style')==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
+// Applies the saved accent tint and look before first paint, so neither flashes.
+// Midnight (no data-style) is the default and is always dark.
+const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent'),s=localStorage.getItem('portfolio-style');if(a&&a!=='blue')d.setAttribute('data-accent',a);if(s==='glass'||s==='soft')d.setAttribute('data-style',s)}catch(e){}`;
+// Runs after next-themes' own script, which may have set a light theme.
+const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
 
 export default async function RootLayout({
   children,
@@ -68,6 +72,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <script dangerouslySetInnerHTML={{ __html: midnightDarkScript }} />
+          <MidnightDark />
           <MotionProvider>
           <OsModeProvider>
             <LiquidWallpaper />
