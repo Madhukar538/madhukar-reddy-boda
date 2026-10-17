@@ -53,7 +53,7 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
               </span>
             ))}
           </div>
-          <span className={featured ? 'tinted-button !py-1.5 !text-sm' : 'flex items-center gap-1.5 text-sm font-semibold text-primary'}>
+          <span className={featured ? 'tinted-button !py-1.5 !text-sm ml-auto' : 'ml-auto flex items-center gap-1.5 text-sm font-semibold text-primary'}>
             Read
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </span>

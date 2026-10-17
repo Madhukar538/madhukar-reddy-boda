@@ -19,6 +19,8 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
   const [minutesLeft, setMinutesLeft] = useState(Math.max(1, Math.round(words / WORDS_PER_MINUTE)));
   const [active, setActive] = useState<string | null>(toc[0]?.id ?? null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  // The mobile contents pill appears once the reader is into the article, clear of the page header.
+  const [pastHeader, setPastHeader] = useState(false);
 
   // Progress through the article body, and the section being read: the last
   // heading above 30% of the viewport. Computed on scroll so long jumps
@@ -33,6 +35,7 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
       const line = window.innerHeight * 0.3;
       const passed = headings.filter((h) => h.getBoundingClientRect().top < line);
       setActive((passed.at(-1) ?? headings[0])?.id ?? null);
+      setPastHeader(body.getBoundingClientRect().top < window.innerHeight * 0.5);
 
       // Share of the body that has scrolled into view: done when its end is on screen.
       const rect = body.getBoundingClientRect();
@@ -137,7 +140,7 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
     <>
       <div
         ref={barRef}
-        className="fixed top-0 left-0 right-0 z-[300] h-[3px] origin-left bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
+        className="fixed top-0 left-0 right-0 z-[300] h-[3px] origin-left bg-primary"
         style={{ transform: 'scaleX(0)' }}
       />
 
@@ -155,7 +158,7 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
       {/* Obsidian-style status bar (desktop). */}
       <div
         aria-hidden
-        className="vault-statusbar fixed bottom-0 right-4 z-[90] hidden items-center gap-4 rounded-t-lg px-3 py-1 text-[11px] tabular-nums text-muted-foreground lg:flex"
+        className="vault-statusbar fixed bottom-0 right-28 z-[90] hidden items-center gap-4 rounded-t-lg px-3 py-1 text-[11px] tabular-nums text-muted-foreground lg:flex"
       >
         <a href="#linked-mentions" tabIndex={-1} className="hover:text-foreground">
           {backlinks} {backlinks === 1 ? 'backlink' : 'backlinks'}
@@ -164,13 +167,18 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
         <span>{timeLeft}</span>
       </div>
 
-      {/* Mobile: floating button + sheet */}
+      {/* Mobile: a pill at the top (the bottom belongs to the tab bar and the genie) + a sheet */}
       {toc.length > 1 && (
         <div className="lg:hidden">
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="glass glass-strong glass-pill fixed bottom-24 left-4 z-[90] flex items-center gap-2 px-4 py-2 text-sm font-medium shadow-lg"
+            aria-hidden={!pastHeader}
+            tabIndex={pastHeader ? undefined : -1}
+            className={cn(
+              'glass glass-strong glass-pill reader-pill fixed top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-[90] flex items-center gap-2 whitespace-nowrap px-4 py-2 text-sm font-medium shadow-lg transition-[opacity,transform] duration-300',
+              pastHeader ? '-translate-x-1/2 opacity-100' : '-translate-x-1/2 -translate-y-3 opacity-0 pointer-events-none'
+            )}
           >
             <List className="h-4 w-4 text-primary" />
             Contents

@@ -26,6 +26,7 @@ import { RollingText } from '@/components/vault/rolling-text';
 import { useOsMode } from '@/components/os/os-mode';
 import type { SiteContent } from '@/lib/content';
 import { stack } from '@/data/stack';
+import { HeroIdentity } from '@/components/portfolio/hero-identity';
 
 
 const socialIcons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
@@ -104,6 +105,8 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
               <span className="block text-muted-foreground">{profile.title} · {profile.location}</span>
             </span>
           </div>
+
+          <HeroIdentity className="text-center lg:text-left [&>p:last-child]:justify-center lg:[&>p:last-child]:justify-start" />
 
           <div className="flex justify-center lg:justify-start">
             <Link
