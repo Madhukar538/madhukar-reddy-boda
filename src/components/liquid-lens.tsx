@@ -51,7 +51,7 @@ function displacementMap(w: number, h: number, r: number, bezel: number) {
 
 type Size = { w: number; h: number; r: number };
 
-/** Only the glass look refracts; the soft look has nothing behind its surfaces to bend. */
+/** Only the Glass look refracts; Midnight keeps its glass flat and cheap. */
 export function LiquidLens({ strength = 48 }: { strength?: number }) {
   const [style] = useDesignStyle();
   return style === 'glass' ? <Lens strength={strength} /> : null;
