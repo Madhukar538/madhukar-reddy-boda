@@ -34,11 +34,11 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
           </div>
           <nav aria-label="Footer" className="grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
             {pages.map((p) => (
-              <Link key={p.href} href={p.href} className="text-foreground/70 hover:text-primary transition-colors">
+              <Link key={p.href} href={p.href} className="tap text-foreground/70 hover:text-primary transition-colors">
                 {p.label}
               </Link>
             ))}
-            <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="text-foreground/70 hover:text-primary transition-colors">
+            <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="tap text-foreground/70 hover:text-primary transition-colors">
               Résumé (PDF)
             </a>
             <OsModeToggle variant="link" className="text-left text-foreground/70 hover:text-primary transition-colors" />

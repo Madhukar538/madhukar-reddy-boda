@@ -9,7 +9,7 @@ import { caseStudyFor } from '@/data/case-studies';
 
 function WriteUp({ slug }: { slug: string }) {
   return (
-    <Link href={`/blog/${slug}`} className="group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary">
+    <Link href={`/blog/${slug}`} className="tap group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary">
       Read the write-up
       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
     </Link>
@@ -18,7 +18,7 @@ function WriteUp({ slug }: { slug: string }) {
 
 function CaseStudyLink({ slug }: { slug: string }) {
   return (
-    <Link href={`/projects/${slug}`} className="group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary">
+    <Link href={`/projects/${slug}`} className="tap group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary">
       Read the case study
       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
     </Link>
@@ -129,7 +129,7 @@ export function Projects({ keyProjects, clientProjects }: { keyProjects: Project
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary"
+                  className="tap inline-flex items-center gap-1 text-sm font-semibold text-primary"
                 >
                   Visit site
                   <ArrowUpRight className="h-3.5 w-3.5" />

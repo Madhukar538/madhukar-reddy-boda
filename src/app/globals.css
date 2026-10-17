@@ -1137,3 +1137,21 @@ main h1 { view-transition-name: page-title; }
   /* The contents pill floats over body text, so it is nearly opaque. */
   .glass.reader-pill { --glass-alpha-strong: 0.94; }
 }
+
+/* ============================================================
+   PHONES — touch and type minimums
+   ============================================================ */
+/* Small text links get a 40px+ touch area without changing the layout. */
+@media (pointer: coarse) {
+  .tap { position: relative; }
+  .tap::after { content: ''; position: absolute; inset: -10px -6px; }
+}
+/* Tags a step larger on small screens. */
+@media (max-width: 640px) {
+  .chip { font-size: 0.78rem; }
+}
+/* The accent tile in Midnight: the same deep blue as the genie, never a pale fill
+   (a light accent like Graphite turned it into a glaring grey block). */
+html:not([data-style]) .glass.bento-accent { background: hsl(222 72% 40%); color: #fff; }
+html:not([data-style]) .glass.bento-accent * { color: #fff; }
+html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { background: rgb(255 255 255 / 0.14); }

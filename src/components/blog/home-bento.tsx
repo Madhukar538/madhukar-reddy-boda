@@ -171,12 +171,12 @@ export function HomeBento({ content }: { content: BentoContent }) {
         <div className="glass flex flex-col gap-1 p-2.5 md:p-4">
           <p className={cn(label, 'px-2 pt-1 pb-2')}>Explore</p>
           <Link href="/graph" className="group flex items-center gap-3 rounded-2xl px-2 py-2.5 text-sm sm:text-[15px] font-medium leading-tight text-foreground hover:text-primary transition-colors">
-            <Network aria-hidden className="h-5 w-5 text-primary" />
+            <Network aria-hidden className="h-5 w-5 shrink-0 text-primary" />
             Knowledge graph
             <ArrowRight aria-hidden className="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
           </Link>
           <Link href="/ai" className="group flex items-center gap-3 rounded-2xl px-2 py-2.5 text-sm sm:text-[15px] font-medium leading-tight text-foreground hover:text-primary transition-colors">
-            <Plug aria-hidden className="h-5 w-5 text-primary" />
+            <Plug aria-hidden className="h-5 w-5 shrink-0 text-primary" />
             Connect your AI
             <ArrowRight aria-hidden className="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
           </Link>

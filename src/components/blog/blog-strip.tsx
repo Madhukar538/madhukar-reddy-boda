@@ -15,7 +15,7 @@ export function BlogStrip({ posts, className }: { posts: BlogPost[]; className?:
             Drag through the writing
           </h2>
         </div>
-        <Link href="/" className="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+        <Link href="/" className="tap flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
           All posts <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

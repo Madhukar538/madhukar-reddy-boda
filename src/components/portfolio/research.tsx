@@ -91,7 +91,7 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
               {project.post && (
                 <Link
                   href={`/blog/${project.post}`}
-                  className="group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary"
+                  className="tap group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary"
                 >
                   Read the write-up
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

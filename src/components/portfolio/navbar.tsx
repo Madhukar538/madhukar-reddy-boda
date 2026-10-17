@@ -150,7 +150,7 @@ export function Navbar() {
                   />
                 )}
                 <Icon className="relative h-[1.15rem] w-[1.15rem]" strokeWidth={isActive ? 2.4 : 2} />
-                <span className="relative text-[10px] font-medium mt-0.5">{link.label}</span>
+                <span className="relative text-[11px] font-medium mt-0.5">{link.label}</span>
               </Link>
             );
           })}

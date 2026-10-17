@@ -115,7 +115,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       {/* Reading progress, driven by the page scroll (CSS only). */}
       <div aria-hidden className="cs-progress fixed inset-x-0 top-0 z-50 h-[3px] origin-left bg-primary" />
 
-      <Link href="/projects" className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+      <Link href="/projects" className="tap mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-4 w-4" /> All projects
       </Link>
 
