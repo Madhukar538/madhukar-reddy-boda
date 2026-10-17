@@ -35,7 +35,7 @@ export default async function Home() {
           </Link>
           <h1 className="text-[2.4rem] leading-[1.05] sm:text-6xl font-bold tracking-tight text-foreground">
             Notes from building{' '}
-            <RollingText words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
+            <RollingText className="rolling-line" words={['fast, observable', 'self-hosted AI', 'load-tested', 'production-grade']} />{' '}
             systems.
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">

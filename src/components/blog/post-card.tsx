@@ -16,7 +16,7 @@ export type CardPost = {
 export function PostCard({ post, featured = false, className }: { post: CardPost; featured?: boolean; className?: string }) {
   return (
     <Link href={`/blog/${post.slug}`} className={cn('group block h-full', className)}>
-      <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-9' : 'p-5 md:p-6')}>
+      <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-10' : 'p-6 md:p-7')}>
         {featured && (
           <div aria-hidden className="card-glow pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl !z-0" />
         )}
@@ -37,12 +37,12 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
         <h3
           className={cn(
             'font-bold tracking-tight text-foreground leading-snug group-hover:text-primary transition-colors',
-            featured ? 'text-2xl md:text-4xl mb-3' : 'text-lg md:text-xl mb-2'
+            featured ? 'text-2xl md:text-[2.5rem] md:leading-[1.1] mb-4' : 'text-lg md:text-[1.35rem] mb-2.5'
           )}
         >
           {post.title}
         </h3>
-        <p className={cn('text-muted-foreground leading-relaxed', featured ? 'text-[15px] md:text-base max-w-3xl mb-6' : 'text-sm mb-5 line-clamp-3')}>
+        <p className={cn('text-muted-foreground leading-relaxed', featured ? 'text-[15px] md:text-base max-w-3xl mb-7' : 'text-[15px] mb-6 line-clamp-3')}>
           {post.excerpt}
         </p>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-3">

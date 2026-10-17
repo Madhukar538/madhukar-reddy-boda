@@ -1,3 +1,4 @@
+import type React from 'react';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
@@ -36,8 +37,8 @@ function FeaturedCard({ project }: { project: ProjectCard }) {
 
 function CompactCard({ project }: { project: ProjectCard }) {
   return (
-    <article id={anchorId(project.title)} className="glass glass-interactive flex flex-col p-5 scroll-mt-28">
-      <h3 className="text-[15px] font-semibold text-foreground mb-1 leading-snug">{project.title}</h3>
+    <article id={anchorId(project.title)} className="glass glass-interactive flex flex-col p-6 scroll-mt-28">
+      <h3 className="text-base font-semibold text-foreground mb-1.5 leading-snug">{project.title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-3">{project.description}</p>
       <div className="flex flex-wrap gap-1.5">
         {project.tech.slice(0, 3).map((tech) => (
@@ -49,28 +50,38 @@ function CompactCard({ project }: { project: ProjectCard }) {
   );
 }
 
+/** A quiet label with a hairline rule that groups a run of cards. */
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-5 flex items-center gap-4">
+      <h3 className="shrink-0 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{children}</h3>
+      <span aria-hidden className="h-px flex-1 bg-foreground/10" />
+    </div>
+  );
+}
+
 export function Projects({ keyProjects, clientProjects }: { keyProjects: ProjectCard[]; clientProjects: ClientProject[] }) {
   const featured = keyProjects.filter((p) => p.featured);
   const rest = keyProjects.filter((p) => !p.featured);
 
   return (
     <Section id="projects" title="Key Projects" comment="Systems and e-commerce builds">
-      <p className="mb-3 text-sm font-semibold text-foreground/70">Featured</p>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 mb-10">
+      <GroupLabel>Featured</GroupLabel>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6 mb-12">
         {featured.map((project) => (
           <FeaturedCard key={project.title} project={project} />
         ))}
       </div>
 
-      <p className="mb-3 text-sm font-semibold text-foreground/70">More systems built from scratch</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
+      <GroupLabel>More systems built from scratch</GroupLabel>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-14">
         {rest.map((project) => (
           <CompactCard key={project.title} project={project} />
         ))}
       </div>
 
-      <p className="mb-3 text-sm font-semibold text-foreground/70">E-commerce portals &amp; integrations</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+      <GroupLabel>E-commerce portals &amp; integrations</GroupLabel>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
         {clientProjects.map((project) => (
           <article key={project.id} id={anchorId(project.title)} className="glass p-5 md:p-6 flex flex-col scroll-mt-28">
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
