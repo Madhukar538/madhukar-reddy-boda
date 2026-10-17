@@ -1230,8 +1230,8 @@ html:not([data-style]) .portrait-alt { display: none; }
   -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
   mask-image: linear-gradient(to top, transparent 0%, #000 40%);
 }
-/* A faint cool rim separates the black hair and shirt from the navy page. */
-.portrait-frame img { filter: drop-shadow(0 0 28px hsl(var(--primary) / 0.22)); }
+/* A little dimmer, so the face sits in the dark page rather than glowing on it. No rim. */
+.portrait-frame img { filter: brightness(0.86); }
 /* Phones: the headline starts where the photo fades out. */
 html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
 @media (min-width: 1024px) {
