@@ -52,7 +52,8 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
   const [lead, ...rest] = results;
 
   return (
-    <section aria-label="Posts" className="space-y-6">
+    <section aria-labelledby="posts-heading" className="space-y-6">
+      <h2 id="posts-heading" className="sr-only">Posts</h2>
       <div className="flex flex-col md:flex-row md:items-center gap-3">
         <label className="glass glass-pill flex flex-1 items-center gap-2.5 px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary">
           <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -121,14 +122,14 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
       ) : unfiltered ? (
         <div className="space-y-4">
           <PostCard post={lead} featured />
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-5 md:gap-6 md:grid-cols-2">
             {rest.map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-5 md:gap-6 md:grid-cols-2">
           {results.map((p) => (
             <PostCard key={p.slug} post={p} />
           ))}

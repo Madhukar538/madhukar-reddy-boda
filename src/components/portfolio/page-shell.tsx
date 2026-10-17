@@ -14,10 +14,10 @@ interface PageShellProps {
 /** Shared frame for every inner page: big editorial header, then content. */
 export function PageShell({ eyebrow, title, description, actions, children, className }: PageShellProps) {
   return (
-    <div className={cn('container mx-auto max-w-5xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16', className)}>
-      <header className="mb-8 md:mb-12 max-w-3xl space-y-3">
+    <div className={cn('container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-20', className)}>
+      <header className="mb-10 md:mb-16 max-w-3xl space-y-4">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.05]">
+        <h1 className="text-[2.6rem] sm:text-6xl lg:text-7xl font-bold tracking-[-0.035em] text-foreground leading-[1.02]">
           {title}
         </h1>
         {description && (

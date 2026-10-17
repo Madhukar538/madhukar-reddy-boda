@@ -25,11 +25,11 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
   const currentYear = new Date().getFullYear();
   return (
     // Bottom padding on mobile keeps the footer clear of the floating tab bar.
-    <footer className="container mx-auto max-w-6xl px-4 md:px-6 pb-28 lg:pb-8">
-      <div className="glass p-6 md:p-8">
+    <footer className="container mx-auto max-w-6xl px-4 md:px-6 pb-28 lg:pb-10">
+      <div className="border-t border-foreground/10 pt-8 md:pt-10">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-1">
-            <p className="text-lg font-bold text-foreground">Boda Madhukar Reddy</p>
+            <p className="text-xl font-bold tracking-tight text-foreground">Boda Madhukar Reddy</p>
             <p className="text-sm text-muted-foreground">Software Architect · Hyderabad, India</p>
           </div>
           <nav aria-label="Footer" className="grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
@@ -44,7 +44,7 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
             <OsModeToggle variant="link" className="text-left text-foreground/70 hover:text-primary transition-colors" />
           </nav>
         </div>
-        <div className="mt-6 pt-5 border-t border-foreground/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 pt-6 border-t border-foreground/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">© {currentYear} Boda Madhukar Reddy. All rights reserved.</p>
           <div className="flex items-center gap-1">
             {socials.map(({ href, icon: Icon, label }) => (

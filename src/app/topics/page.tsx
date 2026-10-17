@@ -24,7 +24,7 @@ export default async function TopicsPage() {
           <FileExplorer content={content} />
         </aside>
         <div className="min-w-0">
-          <section aria-label="Areas" className="grid gap-4 sm:grid-cols-2">
+          <section aria-label="Areas" className="grid gap-5 md:gap-6 sm:grid-cols-2">
             {categories.map((t) => (
               <Link key={t.slug} href={`/topics/${t.slug}`} className="group glass glass-interactive p-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

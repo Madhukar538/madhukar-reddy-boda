@@ -125,7 +125,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
 
           <h1 className="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
             Architecting{' '}
-            <RollingText words={['fast, observable', 'high-throughput', 'self-hosted AI', 'load-tested']} />{' '}
+            <RollingText className="rolling-line mx-auto lg:mx-0" words={['fast, observable', 'high-throughput', 'self-hosted AI', 'load-tested']} />{' '}
             systems.
           </h1>
 
@@ -187,7 +187,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
       </section>
 
       {/* ── Bento grid ── */}
-      <section aria-label="Highlights" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <section aria-label="Highlights" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
         <Tile href="/experience" label="Experience" className="sm:col-span-2">
           <TileIcon className="bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
             <Briefcase className="h-5 w-5" />

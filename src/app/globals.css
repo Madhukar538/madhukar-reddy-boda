@@ -798,6 +798,8 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
 }
 .rolling-sizer,
 .rolling-track { grid-area: 1 / 1; }
+/* On its own line, so the reserved width of the longest word never leaves a gap mid-sentence. */
+.rolling.rolling-line { display: grid; width: fit-content; }
 .rolling-sizer { visibility: hidden; white-space: nowrap; }
 .rolling-track {
   display: flex;
@@ -998,15 +1000,14 @@ html:not([data-style='glass']) .glass-interactive:active {
   box-shadow: var(--soft-pressed);
 }
 
-/* Chips: tiny raised pebbles; coloured chips keep their tint. */
-html:not([data-style='glass']) .chip {
-  background: hsl(var(--soft-bg));
-  box-shadow: var(--soft-raised-xs);
+/* Chips: flat labels with a hairline edge. Only things you press are raised,
+   so cards keep a clear depth and rows of tags don't turn into visual noise. */
+html:not([data-style='glass']) :is(.chip, .chip-accent, .chip-green, .chip-orange, .chip-teal, .chip-purple) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.13);
 }
-html:not([data-style='glass']) .chip:hover { box-shadow: var(--soft-pressed-sm); }
-html:not([data-style='glass']) :is(.chip-accent, .chip-green, .chip-orange, .chip-teal, .chip-purple) {
-  box-shadow: var(--soft-raised-xs);
-}
+html:not([data-style='glass']) :is(a, button) > .chip:hover,
+html:not([data-style='glass']) a.chip:hover { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5); }
 
 /* The primary button keeps its colour (it has to read as the action) on a soft base. */
 html:not([data-style='glass']) .tinted-button {
@@ -1077,16 +1078,16 @@ html:not([data-style='glass']) .nav-active-pill {
   background: transparent;
   box-shadow: var(--soft-pressed-sm);
 }
-html:not([data-style='glass']) .chip-accent { background: hsl(var(--soft-bg)); }
+html:not([data-style='glass']) .chip-accent { box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45); }
 
 /* Post content on the soft surface. Text sits on the plain surface colour,
    where every accent passes 4.5:1, rather than on tinted or darkened patches. */
 html:not([data-style='glass']) .vault-tag {
-  background: hsl(var(--soft-bg));
-  box-shadow: var(--soft-raised-xs);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.35);
   transition: box-shadow 0.15s;
 }
-html:not([data-style='glass']) .vault-tag:hover { background: hsl(var(--soft-bg)); box-shadow: var(--soft-pressed-sm); }
+html:not([data-style='glass']) .vault-tag:hover { background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.7); }
 html:not([data-style='glass']) .article-body :not(pre) > code {
   background: transparent;
   box-shadow: var(--soft-pressed-sm);
