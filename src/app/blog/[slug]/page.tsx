@@ -68,7 +68,13 @@ export default async function BlogPost({ params }: Props) {
     articleSection: post.category,
     url: `${siteUrl()}/blog/${post.slug}`,
     image: `${siteUrl()}/blog/${post.slug}/opengraph-image`,
-    author: { '@type': 'Person', name: 'Boda Madhukar Reddy', url: `${siteUrl()}/about` },
+    author: { '@type': 'Person', name: 'Boda Madhukar Reddy', url: `${siteUrl()}/about`, image: `${siteUrl()}/icons/icon-512.png` },
+    publisher: {
+      '@type': 'Person',
+      name: 'Boda Madhukar Reddy',
+      url: siteUrl(),
+      image: { '@type': 'ImageObject', url: `${siteUrl()}/icons/icon-512.png`, width: 512, height: 512 },
+    },
   };
 
   return (

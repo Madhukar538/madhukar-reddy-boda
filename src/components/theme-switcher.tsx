@@ -29,6 +29,8 @@ const accents: AccentOption[] = [
 ];
 
 const STORAGE_KEY = 'portfolio-accent';
+// Graphite until the visitor picks another accent (applied before paint in app/layout).
+const DEFAULT_ACCENT = 'graphite';
 
 function applyAccent(id: string) {
   if (id === 'blue') {
@@ -39,16 +41,16 @@ function applyAccent(id: string) {
 }
 
 export function ThemeSwitcher() {
-  const [current, setCurrent] = useState('blue');
+  const [current, setCurrent] = useState(DEFAULT_ACCENT);
   const [open, setOpen] = useState(false);
   const [look, setLook] = useDesignStyle();
 
   useEffect(() => {
-    let saved = 'blue';
+    let saved = DEFAULT_ACCENT;
     try {
-      saved = localStorage.getItem(STORAGE_KEY) || 'blue';
+      saved = localStorage.getItem(STORAGE_KEY) || DEFAULT_ACCENT;
     } catch {}
-    if (!accents.some((a) => a.id === saved)) saved = 'blue';
+    if (!accents.some((a) => a.id === saved)) saved = DEFAULT_ACCENT;
     setCurrent(saved);
     applyAccent(saved);
   }, []);

@@ -1162,8 +1162,8 @@ html:not([data-style='glass']) .glass.bento-accent {
 /* ============================================================
    MIDNIGHT — the default look (<html> without data-style)
    The Liquid Glass material, always dark: deep navy, cool drifting
-   light behind frosted panels, one cyan accent, and the portrait
-   backdrop on Home and About. The theme is forced to dark while it
+   light behind frosted panels, one blue accent, and the portrait
+   backdrop on Home and About; a midnight-blue accent. The theme is forced to dark while it
    is active (components/midnight-dark.tsx and the pre-paint script).
    ============================================================ */
 html:not([data-style]) {
@@ -1180,7 +1180,8 @@ html:not([data-style]) {
   --muted-foreground: 218 18% 72%;
   --border: 222 26% 20%;
   --input: 222 26% 20%;
-  --primary: 192 95% 55%;
+  /* Midnight blue accent: light enough to read on navy, with dark labels on filled buttons. */
+  --primary: 214 95% 68%;
   --primary-foreground: 224 50% 6%;
   --accent: var(--primary);
   --accent-foreground: 224 50% 6%;
@@ -1196,8 +1197,8 @@ html:not([data-style]) {
   --glass-specular: rgb(200 235 255 / 0.22);
   --glass-inner-glow: rgb(200 235 255 / 0.05);
 
-  /* Cool light drifting behind the glass: cyan, indigo, violet, deep teal. */
-  --blob-a: 192 95% 45%;
+  /* Cool light drifting behind the glass: blue, indigo, violet, deep teal. */
+  --blob-a: 216 90% 50%;
   --blob-b: 232 80% 50%;
   --blob-c: 262 70% 50%;
   --blob-d: 200 90% 35%;
@@ -1246,4 +1247,42 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     mask-composite: intersect;
   }
   html:not([data-style]) .portrait-offset { padding-top: 0; }
+}
+
+/* ============================================================
+   CASE STUDIES (app/projects/[slug]) — scroll-driven, CSS only.
+   Browsers without scroll timelines, and reduced-motion visitors,
+   simply see everything in place.
+   ============================================================ */
+.cs-progress { transform: scaleX(0); }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cs-progress {
+      animation: cs-grow linear both;
+      animation-timeline: scroll(root);
+    }
+    .cs-reveal {
+      animation: cs-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+    .cs-bar {
+      transform-origin: left center;
+      animation: cs-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .cs-progress { display: none; }
+}
+/* Slide only, no fade: text keeps full contrast at every point of the scroll. */
+@keyframes cs-reveal {
+  from { transform: translateY(36px) scale(0.98); }
+  to { transform: none; }
+}
+@keyframes cs-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }

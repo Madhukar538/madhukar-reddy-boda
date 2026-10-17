@@ -34,6 +34,13 @@ export async function GET() {
     <atom:link href="${base}/rss.xml" rel="self" type="application/rss+xml" />
     <description>.NET performance, self-hosted AI (RAG, MCP, hybrid search), load testing and homelab infrastructure.</description>
     <language>en</language>
+    <image>
+      <url>${base}/icons/icon-144.png</url>
+      <title>Boda Madhukar Reddy — Engineering blog</title>
+      <link>${base}</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
     <lastBuildDate>${new Date(isoDate(posts[0])).toUTCString()}</lastBuildDate>
 ${items}
   </channel>
