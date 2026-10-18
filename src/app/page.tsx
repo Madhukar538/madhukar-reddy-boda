@@ -10,6 +10,7 @@ import { getContent } from '@/lib/content';
 import { RollingText } from '@/components/vault/rolling-text';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
+import { NowCard } from '@/components/portfolio/now-card';
 
 export const metadata: Metadata = {
   // og:url for link previews (WhatsApp, LinkedIn); page-level openGraph replaces the layout's, so it is repeated.
@@ -26,12 +27,14 @@ export default async function Home() {
 
   return (
     <>
+    {/* Dim dot grid filling the empty space left of the hero on wide screens. */}
+    <div aria-hidden className="hero-dots pointer-events-none absolute inset-x-0 top-0 -z-10" />
     <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
       {/* Intro. In Midnight the portrait sits to the right (or above, on phones). */}
-      <header className="portrait-offset mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem]">
+      <header className="portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem]">
         <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-3">
           <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" priority />
           <span className="text-sm leading-tight">
@@ -39,6 +42,7 @@ export default async function Home() {
             <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
           </span>
         </Link>
+        {posts[0] && <NowCard latest={{ slug: posts[0].slug, title: posts[0].title }} />}
         <HeroIdentity />
         <h1 className="text-[clamp(1.85rem,10vw,2.4rem)] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
           Notes from building{' '}

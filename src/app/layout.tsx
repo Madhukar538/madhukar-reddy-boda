@@ -9,6 +9,7 @@ import { Navbar } from '@/components/portfolio/navbar';
 import { PWARegister } from '@/components/pwa-register';
 import { LiquidWallpaper } from '@/components/liquid-wallpaper';
 import { Footer } from '@/components/portfolio/footer';
+import { SocialRail } from '@/components/portfolio/social-rail';
 import { OsModeProvider } from '@/components/os/os-mode';
 import { MotionProvider } from '@/components/motion-provider';
 import { QuickSwitcher } from '@/components/vault/quick-switcher';
@@ -106,6 +107,7 @@ export default async function RootLayout({
             <PWARegister />
             <Navbar />
             <main className="relative z-0 min-h-[70dvh]">
+              <SocialRail profile={profile} socialLinks={socialLinks} />
               {children}
             </main>
             <Footer profile={profile} socialLinks={socialLinks} />
