@@ -162,3 +162,44 @@ export type AdminComment = {
   country: string;
   createdAt: string;
 };
+
+export type TicketStatus = 'open' | 'in-progress' | 'resolved' | 'closed';
+export type TicketPriority = 'P1' | 'P2' | 'P3' | 'P4';
+
+export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = { open: 'Open', 'in-progress': 'In progress', resolved: 'Resolved', closed: 'Closed' };
+
+export type TicketListItem = {
+  id: string;
+  title: string;
+  category: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  name: string;
+  noteCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TicketNote = { at: string; text: string; by: string };
+
+export type Ticket = TicketListItem & {
+  contact: string;
+  description: string;
+  urgency: string;
+  stack: string;
+  link: string;
+  page: string;
+  triageReasons: string[];
+  notes: TicketNote[];
+  resolvedAt: string | null;
+};
+
+export type TicketSummary = {
+  total: number;
+  byStatus: Record<TicketStatus, number>;
+  activeByPriority: Record<TicketPriority, number>;
+  newLast7Days: number;
+  newLast30Days: number;
+  averageResolutionHours: number | null;
+  recent: TicketListItem[];
+};

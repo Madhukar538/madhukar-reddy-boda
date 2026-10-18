@@ -1,8 +1,9 @@
 import { bugReportSchema, ticketId, triage, type BugReport, type Priority } from '@/lib/bug-triage';
 import { escapeHtml, missingTelegramVars, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
+import { saveTicket, ticketStoreConfigured } from '@/lib/tickets';
 
-// "Hire me for a bug": validates a report, triages it into a ticket and
-// sends it to Telegram.
+// "Hire me for a bug": validates a report, triages it into a ticket, stores it
+// in the API (managed under /admin/tickets) and pings Telegram.
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -53,14 +54,16 @@ function formatTicket(id: string, report: BugReport, priority: Priority, reasons
   if (report.link) lines.push(`<b>Link:</b> ${e(report.link)}`);
   if (report.page) lines.push(`<b>Filed from:</b> ${e(report.page)} (genie)`);
   lines.push(`<b>Triage:</b> ${e(reasons.join(', '))}`);
+  if (ticketStoreConfigured()) lines.push(`<b>Manage:</b> https://dhucar.in/admin/tickets/${id}`);
   // Telegram caps messages at 4096 characters.
   const text = lines.join('\n');
   return text.length > 4000 ? `${text.slice(0, 3990)}…` : text;
 }
 
-/** Setup check: open /api/bug-report to see whether Telegram is configured (names only, no values). */
+/** Setup check: open /api/bug-report to see whether Telegram and ticket storage are configured (names only, no values). */
 export function GET() {
-  const missing = missingTelegramVars();
+  const missing: string[] = [...missingTelegramVars()];
+  if (!ticketStoreConfigured()) missing.push('API_URL', 'REVALIDATE_SECRET (32+ characters)');
   return Response.json(
     missing.length
       ? { configured: false, missing, hint: 'Add these in the server environment, then redeploy or restart the app.' }
@@ -100,18 +103,24 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Too many reports from you just now. Try again in a few minutes.' }, { status: 429 });
   }
 
-  if (!telegramConfigured()) {
+  const canStore = ticketStoreConfigured();
+  const canPing = telegramConfigured();
+  if (!canStore && !canPing) {
     return Response.json({ error: 'Bug reports are offline right now. Please email me instead.' }, { status: 503 });
   }
 
   const id = ticketId();
   const { priority, reasons } = triage(report);
-  try {
-    await sendTelegramMessage(formatTicket(id, report, priority, reasons));
-    recordReport(ip);
-  } catch (error) {
-    console.error('[bug-report]', error);
+  // Stored and pinged in parallel; the report counts as received if either works.
+  const [stored, pinged] = await Promise.allSettled([
+    canStore ? saveTicket(id, report, priority, reasons) : Promise.reject(new Error('Ticket store not configured')),
+    canPing ? sendTelegramMessage(formatTicket(id, report, priority, reasons)) : Promise.reject(new Error('Telegram not configured')),
+  ]);
+  if (stored.status === 'rejected' && canStore) console.error('[bug-report] store', stored.reason);
+  if (pinged.status === 'rejected' && canPing) console.error('[bug-report] telegram', pinged.reason);
+  if (stored.status === 'rejected' && pinged.status === 'rejected') {
     return Response.json({ error: "Couldn't deliver your report. Please try again or email me." }, { status: 502 });
   }
+  recordReport(ip);
   return Response.json({ ok: true, ticket: id, priority });
 }

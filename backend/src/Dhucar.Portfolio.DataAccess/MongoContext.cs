@@ -9,7 +9,7 @@ namespace Dhucar.Portfolio.DataAccess;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Post stats and comments collections, with their indexes
+ * Modified Reason :  Post stats, comments and tickets collections, with their indexes
  * Layer           :  DataAccess
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
@@ -68,6 +68,9 @@ public class MongoContext
     /// <summary>Reader comments.</summary>
     public IMongoCollection<CommentDocument> Comments => Database.GetCollection<CommentDocument>("comments");
 
+    /// <summary>Support tickets.</summary>
+    public IMongoCollection<TicketDocument> Tickets => Database.GetCollection<TicketDocument>("tickets");
+
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   EnsureIndexes
@@ -116,6 +119,12 @@ public class MongoContext
         await Comments.Indexes.CreateManyAsync([
             new CreateIndexModel<CommentDocument>(Builders<CommentDocument>.IndexKeys.Ascending(x => x.Slug).Ascending(x => x.Status).Ascending(x => x.CreatedAt)),
             new CreateIndexModel<CommentDocument>(Builders<CommentDocument>.IndexKeys.Ascending(x => x.Status).Descending(x => x.CreatedAt)),
+        ]);
+        await Tickets.Indexes.CreateManyAsync([
+            new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.Status).Descending(x => x.CreatedAt)),
+            new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.Priority).Ascending(x => x.Status)),
+            new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Descending(x => x.CreatedAt)),
+            new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.ResolvedAt), new CreateIndexOptions { Sparse = true }),
         ]);
     }
 }

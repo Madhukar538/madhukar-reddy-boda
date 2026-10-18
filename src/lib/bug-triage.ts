@@ -65,11 +65,14 @@ export function triage(report: BugReport): { priority: Priority; reasons: string
   return { priority, reasons };
 }
 
-/** e.g. BUG-250923-K7QX */
+/**
+ * e.g. BUG-250923-K7QX2M. Tickets are stored by this id, so the suffix is
+ * cryptographically random and long enough that two in a day never collide.
+ */
 export function ticketId(now = new Date()) {
   const date = now.toISOString().slice(2, 10).replace(/-/g, '');
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let suffix = '';
-  for (let i = 0; i < 4; i++) suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  const suffix = Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('');
   return `BUG-${date}-${suffix}`;
 }
