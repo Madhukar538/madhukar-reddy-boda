@@ -14,7 +14,7 @@ export const profile = {
   phoneHref: 'tel:+919573153479',
   github: 'https://github.com/Madhukar538',
   // Full profile URLs. Left empty, the icon is hidden rather than linking to a site's home page.
-  linkedin: '',
+  linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
     'Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
@@ -27,7 +27,6 @@ export const socialLinks = (
   [
     { network: 'GitHub', href: profile.github },
     { network: 'LinkedIn', href: profile.linkedin },
-    { network: 'Twitter', href: profile.twitter },
   ] as const
 ).filter((link) => link.href);
 

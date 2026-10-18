@@ -18,7 +18,7 @@ type Form = Omit<Profile, 'skillCategories' | 'experience' | 'updatedAt'> & {
 
 const toForm = (p: Profile): Form => ({
   name: p.name, title: p.title, company: p.company, location: p.location, email: p.email, phone: p.phone, phoneHref: p.phoneHref,
-  github: p.github, linkedin: p.linkedin, twitter: p.twitter, summary: p.summary,
+  github: p.github, linkedin: p.linkedin, twitter: '', summary: p.summary,
   skillCategories: p.skillCategories.map((c) => ({ title: c.title, color: c.color || 'green', skills: c.skills.join(', ') })),
   experience: { ...p.experience, highlights: p.experience.highlights.map((h) => ({ ...h })), groups: p.experience.groups.map((g) => ({ label: g.label, items: g.items.join('\n') })) },
   education: { ...p.education },
@@ -122,14 +122,13 @@ function ProfileEditor() {
         </div>
       </Panel>
 
-      <Panel title="Contact and links" description="Profile links must be https:// addresses. Leave LinkedIn or Twitter empty to hide them.">
+      <Panel title="Contact and links" description="Profile links must be https:// addresses. Leave LinkedIn empty to hide it.">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {text('email', 'Email', { type: 'email' })}
           {text('phone', 'Phone (as shown)')}
           {text('phoneHref', 'Phone link', { placeholder: 'tel:+91…' })}
           {text('github', 'GitHub', { type: 'url' })}
           {text('linkedin', 'LinkedIn', { type: 'url' })}
-          {text('twitter', 'Twitter / X', { type: 'url' })}
         </div>
       </Panel>
 

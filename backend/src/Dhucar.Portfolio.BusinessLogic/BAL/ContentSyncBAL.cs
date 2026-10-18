@@ -10,10 +10,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  18 Oct 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Profile sync also covers the GitHub and LinkedIn links (Twitter is no longer used)
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Compares the deployed built-in content (seed file) with the database and applies the
  *                    differences the admin chooses: new posts and projects, and updates to changed ones.
  */
@@ -157,13 +157,16 @@ public class ContentSyncBAL(
                 applied += projectsApplied;
             }
 
-            if (seed.Profile != null && wanted.Contains(Key("profile", "skills")))
+            if (seed.Profile != null && wanted.Contains(Key("profile", "profile")))
             {
                 ProfileDocument? profile = await profileDAL.GetProfileDB();
                 if (profile != null)
                 {
-                    // Only the skill groups: contact details and the rest stay as edited in the admin.
+                    // Only the skill groups and profile links: contact details and the rest stay as edited in the admin.
                     profile.SkillCategories = seed.Profile.SkillCategories;
+                    profile.Github = seed.Profile.Github;
+                    profile.Linkedin = seed.Profile.Linkedin;
+                    profile.Twitter = string.Empty;
                     profile.UpdatedAt = DateTime.UtcNow;
                     await profileDAL.UpsertProfileDB(profile);
                     tags.Add("profile");
@@ -246,9 +249,20 @@ public class ContentSyncBAL(
         }
 
         ProfileDocument? profile = await profileDAL.GetProfileDB();
-        if (seed.Profile != null && profile != null && !SameSkills(seed.Profile.SkillCategories, profile.SkillCategories))
+        if (seed.Profile != null && profile != null)
         {
-            items.Add(new ContentSyncItemDTO { Type = "profile", Id = "skills", Title = "Tech stack (skill groups)", Change = "changed", Fields = ["skills"] });
+            List<string> fields = new List<string>();
+            if (!SameSkills(seed.Profile.SkillCategories, profile.SkillCategories))
+            {
+                fields.Add("skills");
+            }
+            Check(fields, "github", seed.Profile.Github, profile.Github);
+            Check(fields, "linkedin", seed.Profile.Linkedin, profile.Linkedin);
+            Check(fields, "twitter", string.Empty, profile.Twitter);
+            if (fields.Count > 0)
+            {
+                items.Add(new ContentSyncItemDTO { Type = "profile", Id = "profile", Title = "Profile (skills and links)", Change = "changed", Fields = fields });
+            }
         }
         return items;
     }

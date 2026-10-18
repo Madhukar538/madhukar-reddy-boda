@@ -16,7 +16,7 @@ import type { ClientProject, Experiment, ProjectCard, SkillCategory, Status } fr
 export type Profile = typeof builtIn.profile;
 export type Experience = typeof builtIn.experience;
 export type Education = typeof builtIn.education;
-export type SocialLink = { network: 'GitHub' | 'LinkedIn' | 'Twitter'; href: string };
+export type SocialLink = { network: 'GitHub' | 'LinkedIn'; href: string };
 
 export type SiteContent = {
   /** Newest first. */
@@ -41,7 +41,6 @@ const socialLinksOf = (profile: Profile): SocialLink[] =>
     [
       { network: 'GitHub', href: profile.github },
       { network: 'LinkedIn', href: profile.linkedin },
-      { network: 'Twitter', href: profile.twitter },
     ] as SocialLink[]
   ).filter((link) => link.href);
 
