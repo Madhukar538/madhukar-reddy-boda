@@ -69,6 +69,7 @@ export async function POST(request: Request) {
   if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string' && TAG.test(t))) return reply(400, 'Unknown tags.');
 
   const unique = [...new Set(tags as string[])];
-  for (const tag of unique) revalidateTag(tag);
+  // Expire at once: the next visit fetches fresh content instead of serving stale while refreshing.
+  for (const tag of unique) revalidateTag(tag, { expire: 0 });
   return Response.json({ revalidated: unique });
 }
