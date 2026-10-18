@@ -1029,6 +1029,106 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
   html:not([data-style]) .portrait-offset { padding-top: 0; }
 }
 
+/* Home page: the left edge on wide screens (components/portfolio/social-rail.tsx,
+   now-card.tsx, and the .hero-dots layer in app/page.tsx). */
+.social-rail, .now-card, .hero-dots { display: none; }
+@media (min-width: 1280px) {
+  .social-rail {
+    position: fixed;
+    left: 1.25rem;
+    top: 50%;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    transform: translateY(-50%);
+  }
+  .social-rail-line {
+    width: 1px;
+    height: 3.5rem;
+    background: linear-gradient(to bottom, transparent, hsl(var(--foreground) / 0.22), transparent);
+  }
+  .social-rail-time {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+  }
+  /* A dot grid that fades out from the left of the hero: depth, nothing to read. */
+  .hero-dots {
+    display: block;
+    height: min(100svh, 60rem);
+    background-image: radial-gradient(hsl(var(--foreground) / 0.16) 1px, transparent 1.5px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(ellipse 34% 55% at 10% 42%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(ellipse 34% 55% at 10% 42%, #000 0%, transparent 100%);
+  }
+}
+/* Once the hero scrolls away, the portrait docks in the left gutter as a sticky
+   profile card, taking over from the link strip. Only where the gutter fits it. */
+.profile-dock { display: none; }
+@media (min-width: 1600px) {
+  .profile-dock {
+    display: block;
+    position: fixed;
+    top: 50%;
+    z-index: 30;
+    width: 13rem;
+    /* Right edge 2rem left of the content column (max-w-6xl, 1.5rem padding). */
+    left: max(1rem, calc((100vw - 72rem) / 2 + 1.5rem - 2rem - 13rem));
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-1.5rem, -50%) scale(0.96);
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.45s;
+  }
+  .home-edge[data-docked] .profile-dock {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0, -50%);
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s;
+  }
+  .social-rail { transition: opacity 0.3s ease, visibility 0s linear 0s; }
+  .home-edge[data-docked] .social-rail { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+}
+.profile-dock-photo {
+  position: relative;
+  height: 11rem;
+  background: radial-gradient(ellipse at 50% 90%, hsl(var(--primary) / 0.28), transparent 70%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 30%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 30%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-dock, .home-edge[data-docked] .profile-dock { transition: none; }
+}
+/* The Now card sits in the gutter left of the hero, which is only wide enough here. */
+@media (min-width: 1760px) {
+  .now-card {
+    display: block;
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    width: 13rem;
+    margin-right: 3rem;
+    transform: translateY(-50%);
+  }
+}
+.now-pulse {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: hsl(var(--sys-green, 142 70% 45%));
+  box-shadow: 0 0 0 0 hsl(var(--sys-green, 142 70% 45%) / 0.6);
+  animation: now-pulse 2.4s ease-out infinite;
+}
+@keyframes now-pulse {
+  70%, 100% { box-shadow: 0 0 0 0.45rem hsl(var(--sys-green, 142 70% 45%) / 0); }
+}
+@media (prefers-reduced-motion: reduce) { .now-pulse { animation: none; } }
+
 /* ============================================================
    CASE STUDIES (app/projects/[slug]) — scroll-driven, CSS only.
    Browsers without scroll timelines, and reduced-motion visitors,
