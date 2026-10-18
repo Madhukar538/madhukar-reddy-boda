@@ -26,6 +26,7 @@ export async function GET() {
     '- [Blog](/): home page, every post with search',
     '- [Topics](/topics): posts grouped by area and tool',
     '- [RSS feed](/rss.xml)',
+    '- [Work with me](/work-with-me): performance audits, self-hosted AI, architecture reviews',
     '- [Fix a bug](/fix-a-bug): send a bug or architecture question as a ticket',
     '- [About](/about): summary, tech stack, education',
     `- [Experience](/experience): ${experience.title}, ${experience.company} (${experience.duration})`,
