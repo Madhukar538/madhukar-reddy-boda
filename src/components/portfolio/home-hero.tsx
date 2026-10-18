@@ -99,7 +99,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
         <div className="min-w-0 space-y-6 text-center lg:text-left">
           {/* Phones: a compact identity row, since the profile card is desktop-only. */}
           <div className="portrait-alt flex items-center justify-center gap-3 lg:hidden">
-            <Image src="/madhukar.png" alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" priority />
+            <Image src="/madhukar.png" alt="" width={56} height={56} className="rounded-full ring-2 ring-primary/40" />
             <span className="text-left text-sm leading-tight">
               <span className="block font-semibold text-foreground">{profile.name}</span>
               <span className="block text-muted-foreground">{profile.title} · {profile.location}</span>
@@ -162,7 +162,6 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
                   width={148}
                   height={148}
                   className="rounded-full object-cover"
-                  priority
                 />
               </div>
             </div>

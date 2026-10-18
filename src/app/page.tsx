@@ -34,7 +34,7 @@ export default async function Home() {
       {/* Intro. In Midnight the portrait sits to the right (or above, on phones). */}
       <header className="portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem]">
         <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-3">
-          <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" priority />
+          <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" />
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
             <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>

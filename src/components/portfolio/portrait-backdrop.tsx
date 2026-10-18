@@ -14,7 +14,9 @@ export function PortraitBackdrop() {
           src="/portrait-cutout.webp"
           alt=""
           fill
-          priority
+          preload
+          // The largest thing on screen (the LCP image): fetch it ahead of everything else.
+          fetchPriority="high"
           quality={60}
           sizes="(min-width: 1024px) 720px, 100vw"
           className="object-cover object-[50%_20%]"
