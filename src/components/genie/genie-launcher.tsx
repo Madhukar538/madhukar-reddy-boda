@@ -24,6 +24,7 @@ export function GenieLauncher({ email }: { email: string }) {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [tucked, setTucked] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const warm = useCallback(() => void loadChat(), []);
@@ -46,6 +47,26 @@ export function GenieLauncher({ email }: { email: string }) {
     return () => window.removeEventListener('hashchange', openFromHash);
   }, []);
 
+  // Phones and tablets: while you scroll down, the button slides mostly off the edge so it
+  // doesn't sit on what you're reading. It comes back when you scroll up or stop scrolling.
+  useEffect(() => {
+    const narrow = window.matchMedia('(max-width: 1023px)');
+    let lastY = window.scrollY;
+    let idle = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (narrow.matches && Math.abs(y - lastY) > 6) setTucked(y > lastY && y > 80);
+      lastY = y;
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => setTucked(false), 900);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.clearTimeout(idle);
+    };
+  }, []);
+
   if (HIDDEN_ON.some((re) => re.test(pathname))) return null;
 
   return (
@@ -63,6 +84,7 @@ export function GenieLauncher({ email }: { email: string }) {
         aria-expanded={open}
         aria-controls="genie-chat"
         aria-label={open ? 'Close the genie' : 'Stuck on something? Ask the genie to file a ticket'}
+        data-tucked={tucked && !open ? '' : undefined}
         className={cn(
           'genie-button fixed right-4 z-[110] flex h-14 w-14 items-center justify-center rounded-full text-white transition-[transform,opacity] duration-300 active:scale-90',
           // Phones: above the floating tab bar. Desktop: the usual corner.
