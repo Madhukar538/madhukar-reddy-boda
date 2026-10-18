@@ -10,10 +10,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Audit log is paged and searchable
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Writes security and content audit entries and serves the audit log.
  */
 public class AuditBAL(AuditDAL auditDAL, IContextService contextService, ICodeLogger codeLog)
@@ -81,10 +81,11 @@ public class AuditBAL(AuditDAL auditDAL, IContextService contextService, ICodeLo
         Response<object> objResponse = new Response<object>();
         try
         {
-            int limit = objAPIRequest.Limit is >= 1 and <= 200 ? objAPIRequest.Limit : 50;
-            List<AuditLogDocument> entries = await auditDAL.GetAuditLogDB(limit);
-            objResponse.Data = entries;
-            objResponse.RowCount = entries.Count;
+            (int page, int pageSize, int skip) = Paging.Normalize(objAPIRequest);
+            string search = (objAPIRequest.Search ?? string.Empty).Trim();
+            (List<AuditLogDocument> entries, long total) = await auditDAL.GetAuditPageDB(search.Length > 100 ? search[..100] : search, skip, pageSize);
+            objResponse.Data = Paging.Result(entries, page, pageSize, total);
+            objResponse.RowCount = total;
             objResponse.ReturnCode = (int)ErrorCode.Success;
             objResponse.ReturnMessage = "Success.";
         }

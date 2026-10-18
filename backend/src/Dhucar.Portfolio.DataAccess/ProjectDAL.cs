@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Properties.Documents;
 using MongoDB.Driver;
 
@@ -6,10 +8,10 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged, searchable admin list
  * Layer           :  DataAccess
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Project storage (key, client and lab).
  */
 public class ProjectDAL(MongoContext context)
@@ -163,5 +165,37 @@ public class ProjectDAL(MongoContext context)
         {
             await context.Projects.InsertManyAsync(projects);
         }
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   GetProjectPageDB
+    // Method Description    :   One page of projects in display order, filtered by kind and matching text in title, client or tech.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   kind, search, skip, limit
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   (List of ProjectDocument, total)
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetProjectPageDB : </c> One page of projects in display order, filtered by kind and matching text in title, client or tech.
+    /// </summary>
+    public async Task<(List<ProjectDocument> Items, long Total)> GetProjectPageDB(string kind, string search, int skip, int limit)
+    {
+        FilterDefinitionBuilder<ProjectDocument> builder = Builders<ProjectDocument>.Filter;
+        FilterDefinition<ProjectDocument> filter = kind.Length > 0 ? builder.Eq(x => x.Kind, kind) : builder.Empty;
+        if (search.Length > 0)
+        {
+            BsonRegularExpression pattern = new BsonRegularExpression(Regex.Escape(search), "i");
+            filter &= builder.Or(builder.Regex(x => x.Title, pattern), builder.Regex(x => x.Client, pattern), builder.Regex("Tech", pattern));
+        }
+        long total = await context.Projects.CountDocumentsAsync(filter);
+        List<ProjectDocument> items = await context.Projects.Find(filter).SortBy(x => x.Kind).ThenBy(x => x.SortOrder).Skip(skip).Limit(limit).ToListAsync();
+        return (items, total);
     }
 }

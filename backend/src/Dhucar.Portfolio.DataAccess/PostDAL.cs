@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Properties.Documents;
 using MongoDB.Driver;
 
@@ -6,10 +8,10 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged, searchable admin list and a light picker list
  * Layer           :  DataAccess
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Blog post storage.
  */
 public class PostDAL(MongoContext context)
@@ -156,5 +158,73 @@ public class PostDAL(MongoContext context)
         {
             await context.Posts.InsertManyAsync(posts);
         }
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   GetPostPageDB
+    // Method Description    :   One page of posts, newest first, without bodies; filters by status and matches text in title, slug, category or tags.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   status, search, skip, limit
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   (List of PostDocument, total)
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetPostPageDB : </c> One page of posts, newest first, without bodies; filters by status and matches text in title, slug, category or tags.
+    /// </summary>
+    public async Task<(List<PostDocument> Items, long Total)> GetPostPageDB(string status, string search, int skip, int limit)
+    {
+        FilterDefinitionBuilder<PostDocument> builder = Builders<PostDocument>.Filter;
+        FilterDefinition<PostDocument> filter = status switch
+        {
+            "published" => builder.Eq(x => x.IsPublished, true),
+            "draft" => builder.Eq(x => x.IsPublished, false),
+            _ => builder.Empty,
+        };
+        if (search.Length > 0)
+        {
+            BsonRegularExpression pattern = new BsonRegularExpression(Regex.Escape(search), "i");
+            filter &= builder.Or(builder.Regex(x => x.Title, pattern), builder.Regex(x => x.Id, pattern), builder.Regex(x => x.Category, pattern), builder.Regex("Tags", pattern));
+        }
+        long total = await context.Posts.CountDocumentsAsync(filter);
+        List<PostDocument> items = await context.Posts.Find(filter)
+            .Project<PostDocument>(Builders<PostDocument>.Projection.Exclude(x => x.Content))
+            .SortByDescending(x => x.PublishedAt)
+            .Skip(skip)
+            .Limit(limit)
+            .ToListAsync();
+        return (items, total);
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   GetPostOptionsDB
+    // Method Description    :   Slug and title of every post, for pickers.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   List of PostDocument
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetPostOptionsDB : </c> Slug and title of every post, for pickers.
+    /// </summary>
+    public async Task<List<PostDocument>> GetPostOptionsDB()
+    {
+        return await context.Posts.Find(FilterDefinition<PostDocument>.Empty)
+            .Project<PostDocument>(Builders<PostDocument>.Projection.Include(x => x.Id).Include(x => x.Title))
+            .SortBy(x => x.Title)
+            .ToListAsync();
     }
 }

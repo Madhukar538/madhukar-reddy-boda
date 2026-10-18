@@ -140,3 +140,25 @@ export type ContentSyncItem = {
 };
 
 export type ContentSyncResult = { applied: number; isRevalidated: boolean };
+
+/** One page of an admin list (GetAllPosts, GetAllProjects, GetAuditLog, GetComments). */
+export type Paged<T> = { items: T[]; page: number; pageSize: number; totalCount: number; totalPages: number };
+
+/** A post as listed in the admin, without its body. */
+export type PostListItem = Pick<Post, 'id' | 'title' | 'category' | 'tags' | 'date' | 'isPublished' | 'updatedAt'>;
+
+/** A post as offered in the project editor's picker. */
+export type PostOption = { id: string; title: string };
+
+export type CommentStatus = 'pending' | 'approved' | 'spam';
+
+export type AdminComment = {
+  id: string;
+  slug: string;
+  postTitle: string;
+  name: string;
+  body: string;
+  status: CommentStatus;
+  country: string;
+  createdAt: string;
+};

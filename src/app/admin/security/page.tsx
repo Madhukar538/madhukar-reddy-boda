@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { errorMessage } from '@/lib/admin/api';
 import { createPasskey, isPasskeyCancelled, isPasskeySupported } from '@/lib/admin/webauthn';
 import type { AdminInfo, AuditEntry, Passkey, PasskeyOptions, RecoveryCodes } from '@/lib/admin/types';
+import { ListToolbar, Pager, usePaged } from '@/components/admin/paged-list';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { RecoveryCodeList } from '@/components/admin/recovery-codes';
@@ -52,7 +53,8 @@ function Security() {
   const { call, signOut } = useAdmin();
   const [info, setInfo] = useState<AdminInfo | null>(null);
   const [passkeys, setPasskeys] = useState<Passkey[] | null>(null);
-  const [audit, setAudit] = useState<AuditEntry[] | null>(null);
+  // Bumped after every load, so the activity log shows what was just done.
+  const [auditVersion, setAuditVersion] = useState(0);
   const [loadError, setLoadError] = useState('');
 
   const [supported, setSupported] = useState(false);
@@ -67,14 +69,10 @@ function Security() {
 
   const load = useCallback(async () => {
     try {
-      const [i, p, a] = await Promise.all([
-        call<AdminInfo>('GetCurrentAdmin'),
-        call<Passkey[]>('GetPasskeys'),
-        call<AuditEntry[]>('GetAuditLog', { limit: 100 }),
-      ]);
+      const [i, p] = await Promise.all([call<AdminInfo>('GetCurrentAdmin'), call<Passkey[]>('GetPasskeys')]);
       setInfo(i);
       setPasskeys(p);
-      setAudit(a);
+      setAuditVersion((v) => v + 1);
     } catch (e) {
       setLoadError(errorMessage(e));
     }
@@ -134,7 +132,7 @@ function Security() {
   };
 
   if (loadError) return <Notice>{loadError}</Notice>;
-  if (!info || !passkeys || !audit) return <Spinner />;
+  if (!info || !passkeys) return <Spinner />;
 
   return (
     <div className="space-y-5">
@@ -234,38 +232,61 @@ function Security() {
         </button>
       </Panel>
 
-      <Panel title="Activity" description="Sign-ins, failures, security changes and content edits, newest first.">
-        <div className="-mx-2 overflow-x-auto">
-          <table className="w-full min-w-[40rem] text-left text-sm">
-            <thead className="text-xs text-muted-foreground">
-              <tr>
-                <th className="px-2 py-1.5 font-medium">When</th>
-                <th className="px-2 py-1.5 font-medium">Event</th>
-                <th className="px-2 py-1.5 font-medium">Detail</th>
-                <th className="px-2 py-1.5 font-medium">IP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {audit.map((a) => (
-                <tr key={a.id} className="border-t border-foreground/5 align-top" title={a.userAgent}>
-                  <td className="whitespace-nowrap px-2 py-1.5 tabular-nums text-muted-foreground">{formatDateTime(a.at)}</td>
-                  <td className="px-2 py-1.5">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className={cn('h-1.5 w-1.5 rounded-full', a.isSuccess ? 'bg-primary' : 'bg-[hsl(var(--destructive))]')} aria-hidden />
-                      {a.action}
-                      <span className="sr-only">{a.isSuccess ? '(succeeded)' : '(failed)'}</span>
-                    </span>
-                  </td>
-                  <td className="px-2 py-1.5 text-muted-foreground">{a.detail}</td>
-                  <td className="whitespace-nowrap px-2 py-1.5 font-mono text-xs text-muted-foreground">{a.ipAddress}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {audit.length === 0 && <p className="px-2 py-3 text-sm text-muted-foreground">No activity yet.</p>}
-        </div>
-      </Panel>
+      <AuditLog version={auditVersion} />
     </div>
+  );
+}
+
+/** Sign-ins, failures, security changes and content edits: paged and searchable. */
+function AuditLog({ version }: { version: number }) {
+  const { data, error, isLoading, setPage, search, setSearch, reload } = usePaged<AuditEntry>('GetAuditLog', {}, 25);
+  useEffect(() => {
+    if (version > 1) reload();
+  }, [version, reload]);
+
+  return (
+    <Panel title="Activity" description="Sign-ins, failures, security changes and content edits, newest first.">
+      <div className="space-y-3">
+        <ListToolbar search={search} onSearch={setSearch} placeholder="Search event, email or detail" />
+        {error && <Notice>{error}</Notice>}
+        {!data ? (
+          !error && <Spinner />
+        ) : (
+          <>
+            <div className="-mx-2 overflow-x-auto">
+              <table className="w-full min-w-[40rem] text-left text-sm">
+                <thead className="text-xs text-muted-foreground">
+                  <tr>
+                    <th className="px-2 py-1.5 font-medium">When</th>
+                    <th className="px-2 py-1.5 font-medium">Event</th>
+                    <th className="px-2 py-1.5 font-medium">Detail</th>
+                    <th className="px-2 py-1.5 font-medium">IP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((a) => (
+                    <tr key={a.id} className="border-t border-foreground/5 align-top" title={a.userAgent}>
+                      <td className="whitespace-nowrap px-2 py-1.5 tabular-nums text-muted-foreground">{formatDateTime(a.at)}</td>
+                      <td className="px-2 py-1.5">
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className={cn('h-1.5 w-1.5 rounded-full', a.isSuccess ? 'bg-primary' : 'bg-[hsl(var(--destructive))]')} aria-hidden />
+                          {a.action}
+                          <span className="sr-only">{a.isSuccess ? '(succeeded)' : '(failed)'}</span>
+                        </span>
+                      </td>
+                      <td className="px-2 py-1.5 text-muted-foreground">{a.detail}</td>
+                      <td className="whitespace-nowrap px-2 py-1.5 font-mono text-xs text-muted-foreground">{a.ipAddress}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {data.items.length === 0 && <p className="px-2 py-3 text-sm text-muted-foreground">No activity matches.</p>}
+            </div>
+            <Pager data={data} onPage={setPage} isLoading={isLoading} />
+          </>
+        )}
+      </div>
+    </Panel>
   );
 }
 

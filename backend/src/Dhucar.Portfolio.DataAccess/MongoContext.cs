@@ -8,10 +8,10 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Post stats and comments collections, with their indexes
  * Layer           :  DataAccess
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
  */
 public class MongoContext
@@ -62,6 +62,12 @@ public class MongoContext
     /// <summary>Owner-edited switches (one document, _id "security").</summary>
     public IMongoCollection<SecuritySettingsDocument> Settings => Database.GetCollection<SecuritySettingsDocument>("settings");
 
+    /// <summary>Per-post reads and reactions.</summary>
+    public IMongoCollection<PostStatsDocument> PostStats => Database.GetCollection<PostStatsDocument>("postStats");
+
+    /// <summary>Reader comments.</summary>
+    public IMongoCollection<CommentDocument> Comments => Database.GetCollection<CommentDocument>("comments");
+
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   EnsureIndexes
@@ -105,5 +111,11 @@ public class MongoContext
         ]);
         await DailySalts.Indexes.CreateOneAsync(new CreateIndexModel<DailySaltDocument>(
             Builders<DailySaltDocument>.IndexKeys.Ascending(x => x.CreatedAt), new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(2) }));
+        await PostStats.Indexes.CreateOneAsync(new CreateIndexModel<PostStatsDocument>(
+            Builders<PostStatsDocument>.IndexKeys.Descending(x => x.Reads)));
+        await Comments.Indexes.CreateManyAsync([
+            new CreateIndexModel<CommentDocument>(Builders<CommentDocument>.IndexKeys.Ascending(x => x.Slug).Ascending(x => x.Status).Ascending(x => x.CreatedAt)),
+            new CreateIndexModel<CommentDocument>(Builders<CommentDocument>.IndexKeys.Ascending(x => x.Status).Descending(x => x.CreatedAt)),
+        ]);
     }
 }

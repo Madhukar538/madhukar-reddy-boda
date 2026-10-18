@@ -48,8 +48,8 @@ public class ContentSyncTests
         // A post missing from the database (as if added to the code after the first seed)…
         Assert.Equal(HttpStatusCode.OK, (await client.Post("DeletePost", new { id = PostSlug }, token: token)).Status);
         // …and a project edited in the admin.
-        ApiResult projects = await client.Post("GetAllProjects", token: token);
-        JsonElement project = projects.Data.EnumerateArray().First(x => x.GetProperty("kind").GetString() == "key");
+        ApiResult projects = await client.Post("GetAllProjects", new { pageSize = 100 }, token: token);
+        JsonElement project = projects.Data.GetProperty("items").EnumerateArray().First(x => x.GetProperty("kind").GetString() == "key");
         string projectId = project.GetProperty("id").GetString()!;
         Assert.Equal(HttpStatusCode.OK, (await client.Post("SaveProject", new
         {

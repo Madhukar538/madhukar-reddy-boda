@@ -89,7 +89,10 @@ public class ContentTests
         Assert.Equal(HttpStatusCode.OK, (await session.Client.Post("SavePost", Post("draft-post", "<p>WIP</p>", isPublished: false), token: session.AccessToken)).Status);
         Assert.Equal(HttpStatusCode.NotFound, (await session.Client.Post("GetPost", new { slug = "draft-post" })).Status);
         Assert.Equal(SeededPostCount(), (await session.Client.Post("GetPosts")).Data.GetArrayLength());
-        Assert.Equal(SeededPostCount() + 1, (await session.Client.Post("GetAllPosts", token: session.AccessToken)).Data.GetArrayLength());
+        Assert.Equal(SeededPostCount() + 1, (await session.Client.Post("GetAllPosts", new { pageSize = 100 }, token: session.AccessToken)).Data.GetProperty("totalCount").GetInt64());
+        JsonElement drafts = (await session.Client.Post("GetAllPosts", new { status = "draft" }, token: session.AccessToken)).Data;
+        Assert.Equal("draft-post", Assert.Single(drafts.GetProperty("items").EnumerateArray()).GetProperty("id").GetString());
+        Assert.Equal("<p>WIP</p>", (await session.Client.Post("GetPostForEdit", new { id = "draft-post" }, token: session.AccessToken)).Data.GetProperty("content").GetString());
 
         Assert.Equal(HttpStatusCode.BadRequest, (await session.Client.Post("SavePost", Post("Bad Slug!", "<p>x</p>"), token: session.AccessToken)).Status);
         Assert.Equal(HttpStatusCode.BadRequest, (await session.Client.Post("SaveProject", new { kind = "client", title = "X", url = "http://insecure.example" }, token: session.AccessToken)).Status);
@@ -105,7 +108,7 @@ public class ContentTests
         await session.Client.Post("SavePost", Post("editor-test", "<p>x</p>"), token: session.AccessToken);
         Assert.Equal(string.Empty, (await session.Client.Post("GetPost", new { slug = "editor-test" })).Data.GetProperty("updatedBy").GetString());
         Assert.DoesNotContain(AdminSession.Email, (await session.Client.Post("GetPosts")).Body.ToString());
-        Assert.Contains(AdminSession.Email, (await session.Client.Post("GetAllPosts", token: session.AccessToken)).Body.ToString());
+        Assert.Contains(AdminSession.Email, (await session.Client.Post("GetPostForEdit", new { id = "editor-test" }, token: session.AccessToken)).Body.ToString());
     }
 
     [Fact]

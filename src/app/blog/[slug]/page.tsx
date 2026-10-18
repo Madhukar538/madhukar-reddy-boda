@@ -9,6 +9,7 @@ import { benchmarks } from '@/data/benchmarks';
 import { diagrams } from '@/data/diagrams';
 import { ReaderChrome } from '@/components/blog/reader-chrome';
 import { ShareButtons } from '@/components/blog/share-buttons';
+import { Comments, PopularPosts, Reactions } from '@/components/blog/post-engagement';
 import { PostCard } from '@/components/blog/post-card';
 import { adjacentPosts, getPost, isoDate, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
@@ -107,10 +108,13 @@ export default async function BlogPost({ params }: Props) {
           <footer className="mt-12 space-y-8">
             <LinkedMentions {...links} />
 
-            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-foreground/10 pt-6">
-              <p className="text-sm font-semibold text-foreground">Found this useful? Share it.</p>
+            <div className="space-y-4 border-t border-foreground/10 pt-6">
+              <p className="text-sm font-semibold text-foreground">Found this useful? React or share it.</p>
+              <Reactions slug={post.slug} />
               <ShareButtons title={post.title} />
             </div>
+
+            <Comments slug={post.slug} />
 
             <Callout kind="question" title="Fighting something like this in your own system?">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
@@ -132,6 +136,7 @@ export default async function BlogPost({ params }: Props) {
         <aside className="lg:sticky lg:top-28 space-y-4">
           <ReaderChrome toc={toc} words={words} backlinks={links.backlinks.length + links.mentions.length} />
           <LocalGraphLazy graph={localGraph(content, post.slug)} />
+          <PopularPosts exclude={post.slug} />
         </aside>
       </div>
 

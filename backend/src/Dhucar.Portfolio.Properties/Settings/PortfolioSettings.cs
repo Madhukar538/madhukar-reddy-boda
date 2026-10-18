@@ -26,6 +26,9 @@ public class PortfolioSettings
     /// <summary>Traffic tracking.</summary>
     public TrackingSettings Tracking { get; set; } = new();
 
+    /// <summary>Optional new-comment alerts.</summary>
+    public TelegramSettings Telegram { get; set; } = new();
+
     /// <summary>Path to the seed content JSON imported into an empty database.</summary>
     public string SeedPath { get; set; } = string.Empty;
 }

@@ -33,6 +33,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     public RecordingHandler Site { get; } = new();
 
+    public RecordingHandler Alerts { get; } = new();
+
     public IMongoDatabase Database => new MongoClient(Runner.Value.ConnectionString).GetDatabase(DatabaseName);
 
     public HttpClient CreateApiClient() => CreateClient(new WebApplicationFactoryClientOptions
@@ -61,6 +63,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
                 ["Portfolio:Passkeys:Origins:0"] = Origin,
                 ["Portfolio:Site:RevalidateUrl"] = "https://site.test/api/revalidate",
                 ["Portfolio:Site:RevalidateSecret"] = RevalidateSecret,
+                ["Portfolio:Telegram:BotToken"] = "test-bot-token",
+                ["Portfolio:Telegram:ChatId"] = "42",
                 ["Portfolio:SeedPath"] = Path.Combine(AppContext.BaseDirectory, "seed", "content.json"),
             };
             foreach (KeyValuePair<string, string?> item in _overrides)
@@ -73,6 +77,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         {
             services.AddSingleton<TimeProvider>(Clock);
             services.AddHttpClient(RevalidationBAL.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => Site);
+            services.AddHttpClient(NotificationBAL.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => Alerts);
         });
     }
 }

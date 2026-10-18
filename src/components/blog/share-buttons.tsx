@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Link2, Linkedin, MessageCircle, Twitter } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Check, Link2, Linkedin, Mail, MessageCircle, Send, Share2, Twitter } from 'lucide-react';
 
-/** Share links built from the live URL, so they work on any domain. */
+/**
+ * Share links built from the live URL, so they work on any domain. Where the
+ * browser has a share sheet (phones, Safari), a Share button opens it first.
+ */
 export function ShareButtons({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => setCanShare(typeof navigator.share === 'function'), []);
 
   const open = (build: (url: string, text: string) => string) => () => {
     const url = window.location.href.split('#')[0];
@@ -16,10 +21,29 @@ export function ShareButtons({ title }: { title: string }) {
     { label: 'LinkedIn', icon: Linkedin, onClick: open((u) => `https://www.linkedin.com/sharing/share-offsite/?url=${u}`) },
     { label: 'X', icon: Twitter, onClick: open((u, t) => `https://twitter.com/intent/tweet?url=${u}&text=${t}`) },
     { label: 'WhatsApp', icon: MessageCircle, onClick: open((u, t) => `https://wa.me/?text=${t}%20${u}`) },
+    { label: 'Telegram', icon: Send, onClick: open((u, t) => `https://t.me/share/url?url=${u}&text=${t}`) },
+    {
+      label: 'Email',
+      icon: Mail,
+      onClick: () => {
+        const url = window.location.href.split('#')[0];
+        window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${title}\n\n${url}`)}`;
+      },
+    },
   ];
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {canShare && (
+        <button
+          type="button"
+          onClick={() => navigator.share({ title, url: window.location.href.split('#')[0] }).catch(() => {})}
+          className="flex h-9 items-center gap-1.5 rounded-full bg-primary/15 px-3.5 text-sm font-medium text-foreground ring-1 ring-primary/40 hover:bg-primary/25 transition-colors"
+        >
+          <Share2 className="h-4 w-4" />
+          Share
+        </button>
+      )}
       {targets.map(({ label, icon: Icon, onClick }) => (
         <button
           key={label}

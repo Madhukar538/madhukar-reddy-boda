@@ -13,11 +13,11 @@ namespace Dhucar.Portfolio.Api.Controllers;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged and searchable
  * Layer           :  Controller
- * Modified By     :
- * Description     :  Lists every project including drafts.
+ * Modified By     :  Boda Madhukar Reddy
+ * Description     :  Lists one page of projects, drafts included.
  */
 [Route("api/[controller]")]
 [ApiController]
@@ -28,7 +28,7 @@ public class GetAllProjectsController(ProjectBAL objProjectBAL, ICodeLogger code
     //****************************************************************************************************
     // Layer                 :   Controller
     // Method Name           :   GetAllProjects
-    // Method Description    :   Lists every project including drafts.
+    // Method Description    :   Lists one page of projects, drafts included.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   objAPIRequest
@@ -41,10 +41,10 @@ public class GetAllProjectsController(ProjectBAL objProjectBAL, ICodeLogger code
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //****************************************************************************************************
     /// <summary>
-    /// <c>GetAllProjects : </c> Lists every project including drafts.
+    /// <c>GetAllProjects : </c> Lists one page of projects, drafts included.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> GetAllProjects([FromBody] GetProjectsRequestDTO objAPIRequest)
+    public async Task<IActionResult> GetAllProjects([FromBody] GetAllProjectsRequestDTO objAPIRequest)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         Response<object> objResponse = new Response<object>();
@@ -52,7 +52,7 @@ public class GetAllProjectsController(ProjectBAL objProjectBAL, ICodeLogger code
         {
             if (objAPIRequest != null)
             {
-                objResponse = await objProjectBAL.GetProjects(objAPIRequest, true);
+                objResponse = await objProjectBAL.GetProjectPage(objAPIRequest);
             }
             else
             {

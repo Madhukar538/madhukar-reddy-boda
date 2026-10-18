@@ -181,9 +181,9 @@ public class AuthFlowTests
         using ApiFactory factory = new();
         AdminSession session = await AdminSession.SignedIn(factory);
         await session.Client.Post("Login", new { email = AdminSession.Email, password = "wrong password here" });
-        ApiResult log = await session.Client.Post("GetAuditLog", new { limit = 50 }, token: session.AccessToken);
+        ApiResult log = await session.Client.Post("GetAuditLog", new { pageSize = 50 }, token: session.AccessToken);
         Assert.Equal(HttpStatusCode.OK, log.Status);
-        List<string> actions = log.Data.EnumerateArray().Select(x => x.GetProperty("action").GetString()!).ToList();
+        List<string> actions = log.Data.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("action").GetString()!).ToList();
         Assert.Contains("setup.completed", actions);
         Assert.Contains("login.totp", actions);
         Assert.Contains("login.password-failed", actions);
