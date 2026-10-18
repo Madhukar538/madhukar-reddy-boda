@@ -35,7 +35,8 @@ function csp({ frameAncestors = "'self'" } = {}) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    `connect-src 'self' ${apiOrigin} https://cloudflareinsights.com${isDev ? ' ws:' : ''}`.replace(/\s+/g, ' '),
+    // The API's WebSocket origin too, for live presence on posts.
+    `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://cloudflareinsights.com${isDev ? ' ws:' : ''}`.replace(/\s+/g, ' '),
     "media-src 'self'",
     "worker-src 'self' blob:",
     "manifest-src 'self'",

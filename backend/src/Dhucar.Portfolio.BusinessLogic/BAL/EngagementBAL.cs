@@ -15,10 +15,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  18 Oct 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Tells live presence which posts readers may join
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Blog engagement: reads, reactions, comments and the most-read list. Built for heavy traffic: atomic counters, short in-memory caches for what every visitor sees, and no visitor identifiers stored.
  */
 public partial class EngagementBAL(
@@ -491,6 +491,29 @@ public partial class EngagementBAL(
                 await postStatsDAL.SetReadsDB(match.Groups[1].Value, row.Count);
             }
         }
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   IsPublishedPost
+    // Method Description    :   Whether a slug is a published post (from the one-minute cache), for live presence.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   slug
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   bool
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>IsPublishedPost : </c> Whether a slug is a published post (from the one-minute cache), for live presence.
+    /// </summary>
+    public async Task<bool> IsPublishedPost(string slug)
+    {
+        return (await PublishedPosts()).ContainsKey(slug);
     }
 
     /// <summary>Slug to title for published posts, cached for a minute (checked on every engagement call).</summary>

@@ -9,6 +9,12 @@ const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
 
 export const engagementEnabled = API_URL.length > 0;
 
+/** Live presence on posts (SignalR, over a WebSocket to the API). */
+export const presenceUrl = engagementEnabled ? `${API_URL}/hubs/presence` : '';
+
+/** Fired on window when this reader adds a reaction, so live presence can float it to everyone else. */
+export const REACTED_EVENT = 'dhucar:reacted';
+
 export const REACTIONS = [
   { key: 'like', emoji: '👍', label: 'Like' },
   { key: 'idea', emoji: '💡', label: 'Insightful' },
