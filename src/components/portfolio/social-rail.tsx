@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github, Linkedin, Mail, MapPin, Rss } from 'lucide-react';
+import { ArrowRight, Github, Linkedin, Mail, MapPin, Rss } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
 import { nowDate } from '@/lib/utils';
 
@@ -136,13 +136,19 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
         <p className="flex items-center gap-1.5 px-5 pt-1.5 text-sm text-muted-foreground">
           <MapPin aria-hidden className="h-3.5 w-3.5" /> Hyderabad, India
         </p>
-        <div className="mx-5 mt-3.5 mb-5 border-t border-foreground/10 pt-3.5">
+        <div className="mx-5 mt-3.5 mb-4 border-t border-foreground/10 pt-3.5">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <span aria-hidden className="now-pulse" /> Now
             {profile.nowUpdatedAt && <span className="font-normal normal-case tracking-normal">· {nowDate(profile.nowUpdatedAt)}</span>}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-foreground/85">{profile.now}</p>
         </div>
+        <Link
+          href="/work-with-me"
+          className="flex items-center justify-between border-t border-foreground/10 px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-foreground/5"
+        >
+          Work with me <ArrowRight aria-hidden className="h-4 w-4" />
+        </Link>
       </aside>
     </>
   );

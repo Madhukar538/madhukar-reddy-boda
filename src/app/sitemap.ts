@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { posts } = await getContent();
   const base = siteUrl();
   const latest = isoDate(posts[0]);
-  const pages = ['', '/topics', '/about', '/experience', '/projects', '/lab', '/fix-a-bug', '/graph', '/ai'];
+  const pages = ['', '/topics', '/about', '/experience', '/projects', '/lab', '/work-with-me', '/fix-a-bug', '/graph', '/ai'];
   return [
     ...pages.map((path) => ({ url: `${base}${path}`, lastModified: path === '' ? latest : undefined, priority: path === '' ? 1 : 0.6 })),
     ...caseStudies.map((c) => ({ url: `${base}/projects/${c.slug}`, priority: 0.8 })),

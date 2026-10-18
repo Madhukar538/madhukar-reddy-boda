@@ -110,7 +110,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
 
           <div className="flex justify-center lg:justify-start">
             <Link
-              href="/fix-a-bug"
+              href="/work-with-me"
               className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
               <span className="relative flex h-2 w-2">

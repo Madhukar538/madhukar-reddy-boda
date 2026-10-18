@@ -12,6 +12,7 @@ const pages = [
   { href: '/lab', label: 'R&D Lab' },
   { href: '/ai', label: 'AI / MCP' },
   { href: '/graph', label: 'Graph' },
+  { href: '/work-with-me', label: 'Work with me' },
   { href: '/fix-a-bug', label: 'Fix a bug' },
 ];
 
