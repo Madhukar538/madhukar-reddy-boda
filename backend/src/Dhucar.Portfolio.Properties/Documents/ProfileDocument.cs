@@ -5,10 +5,10 @@ namespace Dhucar.Portfolio.Properties.Documents;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Added the "Now" note and the date it last changed
  * Layer           :  Properties
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  The single profile document: identity, skills, experience, education.
  */
 [BsonIgnoreExtraElements]
@@ -50,6 +50,12 @@ public class ProfileDocument
 
     /// <summary>Professional summary.</summary>
     public string Summary { get; set; } = string.Empty;
+
+    /// <summary>What he is focused on now, shown on the site's profile card (empty uses the site's built-in note).</summary>
+    public string Now { get; set; } = string.Empty;
+
+    /// <summary>UTC time the Now note last changed. Set by the API, never by the client.</summary>
+    public DateTime? NowUpdatedAt { get; set; }
 
     /// <summary>Skill groups.</summary>
     public List<SkillCategoryItem> SkillCategories { get; set; } = new();

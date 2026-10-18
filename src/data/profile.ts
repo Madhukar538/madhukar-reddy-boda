@@ -20,6 +20,10 @@ export const profile = {
     'Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
     'Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. ' +
     'Production-first: diagnose fast, fix right, prevent recurrence.',
+  // What he is focused on now (the profile card and the home page). Edited in the admin, which
+  // dates it; this built-in copy is used until a note is saved there.
+  now: 'Making the AI agent’s answers about twice as fast by testing a new way to run the model on our own server.',
+  nowUpdatedAt: '2026-10-18' as string | null,
 };
 
 /** Social profiles that are filled in, for icon rows on the site. */

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const { posts, experience, keyProjects, rdProjects } = await getContent();
+  const { posts, experience, keyProjects, rdProjects, profile } = await getContent();
   const topics = allTopics(posts);
 
   return (
@@ -42,7 +42,7 @@ export default async function Home() {
             <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
           </span>
         </Link>
-        {posts[0] && <NowCard latest={{ slug: posts[0].slug, title: posts[0].title }} />}
+        {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
         <HeroIdentity />
         <h1 className="text-[clamp(1.85rem,10vw,2.4rem)] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
           Notes from building{' '}
