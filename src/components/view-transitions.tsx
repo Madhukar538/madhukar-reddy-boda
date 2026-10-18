@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { appIsOutdated } from '@/lib/app-version';
 
 type StartViewTransition = (update: () => Promise<void>) => unknown;
 
@@ -31,6 +32,8 @@ export function ViewTransitions() {
 
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      // A newer deployment is live: let pwa-register turn this into a full page load.
+      if (appIsOutdated()) return;
       const a = (e.target as Element | null)?.closest?.('a');
       if (!a || !a.href || a.target && a.target !== '_self' || a.hasAttribute('download')) return;
       const url = new URL(a.href);
