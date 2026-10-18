@@ -3,10 +3,10 @@ namespace Dhucar.Portfolio.Api.Middlewares;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Two-year HSTS, X-Permitted-Cross-Domain-Policies, wider Permissions-Policy
  * Layer           :  Middlewares
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Adds security headers to every response; the API serves JSON only, so the CSP forbids everything.
  */
 public class SecurityHeadersMiddleware(IWebHostEnvironment environment) : IMiddleware
@@ -40,11 +40,12 @@ public class SecurityHeadersMiddleware(IWebHostEnvironment environment) : IMiddl
             headers["Referrer-Policy"] = "no-referrer";
             headers["Cross-Origin-Opener-Policy"] = "same-origin";
             headers["Cross-Origin-Resource-Policy"] = "same-site";
-            headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()";
+            headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()";
+            headers["X-Permitted-Cross-Domain-Policies"] = "none";
             if (!environment.IsDevelopment())
             {
                 // Sent on every response: behind Cloudflare Tunnel requests arrive as plain HTTP, where UseHsts() would skip it.
-                headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+                headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains";
             }
             if (!isSwagger)
             {
