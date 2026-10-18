@@ -14,7 +14,7 @@ public class ContentSyncItemDTO
     /// <summary>post, project or profile.</summary>
     public string Type { get; set; } = string.Empty;
 
-    /// <summary>Post slug, project id, or "skills" for the profile's skill groups.</summary>
+    /// <summary>Post slug, project id, or "profile" for the profile's skill groups and links.</summary>
     public string Id { get; set; } = string.Empty;
 
     /// <summary>Title shown to the admin.</summary>

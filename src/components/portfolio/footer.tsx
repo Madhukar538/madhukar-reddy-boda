@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { OsModeToggle } from '@/components/os/os-mode';
 import type { Profile, SocialLink } from '@/lib/content';
 
@@ -15,7 +15,7 @@ const pages = [
   { href: '/fix-a-bug', label: 'Fix a bug' },
 ];
 
-const icons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
+const icons = { GitHub: Github, LinkedIn: Linkedin };
 
 export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks: SocialLink[] }) {
   const socials = [

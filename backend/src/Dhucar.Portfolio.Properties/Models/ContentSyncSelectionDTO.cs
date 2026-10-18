@@ -14,6 +14,6 @@ public class ContentSyncSelectionDTO
     /// <summary>post, project or profile.</summary>
     public string Type { get; set; } = string.Empty;
 
-    /// <summary>Post slug, project id, or "skills".</summary>
+    /// <summary>Post slug, project id, or "profile".</summary>
     public string Id { get; set; } = string.Empty;
 }

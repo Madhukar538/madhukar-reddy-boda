@@ -90,6 +90,34 @@ public class ContentSyncTests
     }
 
     [Fact]
+    public async Task Profile_links_are_synced_without_touching_contact_details()
+    {
+        using ApiFactory factory = new();
+        AdminSession session = await AdminSession.SignedIn(factory);
+        HttpClient client = session.Client;
+        string token = session.AccessToken;
+
+        // The live profile: no LinkedIn yet, an old Twitter link, and a phone number changed in the admin.
+        Dictionary<string, object?> profile = JsonSerializer.Deserialize<Dictionary<string, object?>>((await client.Post("GetProfile")).Data.GetRawText())!;
+        profile["linkedin"] = string.Empty;
+        profile["twitter"] = "https://x.com/someone";
+        profile["phone"] = "+91 00000 00000";
+        Assert.Equal(HttpStatusCode.OK, (await client.Post("SaveProfile", new { profile }, token: token)).Status);
+
+        List<(string Type, string Id, string Change, string[] Fields)> items = Items(await client.Post("GetContentSync", token: token));
+        (string Type, string Id, string Change, string[] Fields) item = Assert.Single(items);
+        Assert.Equal(("profile", "profile"), (item.Type, item.Id));
+        Assert.Equal(new[] { "linkedin", "twitter" }, item.Fields);
+
+        Assert.Equal(HttpStatusCode.OK, (await client.Post("ApplyContentSync", new { items = new[] { new { type = "profile", id = "profile" } } }, token: token)).Status);
+        JsonElement synced = (await client.Post("GetProfile")).Data;
+        Assert.StartsWith("https://www.linkedin.com/in/", synced.GetProperty("linkedin").GetString());
+        Assert.Equal(string.Empty, synced.GetProperty("twitter").GetString());
+        Assert.Equal("+91 00000 00000", synced.GetProperty("phone").GetString());
+        Assert.Empty(Items(await client.Post("GetContentSync", token: token)));
+    }
+
+    [Fact]
     public async Task Invalid_selections_are_rejected()
     {
         using ApiFactory factory = new();

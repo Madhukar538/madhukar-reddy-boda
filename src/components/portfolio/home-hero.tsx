@@ -19,7 +19,6 @@ import {
   Network,
   Plug,
   Phone,
-  Twitter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RollingText } from '@/components/vault/rolling-text';
@@ -29,7 +28,7 @@ import { stack } from '@/data/stack';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 
 
-const socialIcons = { GitHub: Github, LinkedIn: Linkedin, Twitter };
+const socialIcons = { GitHub: Github, LinkedIn: Linkedin };
 
 
 
