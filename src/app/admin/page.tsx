@@ -9,6 +9,7 @@ import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { Notice, Panel, Spinner } from '@/components/admin/ui';
 import { RankedList, TrafficChart } from '@/components/admin/traffic-chart';
+import { ContentSync } from '@/components/admin/content-sync';
 
 const RANGES = [7, 30, 90] as const;
 
@@ -54,6 +55,8 @@ function Dashboard() {
           <Link href="/admin/security" className="font-medium text-primary hover:underline">Create new ones</Link>.
         </Notice>
       )}
+
+      <ContentSync />
 
       {/* Filters: one row, above everything they scope. */}
       <div role="radiogroup" aria-label="Date range" className="glass glass-pill inline-flex gap-1 p-1">
