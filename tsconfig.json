@@ -37,12 +37,6 @@
   ],
   "exclude": [
     "node_modules",
-    "app_backup",
-    "portfolio_backup",
-    "components",
-    "ui",
-    "theme-provider.tsx",
-    "theme-toggle.tsx",
     "backend"
   ]
 }

@@ -28,7 +28,7 @@ export default async function NotFound() {
           width={96}
           height={96}
           className="h-24 w-24 rounded-full ring-1 ring-foreground/15"
-          priority
+          preload
         />
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-primary">404 · Not found</p>
         <h1 className="mt-3 text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
