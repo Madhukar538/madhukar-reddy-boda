@@ -1181,3 +1181,9 @@ html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { backgrou
   mask-image: linear-gradient(to top, transparent 0%, #000 35%);
   pointer-events: none;
 }
+
+/* Tables in posts: horizontal scroll on phones, hairline rows. */
+.article-body table { display: block; overflow-x: auto; width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.article-body th, .article-body td { padding: 0.6rem 0.9rem; text-align: left; border-bottom: 1px solid hsl(var(--foreground) / 0.1); white-space: nowrap; }
+.article-body thead th { font-weight: 600; color: hsl(var(--foreground)); border-bottom-color: hsl(var(--foreground) / 0.25); }
+.article-body td:first-child { color: hsl(var(--foreground) / 0.9); }

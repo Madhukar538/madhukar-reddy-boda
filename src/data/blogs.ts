@@ -18,6 +18,75 @@ export const readTime = (html: string) => `${Math.max(1, Math.round(countWords(h
 
 const posts: Omit<BlogPost, 'readTime'>[] = [
   {
+    slug: "rtx-5090-vs-dgx-spark-local-llm-inference",
+    title: "RTX 5090 vs DGX Spark for a Local AI Agent: Why Memory Bandwidth Won",
+    excerpt: "Same model, same Ollama version, same request: the RTX 5090 answered in ~15 seconds and the DGX Spark in ~41. Here is why bandwidth, not memory size, decided it, and when the Spark is still the right box.",
+    date: "October 18, 2026",
+    category: "Artificial Intelligence",
+    tags: ["LLMs", "GPUs", "Ollama", "Performance", "Self-hosted AI"],
+    content: `
+      <p class="lead">We had an NVIDIA DGX Spark to evaluate for our self-hosted AI agent, and an RTX 5090 workstation already running it. On paper the Spark looks like the bigger machine: four times the memory. In practice, for the model we actually run, the RTX 5090 answered the same question in roughly a third of the time.</p>
+
+      <h2>1. A Fair Test</h2>
+      <p>The DGX Spark ships without models preloaded, so both machines were set up the same way:</p>
+      <ul>
+        <li><strong>Model:</strong> Gemma 4 26B on both.</li>
+        <li><strong>Runtime:</strong> Ollama 0.31.1 on both.</li>
+        <li><strong>Workload:</strong> the same agent request (prompt, conversation history and tool definitions), measured end to end.</li>
+      </ul>
+
+      <h2>2. Results</h2>
+      <table>
+        <thead><tr><th>Metric</th><th>RTX 5090</th><th>DGX Spark</th></tr></thead>
+        <tbody>
+          <tr><td>Response time (same request)</td><td>~15 s</td><td>~41 s</td></tr>
+          <tr><td>Relative response time</td><td>1×</td><td>2.73× slower</td></tr>
+          <tr><td>Extra waiting time</td><td>—</td><td>~26 s</td></tr>
+        </tbody>
+      </table>
+      <blockquote><p>[!success] The RTX 5090 finished in about 63% less time</p><p>For this workload the DGX Spark brought no speed-up over the workstation.</p></blockquote>
+
+      <h2>3. Why: Bandwidth Beats Capacity When the Model Fits</h2>
+      <table>
+        <thead><tr><th>Hardware</th><th>RTX 5090</th><th>DGX Spark (GB10)</th></tr></thead>
+        <tbody>
+          <tr><td>Memory</td><td>32 GB GDDR7</td><td>128 GB unified LPDDR5x</td></tr>
+          <tr><td>Memory bus</td><td>512-bit</td><td>256-bit</td></tr>
+          <tr><td>Data rate per pin</td><td>28 Gbps</td><td>~8.533 Gbps</td></tr>
+          <tr><td>Memory bandwidth</td><td>1,792 GB/s</td><td>~273 GB/s</td></tr>
+          <tr><td>Capacity</td><td>1×</td><td>4×</td></tr>
+          <tr><td>Bandwidth</td><td>~6.6×</td><td>1×</td></tr>
+        </tbody>
+      </table>
+      <p>An answer comes in two phases. <strong>Prefill</strong> reads the prompt, the conversation history and every tool definition. <strong>Generation</strong> then produces the answer one token at a time, and every token means streaming the model's weights through memory again. That second phase is limited by memory bandwidth far more than by compute.</p>
+      <p>Gemma 4 26B fits comfortably in the RTX 5090's 32 GB, so the Spark's extra capacity buys nothing here, while the 5090 moves data about 6.6 times faster. That bandwidth gap is the most likely reason for the result.</p>
+      <blockquote><p>[!note] What we did not measure</p><p>We timed the whole response, not prefill and generation separately, and this was one request per machine. The direction of the result is clear; the exact ratio will move with prompt length, output length and quantization.</p></blockquote>
+
+      <h2>4. When the DGX Spark Is the Right Box</h2>
+      <p>128 GB of unified memory is a real advantage when the workload does not fit in 32 GB:</p>
+      <ul>
+        <li>Larger models that would not load on a single consumer GPU at all.</li>
+        <li>Much longer context windows, where the KV cache grows with every token of history.</li>
+        <li>Several models resident at once (for example an embedding model, a reranker and a chat model).</li>
+      </ul>
+      <p>Choose for the model you will actually run: if it fits in GPU memory, bandwidth decides speed; if it does not, capacity decides whether it runs at all.</p>
+
+      <h2>5. What We Test Next</h2>
+      <ul>
+        <li>NVIDIA-native models from NVIDIA's model registry, which may be better optimised for the Spark's hardware.</li>
+        <li>Separate timings for prefill and generation, so each machine's strength is visible on its own.</li>
+        <li>A change to how the model runs on the server that could make answers roughly twice as fast at the same quality, tested on our own hardware before it goes anywhere else.</li>
+      </ul>
+
+      <h2>6. Takeaways</h2>
+      <ul>
+        <li>For local LLM inference, check memory bandwidth before memory size.</li>
+        <li>More memory only helps once the model, or its context, no longer fits.</li>
+        <li>Benchmark with your own model, runtime version and real requests; spec sheets don't tell you the answer for your workload.</li>
+      </ul>
+    `
+  },
+  {
     slug: "ai-development-workflow-obsidian-mcp-skills",
     title: "Memory, Reach and Habits: How I Use an Obsidian Vault, MCP and Skills to Ship Production-Grade Code",
     excerpt: "AI assistants write code quickly but know nothing about my systems. My workflow gives them three things: an Obsidian vault as memory, MCP servers as reach, and Skills as habits. Then nothing ships until it's measured.",
