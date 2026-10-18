@@ -103,12 +103,11 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     // AVIF first: far smaller than WebP for the cut-out portrait (it has transparency).
     formats: ['image/avif', 'image/webp'],
+    // Next 16 only serves listed qualities; the portraits use 60.
+    qualities: [60, 75],
     // Local images only: the optimizer never fetches from other hosts.
     remotePatterns: [],
   },
