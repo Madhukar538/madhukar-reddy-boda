@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react';
 import { errorMessage } from '@/lib/admin/api';
+import { nowDate } from '@/lib/utils';
+import { profile as builtInProfile } from '@/data/profile';
 import type { Profile, SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
@@ -11,7 +13,7 @@ import { Field, Notice, Panel, Spinner, fieldClass, splitLines, splitList } from
 
 // Lists are edited as text (comma- or line-separated) and split on save,
 // so typing a trailing comma or blank line never fights the input.
-type Form = Omit<Profile, 'skillCategories' | 'experience' | 'updatedAt'> & {
+type Form = Omit<Profile, 'skillCategories' | 'experience' | 'updatedAt' | 'nowUpdatedAt'> & {
   skillCategories: { title: string; color: string; skills: string }[];
   experience: Omit<Profile['experience'], 'groups'> & { groups: { label: string; items: string }[] };
 };
@@ -19,6 +21,8 @@ type Form = Omit<Profile, 'skillCategories' | 'experience' | 'updatedAt'> & {
 const toForm = (p: Profile): Form => ({
   name: p.name, title: p.title, company: p.company, location: p.location, email: p.email, phone: p.phone, phoneHref: p.phoneHref,
   github: p.github, linkedin: p.linkedin, twitter: '', summary: p.summary,
+  // No note saved yet: start from the one the site is showing (the built-in copy).
+  now: p.now || builtInProfile.now,
   skillCategories: p.skillCategories.map((c) => ({ title: c.title, color: c.color || 'green', skills: c.skills.join(', ') })),
   experience: { ...p.experience, highlights: p.experience.highlights.map((h) => ({ ...h })), groups: p.experience.groups.map((g) => ({ label: g.label, items: g.items.join('\n') })) },
   education: { ...p.education },
@@ -26,6 +30,7 @@ const toForm = (p: Profile): Form => ({
 
 const fromForm = (f: Form): Profile => ({
   ...f,
+  nowUpdatedAt: null, // The API dates the note itself when its text changes.
   skillCategories: f.skillCategories.filter((c) => c.title.trim()).map((c) => ({ title: c.title.trim(), color: c.color, skills: splitList(c.skills) })),
   experience: {
     ...f.experience,
@@ -61,6 +66,7 @@ const addButton = 'inline-flex items-center gap-1.5 text-sm font-medium text-pri
 function ProfileEditor() {
   const { call, refreshSite } = useAdmin();
   const [original, setOriginal] = useState<Form | null>(null);
+  const [nowUpdatedAt, setNowUpdatedAt] = useState<string | null>(null);
   const [form, setForm] = useState<Form | null>(null);
   const [loadError, setLoadError] = useState('');
   const [busy, setBusy] = useState<'save' | 'delete' | null>(null);
@@ -69,6 +75,7 @@ function ProfileEditor() {
   useEffect(() => {
     call<Profile>('GetProfile')
       .then((p) => {
+        setNowUpdatedAt(p.nowUpdatedAt ?? null);
         setOriginal(toForm(p));
         setForm(toForm(p));
       })
@@ -99,6 +106,7 @@ function ProfileEditor() {
     setStatus(null);
     try {
       const result = await call<SaveResult>('SaveProfile', { profile: fromForm(form) });
+      if (form.now.trim() !== original?.now.trim()) setNowUpdatedAt(form.now.trim() ? new Date().toISOString() : null);
       setOriginal(form);
       setStatus({ kind: 'success', text: savedMessage(await ensureRefreshed(result, ['profile'], refreshSite)) });
     } catch (e) {
@@ -110,6 +118,15 @@ function ProfileEditor() {
 
   return (
     <form onSubmit={save} className="space-y-5">
+      <Panel
+        title="Now"
+        description={`What you're focused on at the moment, shown on the profile card and the home page. The date updates itself when the text changes${nowUpdatedAt ? `; last changed ${nowDate(nowUpdatedAt)}` : ''}.`}
+      >
+        <Field label="Current focus" hint={`${form.now.length}/280`}>
+          <textarea rows={3} maxLength={280} value={form.now} onChange={(e) => update((f) => ({ ...f, now: e.target.value }))} className={`${fieldClass} resize-y`} />
+        </Field>
+      </Panel>
+
       <Panel title="About you">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {text('name', 'Name', { required: true, maxLength: 120 })}

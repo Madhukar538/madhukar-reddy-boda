@@ -802,6 +802,8 @@
     "linkedin": "https://www.linkedin.com/in/madhukar-reddy-boda",
     "twitter": "",
     "summary": "Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. Production-first: diagnose fast, fix right, prevent recurrence.",
+    "now": "Making the AI agent’s answers about twice as fast by testing a new way to run the model on our own server.",
+    "nowUpdatedAt": "2026-10-18",
     "skillCategories": [
       {
         "title": "Languages",

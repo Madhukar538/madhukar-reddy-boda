@@ -1,20 +1,21 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { now } from '@/data/now';
+import { nowDate } from '@/lib/utils';
 
 /**
  * "Now": the current focus and the latest post, in the empty space left of
  * the hero. Only on very wide screens, where that space exists (.now-card in
  * globals.css); elsewhere the bento below already says what Madhukar does.
  */
-export function NowCard({ latest }: { latest?: { slug: string; title: string } }) {
+export function NowCard({ now, updatedAt, latest }: { now: string; updatedAt: string | null; latest?: { slug: string; title: string } }) {
+  const updated = nowDate(updatedAt);
   return (
     <aside aria-labelledby="now-heading" className="now-card glass p-4">
       <p id="now-heading" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         <span aria-hidden className="now-pulse" />
         Now
       </p>
-      <p className="mt-2.5 text-sm leading-relaxed text-foreground/90">{now.focus}</p>
+      <p className="mt-2.5 text-sm leading-relaxed text-foreground/90">{now}</p>
       {latest && (
         <Link href={`/blog/${latest.slug}`} className="group mt-3.5 block border-t border-foreground/10 pt-3">
           <span className="block text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Latest post</span>
@@ -24,7 +25,7 @@ export function NowCard({ latest }: { latest?: { slug: string; title: string } }
           </span>
         </Link>
       )}
-      <p className="mt-3 text-[0.7rem] text-muted-foreground">Updated {now.updated}</p>
+      {updated && <p className="mt-3 text-[0.7rem] text-muted-foreground">Updated {updated}</p>}
     </aside>
   );
 }

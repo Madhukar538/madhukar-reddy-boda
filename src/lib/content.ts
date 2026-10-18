@@ -63,7 +63,7 @@ type ApiProject = {
   id: string; kind: 'key' | 'client' | 'lab'; title: string; description: string; tech: string[]; post: string;
   isFeatured: boolean; outcome: string; status: string; client: string; role: string; duration: string; url: string; responsibilities: string[];
 };
-type ApiProfile = Profile & { skillCategories: SkillCategory[]; experience: Experience; education: Education };
+type ApiProfile = Omit<Profile, 'nowUpdatedAt'> & { nowUpdatedAt?: string | null; skillCategories: SkillCategory[]; experience: Experience; education: Education };
 
 const apiBase = () => (process.env.API_URL || '').replace(/\/$/, '');
 
@@ -136,6 +136,8 @@ function toProfile(p: ApiProfile) {
   const profile: Profile = {
     name: p.name, title: p.title, company: p.company, location: p.location, email: p.email, phone: p.phone,
     phoneHref: p.phoneHref, github: p.github, linkedin: p.linkedin ?? '', twitter: p.twitter ?? '', summary: p.summary,
+    // Until a Now note is saved in the admin, the built-in one stands in.
+    ...(p.now ? { now: p.now, nowUpdatedAt: p.nowUpdatedAt ?? null } : { now: builtIn.profile.now, nowUpdatedAt: builtIn.profile.nowUpdatedAt }),
   };
   // Only colours the site has styles for; anything else falls back to the default.
   const skillCategories = p.skillCategories.map(({ title, skills, color }) => ({

@@ -13,7 +13,7 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Shares the seed reader with the admin content sync
+ * Modified Reason :  Shares the seed reader with the admin content sync; dates the seeded Now note
  * Layer           :  BusinessLogic
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Imports the site's current content (exported to JSON) into an empty database, once.
@@ -64,6 +64,10 @@ public class SeedBAL(PostDAL postDAL, ProjectDAL projectDAL, ProfileDAL profileD
         if (seed.Profile != null && await profileDAL.GetProfileDB() == null)
         {
             seed.Profile.UpdatedAt = DateTime.UtcNow;
+            if (seed.Profile.Now.Length > 0 && seed.Profile.NowUpdatedAt == null)
+            {
+                seed.Profile.NowUpdatedAt = DateTime.UtcNow;
+            }
             await profileDAL.UpsertProfileDB(seed.Profile);
         }
     }

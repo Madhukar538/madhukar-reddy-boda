@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Github, Linkedin, Mail, MapPin, Rss } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
-import { now } from '@/data/now';
+import { nowDate } from '@/lib/utils';
 
 const icons = { GitHub: Github, LinkedIn: Linkedin };
 
@@ -139,8 +139,9 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
         <div className="mx-5 mt-3.5 mb-5 border-t border-foreground/10 pt-3.5">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <span aria-hidden className="now-pulse" /> Now
+            {profile.nowUpdatedAt && <span className="font-normal normal-case tracking-normal">· {nowDate(profile.nowUpdatedAt)}</span>}
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/85">{now.focus}</p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground/85">{profile.now}</p>
         </div>
       </aside>
     </>

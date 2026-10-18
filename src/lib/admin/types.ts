@@ -88,6 +88,10 @@ export type Profile = {
   linkedin: string;
   twitter: string;
   summary: string;
+  /** What he is focused on now, shown on the site's profile card. */
+  now: string;
+  /** When the note last changed; set by the API. */
+  nowUpdatedAt: string | null;
   skillCategories: { title: string; color: string; skills: string[] }[];
   experience: {
     title: string;

@@ -10,10 +10,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  SaveProfile validates the Now note and stamps the date it changed
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  The profile: public read and admin replace.
  */
 public class ProfileBAL(ProfileDAL profileDAL, RevalidationBAL revalidationBAL, AuditBAL auditBAL, IContextService contextService, ICodeLogger codeLog)
@@ -72,13 +72,14 @@ public class ProfileBAL(ProfileDAL profileDAL, RevalidationBAL revalidationBAL, 
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   objAPIRequest
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   18 Oct 2026
+    // Modified Reason       :   Now note: length check, and its date is set here when the text changes
     // Return Values         :   Response
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    18 Oct 2026       Now note and its change date
     //****************************************************************************************************
     /// <summary>
     /// <c>SaveProfile : </c> Validates and replaces the profile, then asks the site to refresh.
@@ -91,6 +92,7 @@ public class ProfileBAL(ProfileDAL profileDAL, RevalidationBAL revalidationBAL, 
             ProfileDocument? profile = objAPIRequest.Profile;
             string error = profile == null || profile.Name.Trim().Length is 0 or > 120 ? "Name is required."
                 : profile.Summary.Length > 2000 ? "Summary is limited to 2,000 characters."
+                : profile.Now.Trim().Length > MaxNowLength ? $"Now is limited to {MaxNowLength} characters."
                 : !IsHttpsOrEmpty(profile.Github) || !IsHttpsOrEmpty(profile.Linkedin) || !IsHttpsOrEmpty(profile.Twitter) ? "Profile links must be https:// addresses."
                 : profile.SkillCategories.Count > 20 || profile.Experience.Groups.Count > 20 ? "Too many skill groups or experience groups."
                 : string.Empty;
@@ -100,7 +102,12 @@ public class ProfileBAL(ProfileDAL profileDAL, RevalidationBAL revalidationBAL, 
                 objResponse.ReturnMessage = error;
                 return objResponse;
             }
-            profile!.UpdatedAt = DateTime.UtcNow;
+            // The Now date is the server's: it moves only when the text actually changes.
+            ProfileDocument? existing = await profileDAL.GetProfileDB();
+            profile!.Now = profile.Now.Trim();
+            profile.NowUpdatedAt = profile.Now == (existing?.Now ?? string.Empty) ? existing?.NowUpdatedAt
+                : profile.Now.Length > 0 ? DateTime.UtcNow : null;
+            profile.UpdatedAt = DateTime.UtcNow;
             await profileDAL.UpsertProfileDB(profile);
             bool isRevalidated = await revalidationBAL.Revalidate(["profile"]);
             await auditBAL.Write("profile.saved", true, contextService.GetUserId(), contextService.GetEmail(), string.Empty);
@@ -120,6 +127,8 @@ public class ProfileBAL(ProfileDAL profileDAL, RevalidationBAL revalidationBAL, 
         }
         return objResponse;
     }
+
+    private const int MaxNowLength = 280;
 
     private static bool IsHttpsOrEmpty(string url)
     {
