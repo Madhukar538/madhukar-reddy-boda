@@ -125,3 +125,14 @@ export type AuditEntry = {
   userAgent: string;
   detail: string;
 };
+
+/** One difference between the deployed built-in content and the database (GetContentSync). */
+export type ContentSyncItem = {
+  type: 'post' | 'project' | 'profile';
+  id: string;
+  title: string;
+  change: 'new' | 'changed';
+  fields: string[];
+};
+
+export type ContentSyncResult = { applied: number; isRevalidated: boolean };

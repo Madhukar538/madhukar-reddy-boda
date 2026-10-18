@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.DataAccess;
+using Dhucar.Portfolio.Properties;
 using Dhucar.Portfolio.Properties.Documents;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Options;
@@ -11,10 +12,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Shares the seed reader with the admin content sync
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Imports the site's current content (exported to JSON) into an empty database, once.
  */
 public class SeedBAL(PostDAL postDAL, ProjectDAL projectDAL, ProfileDAL profileDAL, IOptions<PortfolioSettings> options, ICodeLogger codeLog)
@@ -41,33 +42,15 @@ public class SeedBAL(PostDAL postDAL, ProjectDAL projectDAL, ProfileDAL profileD
     /// </summary>
     public async Task SeedIfEmpty()
     {
-        string path = options.Value.SeedPath;
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        SeedContentDTO? seed = await ReadSeed();
+        if (seed == null)
         {
             codeLog.Code("Seed", "No seed file; skipping.");
             return;
         }
-        SeedFile? seed = JsonSerializer.Deserialize<SeedFile>(await File.ReadAllTextAsync(path), JsonOptions);
-        if (seed == null)
-        {
-            return;
-        }
         if (await postDAL.CountPostsDB() == 0)
         {
-            await postDAL.InsertPostsDB(seed.Posts.Select(x => new PostDocument
-            {
-                Id = x.Slug,
-                Title = x.Title,
-                Excerpt = x.Excerpt,
-                Content = PostBAL.SanitizeHtml(x.Content),
-                Date = x.Date,
-                PublishedAt = DateTime.ParseExact(x.Date, "MMMM d, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
-                Category = x.Category,
-                Tags = x.Tags,
-                IsPublished = true,
-                UpdatedAt = DateTime.UtcNow,
-                UpdatedBy = "seed",
-            }).ToList());
+            await postDAL.InsertPostsDB(seed.Posts.Select(ToPostDocument).ToList());
         }
         if (await projectDAL.CountProjectsDB() == 0)
         {
@@ -85,29 +68,64 @@ public class SeedBAL(PostDAL postDAL, ProjectDAL projectDAL, ProfileDAL profileD
         }
     }
 
-    private sealed class SeedFile
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   ReadSeed
+    // Method Description    :   Reads the deployed seed file, or null when there is none.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   SeedContentDTO
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>ReadSeed : </c> Reads the deployed seed file, or null when there is none.
+    /// </summary>
+    public async Task<SeedContentDTO?> ReadSeed()
     {
-        public List<SeedPost> Posts { get; set; } = new();
-
-        public List<ProjectDocument> Projects { get; set; } = new();
-
-        public ProfileDocument? Profile { get; set; }
+        string path = options.Value.SeedPath;
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        {
+            return null;
+        }
+        return JsonSerializer.Deserialize<SeedContentDTO>(await File.ReadAllTextAsync(path), JsonOptions);
     }
 
-    private sealed class SeedPost
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   ToPostDocument
+    // Method Description    :   Converts a seed post into a published, sanitised post document.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   post
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   PostDocument
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>ToPostDocument : </c> Converts a seed post into a published, sanitised post document.
+    /// </summary>
+    public static PostDocument ToPostDocument(SeedPostDTO post) => new PostDocument
     {
-        public string Slug { get; set; } = string.Empty;
-
-        public string Title { get; set; } = string.Empty;
-
-        public string Excerpt { get; set; } = string.Empty;
-
-        public string Content { get; set; } = string.Empty;
-
-        public string Date { get; set; } = string.Empty;
-
-        public string Category { get; set; } = string.Empty;
-
-        public List<string> Tags { get; set; } = new();
-    }
+        Id = post.Slug,
+        Title = post.Title,
+        Excerpt = post.Excerpt,
+        Content = PostBAL.SanitizeHtml(post.Content),
+        Date = post.Date,
+        PublishedAt = DateTime.ParseExact(post.Date, "MMMM d, yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
+        Category = post.Category,
+        Tags = post.Tags,
+        IsPublished = true,
+        UpdatedAt = DateTime.UtcNow,
+        UpdatedBy = "seed",
+    };
 }
