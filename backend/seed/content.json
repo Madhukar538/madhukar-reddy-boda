@@ -1,6 +1,21 @@
 {
   "posts": [
     {
+      "slug": "rtx-5090-vs-dgx-spark-local-llm-inference",
+      "title": "RTX 5090 vs DGX Spark for a Local AI Agent: Why Memory Bandwidth Won",
+      "excerpt": "Same model, same Ollama version, same request: the RTX 5090 answered in ~15 seconds and the DGX Spark in ~41. Here is why bandwidth, not memory size, decided it, and when the Spark is still the right box.",
+      "content": "<p class=\"lead\">We had an NVIDIA DGX Spark to evaluate for our self-hosted AI agent, and an RTX 5090 workstation already running it. On paper the Spark looks like the bigger machine: four times the memory. In practice, for the model we actually run, the RTX 5090 answered the same question in roughly a third of the time.</p>\n\n      <h2>1. A Fair Test</h2>\n      <p>The DGX Spark ships without models preloaded, so both machines were set up the same way:</p>\n      <ul>\n        <li><strong>Model:</strong> Gemma 4 26B on both.</li>\n        <li><strong>Runtime:</strong> Ollama 0.31.1 on both.</li>\n        <li><strong>Workload:</strong> the same agent request (prompt, conversation history and tool definitions), measured end to end.</li>\n      </ul>\n\n      <h2>2. Results</h2>\n      <table>\n        <thead><tr><th>Metric</th><th>RTX 5090</th><th>DGX Spark</th></tr></thead>\n        <tbody>\n          <tr><td>Response time (same request)</td><td>~15 s</td><td>~41 s</td></tr>\n          <tr><td>Relative response time</td><td>1×</td><td>2.73× slower</td></tr>\n          <tr><td>Extra waiting time</td><td>—</td><td>~26 s</td></tr>\n        </tbody>\n      </table>\n      <blockquote><p>[!success] The RTX 5090 finished in about 63% less time</p><p>For this workload the DGX Spark brought no speed-up over the workstation.</p></blockquote>\n\n      <h2>3. Why: Bandwidth Beats Capacity When the Model Fits</h2>\n      <table>\n        <thead><tr><th>Hardware</th><th>RTX 5090</th><th>DGX Spark (GB10)</th></tr></thead>\n        <tbody>\n          <tr><td>Memory</td><td>32 GB GDDR7</td><td>128 GB unified LPDDR5x</td></tr>\n          <tr><td>Memory bus</td><td>512-bit</td><td>256-bit</td></tr>\n          <tr><td>Data rate per pin</td><td>28 Gbps</td><td>~8.533 Gbps</td></tr>\n          <tr><td>Memory bandwidth</td><td>1,792 GB/s</td><td>~273 GB/s</td></tr>\n          <tr><td>Capacity</td><td>1×</td><td>4×</td></tr>\n          <tr><td>Bandwidth</td><td>~6.6×</td><td>1×</td></tr>\n        </tbody>\n      </table>\n      <p>An answer comes in two phases. <strong>Prefill</strong> reads the prompt, the conversation history and every tool definition. <strong>Generation</strong> then produces the answer one token at a time, and every token means streaming the model's weights through memory again. That second phase is limited by memory bandwidth far more than by compute.</p>\n      <p>Gemma 4 26B fits comfortably in the RTX 5090's 32 GB, so the Spark's extra capacity buys nothing here, while the 5090 moves data about 6.6 times faster. That bandwidth gap is the most likely reason for the result.</p>\n      <blockquote><p>[!note] What we did not measure</p><p>We timed the whole response, not prefill and generation separately, and this was one request per machine. The direction of the result is clear; the exact ratio will move with prompt length, output length and quantization.</p></blockquote>\n\n      <h2>4. When the DGX Spark Is the Right Box</h2>\n      <p>128 GB of unified memory is a real advantage when the workload does not fit in 32 GB:</p>\n      <ul>\n        <li>Larger models that would not load on a single consumer GPU at all.</li>\n        <li>Much longer context windows, where the KV cache grows with every token of history.</li>\n        <li>Several models resident at once (for example an embedding model, a reranker and a chat model).</li>\n      </ul>\n      <p>Choose for the model you will actually run: if it fits in GPU memory, bandwidth decides speed; if it does not, capacity decides whether it runs at all.</p>\n\n      <h2>5. What We Test Next</h2>\n      <ul>\n        <li>NVIDIA-native models from NVIDIA's model registry, which may be better optimised for the Spark's hardware.</li>\n        <li>Separate timings for prefill and generation, so each machine's strength is visible on its own.</li>\n        <li>A change to how the model runs on the server that could make answers roughly twice as fast at the same quality, tested on our own hardware before it goes anywhere else.</li>\n      </ul>\n\n      <h2>6. Takeaways</h2>\n      <ul>\n        <li>For local LLM inference, check memory bandwidth before memory size.</li>\n        <li>More memory only helps once the model, or its context, no longer fits.</li>\n        <li>Benchmark with your own model, runtime version and real requests; spec sheets don't tell you the answer for your workload.</li>\n      </ul>",
+      "date": "October 18, 2026",
+      "category": "Artificial Intelligence",
+      "tags": [
+        "LLMs",
+        "GPUs",
+        "Ollama",
+        "Performance",
+        "Self-hosted AI"
+      ]
+    },
+    {
       "slug": "ai-development-workflow-obsidian-mcp-skills",
       "title": "Memory, Reach and Habits: How I Use an Obsidian Vault, MCP and Skills to Ship Production-Grade Code",
       "excerpt": "AI assistants write code quickly but know nothing about my systems. My workflow gives them three things: an Obsidian vault as memory, MCP servers as reach, and Skills as habits. Then nothing ships until it's measured.",
@@ -168,17 +183,17 @@
       "id": "multi-tenant-ai-chatbot-platform",
       "kind": "key",
       "title": "Multi-Tenant AI Chatbot Platform",
-      "description": "Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.",
+      "description": "Embeddable RAG assistant on .NET 10: Microsoft Agent Framework agents with MCP tools for database and docs access, pgvector retrieval, interactive map answers, passkey sign-in, server-bound licensing and remote installs and upgrades.",
       "tech": [
         ".NET 10",
-        "Semantic Kernel",
+        "Microsoft Agent Framework",
+        "MCP",
         "pgvector",
-        "RabbitMQ",
         "Next.js 16"
       ],
       "post": "rag-chatbot-latency-audit",
       "isFeatured": true,
-      "outcome": "Latency audit traced 40 s answers to 7–8 LLM calls per request; the fix plan targets ~70% faster replies.",
+      "outcome": "Most answers now arrive in about 13 seconds, down from 30–40, after a latency audit and a move to Microsoft Agent Framework.",
       "sortOrder": 0
     },
     {
@@ -477,6 +492,21 @@
       "sortOrder": 15
     },
     {
+      "id": "local-llm-gpu-benchmark-rtx-5090-vs-dgx-spark",
+      "kind": "lab",
+      "title": "Local LLM GPU Benchmark: RTX 5090 vs DGX Spark",
+      "description": "Same model (Gemma 4 26B), same Ollama version, same agent request: ~15 s on an RTX 5090 against ~41 s on a DGX Spark. Memory bandwidth (1,792 vs ~273 GB/s) mattered more than memory size once the model fit.",
+      "tech": [
+        "Ollama",
+        "Gemma 4",
+        "RTX 5090",
+        "DGX Spark"
+      ],
+      "post": "rtx-5090-vs-dgx-spark-local-llm-inference",
+      "status": "RESEARCH",
+      "sortOrder": 16
+    },
+    {
       "id": "hybrid-product-search-bm25-vector-rrf",
       "kind": "lab",
       "title": "Hybrid Product Search (BM25 + Vector + RRF)",
@@ -490,7 +520,7 @@
       ],
       "post": "hybrid-search-solr-bm25-vector-rrf",
       "status": "POC",
-      "sortOrder": 16
+      "sortOrder": 17
     },
     {
       "id": "on-demand-isr-next-js-16-net",
@@ -505,7 +535,7 @@
       ],
       "post": "nextjs-dotnet-on-demand-isr",
       "status": "POC",
-      "sortOrder": 17
+      "sortOrder": 18
     },
     {
       "id": "mcp-server-for-code-database-intelligence",
@@ -522,7 +552,7 @@
       ],
       "post": "mcp-server-code-database-intelligence",
       "status": "WIP",
-      "sortOrder": 18
+      "sortOrder": 19
     },
     {
       "id": "self-hosted-web-analytics",
@@ -537,7 +567,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 19
+      "sortOrder": 20
     },
     {
       "id": "mongodb-query-tuning-for-a-meeting-platform",
@@ -551,7 +581,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 20
+      "sortOrder": 21
     },
     {
       "id": "voice-ivr-agent-over-rag",
@@ -566,7 +596,7 @@
       ],
       "post": "",
       "status": "RESEARCH",
-      "sortOrder": 21
+      "sortOrder": 22
     },
     {
       "id": "in-browser-llm-inference-with-webllm",
@@ -580,7 +610,7 @@
       ],
       "post": "",
       "status": "RESEARCH",
-      "sortOrder": 22
+      "sortOrder": 23
     },
     {
       "id": "image-table-extraction-with-document-ai",
@@ -595,7 +625,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 23
+      "sortOrder": 24
     },
     {
       "id": "10-node-bare-metal-vmss-cluster",
@@ -610,7 +640,7 @@
       ],
       "post": "homelab-vmss-docker-swarm-vs-k3s",
       "status": "RESEARCH",
-      "sortOrder": 24
+      "sortOrder": 25
     },
     {
       "id": "legacy-jquery-site-next-js-static-export",
@@ -625,7 +655,7 @@
       ],
       "post": "",
       "status": "WIP",
-      "sortOrder": 25
+      "sortOrder": 26
     },
     {
       "id": "custom-roslyn-analyzer",
@@ -639,7 +669,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 26
+      "sortOrder": 27
     },
     {
       "id": "api-load-testing-observability",
@@ -654,7 +684,7 @@
       ],
       "post": "load-testing-microservices-k6-grafana",
       "status": "SHIPPED",
-      "sortOrder": 27
+      "sortOrder": 28
     },
     {
       "id": "pdf-generation-from-html-in-c",
@@ -668,7 +698,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 28
+      "sortOrder": 29
     },
     {
       "id": "ai-code-review-assistant",
@@ -684,7 +714,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 29
+      "sortOrder": 30
     },
     {
       "id": "iot-predictive-maintenance-poc",
@@ -700,7 +730,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 30
+      "sortOrder": 31
     },
     {
       "id": "advanced-rag-for-internal-docs",
@@ -715,7 +745,7 @@
       ],
       "post": "building-rag-pipeline-internal-documentation",
       "status": "SHIPPED",
-      "sortOrder": 31
+      "sortOrder": 32
     },
     {
       "id": "end-to-end-encryption-layer",
@@ -729,7 +759,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 32
+      "sortOrder": 33
     },
     {
       "id": "rabbitmq-microservices-bus",
@@ -743,7 +773,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 33
+      "sortOrder": 34
     },
     {
       "id": "grpc-service-mesh",
@@ -757,7 +787,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 34
+      "sortOrder": 35
     }
   ],
   "profile": {

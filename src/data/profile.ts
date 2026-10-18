@@ -164,11 +164,11 @@ export const keyProjects: ProjectCard[] = [
   {
     title: 'Multi-Tenant AI Chatbot Platform',
     description:
-      'Embeddable RAG assistant on .NET 10: Semantic Kernel agents, pgvector retrieval, a text-to-SQL agent, MCP tools, episodic memory, per-workspace PII masking, SignalR streaming and RabbitMQ ingestion.',
-    tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'Next.js 16'],
+      'Embeddable RAG assistant on .NET 10: Microsoft Agent Framework agents with MCP tools for database and docs access, pgvector retrieval, interactive map answers, passkey sign-in, server-bound licensing and remote installs and upgrades.',
+    tech: ['.NET 10', 'Microsoft Agent Framework', 'MCP', 'pgvector', 'Next.js 16'],
     post: 'rag-chatbot-latency-audit',
     featured: true,
-    outcome: 'Latency audit traced 40 s answers to 7–8 LLM calls per request; the fix plan targets ~70% faster replies.',
+    outcome: 'Most answers now arrive in about 13 seconds, down from 30–40, after a latency audit and a move to Microsoft Agent Framework.',
   },
   {
     title: 'Offline-First Procurement & Inspection App',
@@ -388,6 +388,14 @@ export type Experiment = {
 
 // Newest work first.
 export const rdProjects: Experiment[] = [
+  {
+    title: 'Local LLM GPU Benchmark: RTX 5090 vs DGX Spark',
+    description:
+      'Same model (Gemma 4 26B), same Ollama version, same agent request: ~15 s on an RTX 5090 against ~41 s on a DGX Spark. Memory bandwidth (1,792 vs ~273 GB/s) mattered more than memory size once the model fit.',
+    tech: ['Ollama', 'Gemma 4', 'RTX 5090', 'DGX Spark'],
+    status: 'RESEARCH',
+    post: 'rtx-5090-vs-dgx-spark-local-llm-inference',
+  },
   {
     title: 'Hybrid Product Search (BM25 + Vector + RRF)',
     description: 'Solr 9 engine fusing keyword and kNN vector results with Reciprocal Rank Fusion. In-process ONNX embeddings, rule-based NLU over a live catalog vocabulary, typo tolerance, price parsing and multi-item queries.',

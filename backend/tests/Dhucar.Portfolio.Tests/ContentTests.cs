@@ -26,12 +26,12 @@ public class ContentTests
         using ApiFactory factory = new();
         HttpClient client = factory.CreateApiClient();
         ApiResult posts = await client.Post("GetPosts");
-        Assert.Equal(11, posts.Data.GetArrayLength());
+        Assert.Equal(SeededPostCount(), posts.Data.GetArrayLength());
         ApiResult post = await client.Post("GetPost", new { slug = "mcp-server-code-database-intelligence" });
         Assert.Equal(HttpStatusCode.OK, post.Status);
         Assert.Equal(HttpStatusCode.NotFound, (await client.Post("GetPost", new { slug = "does-not-exist" })).Status);
         ApiResult lab = await client.Post("GetProjects", new { kind = "lab" });
-        Assert.Equal(19, lab.Data.GetArrayLength());
+        Assert.Equal(SeededCount("projects", p => p.GetProperty("kind").GetString() == "lab"), lab.Data.GetArrayLength());
         ApiResult profile = await client.Post("GetProfile");
         Assert.Equal("Boda Madhukar Reddy", profile.Data.GetProperty("name").GetString());
     }
@@ -88,8 +88,8 @@ public class ContentTests
         AdminSession session = await AdminSession.SignedIn(factory);
         Assert.Equal(HttpStatusCode.OK, (await session.Client.Post("SavePost", Post("draft-post", "<p>WIP</p>", isPublished: false), token: session.AccessToken)).Status);
         Assert.Equal(HttpStatusCode.NotFound, (await session.Client.Post("GetPost", new { slug = "draft-post" })).Status);
-        Assert.Equal(11, (await session.Client.Post("GetPosts")).Data.GetArrayLength());
-        Assert.Equal(12, (await session.Client.Post("GetAllPosts", token: session.AccessToken)).Data.GetArrayLength());
+        Assert.Equal(SeededPostCount(), (await session.Client.Post("GetPosts")).Data.GetArrayLength());
+        Assert.Equal(SeededPostCount() + 1, (await session.Client.Post("GetAllPosts", token: session.AccessToken)).Data.GetArrayLength());
 
         Assert.Equal(HttpStatusCode.BadRequest, (await session.Client.Post("SavePost", Post("Bad Slug!", "<p>x</p>"), token: session.AccessToken)).Status);
         Assert.Equal(HttpStatusCode.BadRequest, (await session.Client.Post("SaveProject", new { kind = "client", title = "X", url = "http://insecure.example" }, token: session.AccessToken)).Status);
@@ -119,5 +119,14 @@ public class ContentTests
             string html = post.GetProperty("content").GetString()!;
             Assert.Equal(Text(html), Text(Dhucar.Portfolio.BusinessLogic.BAL.PostBAL.SanitizeHtml(html)));
         }
+    }
+
+    /// <summary>Counts from the seed file, so adding content doesn't need a test change.</summary>
+    private static int SeededPostCount() => SeededCount("posts", _ => true);
+
+    private static int SeededCount(string collection, Func<JsonElement, bool> match)
+    {
+        using JsonDocument seed = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "seed", "content.json")));
+        return seed.RootElement.GetProperty(collection).EnumerateArray().Count(match);
     }
 }

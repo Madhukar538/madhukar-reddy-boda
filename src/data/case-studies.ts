@@ -41,16 +41,16 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: 'multi-tenant-ai-chatbot',
     project: 'Multi-Tenant AI Chatbot Platform',
-    title: 'From 40 seconds to a plan for 8\u2013\u206012: auditing a multi-tenant RAG chatbot',
+    title: 'From 40 seconds to about 13: rebuilding a multi-tenant AI agent',
     summary:
-      'An embeddable RAG assistant on .NET 10 worked, but a data question took 30–40 seconds. An end-to-end audit of the request path turned "the chatbot is slow" into a ranked list of 12 fixes.',
-    note: 'Results are the targets of the audit’s fix plan, not yet measured in production.',
+      'An embeddable RAG assistant on .NET 10 worked, but a data question took 30–40 seconds. An end-to-end audit ranked the fixes, the agent moved to Microsoft Agent Framework with MCP tools for data and docs, and most answers now arrive in about 13 seconds.',
+    note: 'Measured on the running platform. The next step, a change to how the model runs on the server, is still being tested.',
     stats: [
       { value: '30–40 s', label: 'per data question, before' },
-      { value: '7–8 → 2–3', label: 'LLM calls per request' },
-      { value: '~70%', label: 'faster replies, targeted' },
+      { value: '~13 s', label: 'most answers now' },
+      { value: '~2×', label: 'faster again, next (in testing)' },
     ],
-    tech: ['.NET 10', 'Semantic Kernel', 'pgvector', 'RabbitMQ', 'SignalR', 'Redis', 'MongoDB', 'Next.js 16'],
+    tech: ['.NET 10', 'Microsoft Agent Framework', 'MCP', 'pgvector', 'RabbitMQ', 'SignalR', 'Redis', 'MongoDB', 'Next.js 16'],
     post: 'rag-chatbot-latency-audit',
     chapters: [
       {
@@ -123,6 +123,47 @@ export const caseStudies: CaseStudy[] = [
           { when: 'Week 1', what: 'Quick wins: real streaming, one vector search, kernel reuse, MCP pooling.', target: '30–40 s → 20–25 s' },
           { when: 'Weeks 2–3', what: 'Single-shot SQL generation, cached intent, parallel pipeline steps.', target: '→ 8–12 s' },
           { when: 'Weeks 3–4', what: 'Tenant isolation in every cache key, retries for ingestion, per-tenant cache invalidation, latency dashboards.' },
+        ],
+      },
+      {
+        kind: 'cards',
+        id: 'shipped',
+        label: 'What shipped',
+        title: 'Faster, and ready to run at customer sites',
+        cards: [
+          {
+            title: 'A new agent core',
+            body: 'The agent moved to Microsoft Agent Framework, with MCP tools that give it controlled access to the database and the documentation it needs to answer each question.',
+            fix: 'Most answers now arrive in about 13 seconds, down from 30–40.',
+          },
+          {
+            title: 'Answers you can explore',
+            body: 'Interactive maps: pick a state to see its districts, then a district to see its cities, all without asking a new question.',
+            fix: 'Follow-up questions became clicks, so users wait less and the model does less work.',
+          },
+          {
+            title: 'Sign-in and licensing',
+            body: 'Users sign in with a fingerprint, face or device PIN instead of a password. Each installation is licensed to one server for a fixed period, and the licence resists tampering and copying.',
+            fix: 'A copied or moved installation stops working, and an expired licence pauses the application until renewal.',
+          },
+          {
+            title: 'Remote installs and operations',
+            body: 'Installs and upgrades run remotely. From one place the team backs up and restores data, rolls back an upgrade, upgrades several instances safely, and watches each service’s health and load.',
+            fix: 'Supporting many servers no longer needs anyone on site.',
+          },
+        ],
+      },
+      {
+        kind: 'text',
+        id: 'hardware',
+        label: 'Hardware',
+        title: 'Choosing the GPU: bandwidth beat memory size',
+        body: [
+          'The same agent request on Gemma 4 26B took about 15 seconds on an RTX 5090 workstation and about 41 seconds on an NVIDIA DGX Spark. The model fits in the 5090’s 32 GB, and its roughly 6.6× higher memory bandwidth is what decides generation speed.',
+        ],
+        points: [
+          'Next: a change to how the model runs on the server could make answers roughly twice as fast at the same quality. It is tested on our own server before it reaches customer servers.',
+          'Full numbers and method in the post “RTX 5090 vs DGX Spark for a Local AI Agent”.',
         ],
       },
       {

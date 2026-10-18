@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import { ArrowLeft, ArrowRight, Bug } from 'lucide-react';
 import { AuthorCard } from '@/components/portfolio/author-card';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
+import { BenchmarkCharts } from '@/components/blog/benchmark-charts';
+import { benchmarks } from '@/data/benchmarks';
 import { diagrams } from '@/data/diagrams';
 import { ReaderChrome } from '@/components/blog/reader-chrome';
 import { ShareButtons } from '@/components/blog/share-buttons';
@@ -53,6 +55,7 @@ export default async function BlogPost({ params }: Props) {
 
   const { html, toc, words } = renderPost(post);
   const diagram = diagrams[post.slug];
+  const benchmark = benchmarks[post.slug];
   const related = relatedPosts(content.posts, post);
   const { newer, older } = adjacentPosts(content.posts, post);
   const links = postLinks(content, post);
@@ -97,6 +100,7 @@ export default async function BlogPost({ params }: Props) {
           </header>
 
           {diagram && <ArchitectureDiagram diagram={diagram} />}
+          {benchmark && <BenchmarkCharts benchmark={benchmark} />}
 
           <div className="article-body border-t border-foreground/10 pt-8" dangerouslySetInnerHTML={{ __html: html }} />
 
