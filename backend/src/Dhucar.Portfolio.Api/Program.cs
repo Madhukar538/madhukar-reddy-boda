@@ -1,13 +1,14 @@
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Live presence hub
  * Layer           :  Api
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Host setup: Kestrel limits, services, and the middleware pipeline (exceptions, security headers, CORS, rate limits).
  */
 using Dhucar.Portfolio.Api.Extensions;
+using Dhucar.Portfolio.Api.Hubs;
 using Dhucar.Portfolio.Api.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(Dhucar.Portfolio.Api.Extensions.ServiceCollectionExtensions.CorsPolicy);
 app.UseRateLimiter();
 app.MapControllers();
+app.MapHub<PresenceHub>("/hubs/presence");
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();

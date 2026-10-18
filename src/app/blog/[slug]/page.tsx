@@ -8,6 +8,7 @@ import { BenchmarkCharts } from '@/components/blog/benchmark-charts';
 import { benchmarks } from '@/data/benchmarks';
 import { diagrams } from '@/data/diagrams';
 import { ReaderChrome } from '@/components/blog/reader-chrome';
+import { LivePresence } from '@/components/blog/live-presence';
 import { ShareButtons } from '@/components/blog/share-buttons';
 import { Comments, PopularPosts, Reactions } from '@/components/blog/post-engagement';
 import { PostCard } from '@/components/blog/post-card';
@@ -92,6 +93,8 @@ export default async function BlogPost({ params }: Props) {
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         All posts
       </Link>
+
+      <LivePresence slug={post.slug} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] items-start">
         <article className="article-shell glass p-6 md:p-10 min-w-0">

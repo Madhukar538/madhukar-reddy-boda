@@ -9,7 +9,7 @@ namespace Dhucar.Portfolio.DataAccess;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Post stats, comments, tickets and media collections, with their indexes
+ * Modified Reason :  Covering indexes for the traffic reports; keeps warm connections to the cluster
  * Layer           :  DataAccess
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
@@ -21,7 +21,11 @@ public class MongoContext
     public MongoContext(IOptions<PortfolioSettings> options)
     {
         PortfolioSettings settings = options.Value;
-        MongoClient client = new MongoClient(settings.Mongo.ConnectionString);
+        MongoClientSettings clientSettings = MongoClientSettings.FromConnectionString(settings.Mongo.ConnectionString);
+        // Keep a couple of connections open even when the site is quiet, so the first request after
+        // a lull doesn't pay for a fresh TLS handshake to the cluster.
+        clientSettings.MinConnectionPoolSize = 2;
+        MongoClient client = new MongoClient(clientSettings);
         Database = client.GetDatabase(settings.Mongo.Database);
         _retentionDays = Math.Clamp(settings.Tracking.RetentionDays, 1, 3650);
     }
@@ -81,13 +85,14 @@ public class MongoContext
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   none
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   18 Oct 2026
+    // Modified Reason       :   Covering indexes for each traffic report, and page views by path
     // Return Values         :   Task
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    18 Oct 2026       Traffic report indexes
     //****************************************************************************************************
     /// <summary>
     /// <c>EnsureIndexes : </c> Creates unique, lookup and TTL indexes; safe to run on every start.
@@ -114,6 +119,14 @@ public class MongoContext
         await PageViews.Indexes.CreateManyAsync([
             new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Timestamp), new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(_retentionDays) }),
             new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.Path)),
+            // One per traffic report, so each is answered from the index alone (no document reads).
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.VisitorHash)),
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.ReferrerHost)),
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.Device)),
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.Country)),
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Day).Ascending(x => x.UtmSource)),
+            // Read counts by post path (an anchored prefix regex can use it).
+            new CreateIndexModel<PageViewDocument>(Builders<PageViewDocument>.IndexKeys.Ascending(x => x.Path)),
         ]);
         await DailySalts.Indexes.CreateOneAsync(new CreateIndexModel<DailySaltDocument>(
             Builders<DailySaltDocument>.IndexKeys.Ascending(x => x.CreatedAt), new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(2) }));

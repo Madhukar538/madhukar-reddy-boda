@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Dhucar.Portfolio.Api.Middlewares;
 using Dhucar.Portfolio.Api.Services;
 using Dhucar.Portfolio.BusinessLogic.BAL;
+using Dhucar.Portfolio.BusinessLogic.Presence;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Security;
 using Dhucar.Portfolio.Common.Services;
@@ -20,7 +21,7 @@ namespace Dhucar.Portfolio.Api.Extensions;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Memory cache, Telegram client, and rate limits for reactions and comments
+ * Modified Reason :  Live presence: SignalR, the reader tracker and its once-a-second broadcaster
  * Layer           :  Extensions
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Composition root: settings, BAL/DAL scanning, security services, CORS and rate limits.
@@ -73,6 +74,15 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<GlobalExceptionMiddleware>();
         services.AddSingleton<SecurityHeadersMiddleware>();
         services.AddHostedService<StartupTasks>();
+
+        // Live presence on blog posts: tiny messages only, one shared tracker, pushed once a second.
+        services.AddSignalR(hub =>
+        {
+            hub.MaximumReceiveMessageSize = 1024;
+            hub.EnableDetailedErrors = false;
+        });
+        services.AddSingleton<PresenceTracker>();
+        services.AddHostedService<PresenceBroadcaster>();
         services.AddSingleton<IFido2>(serviceProvider =>
         {
             PasskeySettings passkeys = serviceProvider.GetRequiredService<IOptions<PortfolioSettings>>().Value.Passkeys;

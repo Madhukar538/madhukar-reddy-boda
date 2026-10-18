@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Eye, Loader2, MessageSquare, Send, TrendingUp } from 'lucide-react';
 import {
+  REACTED_EVENT,
   REACTIONS,
   addComment,
   compactNumber,
@@ -58,6 +59,7 @@ export function Reactions({ slug }: { slug: string }) {
     setMine(next);
     saveMyReactions(slug, next);
     setData((d) => (d ? { ...d, reactions: { ...d.reactions, [key]: Math.max(0, d.reactions[key] + (isAdded ? 1 : -1)) } } : d));
+    if (isAdded) window.dispatchEvent(new CustomEvent(REACTED_EVENT, { detail: key }));
     react(slug, key, isAdded).catch(() => {
       // Put it back if the API refused (rate limit or offline).
       setMine(mine);
