@@ -19,10 +19,10 @@ namespace Dhucar.Portfolio.Api.Extensions;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Memory cache, Telegram client, and rate limits for reactions and comments
  * Layer           :  Extensions
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Composition root: settings, BAL/DAL scanning, security services, CORS and rate limits.
  */
 public static class ServiceCollectionExtensions
@@ -84,6 +84,8 @@ public static class ServiceCollectionExtensions
                 TimestampDriftTolerance = 300_000,
             }, null!);
         });
+        services.AddMemoryCache();
+        services.AddHttpClient(NotificationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5));
         services.AddHttpClient(RevalidationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5))
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 
@@ -113,6 +115,8 @@ public static class ServiceCollectionExtensions
             AddPerIpPolicy(options, "admin", _ => 120);
             AddPerIpPolicy(options, "public", _ => 240);
             AddPerIpPolicy(options, "track", _ => 60);
+            AddPerIpPolicy(options, "react", security => Math.Clamp(security.ReactionsPerMinute, 1, 10_000));
+            AddPerIpPolicy(options, "comment", security => Math.Clamp(security.CommentsPerMinute, 1, 10_000));
         });
 
         services.AddControllers()

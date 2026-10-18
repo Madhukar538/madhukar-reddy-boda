@@ -3,6 +3,7 @@ using Dhucar.Portfolio.Api.Extensions;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Properties;
+using Dhucar.Portfolio.Properties.Models;
 using Dhucar.Portfolio.Api.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -12,11 +13,11 @@ namespace Dhucar.Portfolio.Api.Controllers;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged and searchable
  * Layer           :  Controller
- * Modified By     :
- * Description     :  Lists every post including drafts.
+ * Modified By     :  Boda Madhukar Reddy
+ * Description     :  Lists one page of posts, drafts included.
  */
 [Route("api/[controller]")]
 [ApiController]
@@ -27,7 +28,7 @@ public class GetAllPostsController(PostBAL objPostBAL, ICodeLogger codeLog) : Co
     //****************************************************************************************************
     // Layer                 :   Controller
     // Method Name           :   GetAllPosts
-    // Method Description    :   Lists every post including drafts.
+    // Method Description    :   Lists one page of posts, drafts included.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   none
@@ -40,16 +41,24 @@ public class GetAllPostsController(PostBAL objPostBAL, ICodeLogger codeLog) : Co
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //****************************************************************************************************
     /// <summary>
-    /// <c>GetAllPosts : </c> Lists every post including drafts.
+    /// <c>GetAllPosts : </c> Lists one page of posts, drafts included.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> GetAllPosts()
+    public async Task<IActionResult> GetAllPosts([FromBody] GetAllPostsRequestDTO objAPIRequest)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         Response<object> objResponse = new Response<object>();
         try
         {
-            objResponse = await objPostBAL.GetPosts(true);
+            if (objAPIRequest != null)
+            {
+                objResponse = await objPostBAL.GetPostPage(objAPIRequest);
+            }
+            else
+            {
+                objResponse.ReturnCode = (int)ErrorCode.ValidationFailed;
+                objResponse.ReturnMessage = "Missing Parameters.";
+            }
         }
         catch (Exception ex)
         {

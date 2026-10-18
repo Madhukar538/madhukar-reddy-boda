@@ -6,8 +6,8 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  26 Sep 2026
- * Modified Reason :  Creates the security settings document on start.
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Backfills blog read counts once.
  * Layer           :  Services
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  On start: creates MongoDB indexes and seeds an empty database from the exported site content.
@@ -29,6 +29,7 @@ public class StartupTasks(IServiceProvider serviceProvider) : IHostedService
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //  1.1        Boda Madhukar Reddy    26 Sep 2026       Settings document
+    //  1.2        Boda Madhukar Reddy    18 Oct 2026       Read count backfill
     //****************************************************************************************************
     /// <summary>
     /// <c>StartAsync : </c> Ensures indexes and the settings document, then seeds.
@@ -40,6 +41,8 @@ public class StartupTasks(IServiceProvider serviceProvider) : IHostedService
         // Creates settings/security with its defaults, so the switches are there to flip in the database.
         await scope.ServiceProvider.GetRequiredService<SettingsDAL>().EnsureSecuritySettingsDB();
         await scope.ServiceProvider.GetRequiredService<SeedBAL>().SeedIfEmpty();
+        // Once: read counts start from the page views already stored.
+        await scope.ServiceProvider.GetRequiredService<EngagementBAL>().BackfillReads();
     }
 
     //****************************************************************************************************

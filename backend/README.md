@@ -100,6 +100,8 @@ Settings live under `Portfolio`. In production, set them as environment variable
 | `Portfolio__Security__IsCloudflareTrusted` | `true` only when the API is reachable solely through Cloudflare (Tunnel). It then uses `CF-Connecting-IP` and `CF-IPCountry`. |
 | `Portfolio__Passkeys__RpId` / `Portfolio__Passkeys__Origins__0` | `dhucar.in` / `https://dhucar.in` |
 | `Portfolio__Site__RevalidateUrl` / `Portfolio__Site__RevalidateSecret` | Next.js revalidation endpoint and a shared secret of 32+ characters |
+| `Portfolio__Telegram__BotToken` / `Portfolio__Telegram__ChatId` | Optional: the same Telegram bot as the site's bug reports. Each new blog comment then pings you. Leave empty to turn alerts off. |
+| `Portfolio__Security__CommentsPerMinute` / `Portfolio__Security__ReactionsPerMinute` | Optional per-IP limits; defaults 3 and 30. |
 
 ## First-time setup
 

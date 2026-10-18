@@ -13,10 +13,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged admin list, single-post load for the editor, and a picker list
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Blog posts: public reads of published posts, admin create/update/delete with validation and HTML sanitising.
  */
 public partial class PostBAL(PostDAL postDAL, RevalidationBAL revalidationBAL, AuditBAL auditBAL, IContextService contextService, ICodeLogger codeLog)
@@ -291,5 +291,156 @@ public partial class PostBAL(PostDAL postDAL, RevalidationBAL revalidationBAL, A
         sanitizer.AllowedCssProperties.Clear();
         sanitizer.AllowedAtRules.Clear();
         return sanitizer;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetPostPage
+    // Method Description    :   One page of posts (drafts included) for the admin list, without bodies.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetPostPage : </c> One page of posts (drafts included) for the admin list, without bodies.
+    /// </summary>
+    public async Task<Response<object>> GetPostPage(GetAllPostsRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            string status = (objAPIRequest.Status ?? "all").Trim().ToLowerInvariant();
+            if (status is not ("all" or "published" or "draft"))
+            {
+                objResponse.ReturnCode = (int)ErrorCode.ValidationFailed;
+                objResponse.ReturnMessage = "Status must be all, published or draft.";
+                return objResponse;
+            }
+            (int page, int pageSize, int skip) = Paging.Normalize(objAPIRequest);
+            string search = (objAPIRequest.Search ?? string.Empty).Trim();
+            (List<PostDocument> posts, long total) = await postDAL.GetPostPageDB(status, search.Length > 100 ? search[..100] : search, skip, pageSize);
+            List<PostListItemDTO> items = posts.Select(x => new PostListItemDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Category = x.Category,
+                Tags = x.Tags,
+                Date = x.Date,
+                IsPublished = x.IsPublished,
+                UpdatedAt = x.UpdatedAt,
+            }).ToList();
+            objResponse.Data = Paging.Result(items, page, pageSize, total);
+            objResponse.RowCount = total;
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetPostPage", string.Empty, nameof(GetPostPage));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetPostForEdit
+    // Method Description    :   One post (draft or published) with its body, for the editor.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetPostForEdit : </c> One post (draft or published) with its body, for the editor.
+    /// </summary>
+    public async Task<Response<object>> GetPostForEdit(GetItemRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            string slug = (objAPIRequest.Id ?? string.Empty).Trim();
+            PostDocument? post = slug.Length is > 0 and <= 96 ? await postDAL.GetPostDB(slug) : null;
+            if (post == null)
+            {
+                objResponse.ReturnCode = (int)ErrorCode.NotFound;
+                objResponse.ReturnMessage = "Post not found.";
+                return objResponse;
+            }
+            objResponse.Data = post;
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetPostForEdit", string.Empty, nameof(GetPostForEdit));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetPostOptions
+    // Method Description    :   Slug and title of every post, for the project editor’s picker.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetPostOptions : </c> Slug and title of every post, for the project editor’s picker.
+    /// </summary>
+    public async Task<Response<object>> GetPostOptions(EmptyRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            List<PostOptionDTO> options = (await postDAL.GetPostOptionsDB()).Select(x => new PostOptionDTO { Id = x.Id, Title = x.Title }).ToList();
+            objResponse.Data = options;
+            objResponse.RowCount = options.Count;
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetPostOptions", string.Empty, nameof(GetPostOptions));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
     }
 }

@@ -15,13 +15,13 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  A tracked view of a blog post also adds to its lasting read count
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Cookieless, privacy-first page-view tracking and the traffic dashboard summary.
  */
-public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, IContextService contextService, IOptions<PortfolioSettings> options, ICodeLogger codeLog)
+public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, EngagementBAL engagementBAL, IContextService contextService, IOptions<PortfolioSettings> options, ICodeLogger codeLog)
 {
     [GeneratedRegex(@"bot|crawl|spider|slurp|headless|lighthouse|pagespeed|preview|monitor|curl|wget|python|httpclient|go-http|java/|scrapy|uptime", RegexOptions.IgnoreCase)]
     private static partial Regex BotPattern();
@@ -82,6 +82,8 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, IConte
                 Country = contextService.GetCountry(),
                 VisitorHash = VisitorHash(salt, contextService.GetClientIp(), userAgent),
             });
+            // A blog post's lasting read count (raw page views expire).
+            await engagementBAL.RecordRead(path);
         }
         catch (Exception ex)
         {

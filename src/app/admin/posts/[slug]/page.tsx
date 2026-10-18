@@ -58,10 +58,8 @@ function Editor({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (isNew) return;
-    call<Post[]>('GetAllPosts')
-      .then((posts) => {
-        const post = posts.find((p) => p.id === slug);
-        if (!post) return setLoadError('This post no longer exists.');
+    call<Post>('GetPostForEdit', { id: slug })
+      .then((post) => {
         const loaded = toForm(post);
         setOriginal(loaded);
         setForm(loaded);

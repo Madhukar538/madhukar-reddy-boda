@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { errorMessage } from '@/lib/admin/api';
-import { KIND_LABELS, LAB_STATUSES, type Post, type Project, type ProjectKind, type SaveResult } from '@/lib/admin/types';
+import { KIND_LABELS, LAB_STATUSES, type PostOption, type Project, type ProjectKind, type SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { SaveBar, ensureRefreshed, setFlash, takeFlash, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
@@ -32,12 +32,10 @@ function Editor({ id }: { id: string }) {
   const [status, setStatus] = useState<Status>(takeFlash);
 
   useEffect(() => {
-    call<Post[]>('GetAllPosts').then((posts) => setSlugs(posts.map((p) => p.id))).catch(() => {});
+    call<PostOption[]>('GetPostOptions', {}).then((posts) => setSlugs(posts.map((p) => p.id))).catch(() => {});
     if (isNew) return;
-    call<Project[]>('GetAllProjects', { kind: '' })
-      .then((list) => {
-        const project = list.find((p) => p.id === id);
-        if (!project) return setLoadError('This project no longer exists.');
+    call<Project>('GetProjectForEdit', { id })
+      .then((project) => {
         setOriginal(toForm(project));
         setForm(toForm(project));
       })

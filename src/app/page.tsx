@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Rss } from 'lucide-react';
 import { BlogIndex } from '@/components/blog/blog-index';
+import { PopularPosts } from '@/components/blog/post-engagement';
 import { HomeBento } from '@/components/blog/home-bento';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
@@ -69,6 +70,8 @@ export default async function Home() {
       <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
 
       <BlogIndex posts={summaries(posts)} />
+
+      <PopularPosts className="mt-14 md:mt-20 md:[&_ol]:grid md:[&_ol]:grid-cols-2 md:[&_ol]:gap-x-4" />
 
       {/* Topics */}
       <section aria-labelledby="topics-heading" className="mt-14 md:mt-20">

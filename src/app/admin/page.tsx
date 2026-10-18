@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { errorMessage } from '@/lib/admin/api';
-import type { TrafficSummary } from '@/lib/admin/types';
+import type { AdminComment, Paged, TrafficSummary } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { Notice, Panel, Spinner } from '@/components/admin/ui';
@@ -29,6 +29,13 @@ function Dashboard() {
   const [summary, setSummary] = useState<TrafficSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [waitingComments, setWaitingComments] = useState(0);
+
+  useEffect(() => {
+    call<Paged<AdminComment>>('GetComments', { status: 'pending', pageSize: 1 })
+      .then((page) => setWaitingComments(page.totalCount))
+      .catch(() => {});
+  }, [call]);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,6 +60,13 @@ function Dashboard() {
         <Notice>
           Only {recoveryCodesLeft} recovery {recoveryCodesLeft === 1 ? 'code is' : 'codes are'} left.{' '}
           <Link href="/admin/security" className="font-medium text-primary hover:underline">Create new ones</Link>.
+        </Notice>
+      )}
+
+      {waitingComments > 0 && (
+        <Notice kind="success">
+          {waitingComments} {waitingComments === 1 ? 'comment is' : 'comments are'} waiting for review.{' '}
+          <Link href="/admin/comments" className="font-medium text-primary hover:underline">Review now</Link>.
         </Notice>
       )}
 

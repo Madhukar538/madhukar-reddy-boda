@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { Calendar, Clock, Folder, Link2, Tags } from 'lucide-react';
+import { BarChart3, Calendar, Clock, Folder, Link2, Tags } from 'lucide-react';
 import type { BlogPost } from '@/data/blogs';
 import { slugify } from '@/lib/blog';
+import { engagementEnabled } from '@/lib/engagement';
+import { ReadCount } from '@/components/blog/post-engagement';
 
 function Row({ icon: Icon, name, children }: { icon: typeof Folder; name: string; children: ReactNode }) {
   return (
@@ -42,6 +44,11 @@ export function Properties({ post, words, links }: { post: BlogPost; words: numb
         <Row icon={Clock} name="reading time">
           {post.readTime} · {words.toLocaleString('en-US')} words
         </Row>
+        {engagementEnabled && (
+          <Row icon={BarChart3} name="reads">
+            <ReadCount slug={post.slug} />
+          </Row>
+        )}
         <Row icon={Link2} name="links">
           <a href="#linked-mentions" className="text-primary hover:underline">
             {links} linked {links === 1 ? 'note' : 'notes'}

@@ -11,10 +11,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Paged admin list and single-project load for the editor
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Projects (key systems, client builds, Lab experiments): public reads and admin edits.
  */
 public partial class ProjectBAL(ProjectDAL projectDAL, RevalidationBAL revalidationBAL, AuditBAL auditBAL, IContextService contextService, ICodeLogger codeLog)
@@ -218,5 +218,104 @@ public partial class ProjectBAL(ProjectDAL projectDAL, RevalidationBAL revalidat
             .Distinct()
             .Take(maxCount)
             .ToList();
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetProjectPage
+    // Method Description    :   One page of projects (drafts included) for the admin list.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetProjectPage : </c> One page of projects (drafts included) for the admin list.
+    /// </summary>
+    public async Task<Response<object>> GetProjectPage(GetAllProjectsRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            string kind = (objAPIRequest.Kind ?? string.Empty).Trim().ToLowerInvariant();
+            if (kind.Length > 0 && !Kinds.Contains(kind))
+            {
+                objResponse.ReturnCode = (int)ErrorCode.ValidationFailed;
+                objResponse.ReturnMessage = "Kind must be key, client or lab.";
+                return objResponse;
+            }
+            (int page, int pageSize, int skip) = Paging.Normalize(objAPIRequest);
+            string search = (objAPIRequest.Search ?? string.Empty).Trim();
+            (List<ProjectDocument> projects, long total) = await projectDAL.GetProjectPageDB(kind, search.Length > 100 ? search[..100] : search, skip, pageSize);
+            objResponse.Data = Paging.Result(projects, page, pageSize, total);
+            objResponse.RowCount = total;
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetProjectPage", string.Empty, nameof(GetProjectPage));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetProjectForEdit
+    // Method Description    :   One project (draft or published), for the editor.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetProjectForEdit : </c> One project (draft or published), for the editor.
+    /// </summary>
+    public async Task<Response<object>> GetProjectForEdit(GetItemRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            string projectId = (objAPIRequest.Id ?? string.Empty).Trim();
+            ProjectDocument? project = projectId.Length is > 0 and <= 96 ? await projectDAL.GetProjectDB(projectId) : null;
+            if (project == null)
+            {
+                objResponse.ReturnCode = (int)ErrorCode.NotFound;
+                objResponse.ReturnMessage = "Project not found.";
+                return objResponse;
+            }
+            objResponse.Data = project;
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetProjectForEdit", string.Empty, nameof(GetProjectForEdit));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
     }
 }

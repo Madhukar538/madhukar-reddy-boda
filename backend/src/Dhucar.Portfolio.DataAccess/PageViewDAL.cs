@@ -8,10 +8,10 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Blog read counts for the one-time backfill of post stats
  * Layer           :  DataAccess
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Page view storage and analytics aggregations.
  */
 public class PageViewDAL(MongoContext context)
@@ -108,6 +108,33 @@ public class PageViewDAL(MongoContext context)
             .Group(new BsonDocument { { "_id", "$" + field }, { "count", new BsonDocument("$sum", 1) } })
             .Sort(new BsonDocument { { "count", -1 }, { "_id", 1 } })
             .Limit(limit)
+            .ToListAsync();
+        return rows.Select(x => new CountItemDTO { Key = x["_id"].AsString, Count = x["count"].ToInt64() }).ToList();
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   GetBlogReadCountsDB
+    // Method Description    :   Views per blog post path across the stored page views (one-time backfill of read counts).
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   18 Oct 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   List of CountItemDTO
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    18 Oct 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetBlogReadCountsDB : </c> Views per blog post path across the stored page views (one-time backfill of read counts).
+    /// </summary>
+    public async Task<List<CountItemDTO>> GetBlogReadCountsDB()
+    {
+        List<BsonDocument> rows = await context.PageViews.Aggregate()
+            .Match(new BsonDocument("Path", new BsonRegularExpression("^/blog/[^/]+$")))
+            .Group(new BsonDocument { { "_id", "$Path" }, { "count", new BsonDocument("$sum", 1) } })
             .ToListAsync();
         return rows.Select(x => new CountItemDTO { Key = x["_id"].AsString, Count = x["count"].ToInt64() }).ToList();
     }

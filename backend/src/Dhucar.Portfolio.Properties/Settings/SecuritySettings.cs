@@ -3,10 +3,10 @@ namespace Dhucar.Portfolio.Properties.Settings;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Oct 2026
+ * Modified Reason :  Per-minute limits for comments and reactions
  * Layer           :  Properties
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Authentication, encryption and transport security settings.
  */
 public class SecuritySettings
@@ -49,4 +49,10 @@ public class SecuritySettings
 
     /// <summary>Sign-in requests allowed per client IP per minute.</summary>
     public int AuthRequestsPerMinute { get; set; } = 10;
+
+    /// <summary>Comments one IP may post per minute.</summary>
+    public int CommentsPerMinute { get; set; } = 3;
+
+    /// <summary>Reactions one IP may send per minute.</summary>
+    public int ReactionsPerMinute { get; set; } = 30;
 }
