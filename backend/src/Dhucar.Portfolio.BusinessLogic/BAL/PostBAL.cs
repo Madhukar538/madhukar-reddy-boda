@@ -14,7 +14,7 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Paged admin list, single-post load for the editor, and a picker list
+ * Modified Reason :  Paged admin list, single-post load, picker list; images may keep loading and decoding hints
  * Layer           :  BusinessLogic
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Blog posts: public reads of published posts, admin create/update/delete with validation and HTML sanitising.
@@ -279,7 +279,7 @@ public partial class PostBAL(PostDAL postDAL, RevalidationBAL revalidationBAL, A
             sanitizer.AllowedTags.Add(tag);
         }
         sanitizer.AllowedAttributes.Clear();
-        foreach (string attribute in new[] { "class", "href", "title", "src", "alt", "width", "height", "id", "open" })
+        foreach (string attribute in new[] { "class", "href", "title", "src", "alt", "width", "height", "id", "open", "loading", "decoding" })
         {
             sanitizer.AllowedAttributes.Add(attribute);
         }

@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink, ImagePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { errorMessage } from '@/lib/admin/api';
 import type { Post, SaveResult } from '@/lib/admin/types';
@@ -11,6 +11,7 @@ import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { SaveBar, ensureRefreshed, setFlash, takeFlash, fromInputDate, savedMessage, toInputDate, useLeaveGuard, type Status } from '@/components/admin/editor';
 import { Field, Notice, Spinner, fieldClass, splitList } from '@/components/admin/ui';
+import { ImagePicker } from '@/components/admin/image-picker';
 
 type Form = { slug: string; title: string; excerpt: string; content: string; date: string; category: string; tags: string; isPublished: boolean };
 
@@ -42,6 +43,11 @@ pre{background:rgba(127,127,127,.12);padding:12px;border-radius:10px;overflow:au
 code{font-family:ui-monospace,monospace;font-size:.9em}img{max-width:100%}
 blockquote{margin:1em 0;padding:.6em 1em;border-left:3px solid #3b82f6;background:rgba(59,130,246,.08);border-radius:6px}
 table{border-collapse:collapse}td,th{border:1px solid rgba(127,127,127,.3);padding:4px 8px}
+figure.media{margin:1.6em 0}figure.media img{display:block;width:100%;height:auto;border-radius:12px}figcaption{opacity:.75;font-size:.95em;margin-top:.5em}
+figure.media-overlay{position:relative;overflow:hidden;border-radius:12px}figure.media-overlay img{border-radius:0;min-height:12em;object-fit:cover}
+figure.media-overlay figcaption{position:absolute;inset:auto 0 0 0;margin:0;padding:3em 1.2em 1em;color:#fff;opacity:1;background:linear-gradient(to top,rgba(0,0,0,.78),transparent)}
+figure.media-side{display:grid;grid-template-columns:1fr 1fr;gap:1em;align-items:center}figure.media-side figcaption{opacity:1;margin:0}
+figure.media-wide{margin-inline:-24px}figure.media-wide figcaption{text-align:center;font-size:.85em}
 </style></head><body>${html}</body></html>`;
 
 function Editor({ slug }: { slug: string }) {
@@ -55,6 +61,8 @@ function Editor({ slug }: { slug: string }) {
   const [busy, setBusy] = useState<'save' | 'delete' | null>(null);
   const [status, setStatus] = useState<Status>(takeFlash);
   const [tab, setTab] = useState<'write' | 'preview'>('write');
+  const [isPickingImage, setIsPickingImage] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isNew) return;
@@ -135,6 +143,9 @@ function Editor({ slug }: { slug: string }) {
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <span className="text-sm font-semibold">Content (HTML)</span>
+              <button type="button" onClick={() => setIsPickingImage(true)} className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-primary ring-1 ring-primary/40 hover:bg-primary/10">
+                <ImagePlus className="h-3.5 w-3.5" /> Insert image
+              </button>
               <div role="tablist" className="glass-inset flex gap-1 rounded-full p-0.5 text-xs">
                 {(['write', 'preview'] as const).map((t) => (
                   <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn('rounded-full px-3 py-1 font-medium capitalize', tab === t ? 'bg-primary text-primary-foreground' : 'text-foreground/70')}>
@@ -143,8 +154,21 @@ function Editor({ slug }: { slug: string }) {
                 ))}
               </div>
             </div>
+            {isPickingImage && (
+              <ImagePicker
+                onClose={() => setIsPickingImage(false)}
+                onInsert={(html) => {
+                  // At the cursor (or the end), on its own lines.
+                  const el = contentRef.current;
+                  const at = el && tab === 'write' ? el.selectionStart : form.content.length;
+                  set('content', `${form.content.slice(0, at)}\n${html}\n${form.content.slice(at)}`);
+                  setIsPickingImage(false);
+                }}
+              />
+            )}
             {tab === 'write' ? (
               <textarea
+                ref={contentRef}
                 required
                 aria-label="Content (HTML)"
                 spellCheck={false}

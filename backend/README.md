@@ -116,6 +116,7 @@ Settings live under `Portfolio`. In production, set them as environment variable
 `/admin` is part of the Next.js site. It is a static shell that loads everything from this API after sign-in. It is never indexed and never tracked, and it can't be framed.
 
 - **Traffic:** a tickets summary, then page views and visitors for the last 7, 30 or 90 days, top pages and referrers, devices and countries.
+- **Images in posts:** "Insert image" in the post editor uploads a photo (resized to 1600 px and converted to WebP in the browser, at most 2 MB) or reuses an earlier one, and inserts it in one of four layouts: photo with text below, text on the photo, photo beside text, or a wide banner. The API checks the file's bytes (PNG, JPEG, WebP or GIF only), stores it in MongoDB by content hash, and serves it at `/media/<hash>.<ext>` with a one-year immutable cache; the site serves the same path from its own domain.
 - **Posts** and **Projects:** create, edit, hide or delete. Saving refreshes the live site within seconds. Post HTML is previewed in a sandboxed frame with scripts off, and sanitised by the API on save.
 - **Comments:** reader comments wait here for approval (Waiting, Approved, Spam).
 - **Tickets:** every bug report and enquiry from the site's form and genie. Filter by status and priority, search, change status or priority and keep notes; the Traffic page shows a summary. The site files tickets server-to-server, signed with `REVALIDATE_SECRET` (`CreateTicket` refuses anything unsigned or older than 5 minutes).
