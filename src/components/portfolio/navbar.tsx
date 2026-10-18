@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,6 +12,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { AnimatePresence, m } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
+import { NavLiquid } from '@/components/portfolio/nav-liquid';
 
 // Every page on the site — each one is its own URL.
 // The blog is the home page; the portfolio pages follow it.
@@ -54,6 +55,8 @@ export function Navbar({ contact }: { contact: NavContact }) {
   const [scrolled, setScrolled] = useState(false);
   const [docked, setDocked] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const capsuleRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLElement>(null);
 
   useEffect(() => setControlsOpen(false), [pathname]);
 
@@ -84,6 +87,7 @@ export function Navbar({ contact }: { contact: NavContact }) {
         className="vt-nav nav-flow-top hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none"
       >
         <div
+          ref={capsuleRef}
           className={cn(
             'nav-flow-capsule glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
             scrolled && 'shadow-2xl'
@@ -151,7 +155,9 @@ export function Navbar({ contact }: { contact: NavContact }) {
       </header>
 
       {/* ── Wide screens, scrolled: the same links as tabs down the right edge ── */}
+      <NavLiquid docked={docked} capsuleRef={capsuleRef} dockRef={dockRef} />
       <nav
+        ref={dockRef}
         aria-label="Main"
         data-open={docked ? '' : undefined}
         inert={!docked}
