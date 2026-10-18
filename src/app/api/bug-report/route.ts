@@ -68,10 +68,18 @@ export function GET() {
   );
 }
 
+// A report is a few KB of text; anything far bigger is abuse, refused before parsing.
+const MAX_BODY_BYTES = 32 * 1024;
+
 export async function POST(request: Request) {
+  if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) {
+    return Response.json({ error: 'Report is too large' }, { status: 413 });
+  }
   let body: unknown;
   try {
-    body = await request.json();
+    const text = await request.text();
+    if (Buffer.byteLength(text) > MAX_BODY_BYTES) return Response.json({ error: 'Report is too large' }, { status: 413 });
+    body = JSON.parse(text);
   } catch {
     return Response.json({ error: 'Invalid request' }, { status: 400 });
   }

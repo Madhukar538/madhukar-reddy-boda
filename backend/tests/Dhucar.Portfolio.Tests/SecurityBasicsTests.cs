@@ -18,6 +18,8 @@ public class SecurityBasicsTests
         Assert.Equal("no-store", response.Headers.CacheControl?.ToString());
         Assert.False(response.Headers.Contains("Server"));
         Assert.True(response.Headers.Contains("Strict-Transport-Security"));
+        Assert.Equal("none", response.Headers.GetValues("X-Permitted-Cross-Domain-Policies").Single());
+        Assert.Equal("same-origin", response.Headers.GetValues("Cross-Origin-Opener-Policy").Single());
     }
 
     [Fact]

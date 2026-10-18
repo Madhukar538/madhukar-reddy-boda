@@ -28,7 +28,19 @@ function siteUrl(request: Request) {
   return `${proto}://${host}`;
 }
 
-export async function POST(request: Request) {
+// MCP requests are small JSON-RPC messages; refuse anything bigger before parsing.
+const MAX_BODY_BYTES = 64 * 1024;
+
+async function boundedRequest(request: Request): Promise<Request | null> {
+  if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) return null;
+  const body = await request.text();
+  if (Buffer.byteLength(body) > MAX_BODY_BYTES) return null;
+  return new Request(request.url, { method: request.method, headers: request.headers, body });
+}
+
+export async function POST(incoming: Request) {
+  const request = await boundedRequest(incoming);
+  if (!request) return withCors(Response.json({ error: 'Request too large' }, { status: 413 }));
   const server = createPortfolioServer(siteUrl(request), await getContent());
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
