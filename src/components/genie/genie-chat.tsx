@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { usePathname } from 'next/navigation';
-import { Check, Copy, Loader2, Mail, RotateCcw, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Check, Copy, Loader2, Mail, RotateCcw, SendHorizontal, X } from 'lucide-react';
+import { GenieIcon } from './genie-icon';
 import { cn } from '@/lib/utils';
 import { CATEGORIES, URGENCIES } from '@/lib/bug-report-options';
 
@@ -164,7 +165,7 @@ function useIsPhone() {
 function Orb({ small }: { small?: boolean }) {
   return (
     <span aria-hidden className={cn('genie-orb flex shrink-0 items-center justify-center rounded-full text-white', small ? 'h-7 w-7' : 'h-10 w-10')}>
-      <Sparkles className={small ? 'h-3.5 w-3.5' : 'h-5 w-5'} />
+      <GenieIcon className={small ? 'h-3.5 w-3.5' : 'h-5 w-5'} />
     </span>
   );
 }

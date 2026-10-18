@@ -105,7 +105,7 @@ export default async function RootLayout({
           <OsModeProvider>
             <LiquidWallpaper />
             <PWARegister />
-            <Navbar />
+            <Navbar contact={{ email: profile.email, phone: profile.phone, phoneHref: profile.phoneHref }} />
             <main className="relative z-0 min-h-[70dvh]">
               <SocialRail profile={profile} socialLinks={socialLinks} />
               {children}

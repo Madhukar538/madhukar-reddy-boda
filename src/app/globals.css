@@ -1359,6 +1359,13 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     justify-content: center;
     border-radius: 999px;
   }
+  /* Work with me: the one call to action, in the accent colour. */
+  .nav-dock-cta {
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--primary));
+    box-shadow: 0 4px 14px hsl(var(--primary) / 0.45);
+  }
+  .nav-dock-cta:hover { filter: brightness(1.1); }
   .nav-dock-label {
     position: absolute;
     right: calc(100% + 0.75rem);
@@ -1381,6 +1388,10 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     opacity: 1;
     transform: translate(0, -50%);
   }
+}
+/* Short laptop screens: keep the dock clear of the genie button; search and theme stay in the top bar. */
+@media (min-width: 1280px) and (max-height: 700px) {
+  .nav-dock > :nth-last-child(-n + 2) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-flow-capsule, .nav-flow-top[data-docked] .nav-flow-capsule,

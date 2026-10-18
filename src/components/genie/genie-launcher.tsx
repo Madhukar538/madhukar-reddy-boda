@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { Sparkles, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { GenieIcon } from './genie-icon';
 import { cn } from '@/lib/utils';
 
 // The chat itself loads only when someone opens it (or points at the button),
@@ -70,7 +71,7 @@ export function GenieLauncher({ email }: { email: string }) {
           open && 'max-sm:pointer-events-none max-sm:scale-75 max-sm:opacity-0'
         )}
       >
-        {open ? <X className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
+        {open ? <X className="h-6 w-6" /> : <GenieIcon className="h-6 w-6" />}
       </button>
       {loaded && <GenieChat open={open} onClose={close} email={email} />}
     </div>
