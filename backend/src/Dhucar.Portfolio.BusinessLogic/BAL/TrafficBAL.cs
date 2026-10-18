@@ -16,7 +16,7 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  A tracked view of a blog post also adds to its lasting read count
+ * Modified Reason :  Traffic reports run in parallel
  * Layer           :  BusinessLogic
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Cookieless, privacy-first page-view tracking and the traffic dashboard summary.
@@ -105,13 +105,14 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   objAPIRequest
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   18 Oct 2026
+    // Modified Reason       :   Runs the five reports at the same time
     // Return Values         :   Response
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    18 Oct 2026       Reports run in parallel
     //****************************************************************************************************
     /// <summary>
     /// <c>GetTrafficSummary : </c> Totals, daily series and top pages, referrers, devices and countries for the last N days.
@@ -123,17 +124,24 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
         {
             int days = objAPIRequest.Days is >= 1 and <= 365 ? objAPIRequest.Days : 30;
             string fromDay = DateTime.UtcNow.Date.AddDays(1 - days).ToString("yyyy-MM-dd");
-            List<DailyTrafficDTO> daily = await pageViewDAL.GetDailyTrafficDB(fromDay);
+            // The five reports are independent: ask for them together, one round trip of waiting instead of five.
+            Task<List<DailyTrafficDTO>> dailyTask = pageViewDAL.GetDailyTrafficDB(fromDay);
+            Task<List<CountItemDTO>> pagesTask = pageViewDAL.GetTopValuesDB(fromDay, "Path", 20);
+            Task<List<CountItemDTO>> referrersTask = pageViewDAL.GetTopValuesDB(fromDay, "ReferrerHost", 10);
+            Task<List<CountItemDTO>> devicesTask = pageViewDAL.GetTopValuesDB(fromDay, "Device", 5);
+            Task<List<CountItemDTO>> countriesTask = pageViewDAL.GetTopValuesDB(fromDay, "Country", 10);
+            await Task.WhenAll(dailyTask, pagesTask, referrersTask, devicesTask, countriesTask);
+            List<DailyTrafficDTO> daily = dailyTask.Result;
             objResponse.Data = new TrafficSummaryDTO
             {
                 Days = days,
                 PageViews = daily.Sum(x => x.PageViews),
                 Visitors = daily.Sum(x => x.Visitors),
                 Daily = daily,
-                TopPages = await pageViewDAL.GetTopValuesDB(fromDay, "Path", 20),
-                TopReferrers = await pageViewDAL.GetTopValuesDB(fromDay, "ReferrerHost", 10),
-                Devices = await pageViewDAL.GetTopValuesDB(fromDay, "Device", 5),
-                Countries = await pageViewDAL.GetTopValuesDB(fromDay, "Country", 10),
+                TopPages = pagesTask.Result,
+                TopReferrers = referrersTask.Result,
+                Devices = devicesTask.Result,
+                Countries = countriesTask.Result,
             };
             objResponse.ReturnCode = (int)ErrorCode.Success;
             objResponse.ReturnMessage = "Success.";
