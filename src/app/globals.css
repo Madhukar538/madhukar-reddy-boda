@@ -1069,9 +1069,9 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
   }
 }
 /* Once the hero scrolls away, the portrait docks in the left gutter as a sticky
-   profile card, taking over from the link strip. Only where the gutter fits it. */
+   profile card beside the link strip. Only where the gutter fits both. */
 .profile-dock { display: none; }
-@media (min-width: 1600px) {
+@media (min-width: 1728px) {
   .profile-dock {
     display: block;
     position: fixed;
@@ -1079,7 +1079,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     z-index: 30;
     width: 13rem;
     /* Right edge 2rem left of the content column (max-w-6xl, 1.5rem padding). */
-    left: max(1rem, calc((100vw - 72rem) / 2 + 1.5rem - 2rem - 13rem));
+    left: max(4.5rem, calc((100vw - 72rem) / 2 + 1.5rem - 2rem - 13rem));
     opacity: 0;
     visibility: hidden;
     transform: translate(-1.5rem, -50%) scale(0.96);
@@ -1091,8 +1091,6 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
     transform: translate(0, -50%);
     transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s;
   }
-  .social-rail { transition: opacity 0.3s ease, visibility 0s linear 0s; }
-  .home-edge[data-docked] .social-rail { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
 }
 .profile-dock-photo {
   position: relative;
