@@ -40,27 +40,49 @@ export function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+// Wide screens have room beside the content for the docked tabs (content is max-w-6xl).
+const DOCK_QUERY = '(min-width: 1280px)';
+// Dock a little way down the page; undock nearer the top, so it doesn't flicker at the line.
+const DOCK_AT = 160;
+const UNDOCK_AT = 80;
+
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [docked, setDocked] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
 
   useEffect(() => setControlsOpen(false), [pathname]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const wide = window.matchMedia(DOCK_QUERY);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 12);
+      setDocked((was) => wide.matches && (was ? y > UNDOCK_AT : y > DOCK_AT));
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    wide.addEventListener('change', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      wide.removeEventListener('change', onScroll);
+    };
   }, []);
 
   return (
     <>
-      {/* ── Desktop floating glass capsule ── */}
-      <header className="vt-nav hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none">
+      {/* ── Desktop floating glass capsule. On wide screens, scrolling down sends it flowing
+             along the top edge into the corner, where it pours down the right edge as tabs. ── */}
+      <header
+        data-docked={docked ? '' : undefined}
+        inert={docked}
+        aria-hidden={docked || undefined}
+        className="vt-nav nav-flow-top hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none"
+      >
         <div
           className={cn(
-            'glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
+            'nav-flow-capsule glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
             scrolled && 'shadow-2xl'
           )}
         >
@@ -124,6 +146,58 @@ export function Navbar() {
           </div>
         </div>
       </header>
+
+      {/* ── Wide screens, scrolled: the same links as tabs down the right edge ── */}
+      <nav
+        aria-label="Main"
+        data-open={docked ? '' : undefined}
+        inert={!docked}
+        aria-hidden={!docked || undefined}
+        className="nav-dock glass glass-strong"
+        style={{ '--n': navLinks.length + 3 } as React.CSSProperties}
+      >
+        <Link href="/" title="Madhukar" className="nav-dock-item" style={{ '--i': 0 } as React.CSSProperties}>
+          <Image src="/icons/icon-192.png" alt="Home" width={28} height={28} className="h-7 w-7 rounded-full ring-1 ring-foreground/15" />
+        </Link>
+        <span aria-hidden className="nav-dock-item h-px w-6 bg-foreground/10" style={{ '--i': 1 } as React.CSSProperties} />
+        {navLinks.map((link, i) => {
+          const Icon = link.icon;
+          const isActive =
+            link.href === '/projects' ? pathname.startsWith('/projects') : isActivePath(pathname, link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive ? 'page' : undefined}
+              className={cn('nav-dock-item nav-dock-tab group', isActive ? 'text-foreground' : 'text-foreground/60 hover:text-foreground')}
+              style={{ '--i': i + 2 } as React.CSSProperties}
+            >
+              {isActive && (
+                <m.span
+                  layoutId="dock-pill"
+                  className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              )}
+              <Icon className="relative h-[1.1rem] w-[1.1rem]" strokeWidth={isActive ? 2.4 : 2} />
+              <span className="nav-dock-label">{link.label}</span>
+            </Link>
+          );
+        })}
+        <span aria-hidden className="nav-dock-item h-px w-6 bg-foreground/10" style={{ '--i': navLinks.length + 2 } as React.CSSProperties} />
+        <div className="nav-dock-item" style={{ '--i': navLinks.length + 3 } as React.CSSProperties}>
+          <button
+            type="button"
+            onClick={openQuickSwitcher}
+            aria-label="Search notes (⌘K)"
+            title="Search notes (⌘K)"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground"
+          >
+            <Search className="h-[1.05rem] w-[1.05rem]" />
+          </button>
+          <ThemeToggle />
+        </div>
+      </nav>
 
       {/* ── Mobile / tablet floating tab bar ── */}
       <div className="vt-tabbar lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
