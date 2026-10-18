@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, User, FlaskConical, PenLine, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
+import { Briefcase, User, FlaskConical, Handshake, Mail, PenLine, Phone, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
 import { openQuickSwitcher } from '@/lib/vault-client';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -12,6 +12,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { AnimatePresence, m } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
+import { NavLiquid } from '@/components/portfolio/nav-liquid';
 
 // Every page on the site — each one is its own URL.
 // The blog is the home page; the portfolio pages follow it.
@@ -46,11 +47,16 @@ const DOCK_QUERY = '(min-width: 1280px)';
 const DOCK_AT = 160;
 const UNDOCK_AT = 80;
 
-export function Navbar() {
+/** How to reach Madhukar, offered in the docked tabs. */
+export type NavContact = { email: string; phone: string; phoneHref: string };
+
+export function Navbar({ contact }: { contact: NavContact }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [docked, setDocked] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const capsuleRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLElement>(null);
 
   useEffect(() => setControlsOpen(false), [pathname]);
 
@@ -81,6 +87,7 @@ export function Navbar() {
         className="vt-nav nav-flow-top hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none"
       >
         <div
+          ref={capsuleRef}
           className={cn(
             'nav-flow-capsule glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
             scrolled && 'shadow-2xl'
@@ -148,13 +155,15 @@ export function Navbar() {
       </header>
 
       {/* ── Wide screens, scrolled: the same links as tabs down the right edge ── */}
+      <NavLiquid docked={docked} capsuleRef={capsuleRef} dockRef={dockRef} />
       <nav
+        ref={dockRef}
         aria-label="Main"
         data-open={docked ? '' : undefined}
         inert={!docked}
         aria-hidden={!docked || undefined}
         className="nav-dock glass glass-strong"
-        style={{ '--n': navLinks.length + 3 } as React.CSSProperties}
+        style={{ '--n': navLinks.length + 7 } as React.CSSProperties}
       >
         <Link href="/" title="Madhukar" className="nav-dock-item" style={{ '--i': 0 } as React.CSSProperties}>
           <Image src="/icons/icon-192.png" alt="Home" width={28} height={28} className="h-7 w-7 rounded-full ring-1 ring-foreground/15" />
@@ -185,7 +194,32 @@ export function Navbar() {
           );
         })}
         <span aria-hidden className="nav-dock-item h-px w-6 bg-foreground/10" style={{ '--i': navLinks.length + 2 } as React.CSSProperties} />
-        <div className="nav-dock-item" style={{ '--i': navLinks.length + 3 } as React.CSSProperties}>
+        {[
+          { href: contact.phoneHref, label: `Call ${contact.phone}`, icon: Phone },
+          { href: `mailto:${contact.email}`, label: 'Email me', icon: Mail },
+        ].map((item, i) => (
+          <a
+            key={item.label}
+            href={item.href}
+            aria-label={item.label}
+            className="nav-dock-item nav-dock-tab text-foreground/60 hover:bg-foreground/10 hover:text-foreground"
+            style={{ '--i': navLinks.length + 3 + i } as React.CSSProperties}
+          >
+            <item.icon className="h-[1.1rem] w-[1.1rem]" />
+            <span className="nav-dock-label">{item.label}</span>
+          </a>
+        ))}
+        <Link
+          href="/work-with-me"
+          aria-current={pathname === '/work-with-me' ? 'page' : undefined}
+          className="nav-dock-item nav-dock-tab nav-dock-cta"
+          style={{ '--i': navLinks.length + 5 } as React.CSSProperties}
+        >
+          <Handshake className="h-[1.1rem] w-[1.1rem]" />
+          <span className="nav-dock-label">Work with me</span>
+        </Link>
+        <span aria-hidden className="nav-dock-item h-px w-6 bg-foreground/10" style={{ '--i': navLinks.length + 6 } as React.CSSProperties} />
+        <div className="nav-dock-item" style={{ '--i': navLinks.length + 7 } as React.CSSProperties}>
           <button
             type="button"
             onClick={openQuickSwitcher}
