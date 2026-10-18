@@ -115,8 +115,10 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 `/admin` is part of the Next.js site. It is a static shell that loads everything from this API after sign-in. It is never indexed and never tracked, and it can't be framed.
 
-- **Traffic:** page views and visitors for the last 7, 30 or 90 days, top pages and referrers, devices and countries.
+- **Traffic:** a tickets summary, then page views and visitors for the last 7, 30 or 90 days, top pages and referrers, devices and countries.
 - **Posts** and **Projects:** create, edit, hide or delete. Saving refreshes the live site within seconds. Post HTML is previewed in a sandboxed frame with scripts off, and sanitised by the API on save.
+- **Comments:** reader comments wait here for approval (Waiting, Approved, Spam).
+- **Tickets:** every bug report and enquiry from the site's form and genie. Filter by status and priority, search, change status or priority and keep notes; the Traffic page shows a summary. The site files tickets server-to-server, signed with `REVALIDATE_SECRET` (`CreateTicket` refuses anything unsigned or older than 5 minutes).
 - **Profile:** name, links, tech stack, current role and education.
 - **Security:** passkeys, recovery codes, sign out everywhere, and the activity log. Removing a passkey or creating new recovery codes needs a current authenticator code.
 

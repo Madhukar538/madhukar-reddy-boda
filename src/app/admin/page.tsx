@@ -10,6 +10,7 @@ import { useAdmin } from '@/components/admin/session';
 import { Notice, Panel, Spinner } from '@/components/admin/ui';
 import { RankedList, TrafficChart } from '@/components/admin/traffic-chart';
 import { ContentSync } from '@/components/admin/content-sync';
+import { TicketSummary } from '@/components/admin/ticket-summary';
 
 const RANGES = [7, 30, 90] as const;
 
@@ -69,6 +70,8 @@ function Dashboard() {
           <Link href="/admin/comments" className="font-medium text-primary hover:underline">Review now</Link>.
         </Notice>
       )}
+
+      <TicketSummary />
 
       <ContentSync />
 
