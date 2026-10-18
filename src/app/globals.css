@@ -522,6 +522,47 @@
   color: hsl(var(--foreground) / 0.82);
 }
 .article-body > * + * { margin-top: 1.25rem; }
+/* Post images (uploaded in the admin): four layouts, each a <figure class="media media-…">.
+   below: photo, then its text · overlay: text on the photo · side: photo beside text ·
+   wide: a banner wider than the text column. Phones stack everything. */
+.article-body figure.media { margin-block: 2rem; }
+.article-body figure.media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  background: hsl(var(--foreground) / 0.05);
+}
+.article-body figure.media figcaption { color: hsl(var(--muted-foreground)); font-size: 0.95rem; line-height: 1.6; }
+.article-body figure.media-below figcaption { margin-top: 0.75rem; }
+
+.article-body figure.media-overlay { position: relative; overflow: hidden; border-radius: 1rem; }
+.article-body figure.media-overlay img { border-radius: 0; min-height: 16rem; object-fit: cover; }
+.article-body figure.media-overlay figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 3.5rem 1.5rem 1.25rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+  background: linear-gradient(to top, rgb(0 0 0 / 0.78), rgb(0 0 0 / 0.35) 60%, transparent);
+}
+
+.article-body figure.media-side { display: grid; gap: 1rem 1.5rem; align-items: center; }
+@media (min-width: 768px) {
+  .article-body figure.media-side { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+.article-body figure.media-side figcaption { color: hsl(var(--foreground) / 0.9); font-size: 1rem; }
+
+.article-body figure.media-wide { margin-inline: -1.5rem; }
+.article-body figure.media-wide img { border-radius: 0.75rem; }
+.article-body figure.media-wide figcaption { margin: 0.6rem 1.5rem 0; font-size: 0.85rem; text-align: center; }
+@media (min-width: 768px) {
+  .article-body figure.media-wide { margin-inline: -2.5rem; }
+  .article-body figure.media-wide figcaption { margin-inline: 2.5rem; }
+}
+
 .article-body p.lead {
   font-size: 1.2rem;
   line-height: 1.7;

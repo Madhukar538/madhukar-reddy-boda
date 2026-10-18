@@ -4,7 +4,7 @@ namespace Dhucar.Portfolio.Api.Middlewares;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Two-year HSTS, X-Permitted-Cross-Domain-Policies, wider Permissions-Policy
+ * Modified Reason :  Uploaded images under /media keep their own long-lived Cache-Control
  * Layer           :  Middlewares
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Adds security headers to every response; the API serves JSON only, so the CSP forbids everything.
@@ -32,6 +32,8 @@ public class SecurityHeadersMiddleware(IWebHostEnvironment environment) : IMiddl
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         bool isSwagger = environment.IsDevelopment() && context.Request.Path.StartsWithSegments("/swagger");
+        // Uploaded images are immutable (named by content hash) and set their own long cache.
+        bool isMedia = context.Request.Path.StartsWithSegments("/media");
         context.Response.OnStarting(() =>
         {
             IHeaderDictionary headers = context.Response.Headers;
@@ -50,7 +52,10 @@ public class SecurityHeadersMiddleware(IWebHostEnvironment environment) : IMiddl
             if (!isSwagger)
             {
                 headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
-                headers["Cache-Control"] = "no-store";
+                if (!isMedia)
+                {
+                    headers["Cache-Control"] = "no-store";
+                }
             }
             return Task.CompletedTask;
         });

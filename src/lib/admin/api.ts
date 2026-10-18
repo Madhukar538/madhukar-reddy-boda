@@ -24,7 +24,9 @@ type CallOptions = { token?: string; csrf?: boolean; signal?: AbortSignal };
 export async function apiCall<T>(action: string, body: object = {}, { token, csrf, signal }: CallOptions = {}): Promise<T> {
   if (!API_URL) throw new ApiError('The admin needs NEXT_PUBLIC_API_URL to be set at build time.', -99, 0);
 
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  // Uploads go as multipart (the browser sets its boundary); everything else is JSON.
+  const isForm = body instanceof FormData;
+  const headers: Record<string, string> = isForm ? {} : { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
   // The refresh and sign-out endpoints require this header; cross-site forms can't send it.
   if (csrf) headers['X-Requested-With'] = 'dhucar-admin';
@@ -34,7 +36,7 @@ export async function apiCall<T>(action: string, body: object = {}, { token, csr
     response = await fetch(`${API_URL}/api/${action}`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(body),
+      body: isForm ? body : JSON.stringify(body),
       credentials: 'include',
       cache: 'no-store',
       signal,

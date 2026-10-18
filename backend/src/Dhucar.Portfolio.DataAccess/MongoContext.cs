@@ -9,7 +9,7 @@ namespace Dhucar.Portfolio.DataAccess;
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
  * Modified Date   :  18 Oct 2026
- * Modified Reason :  Post stats, comments and tickets collections, with their indexes
+ * Modified Reason :  Post stats, comments, tickets and media collections, with their indexes
  * Layer           :  DataAccess
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
@@ -71,6 +71,9 @@ public class MongoContext
     /// <summary>Support tickets.</summary>
     public IMongoCollection<TicketDocument> Tickets => Database.GetCollection<TicketDocument>("tickets");
 
+    /// <summary>Uploaded images.</summary>
+    public IMongoCollection<MediaDocument> Media => Database.GetCollection<MediaDocument>("media");
+
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   EnsureIndexes
@@ -126,5 +129,6 @@ public class MongoContext
             new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Descending(x => x.CreatedAt)),
             new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.ResolvedAt), new CreateIndexOptions { Sparse = true }),
         ]);
+        await Media.Indexes.CreateOneAsync(new CreateIndexModel<MediaDocument>(Builders<MediaDocument>.IndexKeys.Descending(x => x.UploadedAt)));
     }
 }

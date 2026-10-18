@@ -203,3 +203,16 @@ export type TicketSummary = {
   averageResolutionHours: number | null;
   recent: TicketListItem[];
 };
+
+/** An uploaded image (UploadImage, GetImages); url is site-relative, e.g. /media/<hash>.webp. */
+export type MediaItem = {
+  id: string;
+  url: string;
+  contentType: string;
+  name: string;
+  width: number;
+  height: number;
+  bytes: number;
+  uploadedBy: string;
+  uploadedAt: string;
+};
