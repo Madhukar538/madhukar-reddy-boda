@@ -410,6 +410,27 @@
 }
 
 /* Live fluid (WebGL) layered over the blobs; fades in once it's running */
+/* A fine dot grid over the whole site, fixed while content scrolls past.
+   Full strength in the side gutters; softer behind the reading column. */
+.liquid-wallpaper .wallpaper-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(hsl(var(--foreground) / 0.16) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: center top;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, rgb(0 0 0 / 0.5) 28%, rgb(0 0 0 / 0.5) 72%, #000 100%);
+  mask-image: linear-gradient(to right, #000 0%, rgb(0 0 0 / 0.5) 28%, rgb(0 0 0 / 0.5) 72%, #000 100%);
+}
+/* Phones: one column, so an even, lighter grid. */
+@media (max-width: 767px) {
+  .liquid-wallpaper .wallpaper-dots {
+    background-size: 18px 18px;
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.6;
+  }
+}
+
 .liquid-wallpaper .fluid-canvas {
   position: absolute;
   inset: 0;
@@ -1030,8 +1051,8 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
 }
 
 /* The left edge of every page (components/portfolio/social-rail.tsx), plus the
-   home page's .hero-dots layer and Now card (app/page.tsx, now-card.tsx). */
-.social-rail, .now-card, .hero-dots { display: none; }
+   home page's Now card (now-card.tsx). */
+.social-rail, .now-card { display: none; }
 .social-rail-line {
   width: 1px;
   height: 3.5rem;
@@ -1052,15 +1073,6 @@ html:not([data-style]) .portrait-offset { padding-top: calc(58svh - 7rem); }
   .social-rail .social-rail-time {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-  }
-  /* A dot grid that fades out from the left of the hero: depth, nothing to read. */
-  .hero-dots {
-    display: block;
-    height: min(100svh, 60rem);
-    background-image: radial-gradient(hsl(var(--foreground) / 0.16) 1px, transparent 1.5px);
-    background-size: 22px 22px;
-    -webkit-mask-image: radial-gradient(ellipse 34% 55% at 10% 42%, #000 0%, transparent 100%);
-    mask-image: radial-gradient(ellipse 34% 55% at 10% 42%, #000 0%, transparent 100%);
   }
 }
 .social-rail-time {

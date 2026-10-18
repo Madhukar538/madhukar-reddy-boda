@@ -27,8 +27,6 @@ export default async function Home() {
 
   return (
     <>
-    {/* Dim dot grid filling the empty space left of the hero on wide screens. */}
-    <div aria-hidden className="hero-dots pointer-events-none absolute inset-x-0 top-0 -z-10" />
     <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />

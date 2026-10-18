@@ -2,8 +2,8 @@
  * Service worker — always serve the latest deployment.
  *
  * The page registers this file as /sw.js?v=<buildId>. A new deployment has a
- * new build id, so the browser installs a fresh worker (and a fresh cache) and
- * the old cache is deleted on activate.
+ * new build id, so the browser installs a fresh worker (and a fresh cache),
+ * which takes over at once; the old cache is deleted on activate.
  *
  * Strategies:
  *   HTML navigations        network-first  (cache only as an offline fallback)
@@ -29,11 +29,9 @@ self.addEventListener('install', (event) => {
         /* precache is best-effort; never block installation on it */
       })
   );
-  // Normally the page asks before activating (see SKIP_WAITING below), so an
-  // open tab is never switched to new code mid-session. A registration without
-  // a version comes from the old cache-first page code, which has no prompt:
-  // take over right away so those visitors stop getting stale pages.
-  if (VERSION === 'dev') self.skipWaiting();
+  // Take over at once: a new deployment's worker never waits behind the old one.
+  // Open tabs reload themselves onto the new version (components/pwa-register.tsx).
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -53,12 +51,6 @@ self.addEventListener('activate', (event) => {
       await self.clients.claim();
     })()
   );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
 
 function isRscRequest(request, url) {

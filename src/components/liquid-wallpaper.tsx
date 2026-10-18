@@ -5,8 +5,8 @@ import { FluidBackground } from './fluid-background';
 import { useDesignStyle } from '@/lib/design-style';
 
 /**
- * Vivid, slowly drifting backdrop that the glass surfaces refract,
- * plus a single delegated pointer listener that feeds the specular
+ * Vivid, slowly drifting backdrop that the glass surfaces refract, under a
+ * fine dot grid (.wallpaper-dots in globals.css), plus a single delegated pointer listener that feeds the specular
  * highlight position (--mx / --my) to whichever .glass-interactive
  * element is under the cursor.
  */
@@ -45,6 +45,7 @@ export function LiquidWallpaper() {
       <div className="blob blob-c" />
       <div className="blob blob-d" />
       {isGlass && <FluidBackground />}
+      <div className="wallpaper-dots" />
     </div>
   );
 }
