@@ -242,3 +242,16 @@ export const summaries = (list: BlogPost[]): PostSummary[] =>
 
 /** Absolute site URL for metadata, feeds and social cards. SITE_URL overrides it (e.g. for a staging deploy). */
 export const siteUrl = () => (process.env.SITE_URL || 'https://dhucar.in').replace(/\/$/, '');
+
+/**
+ * Truncates and formats description text to safely fit within search engine snippet limits (140–155 chars).
+ * Prevents Google, Bing and crawlers from truncating mid-sentence or flagging long meta descriptions.
+ */
+export function clampMetaDescription(text: string, maxLength = 155): string {
+  if (!text) return '';
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxLength) return clean;
+  const sub = clean.slice(0, maxLength - 3);
+  const lastSpace = sub.lastIndexOf(' ');
+  return (lastSpace > 40 ? sub.slice(0, lastSpace) : sub).trim() + '...';
+}

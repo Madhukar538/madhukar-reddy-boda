@@ -12,7 +12,7 @@ import { LivePresence } from '@/components/blog/live-presence';
 import { ShareButtons } from '@/components/blog/share-buttons';
 import { Comments, PopularPosts, Reactions } from '@/components/blog/post-engagement';
 import { PostCard } from '@/components/blog/post-card';
-import { adjacentPosts, getPost, isoDate, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
+import { adjacentPosts, clampMetaDescription, getPost, isoDate, relatedPosts, renderPost, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { localGraph, postLinks } from '@/lib/vault';
 import { Properties } from '@/components/vault/properties';
@@ -26,22 +26,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost((await getContent()).posts, slug);
   if (!post) return { title: 'Post not found' };
+  const description = clampMetaDescription(post.excerpt, 155);
   return {
     title: `${post.title} — Boda Madhukar Reddy`,
-    description: post.excerpt,
+    description,
     keywords: post.tags,
     alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       type: 'article',
       title: post.title,
-      description: post.excerpt,
+      description,
       url: `/blog/${post.slug}`,
       publishedTime: isoDate(post),
       authors: ['Boda Madhukar Reddy'],
       section: post.category,
       tags: post.tags,
     },
-    twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt },
+    twitter: { card: 'summary_large_image', title: post.title, description },
   };
 }
 

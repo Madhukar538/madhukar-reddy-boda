@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: 'Boda Madhukar Reddy — Software Engineer & Tech Blogger',
   description:
-    'Software Engineer specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering. Architecture deep-dives and engineering blog.',
+    'Software Engineer specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering.',
   alternates: {
     types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
   },

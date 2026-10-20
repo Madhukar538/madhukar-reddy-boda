@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { PostCard } from '@/components/blog/post-card';
-import { allTopics, postsForTopic, siteUrl } from '@/lib/blog';
+import { allTopics, clampMetaDescription, postsForTopic, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -22,11 +22,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topic = await findTopic((await params).slug);
   if (!topic) return { title: 'Topic not found' };
+  const description = clampMetaDescription(
+    `Articles and deep dives on ${topic.name} by Boda Madhukar Reddy: architecture, benchmarks, and production implementation details.`,
+    155
+  );
   return {
     title: `${topic.name} — Boda Madhukar Reddy`,
-    description: `Posts about ${topic.name}: ${topic.posts
-      .map((p) => p.title)
-      .join('; ')}`.slice(0, 300),
+    description,
     alternates: { canonical: `/topics/${topic.slug}` },
   };
 }

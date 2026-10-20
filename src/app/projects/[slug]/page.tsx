@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Wrench } from 'lucide-react';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
 import { caseStudies, type CaseChapter } from '@/data/case-studies';
 import { diagrams } from '@/data/diagrams';
+import { clampMetaDescription } from '@/lib/blog';
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!study) return {};
   return {
     title: `${study.project}: case study — Boda Madhukar Reddy`,
-    description: study.summary,
+    description: clampMetaDescription(study.summary, 155),
     alternates: { canonical: `/projects/${study.slug}` },
   };
 }
