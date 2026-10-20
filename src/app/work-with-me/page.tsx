@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Bug, Check, Gauge, Layers, Mail, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { getContent } from '@/lib/content';
+import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: 'Work with me — Boda Madhukar Reddy',
@@ -94,6 +95,29 @@ export default async function WorkWithMePage() {
     { value: String(posts.length), label: 'engineering write-ups' },
   ];
 
+  const base = siteUrl();
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+          { '@type': 'ListItem', position: 2, name: 'Work with me', item: `${base}/work-with-me` },
+        ],
+      },
+      ...services.map((s, idx) => ({
+        '@type': 'Service',
+        '@id': `${base}/work-with-me#service-${idx + 1}`,
+        name: s.title,
+        description: s.fit,
+        provider: { '@id': `${base}/#person` },
+        areaServed: 'Worldwide',
+        serviceType: s.topic,
+      })),
+    ],
+  };
+
   return (
     <PageShell
       eyebrow="Work with me"
@@ -112,6 +136,10 @@ export default async function WorkWithMePage() {
         </>
       }
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <section aria-labelledby="services-heading">
         <h2 id="services-heading" className="sr-only">What I can help with</h2>
         <div className="grid gap-5 md:grid-cols-2">

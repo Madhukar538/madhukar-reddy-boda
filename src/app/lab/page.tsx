@@ -1,23 +1,40 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Scale, Sparkles } from 'lucide-react';
+import { ArrowRight, Scale } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Research } from '@/components/portfolio/research';
 import { getContent } from '@/lib/content';
+import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: 'R&D Lab — Boda Madhukar Reddy',
   description: 'Experiments in load testing, AI code review, RAG, IoT predictive maintenance, encryption, messaging and gRPC.',
+  alternates: { canonical: '/lab' },
 };
 
 export default async function LabPage() {
   const { rdProjects } = await getContent();
+  const base = siteUrl();
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+      { '@type': 'ListItem', position: 2, name: 'R&D Lab', item: `${base}/lab` },
+    ],
+  };
+
   return (
     <PageShell
       eyebrow="R&D Lab"
       title="Experiments & explorations."
       description="Where ideas get pressure-tested before they reach production."
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       {/* Featured Interactive Tool */}
       <div className="mb-10">
         <Link

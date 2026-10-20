@@ -62,24 +62,65 @@ export default async function BlogPost({ params }: Props) {
   const { newer, older } = adjacentPosts(content.posts, post);
   const links = postLinks(content, post);
 
+  const base = siteUrl();
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: isoDate(post),
-    wordCount: words,
-    keywords: post.tags.join(', '),
-    articleSection: post.category,
-    url: `${siteUrl()}/blog/${post.slug}`,
-    image: `${siteUrl()}/blog/${post.slug}/opengraph-image`,
-    author: { '@type': 'Person', name: 'Boda Madhukar Reddy', url: `${siteUrl()}/about`, image: `${siteUrl()}/icons/icon-512.png` },
-    publisher: {
-      '@type': 'Person',
-      name: 'Boda Madhukar Reddy',
-      url: siteUrl(),
-      image: { '@type': 'ImageObject', url: `${siteUrl()}/icons/icon-512.png`, width: 512, height: 512 },
-    },
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${base}/blog/${post.slug}#article`,
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: isoDate(post),
+        wordCount: words,
+        keywords: post.tags.join(', '),
+        articleSection: post.category,
+        url: `${base}/blog/${post.slug}`,
+        image: `${base}/blog/${post.slug}/opengraph-image`,
+        author: {
+          '@type': 'Person',
+          name: 'Boda Madhukar Reddy',
+          url: `${base}/about`,
+          image: `${base}/icons/icon-512.png`,
+        },
+        publisher: {
+          '@type': 'Person',
+          name: 'Boda Madhukar Reddy',
+          url: base,
+          image: { '@type': 'ImageObject', url: `${base}/icons/icon-512.png`, width: 512, height: 512 },
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${base}/blog/${post.slug}#breadcrumbs`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: base,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Blog',
+            item: `${base}/`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: post.category,
+            item: `${base}/topics`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 4,
+            name: post.title,
+            item: `${base}/blog/${post.slug}`,
+          },
+        ],
+      },
+    ],
   };
 
   return (

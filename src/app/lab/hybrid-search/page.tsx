@@ -1,16 +1,29 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, FlaskConical, PenLine } from 'lucide-react';
+import { ChevronLeft, PenLine } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { HybridSearchVisualizer } from '@/components/portfolio/hybrid-search-visualizer';
+import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: 'Hybrid Search Visualizer (BM25 vs Vector vs RRF) — Boda Madhukar Reddy',
   description:
     'Interactive visualization comparing Okapi BM25 keyword search, dense vector kNN semantic search, and Reciprocal Rank Fusion (RRF) on Solr 9 and .NET.',
+  alternates: { canonical: '/lab/hybrid-search' },
 };
 
 export default function HybridSearchPage() {
+  const base = siteUrl();
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+      { '@type': 'ListItem', position: 2, name: 'R&D Lab', item: `${base}/lab` },
+      { '@type': 'ListItem', position: 3, name: 'Hybrid Search Visualizer', item: `${base}/lab/hybrid-search` },
+    ],
+  };
+
   return (
     <PageShell
       eyebrow="Interactive R&D Experiment"
@@ -41,6 +54,10 @@ export default function HybridSearchPage() {
         </div>
       }
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <HybridSearchVisualizer />
     </PageShell>
   );

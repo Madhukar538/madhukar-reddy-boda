@@ -5,20 +5,37 @@ import { PageShell } from '@/components/portfolio/page-shell';
 import { Projects } from '@/components/portfolio/projects';
 import { BlogStrip } from '@/components/blog/blog-strip';
 import { getContent } from '@/lib/content';
+import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: 'Projects — Boda Madhukar Reddy',
   description: 'IoT data platforms, developer tooling, video conferencing, RAG systems and e-commerce builds for Jockey, Speedo, Manyavar and more.',
+  alternates: { canonical: '/projects' },
 };
 
 export default async function ProjectsPage() {
   const { posts, keyProjects, clientProjects } = await getContent();
+  const base = siteUrl();
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+      { '@type': 'ListItem', position: 2, name: 'Projects', item: `${base}/projects` },
+    ],
+  };
+
   return (
     <PageShell
       eyebrow="Projects"
       title="Selected work."
       description="Systems built from scratch, plus the e-commerce portals and integrations I've led."
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
 
       <BlogStrip posts={posts} className="mt-14" />

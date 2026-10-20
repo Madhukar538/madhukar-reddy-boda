@@ -16,6 +16,8 @@ export async function GET() {
     'Availability: working at Revalsys Technologies; open to fixing bugs and giving solutions.',
     `Contact: ${profile.email} · ${profile.github}`,
     '',
+    '> Full-text archive of all articles, projects and architecture notes: [/llms-full.txt](/llms-full.txt)',
+    '',
     '## MCP server',
     '',
     '- [MCP endpoint](/mcp): Streamable HTTP, read-only. Tools: get_profile, get_experience, get_skills, list_projects, search_blog, list_blog_posts, get_blog_post. Prompt: assess_fit.',

@@ -30,6 +30,12 @@ export const metadata: Metadata = {
   },
   openGraph: { type: 'website', siteName: 'Boda Madhukar Reddy', locale: 'en_IN' },
   twitter: { card: 'summary_large_image' },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION || '',
+    },
+  },
   // Icons come from app/favicon.ico, app/icon.png and app/apple-icon.png, and the
   // manifest's from public/icons: all the same portrait on the Midnight navy.
 };
@@ -60,9 +66,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { profile, socialLinks } = await getContent();
+  const { profile, socialLinks, education } = await getContent();
   const base = siteUrl();
-  // Who the site is about, for search engines: the same portrait as the icons.
+  // Google Knowledge Graph and entity graph linking
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -70,17 +76,65 @@ export default async function RootLayout({
         '@type': 'Person',
         '@id': `${base}/#person`,
         name: profile.name,
+        alternateName: ['Madhukar Reddy', 'Madhukar Reddy Boda', 'Boda Madhukar'],
         jobTitle: profile.title,
+        description: profile.summary,
         url: base,
         image: `${base}/icons/icon-512.png`,
+        email: `mailto:${profile.email}`,
+        telephone: profile.phone,
+        worksFor: {
+          '@type': 'Organization',
+          name: profile.company,
+          url: 'https://www.revalsys.com',
+        },
+        alumniOf: {
+          '@type': 'EducationalOrganization',
+          name: education.institution,
+        },
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Hyderabad',
+          addressRegion: 'Telangana',
+          addressCountry: 'IN',
+        },
         sameAs: socialLinks.map((l) => l.href),
+        knowsAbout: [
+          '.NET 10',
+          'ASP.NET Core',
+          'C#',
+          'Model Context Protocol (MCP)',
+          'RAG (Retrieval-Augmented Generation)',
+          'Solr 9 Hybrid Search',
+          'Reciprocal Rank Fusion (RRF)',
+          'k6 Load Testing',
+          'Grafana Observability',
+          'Self-Hosted LLMs',
+          'Roslyn Analyzers',
+          'pgvector',
+          'Next.js 16',
+          'Offline-First PWA',
+          'High-Throughput APIs',
+        ],
       },
       {
         '@type': 'WebSite',
         '@id': `${base}/#website`,
-        name: 'Boda Madhukar Reddy',
+        name: `${profile.name} — Software Architect & Engineering Blog`,
+        alternateName: 'Madhukar Reddy Portfolio',
         url: base,
+        description: profile.summary,
+        inLanguage: 'en-IN',
         author: { '@id': `${base}/#person` },
+        publisher: { '@id': `${base}/#person` },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${base}/?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
       },
     ],
   };
