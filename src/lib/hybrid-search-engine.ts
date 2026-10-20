@@ -83,9 +83,9 @@ export interface HybridSearchResult {
 export const CATALOG: CatalogItem[] = [
   {
     id: 'prod-01',
-    sku: 'FS5432',
-    title: 'Townsman Automatic Stainless Steel Chronometer',
-    brand: 'Fossil',
+    sku: 'CR5432',
+    title: 'Apex Automatic Stainless Steel Chronometer',
+    brand: 'Apex',
     category: 'Watches',
     price: 13995,
     description: 'Exposed skeleton dial with automatic self-winding movement. Brushed stainless steel case and link bracelet, 50m water resistance.',
@@ -94,9 +94,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-02',
-    sku: 'FS5901',
+    sku: 'CR5901',
     title: 'Minimalist Ultra-Slim Dress Watch in Onyx Black',
-    brand: 'Fossil',
+    brand: 'Aura',
     category: 'Watches',
     price: 7495,
     description: 'Sleek 6mm ultra-thin black PVD case with genuine Italian black leather band. Refined two-hand quartz movement for formal evening attire.',
@@ -116,9 +116,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-04',
-    sku: 'FS4835',
-    title: 'Grant Chronograph with Vintage Brown Leather Strap',
-    brand: 'Fossil',
+    sku: 'CR4835',
+    title: 'Heritage Chronograph with Vintage Brown Leather Strap',
+    brand: 'Chronos',
     category: 'Watches',
     price: 11495,
     description: 'Roman numeral markers with classic navy blue sunray dial. Handcrafted brown saddle leather strap with contrast cream stitching.',
@@ -149,9 +149,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-07',
-    sku: 'FS6012',
-    title: 'Neutra Chronograph Amber Dial Stainless Steel',
-    brand: 'Fossil',
+    sku: 'CR6012',
+    title: 'Solstice Chronograph Amber Dial Stainless Steel',
+    brand: 'Solstice',
     category: 'Watches',
     price: 12995,
     description: 'Warm amber sunray dial with polished silver-tone case and solid stainless steel oyster bracelet. Built-in stopwatch chronograph sub-dials.',
@@ -171,9 +171,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-09',
-    sku: 'FS5870',
-    title: 'Everett Titanium Solar-Powered Dress Chronometer',
-    brand: 'Fossil',
+    sku: 'CR5870',
+    title: 'Vanguard Titanium Solar-Powered Dress Chronometer',
+    brand: 'Vanguard',
     category: 'Watches',
     price: 18495,
     description: 'Hypoallergenic aerospace-grade titanium case. Light-harvesting solar dial never requires a battery change. Sapphire crystal lens.',
@@ -182,9 +182,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-10',
-    sku: 'FS4991',
-    title: 'Grant Roman Dial Rose Gold & Navy Watch',
-    brand: 'Fossil',
+    sku: 'CR4991',
+    title: 'Classic Roman Dial Rose Gold & Navy Watch',
+    brand: 'Aura',
     category: 'Watches',
     price: 12495,
     description: 'Rich navy blue dial encased in brushed rose gold plating with matching dark blue leather strap. Timeless cocktail and evening wear accessory.',
@@ -204,9 +204,9 @@ export const CATALOG: CatalogItem[] = [
   },
   {
     id: 'prod-12',
-    sku: 'FS5380',
+    sku: 'CR5380',
     title: 'Minimalist Three-Hand Slim Leather Watch',
-    brand: 'Fossil',
+    brand: 'Aura',
     category: 'Watches',
     price: 6995,
     description: 'Understated clean white face with subtle hairline indices and rich tan leather band. The definitive quiet luxury daily companion.',
@@ -231,8 +231,8 @@ const SYNONYMS: Record<string, string[]> = {
 };
 
 const TYPOS: Record<string, string> = {
-  fossle: 'fossil',
-  fossel: 'fossil',
+  chrons: 'chronos',
+  chronswatch: 'chronos',
   cronometer: 'chronometer',
   cronograph: 'chronograph',
   lether: 'leather',
@@ -247,7 +247,7 @@ export function parseQuery(queryText: string): ParsedQuery {
   let typoCorrection: { original: string; corrected: string } | undefined;
   const synonymsApplied: string[] = [];
 
-  // 1. SKU extraction (e.g. FS5432, SP8820, JK1040)
+  // 1. SKU extraction (e.g. CR5432, SP8820, JK1040)
   const skuMatch = clean.match(/\b([a-z]{2}\d{4})\b/i);
   if (skuMatch) {
     extractedSku = skuMatch[1].toUpperCase();

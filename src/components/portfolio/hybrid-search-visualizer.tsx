@@ -27,7 +27,7 @@ const PRESETS = [
   {
     id: 'sku',
     label: 'Exact SKU lookup',
-    query: 'FS5432 steel chronometer',
+    query: 'CR5432 steel chronometer',
     badge: 'BM25 Dominates',
     description: 'Exact catalog SKU. Vector search gets distracted by semantic concepts; BM25 edismax nails the exact product at rank #1.',
   },
@@ -55,9 +55,9 @@ const PRESETS = [
   {
     id: 'typo',
     label: 'Typo tolerance',
-    query: 'fossle black dial',
+    query: 'chrons black dial',
     badge: 'Fuzzy Recovery',
-    description: 'Catches "fossle" via Solr ~2 edit-distance fuzzy operator, correcting to "Fossil" without needing an LLM.',
+    description: 'Catches "chrons" via Solr ~2 edit-distance fuzzy operator, correcting to "Chronos" without needing an LLM.',
   },
 ];
 
@@ -109,7 +109,7 @@ export function HybridSearchVisualizer() {
             type="search"
             value={queryText}
             onChange={(e) => setQueryText(e.target.value)}
-            placeholder="Search catalog: 'FS5432 steel chronometer', 'evening watch', 'waterproof diver under 10k'…"
+            placeholder="Search catalog: 'CR5432 steel chronometer', 'evening watch', 'waterproof diver under 10k'…"
             aria-label="Search catalog"
             className="w-full bg-transparent text-[15px] md:text-base text-foreground placeholder:text-muted-foreground/75 outline-none [&::-webkit-search-cancel-button]:hidden"
           />

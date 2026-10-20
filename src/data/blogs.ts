@@ -1073,7 +1073,7 @@ score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
       <h2>4. Query Understanding Without an LLM</h2>
       <p>The NLU is deterministic and explainable: lexicon lookup and regex against a <strong>live vocabulary</strong>. A <code>BackgroundService</code> refreshes the real distinct values in the index (brands, colours, categories and so on) every five minutes using Solr facet queries. When the catalog changes, the parser updates without a redeploy.</p>
       <ul>
-        <li><strong>Typos:</strong> "Fossle" resolves via Solr's native fuzzy operator. A curated stop-word list (~60 words) stops common English words from being offered as fuzzy matches.</li>
+        <li><strong>Typos:</strong> "Chrons" resolves via Solr's native fuzzy operator. A curated stop-word list (~60 words) stops common English words from being offered as fuzzy matches.</li>
         <li><strong>Synonyms live in Solr</strong>, not in C# dictionaries. Gender and size moved to <code>*_text</code> fields backed by <code>synonyms.txt</code>.</li>
         <li><strong>Prices:</strong> "under X", "between X and Y", reversed phrasing, "~X" (±10%), "12,000" and "12k".</li>
       </ul>
@@ -1087,7 +1087,7 @@ score(doc) = Σ over result lists  1 / (K + rank(doc))      K = 60</pre>
         <li><strong>Style-level de-dup:</strong> the same style in three colours shows once, with its colour swatches harvested through Solr collapse + expand.</li>
         <li><strong>Phrase proximity</strong> (<code>pf2</code>) reranks adjacent-word matches above bag-of-words hits.</li>
         <li><strong>Business signals</strong> (rating, sale count, availability) as an edismax boost function that nudges relevance but doesn't override it.</li>
-        <li><strong>Embedded SKUs</strong> ("watch FS6121") are forced to position one.</li>
+        <li><strong>Embedded SKUs</strong> ("watch CR6121") are forced to position one.</li>
         <li><strong>Autosuggest</strong> through Solr's Suggester component for fast prefix and infix matches.</li>
       </ul>
 

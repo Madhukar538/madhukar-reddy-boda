@@ -43,7 +43,7 @@ const hybridSearch: Diagram = {
       what: 'The shopper’s raw text. Multi-item queries like “red card case and gold tone watch under 5000” are allowed.',
       tech: ['Next.js UI', 'Suggester autocomplete'] },
     { id: 'sku', label: 'SKU check', sub: 'exact code → #1', x: 230, y: 60, kind: 'service',
-      what: 'If the query contains a product code such as “FS6121”, that product is forced to the top before any fuzzy matching runs.',
+      what: 'If the query contains a product code such as “CR6121”, that product is forced to the top before any fuzzy matching runs.',
       tech: ['Regex', 'Solr elevation'] },
     { id: 'split', label: 'Clause split', sub: 'one intent per item', x: 380, y: 60, kind: 'service',
       what: 'Splits on commas and a standalone “and”, protecting “between X and Y” and “12,000”. Each clause runs the whole pipeline with its own filters, so one item’s category can’t starve another.',
