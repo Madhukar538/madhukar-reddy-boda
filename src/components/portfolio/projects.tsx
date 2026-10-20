@@ -31,7 +31,7 @@ function CaseStudyLink({ slug }: { slug: string }) {
 function FeaturedCard({ project }: { project: ProjectCard }) {
   const study = caseStudyFor(project.title);
   return (
-    <article id={anchorId(project.title)} className="cs-reveal glass glass-interactive flex flex-col p-6 md:p-7 scroll-mt-28">
+    <article id={anchorId(project.title)} data-previews className="cs-reveal glass glass-interactive flex flex-col p-6 md:p-7 scroll-mt-28">
       <h3 className="text-xl font-bold tracking-tight text-foreground leading-snug mb-2">{project.title}</h3>
       <p className="text-[15px] text-muted-foreground leading-relaxed flex-1 mb-5">{project.description}</p>
       {project.outcome && (
@@ -51,7 +51,7 @@ function FeaturedCard({ project }: { project: ProjectCard }) {
 
 function CompactCard({ project }: { project: ProjectCard }) {
   return (
-    <article id={anchorId(project.title)} className="cs-reveal glass glass-interactive flex flex-col p-6 scroll-mt-28">
+    <article id={anchorId(project.title)} data-previews className="cs-reveal glass glass-interactive flex flex-col p-6 scroll-mt-28">
       <h3 className="text-base font-semibold text-foreground mb-1.5 leading-snug">{project.title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-3">{project.description}</p>
       <div className="chips-few flex flex-wrap gap-1.5">

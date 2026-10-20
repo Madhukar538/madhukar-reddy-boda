@@ -3,9 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle2, Wrench } from 'lucide-react';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
+import { Callout } from '@/components/vault/callout';
+import { LocalGraphLazy } from '@/components/vault/local-graph-lazy';
 import { caseStudies, type CaseChapter } from '@/data/case-studies';
 import { diagrams } from '@/data/diagrams';
-import { clampMetaDescription } from '@/lib/blog';
+import { clampMetaDescription, slugify } from '@/lib/blog';
+import { getContent } from '@/lib/content';
+import { localGraph } from '@/lib/vault';
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
@@ -111,6 +115,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const study = caseStudies.find((c) => c.slug === slug);
   if (!study) notFound();
 
+  const content = await getContent();
+  const graph = study.post ? localGraph(content, study.post) : null;
+
   return (
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-20">
       {/* Reading progress, driven by the page scroll (CSS only). */}
@@ -134,9 +141,16 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           ))}
         </dl>
         {study.note && <p className="text-sm text-muted-foreground">{study.note}</p>}
-        <div className="flex flex-wrap gap-1.5 pt-1">
+
+        <Callout kind="tip" title="Architectural Takeaway" className="my-5">
+          Eliminated a 7–8 sequential LLM call cascade in favor of a single schema prompt, pooled MCP tool connections, and enabled native token streaming — cutting request latency by 65% (from 35s down to ~13s).
+        </Callout>
+
+        <div className="flex flex-wrap gap-1.5 pt-1" data-previews>
           {study.tech.map((t) => (
-            <span key={t} className="chip">{t}</span>
+            <Link key={t} href={`/topics/${slugify(t)}`} className="vault-tag">
+              #{t}
+            </Link>
           ))}
         </div>
       </header>
@@ -162,8 +176,26 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         ))}
       </div>
 
+      {/* Obsidian Local Knowledge Graph */}
+      {graph && (
+        <section aria-label="Obsidian Knowledge Graph" className="mt-20 md:mt-28 glass p-6 md:p-8">
+          <div className="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-foreground/10 pb-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Obsidian Knowledge Graph</p>
+              <h2 className="text-xl font-bold text-foreground">Connected Technologies & Research</h2>
+            </div>
+            <Link href="/graph" className="tap text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">
+              Explore full vault graph <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <div className="flex justify-center py-2">
+            <LocalGraphLazy graph={graph} />
+          </div>
+        </section>
+      )}
+
       {/* Next steps */}
-      <div className="mt-20 md:mt-28 flex flex-wrap items-center gap-3">
+      <div className="mt-20 md:mt-28 flex flex-wrap items-center gap-3" data-previews>
         {study.post && (
           <Link href={`/blog/${study.post}`} className="tinted-button !px-5 !py-2.5">
             Read the full write-up <ArrowRight className="h-4 w-4" />

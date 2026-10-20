@@ -65,7 +65,7 @@ export default async function TopicPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2" data-previews>
         {list.map((p) => (
           <PostCard key={p.slug} post={p} />
         ))}

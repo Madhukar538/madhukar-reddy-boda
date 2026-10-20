@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Bug, Check, Gauge, Layers, Mail, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
+import { Callout } from '@/components/vault/callout';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 
@@ -142,7 +143,7 @@ export default async function WorkWithMePage() {
       />
       <section aria-labelledby="services-heading">
         <h2 id="services-heading" className="sr-only">What I can help with</h2>
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2" data-previews>
           {services.map(({ icon: Icon, title, fit, outcomes, proof: link, topic }) => (
             <article key={title} className="glass flex flex-col p-6 md:p-7">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
@@ -202,6 +203,12 @@ export default async function WorkWithMePage() {
           E-commerce platforms and integrations for Jockey, Speedo, Fossil India, Manyavar and LuxCozi.
         </p>
       </section>
+
+      <div className="mt-16 md:mt-24">
+        <Callout kind="tip" title="Response & Collaboration Standards">
+          I personally triage and respond to all engineering enquiries within 24 hours. For active production bottlenecks or stubborn bugs, you can also submit directly to my phone via the <Link href="/fix-a-bug" className="font-semibold underline hover:text-primary">Fix-a-Bug queue</Link>.
+        </Callout>
+      </div>
 
       <section aria-labelledby="start-heading" className="mt-16 md:mt-24">
         <div className="glass flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">

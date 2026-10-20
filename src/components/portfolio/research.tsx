@@ -70,7 +70,7 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
         {visible.map((project) => {
           const status = statusChip[project.status];
           return (
-            <div key={project.title} id={anchorId(project.title)} className="cs-reveal glass glass-interactive p-5 md:p-6 flex flex-col scroll-mt-28">
+            <div key={project.title} id={anchorId(project.title)} data-previews className="cs-reveal glass glass-interactive p-5 md:p-6 flex flex-col scroll-mt-28">
               <div className="flex items-center justify-between gap-3 mb-4 max-sm:mb-2.5">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--sys-purple)/0.14)] text-[hsl(var(--sys-purple))] max-sm:hidden">
                   <FlaskConical className="h-[1.1rem] w-[1.1rem]" />
