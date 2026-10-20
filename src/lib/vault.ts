@@ -23,6 +23,7 @@ const PAGES: Note[] = [
   { href: '/experience', title: 'Experience', type: 'page', meta: 'Page', excerpt: 'Current role, grouped contributions and the client timeline.' },
   { href: '/projects', title: 'Projects', type: 'page', meta: 'Page', excerpt: 'Featured systems, more builds, and e-commerce client work.' },
   { href: '/lab', title: 'R&D Lab', type: 'page', meta: 'Page', excerpt: 'Experiments, proofs of concept and research, filterable by status.' },
+  { href: '/lab/hybrid-search', title: 'Hybrid Search Visualizer', type: 'page', meta: 'Interactive Tool', excerpt: 'Compare Okapi BM25 against Dense Vector kNN and fuse both with Reciprocal Rank Fusion (RRF).' },
   { href: '/graph', title: 'Knowledge graph', type: 'page', meta: 'Page', excerpt: 'Everything on the site, linked through the technologies it shares.' },
   { href: '/ai', title: 'Connect your AI (MCP)', type: 'page', meta: 'Page', excerpt: 'Query this portfolio from Claude or any MCP client.' },
   { href: '/fix-a-bug', title: 'Fix a bug', type: 'page', meta: 'Page', excerpt: 'Describe a problem you are stuck on and I will take a look.' },

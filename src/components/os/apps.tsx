@@ -12,6 +12,7 @@ import {
   Terminal as TerminalIcon,
   User,
   Download,
+  Scale,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Summary } from '@/components/portfolio/summary';
@@ -22,6 +23,7 @@ import { Projects } from '@/components/portfolio/projects';
 import { Research } from '@/components/portfolio/research';
 import { KnowledgeGraphView } from '@/components/portfolio/knowledge-graph';
 import { ArchitectureDiagram } from '@/components/portfolio/architecture-diagram';
+import { HybridSearchVisualizer } from '@/components/portfolio/hybrid-search-visualizer';
 import { diagrams } from '@/data/diagrams';
 import type { SiteContent } from '@/lib/content';
 import type { KnowledgeGraph } from '@/lib/knowledge-graph';
@@ -38,7 +40,7 @@ export type OsPost = {
 
 export type OsData = { posts: OsPost[]; graph: KnowledgeGraph; content: Omit<SiteContent, 'posts'> };
 
-export type AppId = 'about' | 'experience' | 'projects' | 'lab' | 'reader' | 'graph' | 'resume' | 'terminal';
+export type AppId = 'about' | 'experience' | 'projects' | 'lab' | 'reader' | 'graph' | 'resume' | 'terminal' | 'search';
 
 export type AppContext = {
   data: OsData;
@@ -119,7 +121,7 @@ type Line = { kind: 'in' | 'out'; text: string };
 const APP_ALIASES: Record<string, AppId> = {
   about: 'about', experience: 'experience', exp: 'experience', projects: 'projects', work: 'projects',
   lab: 'lab', blog: 'reader', reader: 'reader', graph: 'graph',
-  resume: 'resume', cv: 'resume', terminal: 'terminal',
+  resume: 'resume', cv: 'resume', terminal: 'terminal', search: 'search', rrf: 'search',
 };
 
 function TerminalApp({ data, open, exit }: AppContext) {
@@ -301,6 +303,8 @@ export const APPS: AppDef[] = [
     render: (ctx) => <ReaderApp {...ctx} /> },
   { id: 'graph', name: 'Graph', icon: Network, tint: 'from-amber-300 to-orange-600', size: { w: 980, h: 640 },
     render: ({ data }) => page(<KnowledgeGraphView graph={data.graph} />) },
+  { id: 'search', name: 'Search Lab', icon: Scale, tint: 'from-purple-500 to-indigo-600', size: { w: 980, h: 640 },
+    render: () => page(<HybridSearchVisualizer />) },
   { id: 'resume', name: 'Résumé', icon: FileText, tint: 'from-slate-200 to-slate-500', size: { w: 700, h: 640 },
     render: () => <ResumeApp /> },
   { id: 'terminal', name: 'Terminal', icon: TerminalIcon, tint: 'from-zinc-600 to-zinc-900', size: { w: 620, h: 400 },

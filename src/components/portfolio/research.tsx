@@ -88,15 +88,26 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
                   <span key={t} className="chip">{t}</span>
                 ))}
               </div>
-              {project.post && (
-                <Link
-                  href={`/blog/${project.post}`}
-                  className="tap group mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary"
-                >
-                  Read the write-up
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              )}
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                {project.title.includes('Hybrid Product Search') && (
+                  <Link
+                    href="/lab/hybrid-search"
+                    className="tap group inline-flex items-center gap-1.5 text-sm font-semibold text-[hsl(var(--sys-purple))]"
+                  >
+                    <span>Launch Visualizer</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                )}
+                {project.post && (
+                  <Link
+                    href={`/blog/${project.post}`}
+                    className="tap group inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary"
+                  >
+                    Read the write-up
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                )}
+              </div>
             </div>
           );
         })}
