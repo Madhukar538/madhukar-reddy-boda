@@ -6,7 +6,7 @@ import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: 'Experience — Boda Madhukar Reddy',
-  description: 'Software Architect at Revalsys Technologies: .NET R&D, multi-tenant RAG and MCP platforms, hybrid search, offline-first apps and large e-commerce builds.',
+  description: 'Software Engineer at Revalsys Technologies: .NET R&D, multi-tenant RAG and MCP platforms, hybrid search, offline-first apps and large e-commerce builds.',
   alternates: { canonical: '/experience' },
 };
 

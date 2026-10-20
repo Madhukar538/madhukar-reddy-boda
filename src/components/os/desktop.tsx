@@ -479,7 +479,7 @@ function Desktop({ data, onExit }: { data: OsData; onExit: () => void }) {
       {/* Desktop hint */}
       <div className="pointer-events-none fixed left-6 top-12 z-[1] text-foreground/80">
         <p className="text-4xl font-bold tracking-tight">Boda Madhukar Reddy</p>
-        <p className="mt-1 text-sm text-muted-foreground">Software Architect · double-click a title bar to zoom · ⌘K to search</p>
+        <p className="mt-1 text-sm text-muted-foreground">Software Engineer · double-click a title bar to zoom · ⌘K to search</p>
       </div>
 
       {/* Windows */}

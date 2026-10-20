@@ -92,7 +92,7 @@ export function ResumeDocument() {
       title={`${profile.name} — Résumé`}
       author={profile.name}
       subject={`${profile.title} résumé`}
-      keywords=".NET, Software Architect, RAG, MCP, Next.js, Performance"
+      keywords=".NET, Software Engineer, RAG, MCP, Next.js, Performance"
     >
       <Page size="A4" style={s.page}>
         {/* Header band, as on the site */}

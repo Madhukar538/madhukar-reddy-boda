@@ -6,7 +6,7 @@
 
 export const profile = {
   name: 'Boda Madhukar Reddy',
-  title: 'Software Architect',
+  title: 'Software Engineer',
   company: 'Revalsys Technologies',
   location: 'Hyderabad, India',
   email: 'madhukarreddyboda538@gmail.com',
@@ -17,7 +17,7 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Backend-focused Software Architect with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
+    'Backend-focused Software Engineer with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
     'Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. ' +
     'Production-first: diagnose fast, fix right, prevent recurrence.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
@@ -89,7 +89,7 @@ export const skillCategories: SkillCategory[] = [
 ];
 
 export const experience = {
-  title: 'Software Architect',
+  title: 'Software Engineer',
   company: 'Revalsys Technologies',
   duration: '2021 – Present',
   location: 'Hyderabad, IN',

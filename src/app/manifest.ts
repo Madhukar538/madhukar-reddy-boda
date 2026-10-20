@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Boda Madhukar Reddy | Software Architect',
+    name: 'Boda Madhukar Reddy | Software Engineer',
     short_name: 'Boda Madhukar',
-    description: 'Portfolio of Boda Madhukar Reddy, Software Architect specializing in .NET and AI platforms.',
+    description: 'Portfolio of Boda Madhukar Reddy, Software Engineer specializing in .NET and AI platforms.',
     start_url: '/',
     display: 'standalone',
     // Midnight, the default look, so the splash screen and title bar match the site.

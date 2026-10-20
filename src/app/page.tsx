@@ -38,7 +38,7 @@ export default async function Home() {
           <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" />
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
-            <span className="block text-muted-foreground">Software Architect · Revalsys, Hyderabad</span>
+            <span className="block text-muted-foreground">Software Engineer · Revalsys, Hyderabad</span>
           </span>
         </Link>
         {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}

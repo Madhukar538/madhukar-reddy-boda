@@ -130,7 +130,7 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
           </div>
           <div className="px-5 pt-3">
             <p className="text-lg font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">{profile.name}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Software Architect</p>
+            <p className="mt-1 text-sm text-muted-foreground">Software Engineer</p>
           </div>
         </Link>
         <p className="flex items-center gap-1.5 px-5 pt-1.5 text-sm text-muted-foreground">

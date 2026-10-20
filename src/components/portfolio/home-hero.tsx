@@ -130,7 +130,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
             I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
-            Software Architect in Hyderabad. I design high-throughput .NET APIs, build self-hosted AI
+            Software Engineer in Hyderabad. I design high-throughput .NET APIs, build self-hosted AI
             platforms (RAG, MCP and hybrid search), and load-test everything with k6 + Grafana.
           </p>
 
@@ -166,7 +166,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
               </div>
             </div>
             <p className="text-xl font-bold text-foreground">Boda Madhukar Reddy</p>
-            <p className="text-sm font-medium text-primary">Software Architect</p>
+            <p className="text-sm font-medium text-primary">Software Engineer</p>
             <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" /> Hyderabad, India
             </p>
@@ -191,7 +191,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
             <Briefcase className="h-5 w-5" />
           </TileIcon>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currently</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">Software Architect</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">Software Engineer</p>
           <p className="text-[15px] text-foreground/75">Revalsys Technologies · 2021 – Present</p>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             Leading .NET R&amp;D: multi-tenant RAG chatbots, MCP servers, hybrid search, offline-first
