@@ -14,6 +14,7 @@ const pages = [
   { href: '/graph', label: 'Graph' },
   { href: '/work-with-me', label: 'Work with me' },
   { href: '/fix-a-bug', label: 'Fix a bug' },
+  { href: '/status', label: 'Status' },
 ];
 
 const icons = { GitHub: Github, LinkedIn: Linkedin };

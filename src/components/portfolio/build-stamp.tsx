@@ -1,8 +1,11 @@
+import Link from 'next/link';
+
 /**
  * The footer's build stamp: which commit of the site is live, when it was
  * built, and which release of the API it talks to (from the API's /health).
  * A server component; the API is asked at most every ten minutes and never
  * holds up the page (no API, or no answer within 1.5 s: the api part is left out).
+ * Links to the live /status page.
  */
 async function apiRelease(): Promise<{ version: string; commit: string } | null> {
   const base = (process.env.API_URL || '').replace(/\/$/, '');
@@ -28,7 +31,7 @@ export async function BuildStamp() {
   const api = await apiRelease();
 
   return (
-    <p className="font-mono text-[0.7rem] text-muted-foreground" title={builtAt ? `Built ${builtAt}` : undefined}>
+    <Link href="/status" className="block font-mono text-[0.7rem] text-muted-foreground hover:text-foreground transition-colors" title={builtAt ? `Built ${builtAt} · live status` : 'Live status'}>
       build <span className="text-foreground/75">{site}</span>
       {deployed && <> · deployed {deployed}</>}
       {api && (
@@ -37,6 +40,6 @@ export async function BuildStamp() {
           {api.commit && <> ({api.commit})</>}
         </>
       )}
-    </p>
+    </Link>
   );
 }
