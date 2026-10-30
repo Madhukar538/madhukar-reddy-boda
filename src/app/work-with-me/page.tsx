@@ -123,7 +123,7 @@ export default async function WorkWithMePage() {
     <PageShell
       eyebrow="Work with me"
       title="Slow, stuck, or starting something new?"
-      description="I work full-time as a Software Engineer at Revalsys, and on the side I help a few teams at a time with slow APIs, self-hosted AI and architecture decisions."
+      description="I work full-time as a Senior Software Engineer at Revalsys, and on the side I help a few teams at a time with slow APIs, self-hosted AI and architecture decisions."
       actions={
         <>
           <Link href={enquire('a project')} className="tinted-button !px-5 !py-2.5">

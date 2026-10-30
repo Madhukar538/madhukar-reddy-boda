@@ -9,7 +9,7 @@ import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'About — Boda Madhukar Reddy',
-  description: 'Backend-focused Software Engineer: .NET 10, Next.js, Solr, SQL Server, Redis, k6 performance engineering, RAG, MCP and self-hosted LLMs.',
+  description: 'Backend-focused Senior Software Engineer: .NET 10, Next.js, Solr, SQL Server, Redis, k6 performance engineering, RAG, MCP and self-hosted LLMs.',
   alternates: { canonical: '/about' },
 };
 

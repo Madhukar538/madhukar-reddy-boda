@@ -7,16 +7,18 @@ import {
   keyProjects,
   profile,
   rdProjects,
-  responsibilities,
   skillCategories,
 } from '../src/data/profile';
 
 // Never split words across lines (keeps text clean for ATS parsers).
 Font.registerHyphenationCallback((word) => [word]);
 
-// The site's Midnight look: a navy header band with the portrait, Inter (the
-// site's typeface, embedded and subset, so text stays selectable for ATS
-// parsers) and midnight-blue accents. The body stays white so it prints well.
+// ATS-first: one column, standard section names, no tables, no text in images,
+// no light-on-dark. The portrait sits to the right of the name, after it in
+// reading order, so parsers (which skip images) read the header as plain text. Everything is real, selectable text in
+// reading order, with links written out in full so they survive as plain text.
+// The site shows only in the details: Inter, ink on white, and the collar
+// crimson on the section headings.
 const fontDir = path.join(process.cwd(), 'src/lib/og-fonts');
 Font.register({
   family: 'Inter',
@@ -26,43 +28,51 @@ Font.register({
     { src: path.join(fontDir, 'Inter-ExtraBold.ttf'), fontWeight: 800 },
   ],
 });
-const PORTRAIT = path.join(process.cwd(), 'public/icons/icon-192.png');
 
-const NAVY = '#070a12';
-const NAVY_2 = '#0f1d3d';
-const ACCENT = '#1e4fd6';
-const ACCENT_ON_NAVY = '#7cb6ff';
-const INK = '#111827';
-const MUTED = '#4b5563';
-const RULE = '#e5e7eb';
+// The black t-shirt portrait, square (public/madhukar.png).
+const PORTRAIT = path.join(process.cwd(), 'public/madhukar.png');
+
+const INK = '#16120f';
+const MUTED = '#4a433d';
+const CRIMSON = '#a8323b'; // the site's crimson, darkened for print
+const RULE = '#d9d3cc';
 
 const s = StyleSheet.create({
-  page: { paddingTop: 34, paddingBottom: 40, paddingHorizontal: 0, fontFamily: 'Inter', fontSize: 9, color: INK, lineHeight: 1.4 },
-  body: { paddingHorizontal: 40 },
-  band: { marginTop: -34, backgroundColor: NAVY, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 40, paddingVertical: 22, marginBottom: 6, borderBottomWidth: 3, borderBottomColor: ACCENT },
-  photo: { width: 64, height: 64, borderRadius: 32, marginRight: 18, borderWidth: 1.5, borderColor: NAVY_2 },
-  name: { fontSize: 23, fontWeight: 800, color: '#f1f5fb', letterSpacing: -0.4, lineHeight: 1.15 },
-  title: { fontSize: 11, color: ACCENT_ON_NAVY, fontWeight: 600, marginTop: 3 },
-  contact: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 6, color: '#a9b6cc', fontSize: 8.5 },
-  contactItem: { marginRight: 12 },
-  link: { color: '#a9b6cc', textDecoration: 'none' },
+  page: { paddingTop: 34, paddingBottom: 40, paddingHorizontal: 44, fontFamily: 'Inter', fontSize: 9.3, color: INK, lineHeight: 1.38 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  photo: { width: 74, height: 74, borderRadius: 37, marginLeft: 16 },
+  name: { fontSize: 22, fontWeight: 800, letterSpacing: -0.3, lineHeight: 1.1 },
+  headline: { fontSize: 10.5, fontWeight: 600, color: MUTED, marginTop: 4 },
+  contact: { fontSize: 9, color: MUTED, marginTop: 6 },
+  link: { color: MUTED, textDecoration: 'none' },
+  headerRule: { marginTop: 10, borderBottomWidth: 1.5, borderBottomColor: CRIMSON, width: 36 },
   section: { marginTop: 11 },
-  heading: { fontSize: 9.5, fontWeight: 800, color: ACCENT, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 3, marginBottom: 6, borderBottomWidth: 0.75, borderBottomColor: RULE },
+  heading: {
+    fontSize: 9.5,
+    fontWeight: 800,
+    color: CRIMSON,
+    textTransform: 'uppercase',
+    paddingBottom: 3,
+    marginBottom: 6,
+    borderBottomWidth: 0.6,
+    borderBottomColor: RULE,
+  },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   roleTitle: { fontSize: 11, fontWeight: 600 },
-  meta: { color: MUTED, fontSize: 9 },
-  highlight: { flexDirection: 'row', marginTop: 4 },
-  highlightLabel: { width: 78, fontWeight: 600, fontSize: 9 },
-  highlightValue: { flex: 1, color: MUTED, fontSize: 9 },
-  bullet: { flexDirection: 'row', marginTop: 1.5 },
-  dot: { width: 10, color: ACCENT },
+  dates: { fontSize: 9.5, fontWeight: 600 },
+  org: { color: MUTED, marginTop: 1 },
+  group: { fontSize: 9.3, fontWeight: 600, marginTop: 5, marginBottom: 1 },
+  bullet: { flexDirection: 'row', marginTop: 2 },
+  dot: { width: 10 },
   bulletText: { flex: 1 },
-  item: { marginBottom: 5 },
+  item: { marginBottom: 6 },
   itemTitle: { fontWeight: 600, fontSize: 10 },
-  tech: { color: MUTED, fontSize: 8.5, marginTop: 1 },
-  skillRow: { flexDirection: 'row', marginBottom: 3 },
-  skillLabel: { width: 118, fontWeight: 600, fontSize: 9 },
-  skillValue: { flex: 1, fontSize: 9, color: INK },
+  tech: { color: MUTED, fontSize: 9, marginTop: 1.5 },
+  skillRow: { flexDirection: 'row', marginBottom: 2.5 },
+  skillLabel: { width: 128, fontWeight: 600 },
+  skillValue: { flex: 1 },
+  footer: { position: 'absolute', bottom: 16, left: 44, right: 44 },
+  footerText: { fontSize: 7.5, color: '#8a827a', textAlign: 'center' },
 });
 
 function Bullet({ children }: { children: React.ReactNode }) {
@@ -78,63 +88,97 @@ function Heading({ children }: { children: React.ReactNode }) {
   return <Text style={s.heading} minPresenceAhead={40}>{children}</Text>;
 }
 
+/** "https://www.linkedin.com/in/x" → "linkedin.com/in/x": readable, and still a full address to a parser. */
+const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+
 export function ResumeDocument() {
-  // Keep it to two pages: the newest key projects, plus the newest
-  // prototypes and shipped tools from the Lab.
-  const projects = keyProjects.slice(0, 6);
-  const selectedRnd = [
-    ...rdProjects.filter((p) => p.status !== 'SHIPPED').slice(0, 3),
-    ...rdProjects.filter((p) => p.status === 'SHIPPED').slice(0, 2),
+  // Two pages: the newest key projects, then two Lab research projects.
+  const projects = keyProjects.slice(0, 4);
+  // Research only: the shipped Lab tools (MongoDB tuning, k6 suites) are already in Experience.
+  const selectedRnd = rdProjects.filter((p) => p.status !== 'SHIPPED').slice(0, 2);
+  // "Ollama · Qwen3 · Gemma" reads as one token to some parsers; commas split it.
+  const skillList = (skills: string[]) => skills.join(', ').replace(/ · /g, ', ');
+  const keywords = [...new Set(skillCategories.flatMap((c) => c.skills))].join(', ');
+  // Two fixed lines, so an address is never wrapped (or broken at a hyphen).
+  const contactLines = [
+    [
+      { text: profile.location },
+      { text: profile.email, href: `mailto:${profile.email}` },
+      { text: profile.phone, href: profile.phoneHref },
+    ],
+    [
+      profile.linkedin && { text: bare(profile.linkedin), href: profile.linkedin },
+      { text: bare(profile.github), href: profile.github },
+      { text: 'dhucar.in', href: 'https://dhucar.in' },
+    ].filter(Boolean) as { text: string; href?: string }[],
   ];
 
   return (
     <Document
-      title={`${profile.name} — Résumé`}
+      title={`${profile.name} — ${profile.title} — Résumé`}
       author={profile.name}
       subject={`${profile.title} résumé`}
-      keywords=".NET, Software Engineer, RAG, MCP, Next.js, Performance"
+      keywords={keywords}
+      creator={profile.name}
+      producer="dhucar.in"
     >
       <Page size="A4" style={s.page}>
-        {/* Header band, as on the site */}
-        <View style={s.band}>
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={PORTRAIT} style={s.photo} />
+        <View style={s.header}>
           <View style={{ flex: 1 }}>
             <Text style={s.name}>{profile.name}</Text>
-            <Text style={s.title}>{profile.title} · {profile.company}</Text>
-            <View style={s.contact}>
-              <Text style={s.contactItem}>{profile.location}</Text>
-              <Link style={[s.contactItem, s.link]} src={`mailto:${profile.email}`}>{profile.email}</Link>
-              <Link style={[s.contactItem, s.link]} src={profile.phoneHref}>{profile.phone}</Link>
-              <Link style={[s.contactItem, s.link]} src="https://dhucar.in">dhucar.in</Link>
-              <Link style={[s.contactItem, s.link]} src={profile.github}>{profile.github.replace('https://', '')}</Link>
-            </View>
+            <Text style={s.headline}>{profile.title} | R&amp;D and Problem Solving | .NET and Self-Hosted AI</Text>
+            {contactLines.map((line, n) => (
+              <Text key={n} style={[s.contact, n > 0 ? { marginTop: 1 } : {}]}>
+                {line.map((c, i) => (
+                  <React.Fragment key={c.text}>
+                    {i > 0 && '  |  '}
+                    {c.href ? <Link style={s.link} src={c.href}>{c.text}</Link> : c.text}
+                  </React.Fragment>
+                ))}
+              </Text>
+            ))}
           </View>
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
+          <Image src={PORTRAIT} style={s.photo} />
         </View>
-        <View style={s.body}>
+        <View style={s.headerRule} />
 
         <View style={s.section}>
-          <Heading>Summary</Heading>
+          <Heading>Professional Summary</Heading>
           <Text>{profile.summary}</Text>
         </View>
 
         <View style={s.section}>
-          <Heading>Experience</Heading>
-          <View style={s.row}>
-            <Text style={s.roleTitle}>{experience.title} — {experience.company}</Text>
-            <Text style={s.meta}>{experience.duration} · {experience.location}</Text>
-          </View>
-          {experience.highlights.map((h) => (
-            <View key={h.label} style={s.highlight}>
-              <Text style={s.highlightLabel}>{h.label}</Text>
-              <Text style={s.highlightValue}>{h.value}</Text>
+          <Heading>Technical Skills</Heading>
+          {skillCategories.map((c) => (
+            <View key={c.title} style={s.skillRow} wrap={false}>
+              <Text style={s.skillLabel}>{c.title}:</Text>
+              <Text style={s.skillValue}>{skillList(c.skills)}</Text>
             </View>
           ))}
-          <View style={{ marginTop: 5 }}>
-            {responsibilities.map((r) => (
-              <Bullet key={r}>{r}</Bullet>
-            ))}
+        </View>
+
+        <View style={s.section}>
+          <Heading>Professional Experience</Heading>
+          <View style={s.row}>
+            <Text style={s.roleTitle}>{experience.title}</Text>
+            <Text style={s.dates}>{experience.duration}</Text>
           </View>
+          <Text style={s.org}>
+            {experience.company}, {experience.location} ({experience.type})
+          </Text>
+          {experience.groups.map((g) => (
+            <View key={g.label}>
+              {/* The label never ends a page alone: it travels with its first bullet. */}
+              <View wrap={false}>
+                <Text style={s.group}>{g.label}</Text>
+                <Bullet>{g.items[0]}</Bullet>
+              </View>
+              {g.items.slice(1).map((item) => (
+                <Bullet key={item}>{item}</Bullet>
+              ))}
+            </View>
+          ))}
         </View>
 
         <View style={s.section}>
@@ -143,45 +187,31 @@ export function ResumeDocument() {
             <View key={p.title} style={s.item} wrap={false}>
               <Text style={s.itemTitle}>{p.title}</Text>
               <Text>{p.description}</Text>
-              <Text style={s.tech}>{p.tech.join(' · ')}</Text>
+              {p.outcome && <Text style={{ marginTop: 1.5 }}><Text style={{ fontWeight: 600 }}>Result: </Text>{p.outcome}</Text>}
+              <Text style={s.tech}>Technologies: {p.tech.join(', ')}</Text>
             </View>
           ))}
         </View>
 
         <View style={s.section}>
-          <Heading>Selected R&amp;D</Heading>
+          <Heading>Research and Side Projects</Heading>
           {selectedRnd.map((p) => (
             <View key={p.title} style={s.item} wrap={false}>
               <Text style={s.itemTitle}>{p.title}</Text>
               <Text>{p.description}</Text>
-              <Text style={s.tech}>{p.tech.join(' · ')}</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={s.section}>
-          <Heading>Technical Skills</Heading>
-          {skillCategories.map((c) => (
-            <View key={c.title} style={s.skillRow} wrap={false}>
-              <Text style={s.skillLabel}>{c.title}</Text>
-              <Text style={s.skillValue}>{c.skills.join(', ')}</Text>
+              <Text style={s.tech}>Technologies: {p.tech.join(', ')}</Text>
             </View>
           ))}
         </View>
 
         <View style={s.section} wrap={false}>
           <Heading>Education</Heading>
-          <View style={s.row}>
-            <Text style={s.itemTitle}>{education.degree} — {education.institution}</Text>
-            <Text style={s.meta}>{education.location}</Text>
-          </View>
+          <Text style={s.itemTitle}>{education.degree}</Text>
+          <Text style={s.org}>{education.institution}, {education.location}</Text>
         </View>
 
-        </View>
-
-        {/* Footer on every page */}
-        <View fixed style={{ position: 'absolute', bottom: 16, left: 40, right: 40 }}>
-          <Text style={{ fontSize: 7.5, color: '#9ca3af', textAlign: 'center' }}>{profile.name} · dhucar.in</Text>
+        <View fixed style={s.footer}>
+          <Text style={s.footerText}>{profile.name} | Résumé | dhucar.in</Text>
         </View>
       </Page>
     </Document>

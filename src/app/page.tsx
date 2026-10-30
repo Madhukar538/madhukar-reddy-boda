@@ -47,7 +47,7 @@ export default async function Home() {
           </span>
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
-            <span className="block text-muted-foreground">Software Engineer · Revalsys, Hyderabad</span>
+            <span className="block text-muted-foreground">Senior Software Engineer · Revalsys, Hyderabad</span>
           </span>
         </Link>
         <HeroIdentity />

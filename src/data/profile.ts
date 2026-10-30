@@ -6,7 +6,7 @@
 
 export const profile = {
   name: 'Boda Madhukar Reddy',
-  title: 'Software Engineer',
+  title: 'Senior Software Engineer',
   company: 'Revalsys Technologies',
   location: 'Hyderabad, India',
   email: 'madhukarreddyboda538@gmail.com',
@@ -17,8 +17,8 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Backend-focused Software Engineer with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
-    'Designs high-throughput .NET APIs, multi-tenant RAG and MCP platforms and hybrid search, and validates everything with k6 + Grafana. ' +
+    'Senior Software Engineer specialising in research and development and hard problem solving, with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
+    'Takes ambiguous problems from investigation to production: high-throughput .NET APIs, multi-tenant RAG and MCP platforms on Microsoft Agent Framework, and hybrid search, all validated with k6 + Grafana. ' +
     'Production-first: diagnose fast, fix right, prevent recurrence.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
   // dates it; this built-in copy is used until a note is saved there.
@@ -89,7 +89,7 @@ export const skillCategories: SkillCategory[] = [
 ];
 
 export const experience = {
-  title: 'Software Engineer',
+  title: 'Senior Software Engineer (R&D)',
   company: 'Revalsys Technologies',
   duration: '2021 – Present',
   location: 'Hyderabad, IN',
@@ -103,7 +103,7 @@ export const experience = {
     {
       label: 'AI platforms',
       items: [
-        'Architecting a multi-tenant RAG chatbot platform on .NET 10: Semantic Kernel agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
+        'Architecting a multi-tenant RAG chatbot platform on .NET 10: Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
         'Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.',
         'Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.',
         'Run AI workloads on self-hosted LLMs (Ollama on an in-house GPU server), with no cloud AI dependency.',

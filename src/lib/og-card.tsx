@@ -68,7 +68,7 @@ export async function ogCard({
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', fontSize: 40, fontWeight: 800, color: INK, letterSpacing: '-0.02em' }}>Boda Madhukar Reddy</div>
             <div style={{ display: 'flex', marginTop: 6, fontSize: 26, color: MUTED }}>
-              <span style={{ color: ACCENT, fontWeight: 600 }}>Software Engineer</span>
+              <span style={{ color: ACCENT, fontWeight: 600 }}>Senior Software Engineer</span>
               <span style={{ margin: '0 12px' }}>·</span>
               <span>Hyderabad, India</span>
             </div>

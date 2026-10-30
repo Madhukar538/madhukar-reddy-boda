@@ -106,7 +106,7 @@ export function Header() {
                 </div>
                 <div className="leading-tight">
                   <p className="text-sm font-semibold text-primary">Boda Madhukar Reddy</p>
-                  <p className="text-xs text-muted-foreground">Software Engineer · Hyderabad, IN</p>
+                  <p className="text-xs text-muted-foreground">Senior Software Engineer · Hyderabad, IN</p>
                 </div>
               </m.div>
             )}

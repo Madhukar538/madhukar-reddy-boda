@@ -13,7 +13,7 @@ export function Summary() {
     <Section id="about" title="Overview" comment="Professional summary">
       <div className="glass p-6 md:p-8 space-y-6">
         <p className="text-lg md:text-xl leading-relaxed text-foreground/90 font-medium">
-          Backend-focused Software Engineer building, optimizing and scaling{' '}
+          Backend-focused Senior Software Engineer building, optimizing and scaling{' '}
           <span className="text-gradient font-semibold">high-traffic systems</span> and self-hosted AI platforms.
         </p>
 

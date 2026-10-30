@@ -23,9 +23,9 @@ import { GenieLauncher } from '@/components/genie/genie-launcher';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: 'Boda Madhukar Reddy — Software Engineer & Tech Blogger',
+  title: 'Boda Madhukar Reddy — Senior Software Engineer & Tech Blogger',
   description:
-    'Software Engineer specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering.',
+    'Senior Software Engineer specializing in .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and k6 performance engineering.',
   alternates: {
     types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
   },
@@ -136,7 +136,7 @@ export default async function RootLayout({
       {
         '@type': 'WebSite',
         '@id': `${base}/#website`,
-        name: `${profile.name} — Software Engineer & Engineering Blog`,
+        name: `${profile.name} — Senior Software Engineer & Engineering Blog`,
         alternateName: 'Madhukar Reddy Portfolio',
         url: base,
         description: profile.summary,
