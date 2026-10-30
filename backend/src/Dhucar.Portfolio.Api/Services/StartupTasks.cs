@@ -1,3 +1,4 @@
+using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.DataAccess;
 using MongoDB.Driver;
@@ -17,7 +18,7 @@ namespace Dhucar.Portfolio.Api.Services;
  */
 public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks> logger) : IHostedService
 {
-    private static readonly TimeSpan FirstRetry = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan FirstRetry = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan MaxRetry = TimeSpan.FromMinutes(5);
 
     private readonly CancellationTokenSource _stopping = new();
@@ -55,11 +56,13 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
         {
             // Don't take the whole API down with the database: /health keeps answering (db: down) meanwhile.
             logger.LogWarning(ex, "Database unreachable at start; retrying startup tasks in the background");
+            // Maybe this server's IP isn't on the Atlas access list yet: sync it now rather than at the next check.
+            serviceProvider.GetRequiredService<AtlasSyncTrigger>().Request();
             _retrying = Task.Run(() => RetryUntilDone(_stopping.Token));
         }
     }
 
-    /// <summary>Retries the startup tasks with backoff (30 s, doubling to 5 min) until they succeed or the API stops.</summary>
+    /// <summary>Retries the startup tasks with backoff (10 s, doubling to 5 min) until they succeed or the API stops.</summary>
     private async Task RetryUntilDone(CancellationToken stoppingToken)
     {
         TimeSpan wait = FirstRetry;
@@ -79,6 +82,7 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
             catch (Exception ex) when (ex is MongoException or TimeoutException)
             {
                 logger.LogWarning("Database still unreachable; next try in {Seconds} s", (int)wait.TotalSeconds);
+                serviceProvider.GetRequiredService<AtlasSyncTrigger>().Request();
                 wait = TimeSpan.FromTicks(Math.Min(wait.Ticks * 2, MaxRetry.Ticks));
             }
         }

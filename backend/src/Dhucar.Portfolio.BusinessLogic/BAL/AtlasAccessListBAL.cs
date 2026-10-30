@@ -57,8 +57,16 @@ public class AtlasAccessListBAL(IHttpClientFactory httpClientFactory, IOptions<P
     /// </summary>
     public async Task<string> SyncOnce(CancellationToken cancellationToken)
     {
+        return await SyncOnce(await PublicIp(cancellationToken), cancellationToken);
+    }
+
+    /// <summary>
+    /// <c>SyncOnce : </c> As above, for an IP already looked up (the background service checks the IP on its own,
+    /// often, and only calls Atlas when it changed).
+    /// </summary>
+    public async Task<string> SyncOnce(string ip, CancellationToken cancellationToken)
+    {
         AtlasSettings atlas = options.Value.Atlas;
-        string ip = await PublicIp(atlas, cancellationToken);
         HttpClient client = httpClientFactory.CreateClient(HttpClientName);
         string listUrl = $"{atlas.BaseUrl.TrimEnd('/')}/api/atlas/v2/groups/{Uri.EscapeDataString(atlas.ProjectId.Trim())}/accessList";
 
@@ -101,9 +109,9 @@ public class AtlasAccessListBAL(IHttpClientFactory httpClientFactory, IOptions<P
     }
 
     /// <summary>This server's public IPv4 address, as the IP echo service sees it.</summary>
-    private async Task<string> PublicIp(AtlasSettings atlas, CancellationToken cancellationToken)
+    public async Task<string> PublicIp(CancellationToken cancellationToken)
     {
-        string text = (await httpClientFactory.CreateClient(IpEchoClientName).GetStringAsync(atlas.IpEchoUrl, cancellationToken)).Trim();
+        string text = (await httpClientFactory.CreateClient(IpEchoClientName).GetStringAsync(options.Value.Atlas.IpEchoUrl, cancellationToken)).Trim();
         if (!IPAddress.TryParse(text, out IPAddress? address) || address.AddressFamily != AddressFamily.InterNetwork)
         {
             throw new InvalidOperationException("The IP echo service did not return an IPv4 address.");

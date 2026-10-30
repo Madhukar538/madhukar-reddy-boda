@@ -11,6 +11,7 @@ import { getContent } from '@/lib/content';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
+import { experienceSince } from '@/lib/utils';
 
 export const metadata: Metadata = {
   // og:url for link previews (WhatsApp, LinkedIn); page-level openGraph replaces the layout's, so it is repeated.
@@ -25,7 +26,7 @@ const heroMetrics = [
   { value: '40s → 13s', label: 'RAG latency reduction' },
   { value: '5–50 ms', label: 'MongoDB query tuning' },
   { value: '1,792 GB/s', label: 'GPU inference bandwidth' },
-  { value: '5+ Years', label: 'Production systems' },
+  { value: `${experienceSince().years}+ Years`, label: 'Production systems' },
 ];
 
 export default async function Home() {

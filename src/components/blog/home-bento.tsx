@@ -11,7 +11,7 @@ import {
   Network,
   Plug,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, experienceSince } from '@/lib/utils';
 import { stack } from '@/data/stack';
 import type { SiteContent } from '@/lib/content';
 import { caseStudyFor } from '@/data/case-studies';
@@ -54,8 +54,7 @@ export function HomeBento({ content }: { content: BentoContent }) {
   const featured = keyProjects.find((p) => p.featured && p.outcome) ?? keyProjects.find((p) => p.featured) ?? keyProjects[0];
   const study = featured ? caseStudyFor(featured.title) : undefined;
   const shipped = rdProjects.filter((p) => p.status === 'SHIPPED').length;
-  const startYear = Number(experience.duration.match(/\d{4}/)?.[0] ?? 2021);
-  const years = new Date().getFullYear() - startYear;
+  const { years, since } = experienceSince(experience.duration);
 
   return (
     <section aria-labelledby="highlights-heading" className="mb-12 md:mb-16">
@@ -119,7 +118,7 @@ export function HomeBento({ content }: { content: BentoContent }) {
           <div className="mt-4 space-y-3">
             <p>
               <span className="block text-4xl font-bold tracking-tight text-foreground tabular-nums">{years}+</span>
-              <span className="text-sm text-muted-foreground">years building since {startYear}</span>
+              <span className="text-sm text-muted-foreground">years building since {since}</span>
             </p>
             <p>
               <span className="block text-4xl font-bold tracking-tight text-foreground tabular-nums">{postCount}</span>

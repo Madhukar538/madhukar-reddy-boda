@@ -21,8 +21,11 @@ public class AtlasSettings
     /// <summary>Atlas project (group) id, from Project Settings.</summary>
     public string ProjectId { get; set; } = string.Empty;
 
-    /// <summary>How often to check the public IP.</summary>
-    public int IntervalMinutes { get; set; } = 5;
+    /// <summary>How often to look up the public IP (a tiny request; Atlas is only called when it changed).</summary>
+    public int CheckSeconds { get; set; } = 30;
+
+    /// <summary>How often to check the access list in Atlas even if the IP is the same (repairs a removed entry).</summary>
+    public int ReconcileMinutes { get; set; } = 15;
 
     /// <summary>Marks the entries this service manages; it only ever removes entries with this comment.</summary>
     public string Comment { get; set; } = "portfolio-api (auto)";

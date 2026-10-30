@@ -41,8 +41,13 @@ public class MigrationTests
 
         // Run both again over an old profile: the bullets migration (later Id) sets the final summary and groups.
         await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set("summary", "Old.").Set("Summary", "Old."));
+        IMongoCollection<BsonDocument> projects = factory.Database.GetCollection<BsonDocument>("projects");
+        BsonDocument jockey = await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync();
+        string durationField = jockey.Contains("duration") ? "duration" : "Duration";
+        await projects.UpdateOneAsync(new BsonDocument("_id", "jockey"), Builders<BsonDocument>.Update.Set(durationField, "Jan 2021 – May 2023"));
         await Migrations(factory).DeleteManyAsync(FilterDefinition<BsonDocument>.Empty);
         Assert.Equal([MigrationId, "0002-experience-bullets"], await RunPending(factory));
+        Assert.Equal("Dec 2021 – May 2023", (await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync())[durationField].AsString);
 
         BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         string summaryField = profile.Contains("summary") ? "summary" : "Summary";

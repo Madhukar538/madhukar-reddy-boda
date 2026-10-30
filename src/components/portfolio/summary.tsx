@@ -1,10 +1,11 @@
 import { Section } from '@/components/portfolio/section';
 import { Gauge, Layers, Sparkles, Target } from 'lucide-react';
+import { experienceSince } from '@/lib/utils';
 
 const facts = [
   { icon: Target,   label: 'Focus',         value: 'Backend · AI platforms · Performance' },
   { icon: Layers,   label: 'Primary stack', value: '.NET 10 · Next.js · SQL Server · Redis' },
-  { icon: Gauge,    label: 'Experience',    value: '5+ years' },
+  { icon: Gauge,    label: 'Experience',    value: `${experienceSince().years}+ years` },
   { icon: Sparkles, label: 'Open to',       value: 'Fixing bugs & giving solutions', highlight: true },
 ];
 

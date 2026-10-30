@@ -10,6 +10,7 @@
 using Dhucar.Portfolio.Api.Extensions;
 using Dhucar.Portfolio.Api.Hubs;
 using Dhucar.Portfolio.Api.Middlewares;
+using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.DataAccess;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -47,7 +48,7 @@ string apiVersion = typeof(Program).Assembly.GetName().Version is { } v ? $"{v.M
 string apiCommit = (Environment.GetEnvironmentVariable("SOURCE_COMMIT") ?? string.Empty) is { Length: >= 7 } sha ? sha[..7] : string.Empty;
 // Always 200 while the process runs (a database outage must not get the container restarted);
 // the database's own state and round trip are reported alongside, for the site's /status page.
-app.MapGet("/health", async (MongoContext mongo, CancellationToken requestAborted) =>
+app.MapGet("/health", async (MongoContext mongo, AtlasSyncTrigger atlasSync, CancellationToken requestAborted) =>
 {
     string db = "down";
     long? dbMs = null;
@@ -62,7 +63,8 @@ app.MapGet("/health", async (MongoContext mongo, CancellationToken requestAborte
     }
     catch (Exception ex) when (ex is OperationCanceledException or TimeoutException or MongoException)
     {
-        // Reported as down; never throws out of the health check.
+        // Reported as down; never throws out of the health check. The IP may have changed: fix the Atlas list now.
+        atlasSync.Request();
     }
     return Results.Ok(new { status = "ok", version = apiVersion, commit = apiCommit, db, dbMs });
 });

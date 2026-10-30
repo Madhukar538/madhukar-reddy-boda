@@ -1,3 +1,4 @@
+using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Options;
@@ -7,32 +8,40 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  30 Oct 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  30 Oct 2026
+ * Modified Reason :  Near-instant: checks the IP every 30 s and syncs at once when MongoDB stops answering
  * Layer           :  Api
- * Modified By     :
- * Description     :  When Portfolio:Atlas is configured: on start and then every few minutes, keeps this server's
- *                    public IP on the MongoDB Atlas access list (AtlasAccessListBAL), so a changed home IP heals itself.
+ * Modified By     :  Boda Madhukar Reddy
+ * Description     :  When Portfolio:Atlas is configured, keeps this server's public IP on the MongoDB Atlas access
+ *                    list (AtlasAccessListBAL), so a changed home IP heals itself within seconds:
+ *                    - looks up the public IP every CheckSeconds (30 s) and calls Atlas only when it changed;
+ *                    - syncs immediately when asked (AtlasSyncTrigger: the database stopped answering);
+ *                    - re-checks the list in Atlas every ReconcileMinutes (15) anyway, to repair a removed entry.
  */
-public class AtlasAccessListSync(IServiceProvider serviceProvider, IOptions<PortfolioSettings> options, ILogger<AtlasAccessListSync> logger) : BackgroundService
+public class AtlasAccessListSync(
+    IServiceProvider serviceProvider,
+    AtlasSyncTrigger trigger,
+    IOptions<PortfolioSettings> options,
+    ILogger<AtlasAccessListSync> logger) : BackgroundService
 {
     //****************************************************************************************************
     // Layer                 :   Api
     // Method Name           :   ExecuteAsync
-    // Method Description    :   Syncs at once, then on every interval; a failure is logged and retried next time.
+    // Method Description    :   The check loop: IP lookup every few seconds, Atlas only on a change, a request or reconcile time.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   30 Oct 2026
     // Input Parameters      :   stoppingToken
-    // Modified Date         :
-    // Modified Reason       :
+    // Modified Date         :   30 Oct 2026
+    // Modified Reason       :   Near-instant sync
     // Return Values         :   Task
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    30 Oct 2026       Creation
+    //  1.1        Boda Madhukar Reddy    30 Oct 2026       30 s IP checks, sync on request
     //****************************************************************************************************
     /// <summary>
-    /// <c>ExecuteAsync : </c> Syncs at once, then on every interval; a failure is logged and retried next time.
+    /// <c>ExecuteAsync : </c> The check loop: IP lookup every few seconds, Atlas only on a change, a request or reconcile time.
     /// </summary>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -46,24 +55,37 @@ public class AtlasAccessListSync(IServiceProvider serviceProvider, IOptions<Port
             }
             return;
         }
-        int minutes = Math.Clamp(atlas.IntervalMinutes, 1, 60);
-        using PeriodicTimer timer = new(TimeSpan.FromMinutes(minutes));
-        do
+        TimeSpan check = TimeSpan.FromSeconds(Math.Clamp(atlas.CheckSeconds, 10, 3600));
+        TimeSpan reconcile = TimeSpan.FromMinutes(Math.Clamp(atlas.ReconcileMinutes, 1, 1440));
+        string? syncedIp = null;
+        DateTime reconcileAt = DateTime.MinValue;
+        bool isRequested = true;
+
+        while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
                 using IServiceScope scope = serviceProvider.CreateScope();
-                string result = await scope.ServiceProvider.GetRequiredService<AtlasAccessListBAL>().SyncOnce(stoppingToken);
-                if (result != "unchanged")
+                AtlasAccessListBAL sync = scope.ServiceProvider.GetRequiredService<AtlasAccessListBAL>();
+                string ip = await sync.PublicIp(stoppingToken);
+                if (isRequested || ip != syncedIp || DateTime.UtcNow >= reconcileAt)
                 {
-                    logger.LogInformation("Atlas access list: {Result}", result);
+                    string result = await sync.SyncOnce(ip, stoppingToken);
+                    if (result != "unchanged")
+                    {
+                        logger.LogInformation("Atlas access list: {Result}", result);
+                    }
+                    syncedIp = ip;
+                    reconcileAt = DateTime.UtcNow + reconcile;
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                logger.LogWarning(ex, "Atlas access list sync failed; retrying in {Minutes} min", minutes);
+                // Try again at the next check (not after the full reconcile interval).
+                syncedIp = null;
+                logger.LogWarning(ex, "Atlas access list sync failed; retrying in {Seconds} s", (int)check.TotalSeconds);
             }
+            isRequested = await trigger.WaitAsync(check, stoppingToken);
         }
-        while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 }

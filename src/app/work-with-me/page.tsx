@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { experienceSince } from '@/lib/utils';
 import { ArrowRight, ArrowUpRight, Bug, Check, Gauge, Layers, Mail, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Callout } from '@/components/vault/callout';
@@ -88,7 +89,7 @@ const enquire = (topic: string) => `/fix-a-bug?topic=${encodeURIComponent(topic)
 /** Services for teams: what Madhukar takes on alongside his full-time role, and how to start. */
 export default async function WorkWithMePage() {
   const { profile, keyProjects, clientProjects, posts } = await getContent();
-  const years = new Date().getFullYear() - 2021;
+  const { years } = experienceSince();
   const proof = [
     { value: '~13 s', label: 'AI answers, down from 30–40 s' },
     { value: `${years}+`, label: 'years building production systems' },

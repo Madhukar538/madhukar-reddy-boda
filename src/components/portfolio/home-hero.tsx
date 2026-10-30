@@ -19,7 +19,7 @@ import {
   Plug,
   Phone,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, CAREER_START, experienceSince } from '@/lib/utils';
 import type { SiteContent } from '@/lib/content';
 import { stack } from '@/data/stack';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
@@ -156,7 +156,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
             </p>
             <div className="mt-5 grid grid-cols-2 gap-2">
               <div className="glass-inset py-3">
-                <p className="text-2xl font-bold text-foreground">5+</p>
+                <p className="text-2xl font-bold text-foreground">{experienceSince().years}+</p>
                 <p className="text-[11px] text-muted-foreground">Years</p>
               </div>
               <div className="glass-inset py-3">
@@ -176,7 +176,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
           </TileIcon>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currently</p>
           <p className="mt-1 text-2xl font-bold text-foreground">Senior Software Engineer</p>
-          <p className="text-[15px] text-foreground/75">Revalsys Technologies · 2021 – Present</p>
+          <p className="text-[15px] text-foreground/75">Revalsys Technologies · {CAREER_START} – Present</p>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             Leading .NET R&amp;D: multi-tenant RAG chatbots, MCP servers, hybrid search, offline-first
             apps, and e-commerce platforms for Jockey, Speedo, Manyavar and more.

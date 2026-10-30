@@ -17,7 +17,7 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Senior Software Engineer with 5+ years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
+    'Senior Software Engineer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
     'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s, MongoDB query latency from up to 2 s to under 50 ms, and PR review cycle time by 30%. ' +
     'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana, and takes ambiguous problems from investigation to production.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
@@ -91,7 +91,7 @@ export const skillCategories: SkillCategory[] = [
 export const experience = {
   title: 'Senior Software Engineer (R&D)',
   company: 'Revalsys Technologies',
-  duration: '2021 – Present',
+  duration: 'Dec 2021 – Present',
   location: 'Hyderabad, IN',
   type: 'Full-time',
   highlights: [
@@ -103,10 +103,10 @@ export const experience = {
     {
       label: 'AI platforms',
       items: [
-        'Architected a multi-tenant RAG chatbot platform on .NET 10 (Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming), cutting typical answer time from 30–40 s to about 13 s.',
+        'Architected a multi-tenant RAG chatbot platform on .NET 10 (Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming), then led an end-to-end latency audit that cut typical answer time from 30–40 s to about 13 s.',
         'Built an MCP (Model Context Protocol) server exposing 40+ tools that give AI assistants a map of C# codebases and SQL Server schemas, using Roslyn code analysis and schema extraction synced to MongoDB.',
         'Designed a hybrid product search engine on Solr 9 that fuses BM25 keyword and kNN vector results with Reciprocal Rank Fusion.',
-        'Moved AI workloads to self-hosted LLMs (Ollama on an in-house GPU server), removing the dependency on cloud AI services.',
+        'Moved AI workloads to self-hosted LLMs (Ollama on an in-house GPU server), saving about ₹10,000 a month in cloud AI costs.',
         'Integrated AI into internal workflows, including NLP chatbots, RAG systems and automated code review.',
       ],
     },
@@ -114,7 +114,7 @@ export const experience = {
       label: 'Performance & tooling',
       items: [
         'Created repeatable k6 load-testing suites with Grafana dashboards, setting SLA baselines and capacity models for mission-critical APIs.',
-        'Tuned MongoDB compound and unique indexes for conversational platforms, cutting query latency from 500–2,000 ms to 5–50 ms.',
+        'Diagnosed full collection scans behind slow conversation queries and fixed them with compound and unique MongoDB indexes, cutting query latency from 500–2,000 ms to 5–50 ms.',
         'Developed a CI/CD code-review assistant on local LLMs, reducing PR review cycle time by 30%.',
         'Engineered enterprise data pipelines and SAP integration channels with zero-loss transactional sync.',
       ],
@@ -124,8 +124,8 @@ export const experience = {
       items: [
         'Prototyped an offline-first procurement and inspection app (Next.js PWA with Android SQLite) with outbox-based sync (in progress).',
         'Extended Uptime Kuma into an uptime and incident-management platform with a .NET API, push alerts and ticketing (in progress).',
-        'Led .NET-based R&D projects for rapid prototyping and system innovation.',
-        'Migrated legacy systems to modern .NET hybrid architectures.',
+        'Led all of the company’s .NET R&D projects as the sole lead, from rapid prototypes to working systems.',
+        'Migrated RevalERP’s legacy systems to modern .NET hybrid architectures.',
         'Produced proofs of concept for IoT (MQTT), debugging tools and context-aware assistants.',
         'Implemented an RDLC reporting application for internal workflows, from requirements through delivery.',
       ],
@@ -280,7 +280,7 @@ export const clientProjects: ClientProject[] = [
     title: 'Jockey',
     client: 'Jockey (Page industries ltd, Bangalore)',
     role: 'Software Development Team Lead',
-    duration: 'Jan 2021 – May 2023',
+    duration: 'Dec 2021 – May 2023',
     url: 'https://www.jockey.in/',
     description:
       "Developed features for one of India's leading E-commerce portals, contributing to various modules across the platform.",
@@ -309,7 +309,7 @@ export const clientProjects: ClientProject[] = [
     title: 'Manyavar',
     client: 'Vedant Fashion Limited',
     role: 'Software Development Team Member',
-    duration: 'Jun 2021 – Jan 2022',
+    duration: 'Dec 2021 – Jan 2022',
     url: 'https://www.manyavar.com/',
     description:
       "Contributed to the development of the Manyavar e-commerce site, a major platform in the ethnic wear market.",
@@ -335,7 +335,7 @@ export const clientProjects: ClientProject[] = [
     title: 'LuxCozi',
     client: 'LuxCozi',
     role: 'Software Development Team Lead',
-    duration: 'Jun 2021 – Jan 2022',
+    duration: 'Dec 2021 – Jan 2022',
     url: 'https://www.luxcozi.com/',
     description:
       "Contributed to the development of the LuxCozi e-commerce site, one of India's leading innerwear and casual wear brands.",
@@ -361,7 +361,7 @@ export const clientProjects: ClientProject[] = [
     title: 'Speedo',
     client: 'Speedo',
     role: 'Software Development Team Lead',
-    duration: '2021',
+    duration: 'Dec 2021',
     url: 'https://www.speedo.in/',
     description:
       'Led development efforts for the Speedo e-commerce platform, focusing on core administrative and customer-facing features.',

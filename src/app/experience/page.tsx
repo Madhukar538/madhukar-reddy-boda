@@ -3,6 +3,7 @@ import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
+import { experienceSince } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Experience — Boda Madhukar Reddy',
@@ -23,10 +24,10 @@ export default async function ExperiencePage() {
     ],
   };
 
-  // Counted from the career start year in the experience data.
-  const startYear = Number(experience.duration.match(/\d{4}/)?.[0] ?? 2021);
+  // Whole years since the start month in the experience data.
+  const career = experienceSince(experience.duration);
   const stats = [
-    { value: new Date().getFullYear() - startYear, suffix: '+', label: `years building, since ${startYear}` },
+    { value: career.years, suffix: '+', label: `years building, since ${career.since}` },
     { value: keyProjects.length + clientProjects.length, label: 'projects delivered' },
     { value: clientProjects.length, label: 'e-commerce portals' },
     { value: rdProjects.length, label: 'R&D experiments' },

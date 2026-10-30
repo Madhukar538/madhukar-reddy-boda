@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Dhucar.Portfolio.Api.Middlewares;
 using Dhucar.Portfolio.Api.Services;
+using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.BusinessLogic.Migrations;
 using Dhucar.Portfolio.BusinessLogic.Presence;
@@ -72,6 +73,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContextService, ContextService>();
         services.AddScoped<ICodeLogger, CodeLogger>();
         services.AddSingleton<MongoContext>();
+        services.AddSingleton<AtlasSyncTrigger>();
         services.AddSingleton<TokenService>();
         services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<TotpService>();
