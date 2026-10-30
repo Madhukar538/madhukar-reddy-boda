@@ -24,7 +24,8 @@ export function GenieLauncher({ email }: { email: string }) {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [tucked, setTucked] = useState(false);
+  // Starts tucked: pages open on the hero, where the button would cover its buttons (phones only, in CSS).
+  const [tucked, setTucked] = useState(true);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const warm = useCallback(() => void loadChat(), []);
@@ -48,17 +49,20 @@ export function GenieLauncher({ email }: { email: string }) {
   }, []);
 
   // Phones and tablets: while you scroll down, the button slides mostly off the edge so it
-  // doesn't sit on what you're reading. It comes back when you scroll up or stop scrolling.
+  // doesn't sit on what you're reading. It comes back when you scroll up or stop scrolling,
+  // except over the first screen, where it would cover the hero's buttons.
   useEffect(() => {
     const narrow = window.matchMedia('(max-width: 1023px)');
+    const inHero = () => narrow.matches && window.scrollY < window.innerHeight * 0.6;
     let lastY = window.scrollY;
     let idle = 0;
+    setTucked(inHero());
     const onScroll = () => {
       const y = window.scrollY;
-      if (narrow.matches && Math.abs(y - lastY) > 6) setTucked(y > lastY && y > 80);
+      if (narrow.matches && Math.abs(y - lastY) > 6) setTucked((y > lastY && y > 80) || inHero());
       lastY = y;
       window.clearTimeout(idle);
-      idle = window.setTimeout(() => setTucked(false), 900);
+      idle = window.setTimeout(() => setTucked(inHero()), 900);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
@@ -86,7 +90,7 @@ export function GenieLauncher({ email }: { email: string }) {
         aria-label={open ? 'Close the genie' : 'Stuck on something? Ask the genie to file a ticket'}
         data-tucked={tucked && !open ? '' : undefined}
         className={cn(
-          'genie-button fixed right-4 z-[110] flex h-14 w-14 items-center justify-center rounded-full text-white transition-[transform,opacity] duration-300 active:scale-90',
+          'genie-button fixed right-4 z-[110] flex h-12 w-12 lg:h-14 lg:w-14 items-center justify-center rounded-full text-white transition-[transform,opacity] duration-300 active:scale-90',
           // Phones: above the floating tab bar. Desktop: the usual corner.
           'bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.75rem)] lg:bottom-6 lg:right-6',
           // On phones the open sheet has its own close button, so the bubble steps aside.

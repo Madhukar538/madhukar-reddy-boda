@@ -57,16 +57,17 @@ export default async function Home() {
         <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
           Senior backend engineer at Revalsys, Hyderabad. I work on multi-tenant RAG and MCP platforms, Solr 9 hybrid search, and e-commerce APIs that are load-tested with k6 before they ship.
         </p>
-        <div className="flex flex-wrap items-center gap-2.5 pt-1">
+        {/* Phones: the two actions share a row; the résumé is a quiet link under them. */}
+        <div className="grid grid-cols-2 items-center gap-2.5 pt-1 sm:flex sm:flex-wrap">
           <Link href="/projects" className="tinted-button !px-5 !py-2.5">
             Explore work
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="/work-with-me" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-primary">
+          <Link href="/work-with-me" className="glass glass-pill glass-interactive inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-primary">
             <Handshake className="h-4 w-4" />
             Work with me
           </Link>
-          <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="glass glass-pill glass-interactive inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium">
+          <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="col-span-2 inline-flex items-center justify-center gap-2 py-2 text-sm font-medium text-foreground/75 hover:text-foreground transition-colors sm:glass sm:glass-pill sm:glass-interactive sm:px-4 sm:py-2.5 sm:text-foreground">
             <FileDown className="h-4 w-4 text-muted-foreground" />
             Résumé (PDF)
           </a>

@@ -875,8 +875,11 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
 .genie-button[aria-expanded='true']::after { animation: none; }
 .genie-button:hover { transform: translateY(-2px); }
 /* Scrolling down on a phone: tucked mostly past the right edge, a sliver still tappable. */
-.genie-button[data-tucked] { transform: translateX(calc(100% - 0.75rem)) scale(0.85); opacity: 0.75; }
-.genie-button[data-tucked]::after { animation: none; }
+/* Phones and tablets only, so the tucked first render never shows on desktop. */
+@media (max-width: 1023px) {
+  .genie-button[data-tucked] { transform: translateX(calc(100% - 0.75rem)) scale(0.85); opacity: 0.75; }
+  .genie-button[data-tucked]::after { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) { .genie-button { transition: none; } }
 .genie-orb { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35); }
 @keyframes genie-ping {
@@ -996,10 +999,10 @@ html:not([data-style]) .liquid-wallpaper .wallpaper-dots { display: none; }
    a link across the page every 900px. Narrower: a trace down each edge. */
 html:not([data-style]) .liquid-wallpaper { background-color: transparent; }
 html:not([data-style]) body {
-  background-image: url('/arch/edge-left.svg'), url('/arch/edge-right.svg');
-  background-position: left top, right top;
+  background-image: url('/arch/edge-left.svg'), url('/arch/edge-right.svg'), url('/arch/bus.svg');
+  background-position: left top, right top, 0 0;
   background-repeat: repeat-y;
-  background-size: 28px 1200px;
+  background-size: 18px 1400px, 18px 1400px, 100% 900px;
 }
 @media (min-width: 1600px) {
   html:not([data-style]) body {
@@ -1007,6 +1010,12 @@ html:not([data-style]) body {
     background-position: calc(50vw - 36rem - 230px) 0, calc(50vw + 36rem) 0, 0 0;
     background-size: 230px 1800px, 230px 1800px, 100% 900px;
   }
+}
+
+/* Section titles: the serif reads small at normal weight, so it is set larger. */
+html:not([data-style]) h2.text-2xl { font-size: 2.125rem; line-height: 1.1; }
+@media (min-width: 768px) {
+  html:not([data-style]) h2.md\:text-3xl { font-size: 2.75rem; }
 }
 
 /* No template effects: glow blobs, gradient text, glossy icon tiles, big radii. */
@@ -1059,14 +1068,14 @@ html:not([data-style]) :is(.portrait-backdrop, .portrait-only) { display: block;
 html:not([data-style]) .portrait-alt { display: none; }
 .portrait-frame {
   position: relative;
-  height: 56svh;
+  height: 46svh;
   /* The cut-out photo has no background; only the bottom of the shirt fades away. */
   -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
   mask-image: linear-gradient(to top, transparent 0%, #000 40%);
 }
 .portrait-frame img { filter: brightness(0.86); }
-/* Phones: the headline starts where the photo fades out. */
-html:not([data-style]) .portrait-offset { padding-top: calc(56svh - 7rem); }
+/* Phones: the headline starts where the photo fades out, so the buttons still fit on the first screen. */
+html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
 @media (min-width: 1024px) {
   html:not([data-style]) .portrait-offset { padding-top: 0; }
   /* Desktop: the hero text runs up to the portrait's faded left edge, never over the face.
@@ -1131,7 +1140,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(56svh - 7rem); }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: calc(56svh - 7rem);
+    height: calc(46svh - 6rem);
     padding-inline: 0.375rem 0.75rem;
     pointer-events: none;
   }
@@ -1410,6 +1419,7 @@ main h1 { view-transition-name: page-title; }
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     padding: 0;
+    border: 0;
     border-radius: 0;
   }
   .article-shell.glass::before, .article-shell.glass::after { content: none; }
@@ -1433,7 +1443,7 @@ main h1 { view-transition-name: page-title; }
 }
 /* The accent tile in Midnight: the same deep blue as the genie, never a pale fill
    (a light accent like Graphite turned it into a glaring grey block). */
-html:not([data-style]) .glass.bento-accent { background: hsl(2 55% 38%); color: #fff; }
+html:not([data-style]) .glass.bento-accent { background: hsl(6 34% 24%); border-color: hsl(6 34% 32%); color: #fff; }
 html:not([data-style]) .glass.bento-accent * { color: #fff; }
 html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { background: rgb(255 255 255 / 0.14); }
 

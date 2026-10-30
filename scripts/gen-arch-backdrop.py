@@ -69,12 +69,23 @@ def bus():
 
 
 def edge(left):
-    # Phones and narrower desktops: a trace down the edge with small nodes on it.
-    x, h = (12 if left else 16), 1200
-    nodes = ''.join(f'<rect class="n" x="{x - 4}" y="{y - 4}" width="8" height="8" rx="1.5"/>'
-                    for y in ((180, 520, 900) if left else (90, 400, 760, 1060)))
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="28" height="{h}" viewBox="0 0 28 {h}">{STYLE}'
-            f'<path class="l" d="M{x} 0 V{h}"/>{nodes}{packet(f"M{x} 0 V{h}", 14, 0 if left else 6, 2)}</svg>')
+    # Phones and narrower desktops: a trace in each 16px margin, with small
+    # nodes and their service names set vertically beside it, like a schematic.
+    w, h = 18, 1400
+    x = 3 if left else w - 3
+    labels = (['api-gateway', 'auth.svc', 'orders.svc', 'k6 · load'] if left
+              else ['rag-worker', 'solr 9', 'llm · local', 'redis'])
+    first = 120 if left else 300
+    parts = []
+    for i, label in enumerate(labels):
+        y = first + i * 350
+        parts.append(f'<rect class="n" x="{x - 2.5}" y="{y - 2.5}" width="5" height="5" rx="1"/>')
+        # rotate(90): reads top to bottom, glyphs to the right of the baseline.
+        bx = 7 if left else 4
+        parts.append(f'<text class="t e" transform="translate({bx} {y + 10}) rotate(90)">{label}</text>')
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">{STYLE}'
+            f'<style>.e{{font-size:8.5px;letter-spacing:.08em;fill-opacity:.2}}</style>'
+            f'<path class="l" d="M{x} 0 V{h}"/>{"".join(parts)}{packet(f"M{x} 0 V{h}", 16, 0 if left else 7, 1.8)}</svg>')
 
 
 OUT.mkdir(parents=True, exist_ok=True)

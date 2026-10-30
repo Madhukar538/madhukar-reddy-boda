@@ -82,7 +82,8 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
         </label>
 
         <div className="-mx-4 -my-4 px-4 py-4 overflow-x-auto md:-mx-4 md:px-4">
-          <div className="glass glass-pill inline-flex items-center p-1">
+          {/* A tab row: the chosen topic is underlined in the accent. */}
+          <div className="inline-flex min-w-full items-center gap-6 border-b border-foreground/10">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -90,14 +91,14 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
                 onClick={() => setCategory(cat)}
                 aria-pressed={category === cat}
                 className={cn(
-                  'relative whitespace-nowrap px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200',
-                  category === cat ? 'text-primary-foreground' : 'text-foreground/65 hover:text-foreground'
+                  'relative whitespace-nowrap pb-3 pt-1 text-sm font-medium transition-colors duration-200',
+                  category === cat ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 {category === cat && (
                   <m.span
                     layoutId="blog-index-filter"
-                    className="absolute inset-0 rounded-full bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_14px_-4px_hsl(var(--primary)/0.6)]"
+                    className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   />
                 )}
