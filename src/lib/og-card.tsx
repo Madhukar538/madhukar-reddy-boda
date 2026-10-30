@@ -22,7 +22,7 @@ export const OG_SIZE = { width: 1200, height: 630 };
 // Midnight's warm editorial palette: paper on warm black, with the collar red.
 const INK = '#ede8e1';
 const MUTED = '#a1978c';
-const ACCENT = '#d94a54';
+const ACCENT = '#db5760';
 
 type Stat = { value: string; label: string };
 
@@ -85,7 +85,7 @@ export async function ogCard({
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: ACCENT,
-                borderBottom: '1px solid rgba(217,74,84,0.5)',
+                borderBottom: '1px solid rgba(219,87,96,0.5)',
               }}
             >
               {eyebrow}

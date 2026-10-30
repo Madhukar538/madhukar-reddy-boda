@@ -21,7 +21,7 @@ type AccentOption = {
 
 // Apple system accent colors (Glass)
 const accents: AccentOption[] = [
-  { id: 'blue',     label: 'Blue',     swatch: '#0A84FF', midnight: { label: 'Collar red', swatch: '#D94A54' } },
+  { id: 'blue',     label: 'Blue',     swatch: '#0A84FF', midnight: { label: 'Collar red', swatch: '#DB5760' } },
   { id: 'purple',   label: 'Purple',   swatch: '#BF5AF2', midnight: { label: 'Purple', swatch: '#B38AE6' } },
   { id: 'pink',     label: 'Pink',     swatch: '#FF375F', midnight: { label: 'Pink', swatch: '#E77BA0' } },
   { id: 'orange',   label: 'Orange',   swatch: '#FF9F0A', midnight: { label: 'Orange', swatch: '#EE8E3E' } },
@@ -123,7 +123,7 @@ export function ThemeSwitcher() {
                         className={cn(
                           'h-6 w-10 rounded-lg',
                           option.id === 'midnight'
-                            ? 'bg-[#110f0d] ring-1 ring-[#d94a54]/60'
+                            ? 'bg-[#110f0d] ring-1 ring-[#db5760]/60'
                             : 'bg-gradient-to-br from-sky-300/70 via-fuchsia-300/60 to-amber-200/70 ring-1 ring-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]'
                         )}
                       />

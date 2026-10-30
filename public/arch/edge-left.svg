@@ -2,5 +2,5 @@
 .l{fill:none;stroke:#EDE8E1;stroke-opacity:.09;stroke-width:1}
 .n{fill:#110F0D;stroke:#EDE8E1;stroke-opacity:.15;stroke-width:1}
 .t{fill:#EDE8E1;fill-opacity:.24;font:11px ui-monospace,'SF Mono',Menlo,Consolas,monospace;letter-spacing:.02em}
-.p{fill:#D94A54;fill-opacity:.75}
+.p{fill:#DB5760;fill-opacity:.75}
 </style><style>.e{font-size:8.5px;letter-spacing:.08em;fill-opacity:.2}</style><path class="l" d="M3 0 V1400"/><rect class="n" x="0.5" y="117.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(7 130) rotate(90)">api-gateway</text><rect class="n" x="0.5" y="467.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(7 480) rotate(90)">auth.svc</text><rect class="n" x="0.5" y="817.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(7 830) rotate(90)">orders.svc</text><rect class="n" x="0.5" y="1167.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(7 1180) rotate(90)">k6 · load</text><circle r="1.8" class="p"><animateMotion dur="16s" begin="0s" repeatCount="indefinite" path="M3 0 V1400"/></circle></svg>

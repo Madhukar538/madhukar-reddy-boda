@@ -104,6 +104,8 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // No Next.js badge in the corner during development (it got into screenshots).
+  devIndicators: false,
   images: {
     // AVIF first: far smaller than WebP for the cut-out portrait (it has transparency).
     formats: ['image/avif', 'image/webp'],

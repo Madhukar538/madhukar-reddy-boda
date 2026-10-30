@@ -136,7 +136,12 @@ export function useMegaMenu(disabled: boolean) {
   useEffect(() => close(), [pathname, disabled, close]);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      // Back to the button that opened it, for keyboard users.
+      document.querySelector<HTMLElement>(`[aria-controls="mega-${open}"]`)?.focus();
+      close();
+    };
     const onDown = (e: PointerEvent) => {
       if (!(e.target as Element).closest('[data-mega-root]')) close();
     };
@@ -168,7 +173,11 @@ export function MegaTrigger({
       type="button"
       aria-expanded={isOpen}
       aria-controls={`mega-${id}`}
-      onClick={() => menu.setOpen(isOpen ? null : id)}
+      onClick={(e) => {
+        menu.setOpen(isOpen ? null : id);
+        // Opened from the keyboard (no pointer): move focus into the panel.
+        if (e.detail === 0 && !isOpen) requestAnimationFrame(() => document.querySelector<HTMLElement>(`#mega-${id} a`)?.focus());
+      }}
       onPointerEnter={(e) => e.pointerType === 'mouse' && menu.show(id)}
       onPointerLeave={(e) => e.pointerType === 'mouse' && menu.hideSoon()}
       className={cn('nav-link inline-flex items-center gap-1', (active || isOpen) && 'text-foreground')}
@@ -187,6 +196,10 @@ export function MegaPanel({ data, menu }: { data: NavMenuData; menu: ReturnType<
       id={`mega-${menu.open}`}
       onPointerEnter={menu.keep}
       onPointerLeave={(e) => e.pointerType === 'mouse' && menu.hideSoon()}
+      // Tabbing out of the panel closes it.
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) menu.setOpen(null);
+      }}
       className="mega-panel glass glass-strong pointer-events-auto absolute left-1/2 top-full mt-3 w-[min(48rem,calc(100vw-3rem))] -translate-x-1/2 overflow-hidden"
     >
       {menu.open === 'work' ? <WorkPanel data={data} /> : <WritingPanel data={data} />}
