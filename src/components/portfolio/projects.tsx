@@ -103,7 +103,7 @@ export function Projects({ keyProjects, clientProjects }: { keyProjects: Project
   return (
     <Section id="projects" title="Key Projects" comment="Systems and e-commerce builds">
       <div className="mb-8 -mx-4 px-4 overflow-x-auto">
-        <div className="glass glass-pill inline-flex items-center p-1" role="group" aria-label="Filter projects by area">
+        <div className="inline-flex min-w-full items-center gap-6 border-b border-foreground/10" role="group" aria-label="Filter projects by area">
           {AREAS.map(({ id, label }) => {
             const active = area === id;
             return (
@@ -113,19 +113,19 @@ export function Projects({ keyProjects, clientProjects }: { keyProjects: Project
                 aria-pressed={active}
                 onClick={() => setArea(id)}
                 className={cn(
-                  'relative whitespace-nowrap px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200',
-                  active ? 'text-primary-foreground' : 'text-foreground/65 hover:text-foreground'
+                  'relative whitespace-nowrap pb-3 pt-1 text-sm font-medium transition-colors duration-200',
+                  active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 {active && (
                   <m.span
                     layoutId="projects-filter"
-                    className="absolute inset-0 rounded-full bg-primary"
+                    className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   />
                 )}
                 <span className="relative">
-                  {label} <span className="font-normal tabular-nums">{count(id)}</span>
+                  {label} <span className="font-normal tabular-nums text-muted-foreground">{count(id)}</span>
                 </span>
               </button>
             );

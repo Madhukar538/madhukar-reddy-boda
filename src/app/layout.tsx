@@ -14,7 +14,8 @@ import { OsModeProvider } from '@/components/os/os-mode';
 import { MotionProvider } from '@/components/motion-provider';
 import { QuickSwitcher } from '@/components/vault/quick-switcher';
 import { HoverPreview } from '@/components/vault/hover-preview';
-import { siteUrl } from '@/lib/blog';
+import { allTopics, siteUrl } from '@/lib/blog';
+import { caseStudyFor } from '@/data/case-studies';
 import { chunkReloadScript } from '@/lib/chunk-reload';
 import { getContent } from '@/lib/content';
 import { TrackingBeacon } from '@/components/tracking-beacon';
@@ -68,7 +69,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { profile, socialLinks, education } = await getContent();
+  const { profile, socialLinks, education, keyProjects, posts } = await getContent();
+  // The top bar's mega menus (components/portfolio/nav-menu.tsx).
+  const menu = {
+    projects: keyProjects.filter((p) => p.featured).concat(keyProjects.filter((p) => !p.featured)).slice(0, 3).map((p) => {
+      const study = caseStudyFor(p.title);
+      return { title: p.title, blurb: p.description, href: study ? `/projects/${study.slug}` : p.post ? `/blog/${p.post}` : '/projects' };
+    }),
+    posts: posts.slice(0, 3).map((p) => ({
+      title: p.title,
+      href: `/blog/${p.slug}`,
+      date: new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    })),
+    topics: allTopics(posts).slice(0, 8).map((t) => ({ name: t.name, href: `/topics/${t.slug}` })),
+  };
   const base = siteUrl();
   // Google Knowledge Graph and entity graph linking
   const jsonLd = {
@@ -161,7 +175,7 @@ export default async function RootLayout({
           <OsModeProvider>
             <LiquidWallpaper />
             <PWARegister />
-            <Navbar contact={{ email: profile.email, phone: profile.phone, phoneHref: profile.phoneHref }} />
+            <Navbar contact={{ email: profile.email, phone: profile.phone, phoneHref: profile.phoneHref }} menu={menu} />
             <main className="relative z-0 min-h-[70dvh]">
               <SocialRail profile={profile} socialLinks={socialLinks} />
               {children}

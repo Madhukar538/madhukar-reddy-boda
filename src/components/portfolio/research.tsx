@@ -34,7 +34,7 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
   return (
     <Section id="research" title="Experiments" comment={`${rdProjects.length} projects · shipped tools, prototypes and research`}>
       <div className="mb-6 -mx-4 px-4 overflow-x-auto">
-        <div className="glass glass-pill inline-flex items-center p-1" role="tablist" aria-label="Filter by status">
+        <div className="inline-flex min-w-full items-center gap-6 border-b border-foreground/10" role="tablist" aria-label="Filter by status">
           {filters.map(({ id, label }) => {
             const isActive = filter === id;
             const count = id === 'ALL' ? rdProjects.length : rdProjects.filter((p) => p.status === id).length;
@@ -46,19 +46,19 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
                 aria-selected={isActive}
                 onClick={() => setFilter(id)}
                 className={cn(
-                  'relative whitespace-nowrap px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200',
-                  isActive ? 'text-primary-foreground' : 'text-foreground/65 hover:text-foreground'
+                  'relative whitespace-nowrap pb-3 pt-1 text-sm font-medium transition-colors duration-200',
+                  isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 {isActive && (
                   <m.span
                     layoutId="lab-filter"
-                    className="absolute inset-0 rounded-full bg-primary"
+                    className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
                     transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   />
                 )}
                 <span className="relative">
-                  {label} <span className="font-normal tabular-nums">{count}</span>
+                  {label} <span className="font-normal tabular-nums text-muted-foreground">{count}</span>
                 </span>
               </button>
             );

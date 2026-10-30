@@ -14,6 +14,8 @@ export default {
         sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         body: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         headline: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        // Instrument Serif (app/layout), Midnight's headline face.
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
         mono: ['ui-monospace', '"SF Mono"', 'var(--font-jetbrains-mono)', 'Menlo', 'monospace'],
         code: ['ui-monospace', '"SF Mono"', 'var(--font-jetbrains-mono)', 'Menlo', 'monospace'],
       },

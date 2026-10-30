@@ -1177,9 +1177,8 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
 .profile-dock-photo {
   position: relative;
   aspect-ratio: 1;
-  background: radial-gradient(ellipse at 50% 90%, hsl(var(--primary) / 0.28), transparent 70%);
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 30%);
-  mask-image: linear-gradient(to top, transparent 0%, #000 30%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 38%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 38%);
 }
 @media (prefers-reduced-motion: reduce) {
   .profile-dock, html[data-profile-docked] .profile-dock { transition: none; }
@@ -1381,6 +1380,51 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
     opacity: 1;
     transform: translate(0, -50%);
   }
+}
+/* Midnight: the top bar's links and the right-edge rail, editorial rather than pills.
+   The current page is a short crimson rule (under the link; beside the tab). */
+.nav-link {
+  position: relative;
+  padding: 0.375rem 0.75rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: hsl(var(--foreground) / 0.6);
+  transition: color 0.2s;
+}
+.nav-link:hover { color: hsl(var(--foreground)); }
+.nav-link[data-active] { color: hsl(var(--foreground)); }
+.nav-link[data-active]::after {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: -0.05rem;
+  height: 1.5px;
+  background: hsl(var(--primary));
+}
+button.nav-link[data-active]::after { right: 1.85rem; }
+.mega-panel { border-radius: 0.75rem; animation: mega-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes mega-in { from { opacity: 0; transform: translate(-50%, -6px); } }
+@media (prefers-reduced-motion: reduce) { .mega-panel { animation: none; } }
+@media (min-width: 1280px) {
+  html:not([data-style]) .nav-dock { border-radius: 1.25rem; }
+  html:not([data-style]) .nav-dock-tab[data-active]::before {
+    content: '';
+    position: absolute;
+    left: -0.375rem;
+    top: 28%;
+    bottom: 28%;
+    width: 2px;
+    background: hsl(var(--primary));
+  }
+  html:not([data-style]) .nav-dock-tab:hover { background: hsl(var(--foreground) / 0.06); }
+  html:not([data-style]) .nav-dock-cta {
+    color: hsl(var(--background));
+    background: hsl(var(--foreground));
+    box-shadow: none;
+  }
+  html:not([data-style]) .nav-dock-cta:hover { filter: none; background: hsl(var(--foreground) / 0.86); }
+  html:not([data-style]) .nav-dock-label { border-radius: 0.375rem; backdrop-filter: none; background: hsl(var(--card)); border-color: hsl(var(--border)); }
 }
 /* Short laptop screens: keep the dock clear of the genie button; search and theme stay in the top bar. */
 @media (min-width: 1280px) and (max-height: 700px) {

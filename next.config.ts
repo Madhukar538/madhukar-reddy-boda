@@ -107,8 +107,8 @@ const nextConfig: NextConfig = {
   images: {
     // AVIF first: far smaller than WebP for the cut-out portrait (it has transparency).
     formats: ['image/avif', 'image/webp'],
-    // Next 16 only serves listed qualities; the portraits use 60.
-    qualities: [60, 75],
+    // Next 16 only serves listed qualities; the big portraits use 60, the profile card's small one 90.
+    qualities: [60, 75, 90],
     // Local images only: the optimizer never fetches from other hosts.
     remotePatterns: [],
   },

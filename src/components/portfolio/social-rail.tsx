@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowRight, Github, Linkedin, Mail, MapPin, Rss } from 'lucide-react';
+import { ArrowRight, FileDown, Github, Linkedin, Mail, Rss } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
 import { nowDate } from '@/lib/utils';
 
@@ -123,32 +123,62 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
         </p>
       </aside>
 
+      {/* Drawn as a node of the architecture diagram behind it: a service header,
+          the portrait, then a spec sheet in mono. */}
       <aside aria-label="About Madhukar" className="profile-dock glass overflow-hidden">
+        <p className="flex items-center justify-between border-b border-foreground/10 px-4 py-2 font-mono text-[0.7rem] text-muted-foreground">
+          <span>profile.svc</span>
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className="now-pulse" /> online
+          </span>
+        </p>
         <Link href="/about" className="group block">
           <div className="profile-dock-photo">
-            <Image src="/portrait-cutout.webp" alt="" fill quality={60} sizes="256px" className="object-cover object-top" />
+            <Image src="/portrait-cutout.webp" alt="" fill quality={90} sizes="256px" className="object-cover object-[50%_12%]" />
           </div>
-          <div className="px-5 pt-3">
-            <p className="text-lg font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">{profile.name}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Software Engineer</p>
+          <div className="-mt-6 px-4">
+            <p className="font-serif text-[1.65rem] leading-[1.05] text-foreground group-hover:text-primary transition-colors">{profile.name}</p>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              {profile.title} · {profile.company.split(' ')[0]}
+            </p>
           </div>
         </Link>
-        <p className="flex items-center gap-1.5 px-5 pt-1.5 text-sm text-muted-foreground">
-          <MapPin aria-hidden className="h-3.5 w-3.5" /> Hyderabad, India
-        </p>
-        <div className="mx-5 mt-3.5 mb-4 border-t border-foreground/10 pt-3.5">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            <span aria-hidden className="now-pulse" /> Now
-            {profile.nowUpdatedAt && <span className="font-normal normal-case tracking-normal">· {nowDate(profile.nowUpdatedAt)}</span>}
+
+        <dl className="mx-4 mt-4 grid grid-cols-[4.25rem_1fr] gap-y-1.5 border-t border-foreground/10 pt-3.5 font-mono text-[0.72rem]">
+          <dt className="text-muted-foreground">loc</dt>
+          <dd className="text-foreground/85">Hyderabad, IN</dd>
+          <dt className="text-muted-foreground">time</dt>
+          <dd className="text-foreground/85 tabular-nums"><LocalTime /> IST</dd>
+          <dt className="text-muted-foreground">stack</dt>
+          <dd className="text-foreground/85">.NET · RAG · MCP</dd>
+          <dt className="text-muted-foreground">status</dt>
+          <dd className="text-primary">open to work</dd>
+        </dl>
+
+        <div className="mx-4 mt-3.5 border-t border-foreground/10 pt-3.5">
+          <p className="font-mono text-[0.7rem] text-muted-foreground">
+            now{profile.nowUpdatedAt && <span> · {nowDate(profile.nowUpdatedAt)}</span>}
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/85">{profile.now}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-foreground/85">{profile.now}</p>
         </div>
-        <Link
-          href="/work-with-me"
-          className="flex items-center justify-between border-t border-foreground/10 px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-foreground/5"
-        >
-          Work with me <ArrowRight aria-hidden className="h-4 w-4" />
-        </Link>
+
+        <div className="mt-4 grid grid-cols-[1fr_auto] border-t border-foreground/10 text-sm">
+          <Link
+            href="/work-with-me"
+            className="flex items-center justify-between px-4 py-3 font-medium text-foreground transition-colors hover:bg-foreground/5 hover:text-primary"
+          >
+            Work with me <ArrowRight aria-hidden className="h-4 w-4" />
+          </Link>
+          <a
+            href="/resume.pdf"
+            download="Boda-Madhukar-Reddy-Resume.pdf"
+            aria-label="Download résumé (PDF)"
+            title="Résumé (PDF)"
+            className="flex items-center border-l border-foreground/10 px-4 text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
+          >
+            <FileDown aria-hidden className="h-4 w-4" />
+          </a>
+        </div>
       </aside>
     </>
   );

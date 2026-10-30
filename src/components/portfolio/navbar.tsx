@@ -8,7 +8,7 @@ import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, F
 import { openQuickSwitcher } from '@/lib/vault-client';
 import { cn } from '@/lib/utils';
 import { m } from 'framer-motion';
-import { LiquidLens } from '@/components/liquid-lens';
+import { MegaPanel, MegaTrigger, useMegaMenu, type NavMenuData } from '@/components/portfolio/nav-menu';
 
 // Every page on the site — each one is its own URL.
 export const navLinks = [
@@ -44,10 +44,11 @@ const UNDOCK_AT = 80;
 /** How to reach Madhukar, offered in the docked tabs. */
 export type NavContact = { email: string; phone: string; phoneHref: string };
 
-export function Navbar({ contact }: { contact: NavContact }) {
+export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuData }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [docked, setDocked] = useState(false);
+  const megaMenu = useMegaMenu(docked);
 
   useEffect(() => {
     const wide = window.matchMedia(DOCK_QUERY);
@@ -75,73 +76,66 @@ export function Navbar({ contact }: { contact: NavContact }) {
         aria-hidden={docked || undefined}
         className="vt-nav nav-flow-top hidden lg:flex fixed top-4 inset-x-0 z-[100] justify-center px-6 pointer-events-none"
       >
-        <div
-          className={cn(
-            'nav-flow-capsule glass glass-strong glass-pill pointer-events-auto flex items-center gap-2 px-2 py-1.5 transition-shadow duration-500',
-            scrolled && 'shadow-2xl'
-          )}
-        >
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
+        <div data-mega-root className="relative">
+          <div
+            className={cn(
+              'nav-flow-capsule glass glass-strong glass-pill pointer-events-auto flex items-center gap-1 px-2 py-1.5 transition-shadow duration-500',
+              scrolled && 'shadow-2xl'
+            )}
           >
-            <Image src="/icons/icon-192.png" alt="" width={28} height={28} className="h-7 w-7 rounded-full ring-1 ring-foreground/15" />
-            Madhukar
-          </Link>
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-0.5 text-foreground hover:text-primary transition-colors"
+            >
+              <Image src="/icons/icon-192.png" alt="" width={28} height={28} className="h-7 w-7 rounded-full ring-1 ring-foreground/15" />
+              <span className="font-serif text-[1.15rem] leading-none">Madhukar Reddy</span>
+            </Link>
 
-          <div className="h-5 w-px bg-foreground/10" />
+            <div className="mx-1 h-5 w-px bg-foreground/10" />
 
-          <nav className="flex items-center gap-0.5" aria-label="Main">
-            {navLinks.map((link) => {
-              // Lab has its own entry on desktop, so match it exactly here.
-              const isActive =
-                link.href === '/projects'
-                  ? pathname.startsWith('/projects')
-                  : isActivePath(pathname, link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={cn(
-                    'relative px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-colors duration-200',
-                    isActive ? 'text-foreground' : 'text-foreground/60 hover:text-foreground'
-                  )}
-                >
-                  {isActive && (
-                    <m.span
-                      layoutId="nav-pill"
-                      className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                  <span className="relative">{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+            {/* Work and Writing open mega menus; the current section is underlined in the accent. */}
+            <nav className="flex items-center" aria-label="Main">
+              <Link href="/" aria-current={pathname === '/' ? 'page' : undefined} data-active={pathname === '/' ? '' : undefined} className="nav-link">
+                Home
+              </Link>
+              <MegaTrigger id="work" label="Work" menu={megaMenu} active={['/projects', '/lab'].some((h) => pathname.startsWith(h))} />
+              <MegaTrigger id="writing" label="Writing" menu={megaMenu} active={pathname.startsWith('/blog') || pathname.startsWith('/topics')} />
+              {[
+                { href: '/experience', label: 'Experience' },
+                { href: '/about', label: 'About' },
+              ].map((link) => {
+                const isActive = isActivePath(pathname, link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isActive ? 'page' : undefined}
+                    data-active={isActive ? '' : undefined}
+                    className="nav-link"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          <div className="h-5 w-px bg-foreground/10" />
+            <div className="mx-1 h-5 w-px bg-foreground/10" />
 
-          <div className="flex items-center">
             <button
               type="button"
               onClick={openQuickSwitcher}
               aria-label="Search notes (⌘K)"
               title="Search notes (⌘K)"
-              className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground"
+              className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-foreground/70 transition-colors hover:text-foreground"
             >
               <Search className="h-[1.05rem] w-[1.05rem]" />
-              <kbd className="rounded px-1 text-[10px] font-medium text-muted-foreground ring-1 ring-foreground/15">⌘K</kbd>
+              <kbd className="rounded px-1 font-mono text-[10px] text-muted-foreground ring-1 ring-foreground/15">⌘K</kbd>
             </button>
-            <Link
-              href="/work-with-me"
-              className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all ml-1.5"
-            >
-              <Handshake className="h-3.5 w-3.5" />
-              <span>Contact</span>
+            <Link href="/work-with-me" className="tinted-button ml-1 !px-4 !py-1.5 !text-[13px]">
+              Work with me
             </Link>
           </div>
+          <MegaPanel data={menu} menu={megaMenu} />
         </div>
       </header>
 
@@ -167,16 +161,10 @@ export function Navbar({ contact }: { contact: NavContact }) {
               key={link.href}
               href={link.href}
               aria-current={isActive ? 'page' : undefined}
-              className={cn('nav-dock-item nav-dock-tab group', isActive ? 'text-foreground' : 'text-foreground/60 hover:text-foreground')}
+              data-active={isActive ? '' : undefined}
+              className={cn('nav-dock-item nav-dock-tab group', isActive ? 'text-foreground' : 'text-foreground/55 hover:text-foreground')}
               style={{ '--i': i + 2 } as React.CSSProperties}
             >
-              {isActive && (
-                <m.span
-                  layoutId="dock-pill"
-                  className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_0_0_0.5px_rgba(255,255,255,0.15)]"
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                />
-              )}
               <Icon className="relative h-[1.1rem] w-[1.1rem]" strokeWidth={isActive ? 2.4 : 2} />
               <span className="nav-dock-label">{link.label}</span>
             </Link>
@@ -191,7 +179,7 @@ export function Navbar({ contact }: { contact: NavContact }) {
             key={item.label}
             href={item.href}
             aria-label={item.label}
-            className="nav-dock-item nav-dock-tab text-foreground/60 hover:bg-foreground/10 hover:text-foreground"
+            className="nav-dock-item nav-dock-tab text-foreground/55 hover:text-foreground"
             style={{ '--i': navLinks.length + 3 + i } as React.CSSProperties}
           >
             <item.icon className="h-[1.1rem] w-[1.1rem]" />
