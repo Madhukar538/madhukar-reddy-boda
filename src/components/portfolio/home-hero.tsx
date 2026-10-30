@@ -21,7 +21,6 @@ import {
   Phone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { RollingText } from '@/components/vault/rolling-text';
 import { OS_MODE_AVAILABLE, useOsMode } from '@/components/os/os-mode';
 import type { SiteContent } from '@/lib/content';
 import { stack } from '@/data/stack';
@@ -122,10 +121,8 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
             </Link>
           </div>
 
-          <h1 className="text-[clamp(1.85rem,10vw,2.6rem)] leading-[1.02] sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
-            Architecting{' '}
-            <RollingText className="rolling-line mx-auto lg:mx-0" words={['fast, observable', 'high-throughput', 'self-hosted AI', 'load-tested']} />{' '}
-            systems.
+          <h1 className="text-[clamp(2rem,6vw,3.75rem)] leading-[1.08] font-bold tracking-tight text-foreground">
+            Building high-throughput <span className="text-primary">.NET systems</span> and self-hosted AI platforms.
           </h1>
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">

@@ -8,7 +8,6 @@ import { HomeBento } from '@/components/blog/home-bento';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
 import { getContent } from '@/lib/content';
-import { RollingText } from '@/components/vault/rolling-text';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
@@ -43,13 +42,11 @@ export default async function Home() {
         </Link>
         {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
         <HeroIdentity />
-        <h1 className="text-[clamp(1.85rem,10vw,2.4rem)] leading-[1.05] sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground">
-          Engineering{' '}
-          <RollingText className="rolling-line" words={['high-throughput .NET', 'self-hosted AI', 'observable & resilient', 'production-scale']} />{' '}
-          systems.
+        <h1 className="text-[clamp(2rem,6vw,3.75rem)] leading-[1.08] font-bold tracking-tight text-foreground">
+          Engineering high-throughput <span className="text-primary">.NET architectures</span> &amp; self-hosted <span className="text-primary">AI systems</span>.
         </h1>
-        <p className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
-          Backend Software Engineer specializing in .NET 10 architectures, multi-tenant RAG &amp; MCP platforms, hybrid vector search, and k6 performance engineering.
+        <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
+          Senior Backend Engineer building multi-tenant RAG &amp; MCP platforms, Solr 9 hybrid vector search, and k6-validated high-performance APIs for enterprise e-commerce scale.
         </p>
         <div className="flex flex-wrap items-center gap-2.5 pt-1">
           <Link href="/projects" className="tinted-button !px-5 !py-2.5">

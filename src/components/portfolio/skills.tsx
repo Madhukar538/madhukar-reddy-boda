@@ -27,9 +27,9 @@ const icons: Record<string, LucideIcon> = {
 
 
 const iconTint = {
-  green: 'text-primary bg-primary/[0.12]',
-  cyan: 'text-[hsl(var(--sys-teal))] bg-[hsl(var(--sys-teal)/0.12)]',
-  amber: 'text-[hsl(var(--sys-orange))] bg-[hsl(var(--sys-orange)/0.12)]',
+  green: 'text-primary bg-primary/10 border border-primary/20',
+  cyan: 'text-primary bg-primary/10 border border-primary/20',
+  amber: 'text-primary bg-primary/10 border border-primary/20',
 };
 
 const CORE_SKILLS = new Set([
@@ -65,8 +65,7 @@ export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }
               </span>
               <span className="text-[15px] font-semibold text-foreground">{title}</span>
             </div>
-            {/* Phones: one swipeable row per group instead of a tall block of tags. */}
-            <div className="skill-row flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1">
+            <div className="skill-row flex flex-wrap gap-1.5">
               {skills.map((skill) => {
                 const isCore = CORE_SKILLS.has(skill);
                 return (

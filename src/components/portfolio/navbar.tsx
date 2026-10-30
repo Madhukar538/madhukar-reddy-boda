@@ -87,7 +87,6 @@ export function Navbar({ contact }: { contact: NavContact }) {
             scrolled && 'shadow-2xl'
           )}
         >
-          <LiquidLens />
           <Link
             href="/"
             className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 text-sm font-semibold text-foreground hover:bg-foreground/5 transition-colors"
