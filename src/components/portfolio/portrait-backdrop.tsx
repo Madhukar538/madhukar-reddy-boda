@@ -19,7 +19,7 @@ export function PortraitBackdrop() {
           fetchPriority="high"
           quality={60}
           sizes="(min-width: 1024px) 720px, 100vw"
-          className="object-cover object-[50%_20%]"
+          className="object-cover object-[50%_15%] lg:object-[68%_20%]"
         />
       </div>
     </div>

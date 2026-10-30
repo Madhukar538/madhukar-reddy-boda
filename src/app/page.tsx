@@ -31,10 +31,13 @@ export default async function Home() {
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
-      {/* Intro. In Midnight the portrait sits to the right (or above, on phones). */}
-      <header className="portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem]">
-        <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-3">
-          <Image src="/madhukar.png" alt="" width={44} height={44} className="rounded-full ring-2 ring-primary/40" />
+      {/* Intro. In Midnight the portrait sits on the right; text is constrained to the left so it never overlaps the face. */}
+      <header className="portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem] portrait-text">
+        <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-4">
+          <span className="relative shrink-0">
+            <span aria-hidden className="absolute -inset-2 rounded-full bg-primary/25 blur-xl" />
+            <Image src="/madhukar.png" alt="" width={72} height={72} preload className="relative h-[72px] w-[72px] rounded-full object-cover ring-2 ring-primary/40" />
+          </span>
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
             <span className="block text-muted-foreground">Software Engineer · Revalsys, Hyderabad</span>
@@ -42,7 +45,7 @@ export default async function Home() {
         </Link>
         {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
         <HeroIdentity />
-        <h1 className="text-[clamp(2rem,6vw,3.75rem)] leading-[1.08] font-bold tracking-tight text-foreground">
+        <h1 className="text-[clamp(1.9rem,3.8vw,3.15rem)] leading-[1.12] font-bold tracking-tight text-foreground">
           Engineering high-throughput <span className="text-primary">.NET architectures</span> &amp; self-hosted <span className="text-primary">AI systems</span>.
         </h1>
         <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
@@ -63,8 +66,8 @@ export default async function Home() {
           </a>
         </div>
 
-        {/* Quick Highlights / Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-2 border-t border-foreground/10">
+        {/* Quick Highlights / Metrics Strip - safely contained in left column */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-6 mt-2 border-t border-foreground/10">
           <div className="flex flex-col">
             <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground tabular-nums">40s → 13s</span>
             <span className="text-xs text-muted-foreground font-medium mt-0.5">RAG latency reduction</span>

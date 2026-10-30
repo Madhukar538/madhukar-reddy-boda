@@ -981,25 +981,33 @@ html:not([data-style]) .nav-active-pill { background: hsl(var(--foreground) / 0.
 /* Midnight is dark-only, so the light/dark switch is hidden. */
 html:not([data-style]) .theme-toggle { display: none; }
 
-/* The portrait backdrop: only visible on desktop so mobile content remains immediate. */
+/* The portrait backdrop (components/portfolio/portrait-backdrop.tsx): only in Midnight.
+   Phones: across the top, above the headline. Desktop: to the right of it. */
 .portrait-backdrop, .portrait-only { display: none; }
-@media (min-width: 1024px) {
-  html:not([data-style]) :is(.portrait-backdrop, .portrait-only) { display: block; }
-  html:not([data-style]) .portrait-alt { display: none; }
-}
+html:not([data-style]) :is(.portrait-backdrop, .portrait-only) { display: block; }
+html:not([data-style]) .portrait-alt { display: none; }
 .portrait-frame {
   position: relative;
-  height: 28rem;
+  height: 56svh;
+  /* The cut-out photo has no background; only the bottom of the shirt fades away. */
   -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%);
   mask-image: linear-gradient(to top, transparent 0%, #000 40%);
 }
 .portrait-frame img { filter: brightness(0.86); }
-html:not([data-style]) .portrait-offset { padding-top: 0; }
+/* Phones: the headline starts where the photo fades out. */
+html:not([data-style]) .portrait-offset { padding-top: calc(56svh - 7rem); }
 @media (min-width: 1024px) {
+  html:not([data-style]) .portrait-offset { padding-top: 0; }
+  /* Desktop: the hero text runs up to the portrait's faded left edge, never over the face.
+     Viewport, minus ~90% of the portrait (.portrait-frame width), minus the content
+     column's left edge (max-w-6xl, 1.5rem padding), minus a 2rem gap. */
+  html:not([data-style]) .portrait-text {
+    max-width: calc(100vw - 0.9 * min(36rem, 42vw) - max((100vw - 72rem) / 2, 0px) - 3.5rem);
+  }
   .portrait-frame {
     margin-left: auto;
-    width: min(46rem, 54vw);
-    height: min(100svh, 60rem);
+    width: min(36rem, 42vw);
+    height: min(100svh, 54rem);
     -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
     -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to top, transparent 0%, #000 45%), linear-gradient(to right, transparent 0%, #000 24%);
@@ -1040,8 +1048,26 @@ html:not([data-style]) .portrait-offset { padding-top: 0; }
   white-space: nowrap;
 }
 
-/* Mobile rails disabled for clean, immediate mobile reading layout */
-.mobile-rails { display: none !important; }
+/* Phones and tablets in Midnight, on pages with the portrait across the top:
+   the links down the left of the photo, the time down the right. */
+.mobile-rails { display: none; }
+@media (max-width: 1023px) {
+  html:not([data-style]) body:has(.portrait-frame) .mobile-rails {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(56svh - 7rem);
+    padding-inline: 0.375rem 0.75rem;
+    pointer-events: none;
+  }
+  .mobile-rails > * { pointer-events: auto; }
+  .mobile-rails .social-rail-line { height: 2.5rem; }
+  .mobile-rails .social-rail-time { writing-mode: vertical-rl; }
+}
 
 /* The profile card beside the strip, wherever the big portrait isn't showing
    (html[data-profile-docked], set by social-rail.tsx). It fills the gutter
