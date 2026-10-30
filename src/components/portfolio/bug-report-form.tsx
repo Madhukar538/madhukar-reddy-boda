@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { ArrowRight, Bug, Check, Copy, Loader2, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CATEGORIES, URGENCIES } from '@/lib/bug-report-options';
+import type { TraceStep } from '@/lib/bug-triage';
 
 type Status =
   | { state: 'idle' }
   | { state: 'sending' }
   | { state: 'error'; message: string; fields?: Record<string, string> }
-  | { state: 'sent'; ticket: string; priority?: string };
+  | { state: 'sent'; ticket: string; priority?: string; trace?: TraceStep[] };
 
 const fieldClass =
   'w-full rounded-2xl bg-foreground/[0.04] dark:bg-white/[0.05] px-4 py-3 text-[0.95rem] text-foreground placeholder:text-muted-foreground/70 ring-1 ring-foreground/10 outline-none transition focus:ring-2 focus:ring-primary';
@@ -40,7 +41,7 @@ function Choice<T extends string>({ name, options, value, onChange }: { name: st
           className={cn(
             'rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 transition-all active:scale-95',
             value === option
-              ? 'bg-primary text-primary-foreground ring-primary'
+              ? 'bg-foreground text-background ring-foreground'
               : 'ring-foreground/15 text-foreground/75 hover:bg-foreground/[0.06] hover:text-foreground'
           )}
         >
@@ -48,6 +49,36 @@ function Choice<T extends string>({ name, options, value, onChange }: { name: st
         </button>
       ))}
     </div>
+  );
+}
+
+/**
+ * The report's real path through the system, lit up step by step: the form, the API's
+ * validation, triage, the ticket store and the Telegram ping, with what each took.
+ * A step that failed says so (the report still arrived if one delivery worked).
+ */
+function TicketTrace({ ticket, trace }: { ticket: string; trace?: TraceStep[] }) {
+  const step = (name: TraceStep['step']) => trace?.find((t) => t.step === name);
+  const ms = (t?: TraceStep) => (t?.ms !== undefined ? `${t.ms} ms` : undefined);
+  const nodes = [
+    { label: 'form', note: 'sent', ok: true },
+    { label: 'api', note: 'validated', ok: step('validate')?.ok ?? true },
+    { label: 'triage', note: step('triage')?.detail ?? 'done', ok: step('triage')?.ok ?? true },
+    { label: 'ticket', note: step('store') ? (step('store')!.ok ? ms(step('store')) ?? ticket : 'unavailable') : ticket, ok: step('store')?.ok ?? true },
+    { label: 'telegram', note: step('notify') ? (step('notify')!.ok ? ms(step('notify')) ?? 'pinged' : 'unavailable') : 'pinged', ok: step('notify')?.ok ?? true },
+  ];
+  return (
+    <ol className="ticket-trace" aria-label="Delivery trace">
+      {nodes.map((n, i) => (
+        <li key={n.label} className="ticket-trace-step" data-failed={n.ok ? undefined : ''} style={{ '--i': i } as CSSProperties}>
+          <span className="ticket-trace-node">
+            <span>{n.label}</span>
+            <span className="ticket-trace-note">{n.note}</span>
+          </span>
+          <span className="sr-only">{n.ok ? 'done' : 'failed'}</span>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -83,7 +114,7 @@ export function BugReportForm() {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.ticket) setStatus({ state: 'sent', ticket: data.ticket, priority: data.priority });
+      if (res.ok && data.ticket) setStatus({ state: 'sent', ticket: data.ticket, priority: data.priority, trace: data.trace });
       else setStatus({ state: 'error', message: data.error ?? 'Something went wrong. Please try again.', fields: data.fields });
     } catch {
       setStatus({ state: 'error', message: "You seem to be offline. Please try again when you're connected." });
@@ -92,31 +123,32 @@ export function BugReportForm() {
 
   if (status.state === 'sent') {
     return (
-      <div className="glass p-8 md:p-10 text-center space-y-5">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--sys-green))] text-white shadow-lg">
-          <Check className="h-7 w-7" />
-        </div>
+      <div className="glass p-6 md:p-10 space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Ticket filed</h2>
-          <p className="text-muted-foreground">It&apos;s on my phone now. I&apos;ll reply on the contact you gave.</p>
+          <p className="font-mono text-xs text-primary">ticket filed</p>
+          <h2 className="text-3xl md:text-4xl leading-tight text-foreground">It&apos;s on my phone now.</h2>
+          <p className="text-muted-foreground">I&apos;ll reply on the contact you gave. Here&apos;s what just happened to your report:</p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            navigator.clipboard?.writeText(status.ticket);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-          }}
-          className="glass-inset mx-auto inline-flex items-center gap-3 px-5 py-3 font-mono text-lg font-semibold tracking-wider"
-          title="Copy ticket ID"
-        >
-          {status.ticket}
-          {copied ? <Check className="h-4 w-4 text-[hsl(var(--sys-green))]" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
-        </button>
-        {status.priority && <p className="text-sm text-muted-foreground">Triaged as <span className="font-semibold text-foreground">{status.priority}</span></p>}
-        <button type="button" onClick={() => setStatus({ state: 'idle' })} className="text-sm font-medium text-primary hover:underline">
-          Report another issue
-        </button>
+        <TicketTrace ticket={status.ticket} trace={status.trace} />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-foreground/10 pt-5">
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard?.writeText(status.ticket);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1500);
+            }}
+            className="inline-flex items-center gap-2.5 font-mono text-base font-semibold tracking-wider text-foreground"
+            title="Copy ticket ID"
+          >
+            {status.ticket}
+            {copied ? <Check className="h-4 w-4 text-[hsl(var(--sys-green))]" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
+          </button>
+          {status.priority && <p className="text-sm text-muted-foreground">Triaged as <span className="font-semibold text-foreground">{status.priority}</span></p>}
+          <button type="button" onClick={() => setStatus({ state: 'idle' })} className="ml-auto text-sm font-medium text-foreground hover:text-primary transition-colors">
+            Report another issue
+          </button>
+        </div>
       </div>
     );
   }

@@ -24,6 +24,38 @@ function LocalTime() {
   return <time suppressHydrationWarning>{time || '··:··'}</time>;
 }
 
+// Working hours in Hyderabad (IST), for the profile card's status.
+const WORK_START = 10;
+const WORK_END = 19;
+const EVENING_END = 23;
+
+type Presence = { label: string; tone: 'online' | 'away' | 'offline' };
+
+/** Whether Madhukar is likely at work right now, from Hyderabad's local day and hour. */
+function presenceNow(): Presence {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', weekday: 'short', hour: 'numeric', hourCycle: 'h23' }).formatToParts(new Date());
+  const day = parts.find((p) => p.type === 'weekday')?.value ?? 'Mon';
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 12);
+  const weekend = day === 'Sat' || day === 'Sun';
+  if (weekend) return { label: 'offline · replies Monday', tone: 'offline' };
+  if (hour >= WORK_START && hour < WORK_END) return { label: 'online', tone: 'online' };
+  if (hour >= WORK_END && hour < EVENING_END) return { label: 'away · replies tonight', tone: 'away' };
+  // Friday night waits for Monday.
+  if (day === 'Fri' && hour >= EVENING_END) return { label: 'offline · replies Monday', tone: 'offline' };
+  return { label: 'offline · replies tomorrow', tone: 'offline' };
+}
+
+/** The card's status, worked out in the browser (and refreshed each minute) so server and client HTML match. */
+function usePresence() {
+  const [presence, setPresence] = useState<Presence | null>(null);
+  useEffect(() => {
+    setPresence(presenceNow());
+    const id = window.setInterval(() => setPresence(presenceNow()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+  return presence;
+}
+
 /**
  * Docks the profile card (html[data-profile-docked], styled in globals.css)
  * whenever the big portrait isn't on screen: on pages without one, in looks
@@ -93,6 +125,7 @@ function RailLinks({ links }: { links: RailLink[] }) {
  */
 export function SocialRail({ profile, socialLinks }: { profile: Profile; socialLinks: SocialLink[] }) {
   const pathname = usePathname();
+  const presence = usePresence();
   useProfileDock(pathname);
   if (pathname.startsWith('/admin')) return null;
 
@@ -128,8 +161,8 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
       <aside aria-label="About Madhukar" className="profile-dock glass overflow-hidden">
         <p className="flex items-center justify-between border-b border-foreground/10 px-4 py-2 font-mono text-[0.7rem] text-muted-foreground">
           <span>profile.svc</span>
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden className="now-pulse" /> online
+          <span className="flex items-center gap-1.5" data-presence={presence?.tone}>
+            <span aria-hidden className="presence-dot" /> {presence?.label ?? '···'}
           </span>
         </p>
         <Link href="/about" className="group block">
@@ -153,6 +186,8 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
           <dd className="text-foreground/85">.NET · RAG · MCP</dd>
           <dt className="text-muted-foreground">status</dt>
           <dd className="text-primary">open to work</dd>
+          <dt className="text-muted-foreground">hours</dt>
+          <dd className="text-foreground/85">Mon–Fri · {WORK_START}–{WORK_END} IST</dd>
         </dl>
 
         <div className="mx-4 mt-3.5 border-t border-foreground/10 pt-3.5">

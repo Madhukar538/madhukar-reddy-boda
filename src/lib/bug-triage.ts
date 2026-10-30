@@ -76,3 +76,13 @@ export function ticketId(now = new Date()) {
   const suffix = Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('');
   return `BUG-${date}-${suffix}`;
 }
+
+/** One step of a report's delivery, returned to the form so it can show what happened. */
+export type TraceStep = {
+  step: 'validate' | 'triage' | 'store' | 'notify';
+  ok: boolean;
+  /** Triage: the priority it was given. */
+  detail?: string;
+  /** Store and notify: how long the call took. */
+  ms?: number;
+};

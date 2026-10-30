@@ -1,4 +1,4 @@
-import { bugReportSchema, ticketId, triage, type BugReport, type Priority } from '@/lib/bug-triage';
+import { bugReportSchema, ticketId, triage, type BugReport, type Priority, type TraceStep } from '@/lib/bug-triage';
 import { escapeHtml, missingTelegramVars, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
 import { saveTicket, ticketStoreConfigured } from '@/lib/tickets';
 
@@ -111,10 +111,16 @@ export async function POST(request: Request) {
 
   const id = ticketId();
   const { priority, reasons } = triage(report);
+  // Each delivery's own duration, for the trace the form shows afterwards.
+  const timed = async (work: () => Promise<unknown>) => {
+    const start = performance.now();
+    await work();
+    return Math.round(performance.now() - start);
+  };
   // Stored and pinged in parallel; the report counts as received if either works.
   const [stored, pinged] = await Promise.allSettled([
-    canStore ? saveTicket(id, report, priority, reasons) : Promise.reject(new Error('Ticket store not configured')),
-    canPing ? sendTelegramMessage(formatTicket(id, report, priority, reasons)) : Promise.reject(new Error('Telegram not configured')),
+    canStore ? timed(() => saveTicket(id, report, priority, reasons)) : Promise.reject(new Error('Ticket store not configured')),
+    canPing ? timed(() => sendTelegramMessage(formatTicket(id, report, priority, reasons))) : Promise.reject(new Error('Telegram not configured')),
   ]);
   if (stored.status === 'rejected' && canStore) console.error('[bug-report] store', stored.reason);
   if (pinged.status === 'rejected' && canPing) console.error('[bug-report] telegram', pinged.reason);
@@ -122,5 +128,12 @@ export async function POST(request: Request) {
     return Response.json({ error: "Couldn't deliver your report. Please try again or email me." }, { status: 502 });
   }
   recordReport(ip);
-  return Response.json({ ok: true, ticket: id, priority });
+  // What actually happened, step by step (the form draws it as a request trace).
+  const trace: TraceStep[] = [
+    { step: 'validate', ok: true },
+    { step: 'triage', ok: true, detail: priority },
+    { step: 'store', ok: stored.status === 'fulfilled', ms: stored.status === 'fulfilled' ? stored.value : undefined },
+    { step: 'notify', ok: pinged.status === 'fulfilled', ms: pinged.status === 'fulfilled' ? pinged.value : undefined },
+  ];
+  return Response.json({ ok: true, ticket: id, priority, trace });
 }

@@ -1637,3 +1637,52 @@ html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { backgrou
   pre, figure, img, table { break-inside: avoid; }
   h1, h2, h3 { break-after: avoid; }
 }
+
+/* The bug-report form's delivery trace (bug-report-form.tsx): each step lights up in turn,
+   joined by a line that fills in crimson. Down the page on phones, across from sm up. */
+.ticket-trace { display: flex; flex-direction: column; gap: 0.75rem; }
+@media (min-width: 640px) { .ticket-trace { flex-direction: row; align-items: stretch; gap: 0; } }
+.ticket-trace-step { position: relative; display: flex; flex: 1; min-width: 0; }
+.ticket-trace-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid hsl(var(--foreground) / 0.25);
+  border-radius: 0.375rem;
+  background: hsl(var(--background));
+  font: 500 0.75rem ui-monospace, 'SF Mono', Menlo, monospace;
+  color: hsl(var(--foreground));
+}
+.ticket-trace-note { color: hsl(var(--muted-foreground)); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ticket-trace-step[data-failed] .ticket-trace-node { border-style: dashed; color: hsl(var(--muted-foreground)); }
+.ticket-trace-step[data-failed] .ticket-trace-note { color: hsl(var(--primary)); }
+/* The link to the next step. */
+@media (min-width: 640px) {
+  .ticket-trace-step:not(:last-child) { padding-right: 1.25rem; }
+  .ticket-trace-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1.25rem;
+    height: 1px;
+    background: hsl(var(--primary));
+    transform-origin: left;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ticket-trace-node { animation: trace-node 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(var(--i) * 0.32s); }
+  .ticket-trace-step:not(:last-child)::after { animation: trace-link 0.25s linear both; animation-delay: calc(var(--i) * 0.32s + 0.2s); }
+}
+@keyframes trace-node { from { opacity: 0.15; border-color: hsl(var(--foreground) / 0.08); } }
+@keyframes trace-link { from { transform: scaleX(0); } }
+
+/* The profile card's status dot (social-rail.tsx): green and pulsing at work, amber in the evening, grey off hours. */
+.presence-dot { width: 0.45rem; height: 0.45rem; flex-shrink: 0; border-radius: 9999px; background: hsl(var(--foreground) / 0.3); }
+[data-presence='online'] .presence-dot { background: hsl(var(--sys-green)); animation: now-pulse 2.4s ease-out infinite; }
+[data-presence='away'] .presence-dot { background: hsl(var(--sys-orange)); }
+@media (prefers-reduced-motion: reduce) { [data-presence='online'] .presence-dot { animation: none; } }

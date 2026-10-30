@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Github, Linkedin, Mail } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
+import { BuildStamp } from '@/components/portfolio/build-stamp';
 
 const pages = [
   { href: '/', label: 'Blog' },
@@ -44,7 +45,10 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
           </nav>
         </div>
         <div className="mt-8 pt-6 border-t border-foreground/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">© {currentYear} Boda Madhukar Reddy. All rights reserved.</p>
+          <div className="space-y-1 text-center sm:text-left">
+            <p className="text-xs text-muted-foreground">© {currentYear} Boda Madhukar Reddy. All rights reserved.</p>
+            <BuildStamp />
+          </div>
           <div className="flex items-center gap-1">
             {socials.map(({ href, icon: Icon, label }) => (
               <a

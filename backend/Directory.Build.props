@@ -4,6 +4,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <!-- The API's release version, reported by /health (and the site's footer). Bump it per release. -->
+    <Version>1.1.0</Version>
     <!-- Security-sensitive code: treat nullable and analyzer warnings as build errors. -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>

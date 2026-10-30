@@ -70,6 +70,8 @@ const nextConfig: NextConfig = {
   generateBuildId: async () => buildId,
   env: {
     NEXT_PUBLIC_BUILD_ID: buildId,
+    // When this build was made: the footer's "deployed" date.
+    NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
   },
   // No "X-Powered-By: Next.js" (don't advertise the stack).
   poweredByHeader: false,

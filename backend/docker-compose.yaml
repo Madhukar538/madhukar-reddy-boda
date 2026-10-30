@@ -23,3 +23,5 @@ services:
       Portfolio__Passkeys__Origins__0: "https://dhucar.in"
       Portfolio__Site__RevalidateUrl: "https://dhucar.in/api/revalidate"
       Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
+      # The deployed commit, reported by /health (Coolify: "Include Source Commit in Build").
+      SOURCE_COMMIT: "${SOURCE_COMMIT:-}"
