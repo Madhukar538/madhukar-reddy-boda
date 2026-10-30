@@ -28,8 +28,8 @@ const accents: AccentOption[] = [
 ];
 
 const STORAGE_KEY = 'portfolio-accent';
-// Graphite until the visitor picks another accent (applied before paint in app/layout).
-const DEFAULT_ACCENT = 'graphite';
+// Blue (Midnight's cobalt) until the visitor picks another accent (applied before paint in app/layout).
+const DEFAULT_ACCENT = 'blue';
 
 function applyAccent(id: string) {
   if (id === 'blue') {

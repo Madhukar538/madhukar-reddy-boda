@@ -57,7 +57,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', vari
 
 // Applies the saved accent tint and look before first paint, so neither flashes.
 // Midnight (no data-style) is the default look and is always dark; Graphite is the default accent.
-const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent')||'graphite',s=localStorage.getItem('portfolio-style');if(a!=='blue')d.setAttribute('data-accent',a);if(s==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
+const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent')||'blue',s=localStorage.getItem('portfolio-style');if(a!=='blue')d.setAttribute('data-accent',a);if(s==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
 // Runs after next-themes' own script, which may have set a light theme.
 const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
 

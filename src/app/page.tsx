@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   },
 };
 
+const heroMetrics = [
+  { value: '40s → 13s', label: 'RAG latency reduction' },
+  { value: '5–50 ms', label: 'MongoDB query tuning' },
+  { value: '1,792 GB/s', label: 'GPU inference bandwidth' },
+  { value: '5+ Years', label: 'Production systems' },
+];
+
 export default async function Home() {
   const { posts, experience, keyProjects, rdProjects, profile } = await getContent();
   const topics = allTopics(posts);
@@ -43,7 +50,6 @@ export default async function Home() {
             <span className="block text-muted-foreground">Software Engineer · Revalsys, Hyderabad</span>
           </span>
         </Link>
-        {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
         <HeroIdentity />
         <h1 className="text-[clamp(1.9rem,3.8vw,3.15rem)] leading-[1.12] font-bold tracking-tight text-foreground">
           Engineering high-throughput <span className="text-primary">.NET architectures</span> &amp; self-hosted <span className="text-primary">AI systems</span>.
@@ -66,25 +72,17 @@ export default async function Home() {
           </a>
         </div>
 
-        {/* Quick Highlights / Metrics Strip - safely contained in left column */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-6 mt-2 border-t border-foreground/10">
-          <div className="flex flex-col">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground tabular-nums">40s → 13s</span>
-            <span className="text-xs text-muted-foreground font-medium mt-0.5">RAG latency reduction</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground tabular-nums">5–50 ms</span>
-            <span className="text-xs text-muted-foreground font-medium mt-0.5">MongoDB query tuning</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground tabular-nums">1,792 GB/s</span>
-            <span className="text-xs text-muted-foreground font-medium mt-0.5">GPU inference bandwidth</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground tabular-nums">5+ Years</span>
-            <span className="text-xs text-muted-foreground font-medium mt-0.5">Production systems</span>
-          </div>
-        </div>
+        {/* Metrics strip: each value stays on one line, so the four columns share a baseline. */}
+        <dl className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-5 pt-6 mt-2 border-t border-foreground/10">
+          {heroMetrics.map(({ value, label }) => (
+            <div key={label} className="flex flex-col-reverse">
+              <dt className="text-xs text-muted-foreground font-medium mt-1">{label}</dt>
+              <dd className="whitespace-nowrap text-2xl xl:text-[1.75rem] font-extrabold tracking-tight text-foreground tabular-nums">{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
       </header>
 
       <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
