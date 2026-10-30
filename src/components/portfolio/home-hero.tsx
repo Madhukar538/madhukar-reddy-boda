@@ -121,8 +121,8 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
             </Link>
           </div>
 
-          <h1 className="text-[clamp(2rem,6vw,3.75rem)] leading-[1.08] font-bold tracking-tight text-foreground">
-            Building high-throughput <span className="text-primary">.NET systems</span> and self-hosted AI platforms.
+          <h1 className="text-[clamp(2.5rem,6.5vw,4.5rem)] leading-[1.02] text-foreground">
+            I build fast .NET systems, and AI that stays on <em>your own servers</em>.
           </h1>
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">

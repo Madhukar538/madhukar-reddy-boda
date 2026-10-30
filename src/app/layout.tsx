@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter, Instrument_Serif, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -45,18 +45,20 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: [
     // Midnight's page colour (the default look is always dark), so the browser bar matches.
-    { media: '(prefers-color-scheme: light)', color: '#070a12' },
-    { media: '(prefers-color-scheme: dark)', color: '#070a12' },
+    { media: '(prefers-color-scheme: light)', color: '#110f0d' },
+    { media: '(prefers-color-scheme: dark)', color: '#110f0d' },
   ],
 };
 
 // Self-hosted at build time: no render-blocking request to Google, and the files are preloaded.
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
+// Midnight's headlines (h1, h2 in globals.css).
+const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], display: 'swap', variable: '--font-serif' });
 // Code blocks only, so it isn't preloaded on every page.
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
 // Applies the saved accent tint and look before first paint, so neither flashes.
-// Midnight (no data-style) is the default look and is always dark; Graphite is the default accent.
+// Midnight (no data-style) is the default look and is always dark; Blue is the default accent (in Midnight, the base red).
 const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent')||'blue',s=localStorage.getItem('portfolio-style');if(a!=='blue')d.setAttribute('data-accent',a);if(s==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
 // Runs after next-themes' own script, which may have set a light theme.
 const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
@@ -139,7 +141,7 @@ export default async function RootLayout({
     ],
   };
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: accentScript }} />
         <script dangerouslySetInnerHTML={{ __html: chunkReloadScript }} />

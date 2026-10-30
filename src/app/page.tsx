@@ -51,11 +51,11 @@ export default async function Home() {
           </span>
         </Link>
         <HeroIdentity />
-        <h1 className="text-[clamp(1.9rem,3.8vw,3.15rem)] leading-[1.12] font-bold tracking-tight text-foreground">
-          Engineering high-throughput <span className="text-primary">.NET architectures</span> &amp; self-hosted <span className="text-primary">AI systems</span>.
+        <h1 className="text-[clamp(2.5rem,5.2vw,4.5rem)] leading-[1.02] text-foreground">
+          I build fast .NET systems, and AI that stays on <em>your own servers</em>.
         </h1>
         <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-          Senior Backend Engineer building multi-tenant RAG &amp; MCP platforms, Solr 9 hybrid vector search, and k6-validated high-performance APIs for enterprise e-commerce scale.
+          Senior backend engineer at Revalsys, Hyderabad. I work on multi-tenant RAG and MCP platforms, Solr 9 hybrid search, and e-commerce APIs that are load-tested with k6 before they ship.
         </p>
         <div className="flex flex-wrap items-center gap-2.5 pt-1">
           <Link href="/projects" className="tinted-button !px-5 !py-2.5">
