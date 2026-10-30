@@ -6,23 +6,23 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  18 Oct 2026
- * Modified Reason :  Backfills blog read counts once.
+ * Modified Date   :  30 Oct 2026
+ * Modified Reason :  Runs the release's pending data migrations.
  * Layer           :  Services
  * Modified By     :  Boda Madhukar Reddy
- * Description     :  On start: creates MongoDB indexes and seeds an empty database from the exported site content.
+ * Description     :  On start: creates MongoDB indexes, seeds an empty database from the exported site content, and runs pending data migrations.
  */
 public class StartupTasks(IServiceProvider serviceProvider) : IHostedService
 {
     //****************************************************************************************************
     // Layer                 :   Services
     // Method Name           :   StartAsync
-    // Method Description    :   Ensures indexes and the settings document, then seeds.
+    // Method Description    :   Ensures indexes and the settings document, seeds, then migrates.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   cancellationToken
-    // Modified Date         :   26 Sep 2026
-    // Modified Reason       :   Creates the security settings document on start.
+    // Modified Date         :   30 Oct 2026
+    // Modified Reason       :   Runs pending data migrations.
     // Return Values         :   Task
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
@@ -30,9 +30,10 @@ public class StartupTasks(IServiceProvider serviceProvider) : IHostedService
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //  1.1        Boda Madhukar Reddy    26 Sep 2026       Settings document
     //  1.2        Boda Madhukar Reddy    18 Oct 2026       Read count backfill
+    //  1.3        Boda Madhukar Reddy    30 Oct 2026       Data migrations
     //****************************************************************************************************
     /// <summary>
-    /// <c>StartAsync : </c> Ensures indexes and the settings document, then seeds.
+    /// <c>StartAsync : </c> Ensures indexes and the settings document, seeds, then migrates.
     /// </summary>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -43,6 +44,8 @@ public class StartupTasks(IServiceProvider serviceProvider) : IHostedService
         await scope.ServiceProvider.GetRequiredService<SeedBAL>().SeedIfEmpty();
         // Once: read counts start from the page views already stored.
         await scope.ServiceProvider.GetRequiredService<EngagementBAL>().BackfillReads();
+        // Each release's data changes (BusinessLogic/Migrations), once per database.
+        await scope.ServiceProvider.GetRequiredService<MigrationBAL>().RunPending();
     }
 
     //****************************************************************************************************

@@ -149,6 +149,17 @@ ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Dhucar.Portfolio.Api
 
 Swagger UI is available at `/swagger` in Development only.
 
+## Data migrations
+
+The seed only fills an empty database, so changes to data that is already live ship as migrations. Each one is a class in `src/Dhucar.Portfolio.BusinessLogic/Migrations` that implements `IMigration`:
+
+- `Id`: `yyyy-MM-dd-what-it-does`. Migrations run in `Id` order. Never rename one that has shipped.
+- `Apply()`: changes the data and returns the site cache tags to refresh (for example `profile`). It must be safe to run twice.
+
+On every start, after seeding, `MigrationBAL.RunPending()` applies each migration not yet listed in the `migrations` collection, records it there, then asks the site to revalidate the returned tags once. A migration that throws is not recorded, so the next start retries it. Classes implementing `IMigration` are registered automatically.
+
+To change live data in a release: add a migration (and update `src/data/profile.ts` and the seed with `scripts/export-content.ts`, so a fresh database gets the same result), deploy, and the first start applies it.
+
 ## Deploy (Coolify)
 
 `docker-compose.yaml` (Coolify's default name) runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.

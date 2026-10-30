@@ -78,6 +78,9 @@ public class MongoContext
     /// <summary>Uploaded images.</summary>
     public IMongoCollection<MediaDocument> Media => Database.GetCollection<MediaDocument>("media");
 
+    /// <summary>Data migrations already applied (MigrationBAL).</summary>
+    public IMongoCollection<MigrationDocument> Migrations => Database.GetCollection<MigrationDocument>("migrations");
+
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   EnsureIndexes

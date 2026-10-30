@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Dhucar.Portfolio.Api.Middlewares;
 using Dhucar.Portfolio.Api.Services;
 using Dhucar.Portfolio.BusinessLogic.BAL;
+using Dhucar.Portfolio.BusinessLogic.Migrations;
 using Dhucar.Portfolio.BusinessLogic.Presence;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Security;
@@ -59,6 +60,12 @@ public static class ServiceCollectionExtensions
             .FromAssembliesOf(typeof(AuthBAL), typeof(UserDAL))
             .AddClasses(classes => classes.Where(type => type.Name.EndsWith("BAL") || type.Name.EndsWith("DAL")))
             .AsSelf()
+            .WithScopedLifetime());
+        // Data migrations (BusinessLogic/Migrations), run on start by MigrationBAL.
+        services.Scan(scan => scan
+            .FromAssembliesOf(typeof(IMigration))
+            .AddClasses(classes => classes.AssignableTo<IMigration>())
+            .As<IMigration>()
             .WithScopedLifetime());
 
         services.AddHttpContextAccessor();
