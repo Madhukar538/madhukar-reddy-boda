@@ -15,13 +15,11 @@ import {
   Linkedin,
   Mail,
   MapPin,
-  Monitor,
   Network,
   Plug,
   Phone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { OS_MODE_AVAILABLE, useOsMode } from '@/components/os/os-mode';
 import type { SiteContent } from '@/lib/content';
 import { stack } from '@/data/stack';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
@@ -61,17 +59,6 @@ function Tile({
         {children}
       </Link>
     </div>
-  );
-}
-
-function HeroOsButton() {
-  const { setEnabled } = useOsMode();
-  if (!OS_MODE_AVAILABLE) return null;
-  return (
-    <button type="button" onClick={() => setEnabled(true)} className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
-      <Monitor className="h-4 w-4 text-primary" />
-      Try desktop mode
-    </button>
   );
 }
 
@@ -284,7 +271,6 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
 
         <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 text-sm font-medium text-muted-foreground">
           <span className="text-xs font-semibold uppercase tracking-wide">Explore</span>
-          <HeroOsButton />
           <Link href="/graph" className="group inline-flex items-center gap-2 hover:text-foreground transition-colors">
             <Network className="h-4 w-4 text-primary" />
             The knowledge graph

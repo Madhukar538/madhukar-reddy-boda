@@ -7,7 +7,7 @@ import { m, AnimatePresence } from 'framer-motion';
 import { useDesignStyle, type DesignStyle } from '@/lib/design-style';
 
 const LOOKS: { id: DesignStyle; label: string; hint: string }[] = [
-  { id: 'midnight', label: 'Midnight', hint: 'Dark' },
+  { id: 'midnight', label: 'Midnight', hint: 'Warm dark' },
   { id: 'glass', label: 'Glass', hint: 'Liquid glass' },
 ];
 
@@ -15,16 +15,18 @@ type AccentOption = {
   id: string;
   label: string;
   swatch: string; // CSS color for the preview swatch
+  // Midnight's own, softer version (its --primary in globals.css); its base accent is the collar red.
+  midnight: { label: string; swatch: string };
 };
 
-// Apple system accent colors
+// Apple system accent colors (Glass)
 const accents: AccentOption[] = [
-  { id: 'blue',     label: 'Blue',     swatch: '#0A84FF' },
-  { id: 'purple',   label: 'Purple',   swatch: '#BF5AF2' },
-  { id: 'pink',     label: 'Pink',     swatch: '#FF375F' },
-  { id: 'orange',   label: 'Orange',   swatch: '#FF9F0A' },
-  { id: 'green',    label: 'Green',    swatch: '#30D158' },
-  { id: 'graphite', label: 'Graphite', swatch: '#8E8E93' },
+  { id: 'blue',     label: 'Blue',     swatch: '#0A84FF', midnight: { label: 'Collar red', swatch: '#DD504B' } },
+  { id: 'purple',   label: 'Purple',   swatch: '#BF5AF2', midnight: { label: 'Purple', swatch: '#B38AE6' } },
+  { id: 'pink',     label: 'Pink',     swatch: '#FF375F', midnight: { label: 'Pink', swatch: '#E77BA0' } },
+  { id: 'orange',   label: 'Orange',   swatch: '#FF9F0A', midnight: { label: 'Orange', swatch: '#EE8E3E' } },
+  { id: 'green',    label: 'Green',    swatch: '#30D158', midnight: { label: 'Green', swatch: '#55B585' } },
+  { id: 'graphite', label: 'Graphite', swatch: '#8E8E93', midnight: { label: 'Stone', swatch: '#BDB7AF' } },
 ];
 
 const STORAGE_KEY = 'portfolio-accent';
@@ -64,6 +66,7 @@ export function ThemeSwitcher() {
   };
 
   const active = accents.find((a) => a.id === current) ?? accents[0];
+  const shown = (a: AccentOption) => (look === 'glass' ? a : { ...a, ...a.midnight });
 
   return (
     <div className="relative">
@@ -83,7 +86,7 @@ export function ThemeSwitcher() {
                 : 'hsl(var(--primary))',
           }}
         />
-        <span className="sr-only">Current accent: {active.label}</span>
+        <span className="sr-only">Current accent: {shown(active).label}</span>
       </button>
 
       <AnimatePresence>
@@ -120,7 +123,7 @@ export function ThemeSwitcher() {
                         className={cn(
                           'h-6 w-10 rounded-lg',
                           option.id === 'midnight'
-                            ? 'bg-[#0b1220] ring-1 ring-[#22d3ee]/50'
+                            ? 'bg-[#110f0d] ring-1 ring-[#dd504b]/60'
                             : 'bg-gradient-to-br from-sky-300/70 via-fuchsia-300/60 to-amber-200/70 ring-1 ring-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]'
                         )}
                       />
@@ -134,7 +137,8 @@ export function ThemeSwitcher() {
                 Accent Color
               </p>
               <div className="space-y-0.5">
-                {accents.map((accent) => {
+                {accents.map((option) => {
+                  const accent = shown(option);
                   const isSelected = current === accent.id;
                   return (
                     <button

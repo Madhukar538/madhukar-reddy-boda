@@ -13,7 +13,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 
   return (
     <html lang="en">
-      <body style={{ margin: 0, minHeight: '100dvh', display: 'grid', placeItems: 'center', background: '#070a12', color: '#f1f5fb', fontFamily: 'system-ui, sans-serif' }}>
+      <body style={{ margin: 0, minHeight: '100dvh', display: 'grid', placeItems: 'center', background: '#110f0d', color: '#ede8e1', fontFamily: 'system-ui, sans-serif' }}>
         <main style={{ maxWidth: 420, padding: 24, textAlign: 'center' }}>
           <h1 style={{ fontSize: 24, margin: '0 0 8px' }}>{isStaleBuild ? 'Loading the latest version…' : 'Something went wrong.'}</h1>
           <p style={{ margin: '0 0 20px', color: '#a9b6cc', lineHeight: 1.5 }}>

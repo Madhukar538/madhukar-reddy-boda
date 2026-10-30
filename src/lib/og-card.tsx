@@ -6,20 +6,23 @@ import sharp from 'sharp';
 // The cut-out portrait, inlined so the card needs no extra request.
 const portrait = `data:image/png;base64,${readFileSync(join(process.cwd(), 'public/og/portrait.png')).toString('base64')}`;
 
-// Inter (SIL Open Font License, see og-fonts/LICENSE.txt), the site's own typeface.
+// Inter (SIL Open Font License, see og-fonts/LICENSE.txt), the site's own typeface,
+// and Instrument Serif (OFL, og-fonts/InstrumentSerif-LICENSE.txt) for the title, as on the site.
 // The image renderer's built-in font has no bold, so headings came out regular.
 const font = (file: string) => readFileSync(join(process.cwd(), 'src/lib/og-fonts', file));
 const fonts = [
   { name: 'Inter', data: font('Inter-Regular.ttf'), weight: 400 as const, style: 'normal' as const },
   { name: 'Inter', data: font('Inter-SemiBold.ttf'), weight: 600 as const, style: 'normal' as const },
   { name: 'Inter', data: font('Inter-ExtraBold.ttf'), weight: 800 as const, style: 'normal' as const },
+  { name: 'Instrument Serif', data: font('InstrumentSerif-Regular.ttf'), weight: 400 as const, style: 'normal' as const },
 ];
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const INK = '#f1f5fb';
-const MUTED = '#a9b6cc';
-const ACCENT = '#7cb6ff';
+// Midnight's warm editorial palette: paper on warm black, with the collar red.
+const INK = '#ede8e1';
+const MUTED = '#a1978c';
+const ACCENT = '#dd504b';
 
 type Stat = { value: string; label: string };
 
@@ -51,8 +54,8 @@ export async function ogCard({
           height: '100%',
           display: 'flex',
           position: 'relative',
-          backgroundColor: '#070a12',
-          backgroundImage: 'linear-gradient(120deg, #070a12 0%, #0b1428 55%, #12244a 100%)',
+          backgroundColor: '#110f0d',
+          backgroundImage: 'radial-gradient(ellipse 70% 90% at 85% 10%, #2a221b 0%, #110f0d 70%)',
           fontFamily: 'Inter',
         }}
       >
@@ -76,18 +79,18 @@ export async function ogCard({
               style={{
                 display: 'flex',
                 alignSelf: 'flex-start',
-                padding: '6px 16px',
-                borderRadius: 999,
+                paddingBottom: 6,
                 fontSize: 20,
                 fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
                 color: ACCENT,
-                background: 'rgba(124,182,255,0.12)',
-                border: '1px solid rgba(124,182,255,0.35)',
+                borderBottom: '1px solid rgba(221,80,75,0.5)',
               }}
             >
               {eyebrow}
             </div>
-            <div style={{ display: 'flex', marginTop: 18, fontSize: titleSize, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.025em', color: INK }}>
+            <div style={{ display: 'flex', marginTop: 18, fontFamily: 'Instrument Serif', fontSize: titleSize * 1.18, fontWeight: 400, lineHeight: 1.04, letterSpacing: '-0.01em', color: INK }}>
               {title}
             </div>
             {meta && <div style={{ display: 'flex', marginTop: 14, fontSize: 22, color: MUTED }}>{meta}</div>}
@@ -110,7 +113,7 @@ export async function ogCard({
               {stack.map((t) => (
                 <span
                   key={t}
-                  style={{ display: 'flex', padding: '5px 14px', borderRadius: 999, fontSize: 18, color: INK, border: '1px solid rgba(255,255,255,0.18)' }}
+                  style={{ display: 'flex', padding: '5px 14px', borderRadius: 6, fontSize: 18, color: INK, border: '1px solid rgba(237,232,225,0.18)' }}
                 >
                   {t}
                 </span>

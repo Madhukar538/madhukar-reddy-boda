@@ -4,14 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
+import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, FolderKanban, Search, Tags } from 'lucide-react';
 import { openQuickSwitcher } from '@/lib/vault-client';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { ThemeSwitcher } from '@/components/theme-switcher';
-import { AnimatePresence, m } from 'framer-motion';
+import { m } from 'framer-motion';
 import { LiquidLens } from '@/components/liquid-lens';
-import { OsModeToggle } from '@/components/os/os-mode';
 
 // Every page on the site — each one is its own URL.
 export const navLinks = [
@@ -51,9 +48,6 @@ export function Navbar({ contact }: { contact: NavContact }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [docked, setDocked] = useState(false);
-  const [controlsOpen, setControlsOpen] = useState(false);
-
-  useEffect(() => setControlsOpen(false), [pathname]);
 
   useEffect(() => {
     const wide = window.matchMedia(DOCK_QUERY);
@@ -140,9 +134,6 @@ export function Navbar({ contact }: { contact: NavContact }) {
               <Search className="h-[1.05rem] w-[1.05rem]" />
               <kbd className="rounded px-1 text-[10px] font-medium text-muted-foreground ring-1 ring-foreground/15">⌘K</kbd>
             </button>
-            <OsModeToggle />
-            <ThemeSwitcher />
-            <ThemeToggle />
             <Link
               href="/work-with-me"
               className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all ml-1.5"
@@ -227,7 +218,6 @@ export function Navbar({ contact }: { contact: NavContact }) {
           >
             <Search className="h-[1.05rem] w-[1.05rem]" />
           </button>
-          <ThemeToggle />
         </div>
       </nav>
 
@@ -262,50 +252,16 @@ export function Navbar({ contact }: { contact: NavContact }) {
           })}
         </nav>
 
-        {/* One detached button, like iOS 26's separate tab-bar button; opens the display controls. */}
-        <div className="relative pointer-events-auto">
-          <AnimatePresence>
-            {controlsOpen && (
-              <>
-                <div className="fixed inset-0 -z-10" onClick={() => setControlsOpen(false)} />
-                <m.div
-                  id="display-controls"
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-                  className="glass glass-strong glass-bar glass-pill absolute bottom-full right-0 mb-2 flex flex-col items-center p-1 origin-bottom"
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setControlsOpen(false);
-                      openQuickSwitcher();
-                    }}
-                    aria-label="Search notes"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90"
-                  >
-                    <Search className="h-[1.05rem] w-[1.05rem]" />
-                  </button>
-                  <OsModeToggle />
-                  <ThemeSwitcher />
-                  <ThemeToggle />
-                </m.div>
-              </>
-            )}
-          </AnimatePresence>
-          <div className="glass glass-strong glass-bar glass-pill p-1">
-            <button
-              type="button"
-              onClick={() => setControlsOpen((o) => !o)}
-              aria-expanded={controlsOpen}
-              aria-controls="display-controls"
-              aria-label={controlsOpen ? 'Close display settings' : 'Display settings'}
-              className="flex h-[2.9rem] w-[2.9rem] items-center justify-center rounded-full text-foreground/80 transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90"
-            >
-              {controlsOpen ? <X className="h-[1.15rem] w-[1.15rem]" /> : <Settings2 className="h-[1.15rem] w-[1.15rem]" />}
-            </button>
-          </div>
+        {/* One detached button, like iOS 26's separate tab-bar button: search. */}
+        <div className="glass glass-strong glass-bar glass-pill pointer-events-auto p-1">
+          <button
+            type="button"
+            onClick={openQuickSwitcher}
+            aria-label="Search notes"
+            className="flex h-[2.9rem] w-[2.9rem] items-center justify-center rounded-full text-foreground/80 transition-all duration-300 hover:bg-foreground/10 hover:text-foreground active:scale-90"
+          >
+            <Search className="h-[1.15rem] w-[1.15rem]" />
+          </button>
         </div>
       </div>
     </>

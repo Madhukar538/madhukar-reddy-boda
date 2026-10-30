@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     },
   },
   // Icons come from app/favicon.ico, app/icon.png and app/apple-icon.png, and the
-  // manifest's from public/icons: all the same portrait on the Midnight navy.
+  // manifest's from public/icons: all the same portrait on Midnight's warm black.
 };
 
 export const viewport: Viewport = {
@@ -57,9 +57,9 @@ const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', st
 // Code blocks only, so it isn't preloaded on every page.
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
-// Applies the saved accent tint and look before first paint, so neither flashes.
-// Midnight (no data-style) is the default look and is always dark; Blue is the default accent (in Midnight, the base red).
-const accentScript = `try{var d=document.documentElement,a=localStorage.getItem('portfolio-accent')||'blue',s=localStorage.getItem('portfolio-style');if(a!=='blue')d.setAttribute('data-accent',a);if(s==='glass')d.setAttribute('data-style','glass')}catch(e){}`;
+// The look and accent are fixed (Midnight, collar red) now the switcher is gone: clear any
+// choice a visitor saved earlier, so nobody is stuck on a look they can't leave.
+const accentScript = `try{localStorage.removeItem('portfolio-accent');localStorage.removeItem('portfolio-style')}catch(e){}`;
 // Runs after next-themes' own script, which may have set a light theme.
 const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
 

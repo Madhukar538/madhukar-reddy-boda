@@ -7,7 +7,6 @@ import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { AnimatePresence, m } from 'framer-motion';
 import Image from 'next/image';
 
@@ -112,7 +111,6 @@ export function Header() {
               </m.div>
             )}
           </AnimatePresence>
-          <ThemeToggle />
           <div className="md:hidden">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>

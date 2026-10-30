@@ -962,6 +962,14 @@ html:not([data-style]) {
   --glass-inner-glow: transparent;
 
   --blob-opacity: 0;
+
+  /* The status / category colours, in earthy tones instead of neon. */
+  --sys-purple: 12 45% 60%;   /* clay */
+  --sys-teal: 150 18% 58%;    /* sage */
+  --sys-indigo: 30 8% 64%;    /* stone */
+  --sys-orange: 38 55% 58%;   /* ochre */
+  --sys-pink: 350 35% 64%;    /* dusty rose */
+  --sys-green: 140 32% 52%;
 }
 html:not([data-style])[data-accent='purple'] { --primary: 270 60% 70%; }
 html:not([data-style])[data-accent='pink'] { --primary: 340 70% 68%; }
@@ -1000,6 +1008,16 @@ html:not([data-style]) body {
     background-size: 230px 1800px, 230px 1800px, 100% 900px;
   }
 }
+
+/* No template effects: glow blobs, gradient text, glossy icon tiles, big radii. */
+html:not([data-style]) :is(.card-glow, .avatar-glow) { display: none; }
+html:not([data-style]) .text-gradient {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: hsl(var(--primary));
+}
+html:not([data-style]) [class*='shadow-[inset_0_1px_0'] { box-shadow: none; }
+html:not([data-style]) :is(.rounded-2xl, .rounded-3xl) { border-radius: 0.625rem; }
 
 /* Serif headlines, set at normal weight; italics carry the emphasis. */
 html:not([data-style]) :is(h1, h2) {

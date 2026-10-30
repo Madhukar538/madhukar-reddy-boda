@@ -114,7 +114,8 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
   const timeLeft = minutesLeft === 0 ? 'Finished' : `${minutesLeft} min left`;
 
   const list = (onPick?: () => void) => (
-    <ol className="space-y-0.5 text-sm">
+    // One hairline down the list; the current section is a short red segment on it.
+    <ol className="border-l border-foreground/10 text-sm">
       {toc.map((item) => (
         <li key={item.id}>
           <a
@@ -122,11 +123,11 @@ export function ReaderChrome({ toc, words, backlinks = 0 }: { toc: TocItem[]; wo
             onClick={onPick}
             aria-current={active === item.id ? 'location' : undefined}
             className={cn(
-              'block rounded-lg border-l-2 py-1.5 pr-2 leading-snug transition-colors',
-              item.level === 3 ? 'pl-6' : 'pl-3',
+              '-ml-px block border-l-2 py-1.5 pr-2 leading-snug transition-colors duration-200',
+              item.level === 3 ? 'pl-7 text-[0.8125rem]' : 'pl-4',
               active === item.id
-                ? 'border-primary bg-primary/10 font-semibold text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+                ? 'border-primary font-medium text-foreground'
+                : 'border-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground'
             )}
           >
             {item.text}
