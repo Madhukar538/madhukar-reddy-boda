@@ -3,10 +3,10 @@ namespace Dhucar.Portfolio.Properties.Settings;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  30 Oct 2026
+ * Modified Reason :  Atlas access-list sync
  * Layer           :  Properties
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Application settings bound from the "Portfolio" configuration section (environment variables in production).
  */
 public class PortfolioSettings
@@ -28,6 +28,9 @@ public class PortfolioSettings
 
     /// <summary>Optional new-comment alerts.</summary>
     public TelegramSettings Telegram { get; set; } = new();
+
+    /// <summary>Optional: keeps this server's IP on the Atlas access list.</summary>
+    public AtlasSettings Atlas { get; set; } = new();
 
     /// <summary>Path to the seed content JSON imported into an empty database.</summary>
     public string SeedPath { get; set; } = string.Empty;

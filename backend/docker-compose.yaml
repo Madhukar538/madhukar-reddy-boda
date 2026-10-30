@@ -25,3 +25,8 @@ services:
       Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
       # The deployed commit, reported by /health (Coolify: "Include Source Commit in Build").
       SOURCE_COMMIT: "${SOURCE_COMMIT:-}"
+      # Optional: keeps this server's IP on the Atlas access list (for a home IP that changes).
+      # An Atlas API key with the "Project Network Access Manager" role; leave empty to turn off.
+      Portfolio__Atlas__PublicKey: "${ATLAS_PUBLIC_KEY:-}"
+      Portfolio__Atlas__PrivateKey: "${ATLAS_PRIVATE_KEY:-}"
+      Portfolio__Atlas__ProjectId: "${ATLAS_PROJECT_ID:-}"

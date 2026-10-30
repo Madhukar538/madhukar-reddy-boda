@@ -6,10 +6,10 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  30 Oct 2026
+ * Modified Reason :  Validates the optional Atlas access-list sync
  * Layer           :  Services
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Fails startup when security-critical settings are missing or weak.
  */
 public class PortfolioSettingsValidator : IValidateOptions<PortfolioSettings>
@@ -66,6 +66,12 @@ public class PortfolioSettingsValidator : IValidateOptions<PortfolioSettings>
         if (options.Security.AccessTokenMinutes is < 1 or > 60 || options.Security.RefreshTokenDays is < 1 or > 30)
         {
             failures.Add("Token lifetimes must be 1-60 minutes (access) and 1-30 days (refresh).");
+        }
+        AtlasSettings atlas = options.Atlas;
+        bool isAtlasPartial = (atlas.PublicKey.Length > 0 || atlas.PrivateKey.Length > 0 || atlas.ProjectId.Length > 0) && !atlas.IsEnabled;
+        if (isAtlasPartial || atlas.IntervalMinutes is < 1 or > 60)
+        {
+            failures.Add("Portfolio:Atlas needs PublicKey, PrivateKey and ProjectId together (or none), and IntervalMinutes of 1-60.");
         }
         return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
     }

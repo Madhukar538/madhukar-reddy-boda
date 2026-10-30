@@ -80,6 +80,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RecoveryCodeService>();
         services.AddSingleton<GlobalExceptionMiddleware>();
         services.AddSingleton<SecurityHeadersMiddleware>();
+        // Before StartupTasks: its first sync starts straight away, and startup retries the database until the IP is listed.
+        services.AddHostedService<AtlasAccessListSync>();
         services.AddHostedService<StartupTasks>();
 
         // Live presence on blog posts: tiny messages only, one shared tracker, pushed once a second.
@@ -103,6 +105,21 @@ public static class ServiceCollectionExtensions
         });
         services.AddMemoryCache();
         services.AddHttpClient(NotificationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5));
+        services.AddHttpClient(AtlasAccessListBAL.IpEchoClientName, client => client.Timeout = TimeSpan.FromSeconds(10));
+        // Atlas authenticates API keys with HTTP digest; the handler answers the challenge.
+        services.AddHttpClient(AtlasAccessListBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(15))
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                AtlasSettings atlas = sp.GetRequiredService<IOptions<PortfolioSettings>>().Value.Atlas;
+                return new HttpClientHandler
+                {
+                    AllowAutoRedirect = false,
+                    Credentials = new System.Net.CredentialCache
+                    {
+                        { new Uri(atlas.BaseUrl), "Digest", new System.Net.NetworkCredential(atlas.PublicKey, atlas.PrivateKey) },
+                    },
+                };
+            });
         services.AddHttpClient(RevalidationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5))
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 
