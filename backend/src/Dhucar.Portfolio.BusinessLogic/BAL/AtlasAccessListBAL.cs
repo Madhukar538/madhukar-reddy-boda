@@ -60,7 +60,7 @@ public class AtlasAccessListBAL(IHttpClientFactory httpClientFactory, IOptions<P
         AtlasSettings atlas = options.Value.Atlas;
         string ip = await PublicIp(atlas, cancellationToken);
         HttpClient client = httpClientFactory.CreateClient(HttpClientName);
-        string listUrl = $"{atlas.BaseUrl.TrimEnd('/')}/api/atlas/v2/groups/{Uri.EscapeDataString(atlas.ProjectId)}/accessList";
+        string listUrl = $"{atlas.BaseUrl.TrimEnd('/')}/api/atlas/v2/groups/{Uri.EscapeDataString(atlas.ProjectId.Trim())}/accessList";
 
         using HttpRequestMessage get = new(HttpMethod.Get, $"{listUrl}?itemsPerPage=500");
         get.Headers.Accept.ParseAdd(ApiMediaType);

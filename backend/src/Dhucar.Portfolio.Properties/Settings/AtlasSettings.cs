@@ -3,10 +3,10 @@ namespace Dhucar.Portfolio.Properties.Settings;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  30 Oct 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  30 Oct 2026
+ * Modified Reason :  Reports which values are missing instead of failing startup
  * Layer           :  Properties
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  Optional: keeps this server's public IP on the MongoDB Atlas project's access list
  *                    (for a host whose IP changes). Empty keys turn it off.
  */
@@ -33,6 +33,28 @@ public class AtlasSettings
     /// <summary>Atlas Administration API base address.</summary>
     public string BaseUrl { get; set; } = "https://cloud.mongodb.com";
 
-    /// <summary>Whether the sync is configured.</summary>
-    public bool IsEnabled => PublicKey.Length > 0 && PrivateKey.Length > 0 && ProjectId.Length > 0;
+    /// <summary>Whether the sync is configured (all three values set).</summary>
+    public bool IsEnabled => Missing().Count == 0;
+
+    /// <summary>Whether any of the three values is set (so a partial setup can be reported).</summary>
+    public bool IsAnySet => !string.IsNullOrWhiteSpace(PublicKey) || !string.IsNullOrWhiteSpace(PrivateKey) || !string.IsNullOrWhiteSpace(ProjectId);
+
+    /// <summary>The settings still empty, by environment variable name, for the log.</summary>
+    public List<string> Missing()
+    {
+        List<string> missing = new List<string>();
+        if (string.IsNullOrWhiteSpace(PublicKey))
+        {
+            missing.Add("ATLAS_PUBLIC_KEY");
+        }
+        if (string.IsNullOrWhiteSpace(PrivateKey))
+        {
+            missing.Add("ATLAS_PRIVATE_KEY");
+        }
+        if (string.IsNullOrWhiteSpace(ProjectId))
+        {
+            missing.Add("ATLAS_PROJECT_ID");
+        }
+        return missing;
+    }
 }

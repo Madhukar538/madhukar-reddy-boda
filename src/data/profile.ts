@@ -17,9 +17,9 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Senior Software Engineer specialising in research and development and hard problem solving, with 5+ years building, optimizing and scaling high-traffic systems and self-hosted AI platforms. ' +
-    'Takes ambiguous problems from investigation to production: high-throughput .NET APIs, multi-tenant RAG and MCP platforms on Microsoft Agent Framework, and hybrid search, all validated with k6 + Grafana. ' +
-    'Production-first: diagnose fast, fix right, prevent recurrence.',
+    'Senior Software Engineer with 5+ years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
+    'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s, MongoDB query latency from up to 2 s to under 50 ms, and PR review cycle time by 30%. ' +
+    'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana, and takes ambiguous problems from investigation to production.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
   // dates it; this built-in copy is used until a note is saved there.
   now: 'Making the AI agent’s answers about twice as fast by testing a new way to run the model on our own server.',
@@ -103,40 +103,40 @@ export const experience = {
     {
       label: 'AI platforms',
       items: [
-        'Architecting a multi-tenant RAG chatbot platform on .NET 10: Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming.',
-        'Built an MCP (Model Context Protocol) server that gives AI assistants a map of C# codebases and SQL Server schemas: Roslyn code analysis and schema extraction synced to MongoDB, exposed as 40+ tools.',
-        'Designed a hybrid product search engine on Solr 9 fusing BM25 and vector kNN results with Reciprocal Rank Fusion.',
-        'Run AI workloads on self-hosted LLMs (Ollama on an in-house GPU server), with no cloud AI dependency.',
-        'Integrated AI/ML workflows — NLP chatbots, RAG systems, code review automation.',
+        'Architected a multi-tenant RAG chatbot platform on .NET 10 (Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming), cutting typical answer time from 30–40 s to about 13 s.',
+        'Built an MCP (Model Context Protocol) server exposing 40+ tools that give AI assistants a map of C# codebases and SQL Server schemas, using Roslyn code analysis and schema extraction synced to MongoDB.',
+        'Designed a hybrid product search engine on Solr 9 that fuses BM25 keyword and kNN vector results with Reciprocal Rank Fusion.',
+        'Moved AI workloads to self-hosted LLMs (Ollama on an in-house GPU server), removing the dependency on cloud AI services.',
+        'Integrated AI into internal workflows, including NLP chatbots, RAG systems and automated code review.',
       ],
     },
     {
       label: 'Performance & tooling',
       items: [
-        'Designed repeatable k6 load-testing suites with Grafana dashboards, establishing SLA baselines and capacity models for mission-critical APIs.',
-        'Tuned MongoDB compound and unique indexes for conversational platforms, cutting query latencies from 500–2,000 ms to 5–50 ms.',
-        'Built CI/CD automated Code Review assistant using local LLMs, reducing PR review cycle times by 30%.',
-        'Engineered enterprise data pipelines and SAP communication channels with zero-loss transactional sync.',
+        'Created repeatable k6 load-testing suites with Grafana dashboards, setting SLA baselines and capacity models for mission-critical APIs.',
+        'Tuned MongoDB compound and unique indexes for conversational platforms, cutting query latency from 500–2,000 ms to 5–50 ms.',
+        'Developed a CI/CD code-review assistant on local LLMs, reducing PR review cycle time by 30%.',
+        'Engineered enterprise data pipelines and SAP integration channels with zero-loss transactional sync.',
       ],
     },
     {
       label: 'Architecture & R&D',
       items: [
-        'Building an offline-first procurement and inspection app (Next.js PWA + Android SQLite) with outbox-based sync.',
-        'Building an uptime and incident-management platform on Uptime Kuma with a .NET API, push alerts and ticketing.',
+        'Prototyped an offline-first procurement and inspection app (Next.js PWA with Android SQLite) with outbox-based sync (in progress).',
+        'Extended Uptime Kuma into an uptime and incident-management platform with a .NET API, push alerts and ticketing (in progress).',
         'Led .NET-based R&D projects for rapid prototyping and system innovation.',
         'Migrated legacy systems to modern .NET hybrid architectures.',
-        'Built PoCs for IoT (MQTT), debugging tools, and context-aware assistants.',
-        'Created RDLC Application for internal workflow, end-to-end requirement to delivery.',
+        'Produced proofs of concept for IoT (MQTT), debugging tools and context-aware assistants.',
+        'Implemented an RDLC reporting application for internal workflows, from requirements through delivery.',
       ],
     },
     {
       label: 'Client delivery',
       items: [
-        'Architected and delivered core features for high-traffic e-commerce brands: Jockey, Speedo, Manyavar, LuxCozi, and Fossil India (Angular + .NET).',
-        'Led ONDC (Open Network for Digital Commerce) protocol integration.',
-        'Delivered core modules across RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS, and RevalInventory.',
-        'Reval Meet — video conferencing platform (WebRTC + SignalR + Node.js).',
+        'Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.',
+        'Led the ONDC (Open Network for Digital Commerce) protocol integration.',
+        'Shipped core modules across the 6-product RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS and RevalInventory.',
+        'Built Reval Meet, a video conferencing platform on WebRTC, SignalR and Node.js.',
       ],
     },
   ],

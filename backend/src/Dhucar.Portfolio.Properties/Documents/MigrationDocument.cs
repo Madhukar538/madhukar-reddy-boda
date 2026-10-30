@@ -14,7 +14,7 @@ namespace Dhucar.Portfolio.Properties.Documents;
 [BsonIgnoreExtraElements]
 public class MigrationDocument
 {
-    /// <summary>Migration id, e.g. "2026-10-30-senior-title-and-maf"; sorts in the order they run.</summary>
+    /// <summary>Migration id, e.g. "0001-senior-title-and-maf"; sorts in the order they run.</summary>
     [BsonId]
     public string Id { get; set; } = string.Empty;
 

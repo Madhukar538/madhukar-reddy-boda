@@ -10,7 +10,7 @@ namespace Dhucar.Portfolio.Tests;
 
 public class MigrationTests
 {
-    private const string MigrationId = "2026-10-30-senior-title-and-maf";
+    private const string MigrationId = "0001-senior-title-and-maf";
 
     private static async Task<IReadOnlyList<string>> RunPending(ApiFactory factory)
     {
@@ -31,6 +31,26 @@ public class MigrationTests
         BsonDocument record = await Migrations(factory).Find(new BsonDocument("_id", MigrationId)).SingleAsync();
         Assert.True(record.Contains("appliedAt") || record.Contains("AppliedAt"));
         Assert.Empty(await RunPending(factory));
+    }
+
+    [Fact]
+    public async Task Migrations_run_in_order_and_the_last_one_wins()
+    {
+        using ApiFactory factory = new();
+        factory.CreateApiClient();
+
+        // Run both again over an old profile: the bullets migration (later Id) sets the final summary and groups.
+        await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set("summary", "Old.").Set("Summary", "Old."));
+        await Migrations(factory).DeleteManyAsync(FilterDefinition<BsonDocument>.Empty);
+        Assert.Equal([MigrationId, "0002-experience-bullets"], await RunPending(factory));
+
+        BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
+        string summaryField = profile.Contains("summary") ? "summary" : "Summary";
+        Assert.Equal(Migration20261030ExperienceBullets.Summary, profile[summaryField].AsString);
+        string experienceField = profile.Contains("experience") ? "experience" : "Experience";
+        BsonDocument experience = profile[experienceField].AsBsonDocument;
+        BsonArray groups = experience[experience.Contains("groups") ? "groups" : "Groups"].AsBsonArray;
+        Assert.Equal(Migration20261030ExperienceBullets.Groups.Count, groups.Count);
     }
 
     [Fact]

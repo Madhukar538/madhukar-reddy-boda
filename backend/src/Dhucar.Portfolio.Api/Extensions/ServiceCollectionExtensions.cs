@@ -116,7 +116,7 @@ public static class ServiceCollectionExtensions
                     AllowAutoRedirect = false,
                     Credentials = new System.Net.CredentialCache
                     {
-                        { new Uri(atlas.BaseUrl), "Digest", new System.Net.NetworkCredential(atlas.PublicKey, atlas.PrivateKey) },
+                        { new Uri(atlas.BaseUrl), "Digest", new System.Net.NetworkCredential(atlas.PublicKey.Trim(), atlas.PrivateKey.Trim()) },
                     },
                 };
             });

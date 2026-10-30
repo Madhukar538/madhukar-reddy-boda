@@ -23,7 +23,7 @@ public class Migration20261030SeniorTitleAndMaf(ProfileDAL profileDAL, TimeProvi
         "Takes ambiguous problems from investigation to production: high-throughput .NET APIs, multi-tenant RAG and MCP platforms on Microsoft Agent Framework, and hybrid search, all validated with k6 + Grafana. " +
         "Production-first: diagnose fast, fix right, prevent recurrence.";
 
-    public string Id => "2026-10-30-senior-title-and-maf";
+    public string Id => "0001-senior-title-and-maf";
 
     public string Description => "Profile: senior title, R&D summary, Revalsys role, chatbot agents on Microsoft Agent Framework.";
 

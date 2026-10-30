@@ -11,7 +11,7 @@ namespace Dhucar.Portfolio.BusinessLogic.Migrations;
  */
 public interface IMigration
 {
-    /// <summary>Unique and sortable: "yyyy-MM-dd-what-it-does". Migrations run in Id order. Never rename one that has shipped.</summary>
+    /// <summary>Unique and sortable: "NNNN-what-it-does" (next number up). Migrations run in Id order. Never rename one that has shipped.</summary>
     string Id { get; }
 
     /// <summary>One line on what it changes; stored with the record.</summary>

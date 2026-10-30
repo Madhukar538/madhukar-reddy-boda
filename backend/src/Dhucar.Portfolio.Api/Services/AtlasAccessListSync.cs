@@ -39,9 +39,15 @@ public class AtlasAccessListSync(IServiceProvider serviceProvider, IOptions<Port
         AtlasSettings atlas = options.Value.Atlas;
         if (!atlas.IsEnabled)
         {
+            // Not set up: say so only if it was half set up, so a typo in Coolify is easy to spot.
+            if (atlas.IsAnySet)
+            {
+                logger.LogWarning("Atlas access list sync is off: {Missing} not set", string.Join(", ", atlas.Missing()));
+            }
             return;
         }
-        using PeriodicTimer timer = new(TimeSpan.FromMinutes(atlas.IntervalMinutes));
+        int minutes = Math.Clamp(atlas.IntervalMinutes, 1, 60);
+        using PeriodicTimer timer = new(TimeSpan.FromMinutes(minutes));
         do
         {
             try
@@ -55,7 +61,7 @@ public class AtlasAccessListSync(IServiceProvider serviceProvider, IOptions<Port
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                logger.LogWarning(ex, "Atlas access list sync failed; retrying in {Minutes} min", atlas.IntervalMinutes);
+                logger.LogWarning(ex, "Atlas access list sync failed; retrying in {Minutes} min", minutes);
             }
         }
         while (await timer.WaitForNextTickAsync(stoppingToken));

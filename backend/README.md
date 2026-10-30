@@ -153,7 +153,7 @@ Swagger UI is available at `/swagger` in Development only.
 
 The seed only fills an empty database, so changes to data that is already live ship as migrations. Each one is a class in `src/Dhucar.Portfolio.BusinessLogic/Migrations` that implements `IMigration`:
 
-- `Id`: `yyyy-MM-dd-what-it-does`. Migrations run in `Id` order. Never rename one that has shipped.
+- `Id`: `NNNN-what-it-does`, numbered one past the last (`0001-…`, `0002-…`). Migrations run in `Id` order. Never rename one that has shipped.
 - `Apply()`: changes the data and returns the site cache tags to refresh (for example `profile`). It must be safe to run twice.
 
 On every start, after seeding, `MigrationBAL.RunPending()` applies each migration not yet listed in the `migrations` collection, records it there, then asks the site to revalidate the returned tags once. A migration that throws is not recorded, so the next start retries it. Classes implementing `IMigration` are registered automatically.
