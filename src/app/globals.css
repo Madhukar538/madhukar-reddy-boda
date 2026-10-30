@@ -980,37 +980,26 @@ html:not([data-style]) .liquid-wallpaper {
 html:not([data-style]) .liquid-wallpaper::after { opacity: 0.06; }
 html:not([data-style]) .liquid-wallpaper .wallpaper-dots { display: none; }
 
-/* Midnight's backdrop: a faint architecture diagram in the margins
-   (components/arch-backdrop.tsx). Wide screens get the full diagram, faded
-   behind the reading column; phones a trace down each edge. */
-.arch-backdrop { display: none; }
-html:not([data-style]) .arch-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: hsl(var(--foreground));
+/* Midnight's backdrop: a faint architecture diagram down each side of the page
+   (public/arch, made by scripts/gen-arch-backdrop.py). It sits on the page
+   itself, so it scrolls with the content and repeats for the page's full length.
+   The fixed lamp and grain stay above it, on a transparent wallpaper.
+   Wide screens: a column of services just outside the content, either side, with
+   a link across the page every 900px. Narrower: a trace down each edge. */
+html:not([data-style]) .liquid-wallpaper { background-color: transparent; }
+html:not([data-style]) body {
+  background-image: url('/arch/edge-left.svg'), url('/arch/edge-right.svg');
+  background-position: left top, right top;
+  background-repeat: repeat-y;
+  background-size: 28px 1200px;
 }
-html:not([data-style]) .arch-phone { display: block; }
-@media (min-width: 768px) {
-  html:not([data-style]) .arch-phone { display: none; }
-  html:not([data-style]) .arch-wide {
-    display: block;
-    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 18%, rgb(0 0 0 / 0.15) 34%, rgb(0 0 0 / 0.15) 66%, #000 82%, #000 100%);
-    mask-image: linear-gradient(to right, #000 0%, #000 18%, rgb(0 0 0 / 0.15) 34%, rgb(0 0 0 / 0.15) 66%, #000 82%, #000 100%);
+@media (min-width: 1600px) {
+  html:not([data-style]) body {
+    background-image: url('/arch/left.svg'), url('/arch/right.svg'), url('/arch/bus.svg');
+    background-position: calc(50vw - 36rem - 230px) 0, calc(50vw + 36rem) 0, 0 0;
+    background-size: 230px 1800px, 230px 1800px, 100% 900px;
   }
 }
-.arch-lines path { fill: none; stroke: currentColor; stroke-opacity: 0.09; stroke-width: 1; }
-.arch-node rect, rect.arch-node { fill: hsl(var(--background)); stroke: currentColor; stroke-opacity: 0.14; stroke-width: 1; }
-.arch-node text {
-  fill: currentColor;
-  fill-opacity: 0.22;
-  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-.arch-packet { fill: hsl(var(--primary)); fill-opacity: 0.7; }
-@media (prefers-reduced-motion: reduce) { .arch-packet { display: none; } }
 
 /* Serif headlines, set at normal weight; italics carry the emphasis. */
 html:not([data-style]) :is(h1, h2) {

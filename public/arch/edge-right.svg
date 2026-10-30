@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="1200" viewBox="0 0 28 1200"><style>
+.l{fill:none;stroke:#EDE8E1;stroke-opacity:.09;stroke-width:1}
+.n{fill:#110F0D;stroke:#EDE8E1;stroke-opacity:.15;stroke-width:1}
+.t{fill:#EDE8E1;fill-opacity:.24;font:11px ui-monospace,'SF Mono',Menlo,Consolas,monospace;letter-spacing:.02em}
+.p{fill:#DD504B;fill-opacity:.75}
+</style><path class="l" d="M16 0 V1200"/><rect class="n" x="12" y="86" width="8" height="8" rx="1.5"/><rect class="n" x="12" y="396" width="8" height="8" rx="1.5"/><rect class="n" x="12" y="756" width="8" height="8" rx="1.5"/><rect class="n" x="12" y="1056" width="8" height="8" rx="1.5"/><circle r="2" class="p"><animateMotion dur="14s" begin="6s" repeatCount="indefinite" path="M16 0 V1200"/></circle></svg>

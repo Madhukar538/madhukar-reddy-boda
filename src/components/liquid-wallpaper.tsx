@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { FluidBackground } from './fluid-background';
-import { ArchBackdrop } from './arch-backdrop';
 import { useDesignStyle } from '@/lib/design-style';
 
 /**
@@ -47,7 +46,6 @@ export function LiquidWallpaper() {
       <div className="blob blob-d" />
       {isGlass && <FluidBackground />}
       <div className="wallpaper-dots" />
-      <ArchBackdrop />
     </div>
   );
 }
