@@ -1040,7 +1040,7 @@ revalidateTag('page-home', 'max');</pre>
     title: "Hybrid Product Search on Solr 9: BM25 + Vectors + Reciprocal Rank Fusion in .NET",
     excerpt: "Keyword search misses meaning; vector search misses exact terms. Fusing both with RRF, adding rule-based query understanding and running embeddings in-process gave a search that handles \"red card case and gold tone watch under 5000\".",
     date: "August 14, 2026",
-    category: "Software Architecture",
+    category: "Search & Vectors",
     tags: ["Solr", "Vector Search", "RRF", "ONNX", ".NET Core"],
     content: `
       <p class="lead">E-commerce search fails in two opposite ways. BM25 keyword search can't tell that "evening wristwatch" and "dress watch" mean the same thing. Pure vector search happily returns "something watch-like" when the shopper typed an exact SKU. This R&amp;D engine runs both and fuses the results, on a Solr 9 core of about 540 real catalog products, without touching the production search path.</p>

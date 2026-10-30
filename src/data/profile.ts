@@ -113,9 +113,10 @@ export const experience = {
     {
       label: 'Performance & tooling',
       items: [
-        'Tuned MongoDB indexes for the meeting platform, cutting conversation queries from 500–2000 ms to 5–50 ms.',
-        'Built internal Code Review tool — reduced PR cycle time by 30%.',
-        'Developed document processing and complex third-party integration pipelines.',
+        'Designed repeatable k6 load-testing suites with Grafana dashboards, establishing SLA baselines and capacity models for mission-critical APIs.',
+        'Tuned MongoDB compound and unique indexes for conversational platforms, cutting query latencies from 500–2,000 ms to 5–50 ms.',
+        'Built CI/CD automated Code Review assistant using local LLMs, reducing PR review cycle times by 30%.',
+        'Engineered enterprise data pipelines and SAP communication channels with zero-loss transactional sync.',
       ],
     },
     {
@@ -132,9 +133,9 @@ export const experience = {
     {
       label: 'Client delivery',
       items: [
-        'Led ONDC (Open Network for Digital Commerce) integration.',
-        'E-commerce: Jockey, Speedo, Manyavar, LuxCozi (Angular + .NET).',
-        'RevalERP · RevalHRM · RevalCRM · RevalCMS · RevalPOS · RevalInventory · RevalProject · RevalSales.',
+        'Architected and delivered core features for high-traffic e-commerce brands: Jockey, Speedo, Manyavar, LuxCozi, and Fossil India (Angular + .NET).',
+        'Led ONDC (Open Network for Digital Commerce) protocol integration.',
+        'Delivered core modules across RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS, and RevalInventory.',
         'Reval Meet — video conferencing platform (WebRTC + SignalR + Node.js).',
       ],
     },
@@ -224,10 +225,17 @@ export const keyProjects: ProjectCard[] = [
     tech: ['Python', 'FastAPI', 'LangChain', 'LLM'],
   },
   {
-    title: 'Document RAG System',
+    title: 'Multi-Tier In-Memory Caching Engine',
     description:
-      'Designed a caching layer using action filters and in-memory persistence to accelerate dashboard data delivery, with configurable TTLs and tiered caching.',
+      'Designed an accelerated caching layer using ASP.NET action filters and in-memory persistence to speed up dashboard data delivery, with configurable TTLs and tiered caching.',
     tech: ['.NET', 'Memory Cache', 'Filters', 'SQL Server'],
+  },
+  {
+    title: 'Developer Knowledge Discovery RAG',
+    description:
+      'Production RAG pipeline for internal engineering documentation: developers query in natural language and get precise answers with source links.',
+    tech: ['RAG', 'LangChain', 'Vector DB', 'Transformers'],
+    post: 'building-rag-pipeline-internal-documentation',
   },
   {
     title: 'PWBAssistant NuGet Package',
@@ -330,7 +338,7 @@ export const clientProjects: ClientProject[] = [
     duration: 'Jun 2021 – Jan 2022',
     url: 'https://www.luxcozi.com/',
     description:
-      "Contributed to the development of the LuxCozi e-commerce site, a major platform in the ethnic wear market.",
+      "Contributed to the development of the LuxCozi e-commerce site, one of India's leading innerwear and casual wear brands.",
     responsibilities: [
       'Focused on backend development for the Administrator-facing CMS.',
       "Contributed to various modules to enhance the platform's functionality and performance.",
@@ -353,7 +361,7 @@ export const clientProjects: ClientProject[] = [
     title: 'Speedo',
     client: 'Speedo',
     role: 'Software Development Team Lead',
-    duration: 'July 2019 – Jun 2021',
+    duration: '2021',
     url: 'https://www.speedo.in/',
     description:
       'Led development efforts for the Speedo e-commerce platform, focusing on core administrative and customer-facing features.',
