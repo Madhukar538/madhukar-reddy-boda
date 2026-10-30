@@ -88,13 +88,13 @@
     --sys-purple: 285 85% 65%;
 
     --glass-bg: 240 6% 18%;
-    --glass-alpha: 0.38;
-    --glass-alpha-strong: 0.72;
+    --glass-alpha: 0.46;
+    --glass-alpha-strong: 0.76;
     --glass-stroke: 0 0% 100%;
-    --glass-stroke-alpha: 0.16;
+    --glass-stroke-alpha: 0.18;
     --glass-shadow: 0 12px 40px -10px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
-    --glass-specular: rgb(255 255 255 / 0.35);
-    --glass-inner-glow: rgb(255 255 255 / 0.08);
+    --glass-specular: rgb(255 255 255 / 0.4);
+    --glass-inner-glow: rgb(255 255 255 / 0.12);
 
     --blob-b: 287 70% 45%;
     --blob-c: 189 80% 38%;

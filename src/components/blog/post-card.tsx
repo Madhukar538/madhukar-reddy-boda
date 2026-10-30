@@ -12,8 +12,25 @@ export type CardPost = {
   tags: string[];
 };
 
+function getSpecialBadge(post: CardPost) {
+  if (post.slug === 'rtx-5090-vs-dgx-spark-local-llm-inference' || post.tags.includes('GPUs')) {
+    return <span className="chip chip-purple font-semibold">Benchmark</span>;
+  }
+  if (post.slug === 'hybrid-search-solr-bm25-vector-rrf') {
+    return <span className="chip chip-teal font-semibold">Interactive Lab</span>;
+  }
+  if (post.slug === 'rag-chatbot-latency-audit') {
+    return <span className="chip chip-green font-semibold">Case Study</span>;
+  }
+  if (post.tags.includes('k6') || post.category === 'Observability') {
+    return <span className="chip chip-orange font-semibold">Load Testing Suite</span>;
+  }
+  return null;
+}
+
 /** Glass card for a post; `featured` is the large lead card. */
 export function PostCard({ post, featured = false, className }: { post: CardPost; featured?: boolean; className?: string }) {
+  const badge = getSpecialBadge(post);
   return (
     <Link href={`/blog/${post.slug}`} className={cn('group block h-full', className)}>
       <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-10' : 'p-6 md:p-7')}>
@@ -22,6 +39,7 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
         )}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {featured && <span className="chip chip-accent">Latest</span>}
+          {badge}
           <span className="chip">{post.category}</span>
           <span className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">

@@ -32,6 +32,25 @@ const iconTint = {
   amber: 'text-[hsl(var(--sys-orange))] bg-[hsl(var(--sys-orange)/0.12)]',
 };
 
+const CORE_SKILLS = new Set([
+  'C#',
+  '.NET 10 / ASP.NET Core',
+  'Next.js 16 (App Router, ISR)',
+  'RAG',
+  'Semantic Kernel',
+  'Microsoft Agent Framework',
+  'MCP (Model Context Protocol)',
+  'Solr 9 (kNN, Suggester, MLT)',
+  'Hybrid BM25 + Vector (RRF)',
+  'pgvector',
+  'SQL Server',
+  'Redis',
+  'RabbitMQ',
+  'Docker',
+  'k6',
+  'Grafana',
+]);
+
 export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }) {
   return (
     <Section id="skills" title="Tech Stack" comment="Skills and technologies" data={skillCategories}>
@@ -48,11 +67,14 @@ export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }
             </div>
             {/* Phones: one swipeable row per group instead of a tall block of tags. */}
             <div className="skill-row flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1">
-              {skills.map((skill) => (
-                <span key={skill} className="chip">
-                  {skill}
-                </span>
-              ))}
+              {skills.map((skill) => {
+                const isCore = CORE_SKILLS.has(skill);
+                return (
+                  <span key={skill} className={isCore ? 'chip chip-accent font-semibold' : 'chip'}>
+                    {skill}
+                  </span>
+                );
+              })}
             </div>
           </div>
           );

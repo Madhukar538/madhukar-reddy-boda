@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, User, FlaskConical, Handshake, Mail, PenLine, Phone, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
+import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, FolderKanban, Search, Settings2, Tags, X } from 'lucide-react';
 import { openQuickSwitcher } from '@/lib/vault-client';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -14,24 +14,22 @@ import { LiquidLens } from '@/components/liquid-lens';
 import { OsModeToggle } from '@/components/os/os-mode';
 
 // Every page on the site — each one is its own URL.
-// The blog is the home page; the portfolio pages follow it.
 export const navLinks = [
-  { href: '/',           label: 'Blog',       icon: PenLine },
-  { href: '/topics',     label: 'Topics',     icon: Tags },
+  { href: '/',           label: 'Home',       icon: Home },
   { href: '/projects',   label: 'Projects',   icon: FolderKanban },
-  { href: '/lab',        label: 'Lab',        icon: FlaskConical },
   { href: '/experience', label: 'Experience', icon: Briefcase },
+  { href: '/lab',        label: 'Lab',        icon: FlaskConical },
+  { href: '/topics',     label: 'Topics',     icon: Tags },
   { href: '/about',      label: 'About',      icon: User },
 ];
 
 // Mobile tab bar — capped to 5 so it fits a 320px screen.
-// The Lab is reachable from About and the Projects page.
 const tabLinks = [
-  { href: '/',           label: 'Blog',    icon: PenLine },
-  { href: '/topics',     label: 'Topics',  icon: Tags },
-  { href: '/projects',   label: 'Work',    icon: FolderKanban },
-  { href: '/experience', label: 'Career',  icon: Briefcase },
-  { href: '/about',      label: 'About',   icon: User },
+  { href: '/',             label: 'Home',    icon: Home },
+  { href: '/projects',     label: 'Work',    icon: FolderKanban },
+  { href: '/experience',   label: 'Career',  icon: Briefcase },
+  { href: '/about',        label: 'About',   icon: User },
+  { href: '/work-with-me', label: 'Contact', icon: Handshake },
 ];
 
 export function isActivePath(pathname: string, href: string) {
@@ -146,6 +144,13 @@ export function Navbar({ contact }: { contact: NavContact }) {
             <OsModeToggle />
             <ThemeSwitcher />
             <ThemeToggle />
+            <Link
+              href="/work-with-me"
+              className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all ml-1.5"
+            >
+              <Handshake className="h-3.5 w-3.5" />
+              <span>Contact</span>
+            </Link>
           </div>
         </div>
       </header>
