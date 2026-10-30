@@ -905,7 +905,7 @@ details.callout[open] > summary::after { transform: rotate(90deg); }
 }
 /* Midnight: a deep midnight-blue bubble with a dark shadow. It doesn't follow the accent
    (a light accent like Graphite made it a pale, glaring ball on the dark page). */
-html:not([data-style]) :is(.genie-button, .genie-orb) { background: hsl(2 55% 42%); }
+html:not([data-style]) :is(.genie-button, .genie-orb) { background: hsl(356 55% 40%); }
 html:not([data-style]) .genie-button {
   box-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 0 0 1px rgb(255 255 255 / 0.08);
 }
@@ -947,8 +947,8 @@ html:not([data-style]) {
   --muted-foreground: 30 8% 60%;
   --border: 30 10% 16%;
   --input: 30 10% 16%;
-  /* Collar red, lifted a touch so it reads as text on the dark page */
-  --primary: 2 68% 58%;
+  /* Collar red: a crimson (not coral), lifted just enough to read as small text (4.6:1) */
+  --primary: 356 65% 57%;
   --primary-foreground: 0 0% 100%;
   --accent: var(--primary);
   --accent-foreground: var(--primary-foreground);
@@ -985,7 +985,7 @@ html:not([data-style])[data-accent='graphite'] { --primary: 35 10% 72%; }
 html:not([data-style]) .liquid-wallpaper {
   background-image:
     radial-gradient(ellipse 55% 60% at 82% 6%, hsl(35 45% 62% / 0.075), transparent 70%),
-    radial-gradient(ellipse 38% 32% at 78% 48%, hsl(2 60% 45% / 0.05), transparent 70%),
+    radial-gradient(ellipse 38% 32% at 78% 48%, hsl(356 60% 42% / 0.05), transparent 70%),
     radial-gradient(ellipse 130% 95% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.4));
 }
 html:not([data-style]) .liquid-wallpaper::after { opacity: 0.06; }
@@ -1443,7 +1443,7 @@ main h1 { view-transition-name: page-title; }
 }
 /* The accent tile in Midnight: the same deep blue as the genie, never a pale fill
    (a light accent like Graphite turned it into a glaring grey block). */
-html:not([data-style]) .glass.bento-accent { background: hsl(6 34% 24%); border-color: hsl(6 34% 32%); color: #fff; }
+html:not([data-style]) .glass.bento-accent { background: hsl(356 32% 22%); border-color: hsl(356 30% 30%); color: #fff; }
 html:not([data-style]) .glass.bento-accent * { color: #fff; }
 html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { background: rgb(255 255 255 / 0.14); }
 

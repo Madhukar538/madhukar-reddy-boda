@@ -2,5 +2,5 @@
 .l{fill:none;stroke:#EDE8E1;stroke-opacity:.09;stroke-width:1}
 .n{fill:#110F0D;stroke:#EDE8E1;stroke-opacity:.15;stroke-width:1}
 .t{fill:#EDE8E1;fill-opacity:.24;font:11px ui-monospace,'SF Mono',Menlo,Consolas,monospace;letter-spacing:.02em}
-.p{fill:#DD504B;fill-opacity:.75}
+.p{fill:#D94A54;fill-opacity:.75}
 </style><style>.e{font-size:8.5px;letter-spacing:.08em;fill-opacity:.2}</style><path class="l" d="M15 0 V1400"/><rect class="n" x="12.5" y="297.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(4 310) rotate(90)">rag-worker</text><rect class="n" x="12.5" y="647.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(4 660) rotate(90)">solr 9</text><rect class="n" x="12.5" y="997.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(4 1010) rotate(90)">llm · local</text><rect class="n" x="12.5" y="1347.5" width="5" height="5" rx="1"/><text class="t e" transform="translate(4 1360) rotate(90)">redis</text><circle r="1.8" class="p"><animateMotion dur="16s" begin="7s" repeatCount="indefinite" path="M15 0 V1400"/></circle></svg>

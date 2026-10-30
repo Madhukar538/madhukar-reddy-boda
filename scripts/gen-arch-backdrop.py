@@ -10,7 +10,7 @@ from pathlib import Path
 OUT = Path(__file__).resolve().parent.parent / 'public' / 'arch'
 INK = '#EDE8E1'      # Midnight --foreground
 PAGE = '#110F0D'     # Midnight --background
-RED = '#DD504B'      # Midnight --primary (the collar red)
+RED = '#D94A54'      # Midnight --primary (the collar red)
 W, H = 230, 1800     # side tile; repeats down the page
 NODE_W, NODE_H = 136, 32
 
