@@ -1,18 +1,45 @@
-# Portfolio API for Coolify (or any Docker host). The database is MongoDB Atlas.
+# Portfolio API and its MongoDB, for Coolify (or any Docker host).
 # Secrets come from the environment: set them in Coolify's environment
 # variables, never in this file.
 services:
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    # A small cache: the data set is small and the host is shared (default is half the RAM).
+    command: ["--wiredTigerCacheSizeGB", "0.25"]
+    # No ports: only the API, on this compose network, can reach the database.
+    environment:
+      # Root: for admin work by hand only (mongosh inside the container). The API never uses it.
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_ROOT_USERNAME:-root}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}"
+      # The API's own user (readWrite on portfolio only), created by mongo/init-app-user.js on first start.
+      MONGO_APP_USERNAME: "${MONGO_APP_USERNAME:-portfolio}"
+      MONGO_APP_PASSWORD: "${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD}"
+      MONGO_APP_DATABASE: "portfolio"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo/init-app-user.js:/docker-entrypoint-initdb.d/init-app-user.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
   api:
     build: .
     restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
     # Internal only: reach it through the Cloudflare Tunnel (Coolify's proxy or
     # cloudflared on this network). Publishing a host port would bypass
     # Cloudflare, and IsCloudflareTrusted would then let callers fake their IP.
     expose:
       - "8080"
     environment:
-      # The Atlas connection string, e.g. mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/?appName=Cluster0
-      Portfolio__Mongo__ConnectionString: "${MONGO_CONNECTION_STRING}"
+      # The mongo service above, as the API's own user. Use a URL-safe password (openssl rand -hex 32).
+      Portfolio__Mongo__ConnectionString: "mongodb://${MONGO_APP_USERNAME:-portfolio}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=portfolio"
       Portfolio__Mongo__Database: "portfolio"
       Portfolio__Security__JwtSigningKey: "${JWT_SIGNING_KEY}"
       Portfolio__Security__EncryptionKey: "${ENCRYPTION_KEY}"
@@ -25,8 +52,7 @@ services:
       Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
       # The deployed commit, reported by /health (Coolify: "Include Source Commit in Build").
       SOURCE_COMMIT: "${SOURCE_COMMIT:-}"
-      # Optional: keeps this server's IP on the Atlas access list (for a home IP that changes).
-      # An Atlas API key with the "Project Network Access Manager" role; leave empty to turn off.
-      Portfolio__Atlas__PublicKey: "${ATLAS_PUBLIC_KEY:-}"
-      Portfolio__Atlas__PrivateKey: "${ATLAS_PRIVATE_KEY:-}"
-      Portfolio__Atlas__ProjectId: "${ATLAS_PROJECT_ID:-}"
+
+volumes:
+  # The database files. Survives redeploys; removing this volume deletes the data.
+  mongo-data:

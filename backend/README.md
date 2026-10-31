@@ -60,7 +60,7 @@ All endpoints are `POST /api/{Name}` with a JSON body and return `{ returnCode, 
 - Sign-in endpoints are limited to 10 requests per minute per IP, with separate limits for admin, public and tracking traffic.
 - An unknown email takes as long as a wrong password, and gets the same message.
 
-**Passkey-only switch.** The document `settings` → `{ _id: "security" }` holds `IsPasswordLoginEnabled`. The API creates it on first start, with the value `true`. Set it to `false` by hand (for example in MongoDB Atlas → Browse Collections) and email + password + code sign-in stops at once: the sign-in page shows only the passkey button, and the API refuses `Login` and `VerifyMfa`. Set it back to `true` to allow passwords again. It is read on every request, so no restart is needed. While no passkey is registered the switch is ignored, so the admin can't be locked out.
+**Passkey-only switch.** The document `settings` → `{ _id: "security" }` holds `IsPasswordLoginEnabled`. The API creates it on first start, with the value `true`. Set it to `false` by hand (with `mongosh` in the `mongo` container, see **Deploy** below) and email + password + code sign-in stops at once: the sign-in page shows only the passkey button, and the API refuses `Login` and `VerifyMfa`. Set it back to `true` to allow passwords again. It is read on every request, so no restart is needed. While no passkey is registered the switch is ignored, so the admin can't be locked out.
 
 **Step-up.** Deleting a passkey or regenerating recovery codes needs a fresh authenticator code.
 
@@ -92,7 +92,7 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 | Variable | Notes |
 |---|---|
-| `Portfolio__Mongo__ConnectionString` | The MongoDB Atlas connection string (`mongodb+srv://…`). Use a database user limited to `readWrite` on the `portfolio` database. |
+| `Portfolio__Mongo__ConnectionString` | Set by `docker-compose.yaml` to the `mongo` service, as the API's own user (`readWrite` on `portfolio` only). Locally: `mongodb://localhost:27017`. |
 | `Portfolio__Security__JwtSigningKey` | `openssl rand -base64 48` |
 | `Portfolio__Security__EncryptionKey` | exactly 32 bytes: `openssl rand -base64 32` |
 | `Portfolio__Security__SetupToken` | `openssl rand -hex 32`, only until the admin is enrolled |
@@ -162,16 +162,52 @@ To change live data in a release: add a migration (and update `src/data/profile.
 
 ## Deploy (Coolify)
 
-`docker-compose.yaml` (Coolify's default name) runs the API; the data lives in MongoDB Atlas. Set `MONGO_CONNECTION_STRING`, `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` (and `SETUP_TOKEN` for the first run) in Coolify's environment variables. In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+`docker-compose.yaml` (Coolify's default name) runs two containers: the API and its MongoDB (`mongo:8.0`). The database has no published port and is reachable only from the API on the compose network, so there is no IP allow-list to keep up to date. Its files live in the `mongo-data` volume, which survives redeploys.
 
-**Atlas checklist**
+Set these in Coolify's environment variables:
 
-- **Home server with a changing IP:** let the API keep its own IP on the access list. In Atlas, create a project API key (Access Manager → Applications → API Keys) with only the **Project Network Access Manager** role, and set `ATLAS_PUBLIC_KEY`, `ATLAS_PRIVATE_KEY` and `ATLAS_PROJECT_ID` in Coolify. Every 30 seconds (`Portfolio__Atlas__CheckSeconds`) the API looks up its public IP; when it changes, the moment the database stops answering, and every 15 minutes anyway (`Portfolio__Atlas__ReconcileMinutes`), it adds the IP to the access list and removes the entries it added earlier (it only touches entries with the comment `portfolio-api (auto)`). If your organisation requires an IP access list for the Atlas Administration API itself, the key can't call Atlas from a new IP: turn that requirement off for this key's organisation or use a static IP.
-- If the database is unreachable at start (for example, before the IP is listed), the API still starts: `/health` answers with `"db": "down"` and the startup tasks (indexes, seed, migrations) retry in the background, from 10 seconds up to every 5 minutes, until they succeed.
+| Variable | Notes |
+|---|---|
+| `MONGO_ROOT_PASSWORD` | `openssl rand -hex 24`. Root, for admin work by hand only; the API never uses it. |
+| `MONGO_APP_PASSWORD` | `openssl rand -hex 32` (hex keeps it URL-safe). The API's own user, `readWrite` on `portfolio` only. |
+| `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | As in **Configuration** above. |
+| `SETUP_TOKEN` | Only for the first admin enrolment. |
 
-- **Network Access:** add your Coolify server's public IP. Avoid `0.0.0.0/0`, which lets anyone on the internet try your database password.
-- **Database Access:** give the API its own user with the built-in role `readWrite` on the `portfolio` database only, not `atlasAdmin` or "read and write to any database". Use a long generated password. Characters like `@ : / ?` in it must be URL-encoded in the connection string.
-- The API creates its indexes and imports `seed/content.json` into empty collections on first start. It never overwrites existing data.
-- Atlas encrypts connections with TLS and data at rest, and the free tier has no automatic backups. Export the `portfolio` database now and then (`mongodump`), or use a paid tier with backups.
+Both MongoDB users are created the first time the `mongo-data` volume is created (`mongo/init-app-user.js`). Changing the passwords later in Coolify does not change them in the database: change them with `mongosh` too (`db.changeUserPassword(...)`), or the API can't sign in.
+
+In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
+
+If the database is unreachable at start, the API still starts: `/health` answers with `"db": "down"` and the startup tasks (indexes, seed, migrations) retry in the background, from 10 seconds up to every 5 minutes, until they succeed.
+
+**Working with the data.** Coolify → the resource → Terminal → `mongo` container:
+
+```sh
+mongosh -u root -p          # asks for MONGO_ROOT_PASSWORD
+use portfolio
+db.settings.findOne({ _id: "security" })
+```
+
+**Backups.** Nothing backs this database up by itself. Take a dump now and then and keep it off the server:
+
+```sh
+# on the server: write a compressed dump into the container, then copy it out
+docker exec <mongo-container> sh -c 'mongodump -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --db portfolio --gzip --archive=/tmp/portfolio.gz'
+docker cp <mongo-container>:/tmp/portfolio.gz ./portfolio-$(date +%F).gz
+```
+
+Restore one with `mongorestore ... --gzip --archive=portfolio.gz --nsInclude 'portfolio.*' --drop`.
+
+**Moving from MongoDB Atlas.** Deploy once, so the empty database is seeded. Then replace it with your Atlas data, so admin users, passkeys, posts, comments, tickets and media come across:
+
+```sh
+# 1. From any machine Atlas allows (your laptop): dump the Atlas database
+mongodump --uri "mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/portfolio" --gzip --archive=atlas.gz
+# 2. Copy it to the server, then into the mongo container, and restore over the seed
+docker cp atlas.gz <mongo-container>:/tmp/atlas.gz
+docker exec <mongo-container> sh -c 'mongorestore -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --gzip --archive=/tmp/atlas.gz --nsInclude "portfolio.*" --drop'
+# 3. Restart the API so it rebuilds caches and indexes
+```
+
+`--drop` replaces each collection with the Atlas copy. Once the site works on the new database, delete the Atlas cluster and its database user.
 
 On first start the API creates its indexes and imports `seed/content.json` into any empty collection. It never overwrites existing data. Regenerate the seed from the site with `npx tsx --tsconfig tsconfig.json scripts/export-content.ts`.

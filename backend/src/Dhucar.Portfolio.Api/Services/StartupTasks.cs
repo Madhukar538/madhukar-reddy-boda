@@ -8,12 +8,12 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  30 Oct 2026
- * Modified Reason :  Runs the release's pending data migrations; keeps the API up and retries while the database is unreachable.
+ * Modified Date   :  31 Oct 2026
+ * Modified Reason :  Self-hosted MongoDB: no Atlas access-list sync while retrying
  * Layer           :  Services
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  On start: creates MongoDB indexes, seeds an empty database from the exported site content, and runs pending data migrations.
- *                    If the database can't be reached (e.g. the server's IP isn't on the Atlas access list yet), the API
+ *                    If the database can't be reached (e.g. its container is still starting), the API
  *                    still starts and these run in the background, retrying with backoff until they succeed.
  */
 public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks> logger) : IHostedService
@@ -56,8 +56,6 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
         {
             // Don't take the whole API down with the database: /health keeps answering (db: down) meanwhile.
             logger.LogWarning(ex, "Database unreachable at start; retrying startup tasks in the background");
-            // Maybe this server's IP isn't on the Atlas access list yet: sync it now rather than at the next check.
-            serviceProvider.GetRequiredService<AtlasSyncTrigger>().Request();
             _retrying = Task.Run(() => RetryUntilDone(_stopping.Token));
         }
     }
@@ -82,7 +80,6 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
             catch (Exception ex) when (ex is MongoException or TimeoutException)
             {
                 logger.LogWarning("Database still unreachable; next try in {Seconds} s", (int)wait.TotalSeconds);
-                serviceProvider.GetRequiredService<AtlasSyncTrigger>().Request();
                 wait = TimeSpan.FromTicks(Math.Min(wait.Ticks * 2, MaxRetry.Ticks));
             }
         }
