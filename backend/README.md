@@ -92,7 +92,8 @@ Settings live under `Portfolio`. In production, set them as environment variable
 
 | Variable | Notes |
 |---|---|
-| `Portfolio__Mongo__ConnectionString` | Set by `docker-compose.yaml` to the `mongo` service, as the API's own user (`readWrite` on `portfolio` only). Locally: `mongodb://localhost:27017`. |
+| `Portfolio__Mongo__ConnectionString` | Set by `docker-compose.yaml` to `mongodb://mongo:27017`. Locally: `mongodb://localhost:27017`. |
+| `Portfolio__Mongo__Username`, `Portfolio__Mongo__Password` | Optional sign-in, kept out of the connection string so the password needs no URL encoding. Set by `docker-compose.yaml` to the API's own user. |
 | `Portfolio__Security__JwtSigningKey` | `openssl rand -base64 48` |
 | `Portfolio__Security__EncryptionKey` | exactly 32 bytes: `openssl rand -base64 32` |
 | `Portfolio__Security__SetupToken` | `openssl rand -hex 32`, only until the admin is enrolled |
@@ -169,11 +170,11 @@ Set these in Coolify's environment variables:
 | Variable | Notes |
 |---|---|
 | `MONGO_ROOT_PASSWORD` | `openssl rand -hex 24`. Root, for admin work by hand only; the API never uses it. |
-| `MONGO_APP_PASSWORD` | `openssl rand -hex 32` (hex keeps it URL-safe). The API's own user, `readWrite` on `portfolio` only. |
+| `MONGO_APP_PASSWORD` | `openssl rand -hex 32`. The API's own user, `readWrite` on `portfolio` only. |
 | `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | As in **Configuration** above. |
 | `SETUP_TOKEN` | Only for the first admin enrolment. |
 
-On every start, the `mongo` container makes sure the API's user exists with the current `MONGO_APP_PASSWORD` (`mongo/entrypoint.sh` and `mongo/ensure-app-user.js`, built into the image by `mongo/Dockerfile`). Its health check passes only once that user can sign in, and the API waits for it. So changing `MONGO_APP_PASSWORD` in Coolify and redeploying just works. The root password is different: MongoDB sets it once, when the `mongo-data` volume is created, and the container needs it to manage the API's user. If it no longer matches, the `mongo` log says so; put the old one back, or remove the volume if it holds no data yet.
+On every start, before MongoDB opens to the network, the `mongo` container sets **both** users from these variables (`mongo/entrypoint.sh` and `mongo/set-users.js`, built into the image by `mongo/Dockerfile`). It does this on a private server with no access control, bound to `127.0.0.1:27018` inside the container, for a few seconds. So changing either password in Coolify and redeploying just works, without the old password. The health check passes only once the API's user can sign in, and the API waits for it. Passwords are passed as options, never inside a URL, so any characters work (hex is still easiest to copy).
 
 In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
 

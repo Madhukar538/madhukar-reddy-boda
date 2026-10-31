@@ -6,12 +6,12 @@ set -eu
 
 KEEP="${BACKUP_KEEP:-14}"
 AT="${BACKUP_AT_UTC:-21:00}" # 21:00 UTC is 02:30 in India: the quietest hour
-URI="mongodb://${MONGO_APP_USERNAME}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=portfolio"
 
 backup() {
   file="/backups/portfolio-$(date -u +%Y-%m-%dT%H%M%SZ).gz"
   # Written under a temporary name first, so a half-written dump never looks like a good one.
-  if mongodump --uri="$URI" --gzip --archive="$file.part" --quiet; then
+  if mongodump --host mongo --port 27017 --username "$MONGO_APP_USERNAME" --password "$MONGO_APP_PASSWORD" \
+      --authenticationDatabase portfolio --db portfolio --gzip --archive="$file.part" --quiet; then
     mv "$file.part" "$file"
     echo "backup: wrote $file ($(du -h "$file" | cut -f1))"
   else

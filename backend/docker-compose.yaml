@@ -10,10 +10,12 @@ services:
     command: ["--wiredTigerCacheSizeGB", "0.25"]
     # No ports: only the API, on this compose network, can reach the database.
     environment:
+      # Both users are set from these on every start (mongo/entrypoint.sh), so changing either
+      # password here and redeploying just works.
       # Root: for admin work by hand only (mongosh inside the container). The API never uses it.
       MONGO_INITDB_ROOT_USERNAME: "${MONGO_ROOT_USERNAME:-root}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}"
-      # The API's own user (readWrite on portfolio only), created or updated to match on every start.
+      # The API's own user (readWrite on portfolio only).
       MONGO_APP_USERNAME: "${MONGO_APP_USERNAME:-portfolio}"
       MONGO_APP_PASSWORD: "${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD}"
       MONGO_APP_DATABASE: "portfolio"
@@ -25,7 +27,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-      # A new volume creates root and restarts mongod before the API's user is set: give a slow host time.
+      # Setting the users first adds a few seconds to each start: give a slow host time.
       start_period: 60s
 
   # Nightly dump of the database into the mongo-backups volume, newest 14 kept (mongo/backup.sh).
@@ -57,9 +59,11 @@ services:
     expose:
       - "8080"
     environment:
-      # The mongo service above, as the API's own user. Use a URL-safe password (openssl rand -hex 32).
-      Portfolio__Mongo__ConnectionString: "mongodb://${MONGO_APP_USERNAME:-portfolio}:${MONGO_APP_PASSWORD}@mongo:27017/portfolio?authSource=portfolio"
+      # The mongo service above, as the API's own user (given apart, so any password works).
+      Portfolio__Mongo__ConnectionString: "mongodb://mongo:27017"
       Portfolio__Mongo__Database: "portfolio"
+      Portfolio__Mongo__Username: "${MONGO_APP_USERNAME:-portfolio}"
+      Portfolio__Mongo__Password: "${MONGO_APP_PASSWORD}"
       Portfolio__Security__JwtSigningKey: "${JWT_SIGNING_KEY}"
       Portfolio__Security__EncryptionKey: "${ENCRYPTION_KEY}"
       Portfolio__Security__SetupToken: "${SETUP_TOKEN:-}"

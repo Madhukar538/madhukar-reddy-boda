@@ -8,8 +8,8 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  18 Oct 2026
- * Modified Reason :  Covering indexes for the traffic reports; keeps warm connections to the cluster
+ * Modified Date   :  31 Oct 2026
+ * Modified Reason :  Optional username and password apart from the connection string
  * Layer           :  DataAccess
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
@@ -25,6 +25,11 @@ public class MongoContext
         // Keep a couple of connections open even when the site is quiet, so the first request after
         // a lull doesn't wait for a new connection.
         clientSettings.MinConnectionPoolSize = 2;
+        // Credentials given apart from the connection string need no URL encoding.
+        if (settings.Mongo.Username.Length > 0)
+        {
+            clientSettings.Credential = MongoCredential.CreateCredential(settings.Mongo.Database, settings.Mongo.Username, settings.Mongo.Password);
+        }
         MongoClient client = new MongoClient(clientSettings);
         Database = client.GetDatabase(settings.Mongo.Database);
         _retentionDays = Math.Clamp(settings.Tracking.RetentionDays, 1, 3650);

@@ -1,41 +1,32 @@
 #!/bin/bash
-# Starts MongoDB exactly as the official image does (which creates the root user on a new
-# volume), then, once the real server is up, makes sure the API's user matches the environment.
-set -u
+# Before MongoDB starts for real, sets the root and API users from the environment, so the
+# passwords in Coolify are always the ones that work: on a new volume, an old one, or after
+# either password changes (no old password needed). This happens on a private server with no
+# access control, bound to 127.0.0.1:27018 inside this container, for a few seconds. Then the
+# official entrypoint starts MongoDB as usual, with access control on (--auth).
+set -euo pipefail
 
-/usr/local/bin/docker-entrypoint.sh "$@" &
-mongo_pid=$!
-trap 'kill -TERM "$mongo_pid" 2>/dev/null' TERM INT
+prep_log=/tmp/set-users-mongod.log
+mongod_as_owner() { if [ "$(id -u)" = 0 ]; then gosu mongodb mongod "$@"; else mongod "$@"; fi; }
 
-# Where the image's temporary first-start server keeps its pid file (TMPDIR is usually unset).
-temp_pidfile="${TMPDIR:-}/docker-entrypoint-temp-mongod.pid"
-root_failures=0
-for _ in $(seq 1 150); do
-  kill -0 "$mongo_pid" 2>/dev/null || break
-  # Wait for the real server, not the temporary one the image runs while creating root.
-  if [ -e "$temp_pidfile" ] || ! mongosh --quiet --eval 'db.adminCommand({ ping: 1 }).ok' >/dev/null 2>&1; then
-    sleep 2
-    continue
-  fi
-  if mongosh --quiet --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" \
-      --authenticationDatabase admin /usr/local/share/mongo/ensure-app-user.js; then
-    break
-  fi
-  # Allow for the moment between the first start and the restart that follows it.
-  root_failures=$((root_failures + 1))
-  if [ "$root_failures" -ge 30 ]; then
-    echo "ensure-app-user: can't sign in as root. MONGO_ROOT_PASSWORD must be the one this volume was" \
-      "first created with; if the volume has no data yet, remove the mongo-data volume and redeploy." >&2
-    break
-  fi
-  sleep 2
+if [ "$(id -u)" = 0 ]; then
+  # The data must belong to the mongodb user, as the official entrypoint ensures too.
+  find -L /data/db /data/configdb \! -user mongodb -exec chown mongodb '{}' +
+fi
+
+mongod_as_owner --dbpath /data/db --bind_ip 127.0.0.1 --port 27018 --wiredTigerCacheSizeGB 0.25 \
+  --fork --logpath "$prep_log" >/dev/null
+for _ in $(seq 1 60); do
+  mongosh --quiet --port 27018 --eval 'db.adminCommand({ ping: 1 }).ok' >/dev/null 2>&1 && break
+  sleep 1
 done
+if ! mongosh --quiet --port 27018 /usr/local/share/mongo/set-users.js; then
+  echo "set-users: failed; see $prep_log" >&2
+  mongod_as_owner --dbpath /data/db --shutdown >/dev/null || true
+  exit 1
+fi
+mongod_as_owner --dbpath /data/db --shutdown >/dev/null
 
-# Exit with mongod's own status. A stop signal interrupts "wait" while mongod is still shutting
-# down, so keep waiting until it has really gone.
-status=0
-while kill -0 "$mongo_pid" 2>/dev/null; do
-  wait "$mongo_pid"
-  status=$?
-done
-exit "$status"
+# The volume is now initialised with both users, so the official entrypoint skips its own
+# first-start setup and just starts mongod with --auth.
+exec /usr/local/bin/docker-entrypoint.sh "$@"
