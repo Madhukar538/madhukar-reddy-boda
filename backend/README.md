@@ -173,7 +173,7 @@ Set these in Coolify's environment variables:
 | `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | As in **Configuration** above. |
 | `SETUP_TOKEN` | Only for the first admin enrolment. |
 
-Both MongoDB users are created the first time the `mongo-data` volume is created (`mongo/init-app-user.js`, built into the image by `mongo/Dockerfile`). Changing the passwords later in Coolify does not change them in the database: change them with `mongosh` too (`db.changeUserPassword(...)`), or the API can't sign in.
+On every start, the `mongo` container makes sure the API's user exists with the current `MONGO_APP_PASSWORD` (`mongo/entrypoint.sh` and `mongo/ensure-app-user.js`, built into the image by `mongo/Dockerfile`). Its health check passes only once that user can sign in, and the API waits for it. So changing `MONGO_APP_PASSWORD` in Coolify and redeploying just works. The root password is different: MongoDB sets it once, when the `mongo-data` volume is created, and the container needs it to manage the API's user. If it no longer matches, the `mongo` log says so; put the old one back, or remove the volume if it holds no data yet.
 
 In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
 

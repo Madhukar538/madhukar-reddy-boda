@@ -3,7 +3,7 @@
 # variables, never in this file.
 services:
   mongo:
-    # mongo:8.0 plus mongo/init-app-user.js and mongo/backup.sh (see mongo/Dockerfile).
+    # mongo:8.0 plus this app's scripts (see mongo/Dockerfile).
     build: ./mongo
     restart: unless-stopped
     # A small cache: the data set is small and the host is shared (default is half the RAM).
@@ -13,18 +13,19 @@ services:
       # Root: for admin work by hand only (mongosh inside the container). The API never uses it.
       MONGO_INITDB_ROOT_USERNAME: "${MONGO_ROOT_USERNAME:-root}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}"
-      # The API's own user (readWrite on portfolio only), created by mongo/init-app-user.js on first start.
+      # The API's own user (readWrite on portfolio only), created or updated to match on every start.
       MONGO_APP_USERNAME: "${MONGO_APP_USERNAME:-portfolio}"
       MONGO_APP_PASSWORD: "${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD}"
       MONGO_APP_DATABASE: "portfolio"
     volumes:
       - mongo-data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      # Passes only once the API's user can sign in.
+      test: ["CMD", "healthcheck.sh"]
       interval: 10s
       timeout: 10s
       retries: 10
-      # The first start creates the users and restarts mongod: give a slow host time.
+      # A new volume creates root and restarts mongod before the API's user is set: give a slow host time.
       start_period: 60s
 
   # Nightly dump of the database into the mongo-backups volume, newest 14 kept (mongo/backup.sh).
