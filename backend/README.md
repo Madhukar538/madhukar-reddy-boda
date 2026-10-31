@@ -187,15 +187,24 @@ use portfolio
 db.settings.findOne({ _id: "security" })
 ```
 
-**Backups.** Nothing backs this database up by itself. Take a dump now and then and keep it off the server:
+**Backups.** The `mongo-backup` container (`mongo/backup.sh`) dumps the `portfolio` database every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it can read `portfolio` and nothing else.
+
+The dumps sit on the same disk as the database, so copy one elsewhere now and then:
 
 ```sh
-# on the server: write a compressed dump into the container, then copy it out
-docker exec <mongo-container> sh -c 'mongodump -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --db portfolio --gzip --archive=/tmp/portfolio.gz'
-docker cp <mongo-container>:/tmp/portfolio.gz ./portfolio-$(date +%F).gz
+# on the server: the newest dump, out of the backup container
+docker exec <mongo-backup-container> sh -c 'ls -1t /backups/*.gz | head -1'
+docker cp <mongo-backup-container>:/backups/portfolio-2026-10-31T210000Z.gz .
 ```
 
-Restore one with `mongorestore ... --gzip --archive=portfolio.gz --nsInclude 'portfolio.*' --drop`.
+To restore one, copy it into the `mongo` container and replace the database with it:
+
+```sh
+docker cp portfolio-2026-10-31T210000Z.gz <mongo-container>:/tmp/restore.gz
+docker exec <mongo-container> sh -c 'mongorestore -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --gzip --archive=/tmp/restore.gz --nsInclude "portfolio.*" --drop'
+```
+
+Then restart the API.
 
 **Moving from MongoDB Atlas.** Deploy once, so the empty database is seeded. Then replace it with your Atlas data, so admin users, passkeys, posts, comments, tickets and media come across:
 

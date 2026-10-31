@@ -26,6 +26,24 @@ services:
       retries: 6
       start_period: 20s
 
+  # Nightly dump of the database into the mongo-backups volume, newest 14 kept (mongo/backup.sh).
+  mongo-backup:
+    image: mongo:8.0
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: ["sh", "/backup.sh"]
+    environment:
+      # Same limited user as the API: it can read the portfolio database and nothing else.
+      MONGO_APP_USERNAME: "${MONGO_APP_USERNAME:-portfolio}"
+      MONGO_APP_PASSWORD: "${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD}"
+      BACKUP_KEEP: "${BACKUP_KEEP:-14}"
+      BACKUP_AT_UTC: "${BACKUP_AT_UTC:-21:00}"
+    volumes:
+      - mongo-backups:/backups
+      - ./mongo/backup.sh:/backup.sh:ro
+
   api:
     build: .
     restart: unless-stopped
@@ -56,3 +74,5 @@ services:
 volumes:
   # The database files. Survives redeploys; removing this volume deletes the data.
   mongo-data:
+  # The nightly dumps. On the same disk as the data: copy them elsewhere now and then.
+  mongo-backups:
