@@ -74,7 +74,8 @@ public class ContentTests
         AdminSession session = await AdminSession.SignedIn(factory);
         ApiResult saved = await session.Client.Post("SavePost", Post("webhook-test", "<p>Hello</p>"), token: session.AccessToken);
         Assert.True(saved.Data.GetProperty("isRevalidated").GetBoolean());
-        (Uri url, Dictionary<string, string> headers, string body) = Assert.Single(factory.Site.Requests);
+        // Startup migrations send their own revalidation too; check the one for this save.
+        (Uri url, Dictionary<string, string> headers, string body) = Assert.Single(factory.Site.Requests, r => r.Body.Contains("post:webhook-test"));
         Assert.Equal("https://site.test/api/revalidate", url.ToString());
         Assert.Equal(RequestSigner.Sign(ApiFactory.RevalidateSecret, headers["X-Timestamp"], body), headers["X-Signature"]);
         string[] tags = JsonDocument.Parse(body).RootElement.GetProperty("tags").EnumerateArray().Select(x => x.GetString()!).ToArray();

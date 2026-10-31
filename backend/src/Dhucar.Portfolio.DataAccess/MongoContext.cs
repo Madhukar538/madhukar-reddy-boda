@@ -23,7 +23,7 @@ public class MongoContext
         PortfolioSettings settings = options.Value;
         MongoClientSettings clientSettings = MongoClientSettings.FromConnectionString(settings.Mongo.ConnectionString);
         // Keep a couple of connections open even when the site is quiet, so the first request after
-        // a lull doesn't pay for a fresh TLS handshake to the cluster.
+        // a lull doesn't wait for a new connection.
         clientSettings.MinConnectionPoolSize = 2;
         MongoClient client = new MongoClient(clientSettings);
         Database = client.GetDatabase(settings.Mongo.Database);

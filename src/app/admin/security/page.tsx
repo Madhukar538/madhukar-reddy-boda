@@ -198,7 +198,7 @@ function Security() {
             <Notice>It&apos;s switched off in the database, but stays on until you add a passkey, so you can&apos;t be locked out.</Notice>
           )}
           <p className="text-muted-foreground">
-            To change it: MongoDB Atlas → Browse Collections → <code>portfolio</code> → <code>settings</code> → the document with <code>_id: &quot;security&quot;</code> → set <code>IsPasswordLoginEnabled</code> to <code>false</code> (passkey only) or <code>true</code>. It applies straight away.
+            To change it, open a terminal on the <code>mongo</code> container (Coolify → the API resource → Terminal → <code>mongo</code>), run <code>mongosh -u root -p</code>, then <code>use portfolio</code> and <code>db.settings.updateOne(&#123; _id: &quot;security&quot; &#125;, &#123; $set: &#123; IsPasswordLoginEnabled: false &#125; &#125;)</code> (passkey only; <code>true</code> allows passwords again). It applies straight away.
           </p>
         </div>
       </Panel>

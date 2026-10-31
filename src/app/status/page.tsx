@@ -5,7 +5,7 @@ import { probeApi, uptimeMonitors, type Beat, type Monitor } from '@/lib/status'
 
 export const metadata: Metadata = {
   title: 'System status — Boda Madhukar Reddy',
-  description: 'Live status of this site: Cloudflare, the Next.js front end, the .NET API and MongoDB Atlas, with response times, uptime and the last deploys.',
+  description: 'Live status of this site: Cloudflare, the Next.js front end, the .NET API and MongoDB, with response times, uptime and the last deploys.',
   alternates: { canonical: '/status' },
 };
 
@@ -63,7 +63,7 @@ export default async function StatusPage() {
     },
     {
       name: 'mongodb',
-      role: 'atlas',
+      role: 'self-hosted',
       state: api?.db === 'ok' ? 'up' : api?.db === 'down' ? 'down' : 'unknown',
       detail: api?.db === 'ok' ? `${api.dbMs} ms` : api?.db === 'down' ? 'not responding' : 'unknown',
     },
@@ -134,7 +134,7 @@ export default async function StatusPage() {
             {api?.commit && <span className="text-muted-foreground"> · {short(api.commit) ?? api.commit}</span>}
           </dd>
           <dt className="text-muted-foreground">stack</dt>
-          <dd className="text-foreground/85">Next.js 16 · .NET 8 · MongoDB Atlas · Cloudflare Tunnel · Coolify</dd>
+          <dd className="text-foreground/85">Next.js 16 · .NET 8 · MongoDB · Cloudflare Tunnel · Coolify</dd>
         </dl>
       </section>
     </div>

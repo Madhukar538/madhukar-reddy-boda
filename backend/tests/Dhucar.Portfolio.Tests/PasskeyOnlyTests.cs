@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Dhucar.Portfolio.Tests;
 
-/// <summary>The owner's database switch settings/security.IsPasswordLoginEnabled, flipped exactly as in Atlas.</summary>
+/// <summary>The owner's database switch settings/security.IsPasswordLoginEnabled, flipped by hand in the database.</summary>
 public class PasskeyOnlyTests
 {
     private static async Task SetPasswordLogin(ApiFactory factory, bool isEnabled)

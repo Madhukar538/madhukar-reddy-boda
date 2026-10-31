@@ -6,8 +6,8 @@ namespace Dhucar.Portfolio.Api.Services;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  30 Oct 2026
- * Modified Reason :  Leaves the optional Atlas access-list sync to log, not block startup
+ * Modified Date   :  31 Oct 2026
+ * Modified Reason :  Self-hosted MongoDB: Atlas settings removed
  * Layer           :  Services
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Fails startup when security-critical settings are missing or weak.
@@ -67,7 +67,6 @@ public class PortfolioSettingsValidator : IValidateOptions<PortfolioSettings>
         {
             failures.Add("Token lifetimes must be 1-60 minutes (access) and 1-30 days (refresh).");
         }
-        // Portfolio:Atlas is optional and never blocks startup: AtlasAccessListSync logs what is missing instead.
         return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
     }
 
