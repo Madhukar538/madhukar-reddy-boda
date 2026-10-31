@@ -173,7 +173,7 @@ Set these in Coolify's environment variables:
 | `JWT_SIGNING_KEY`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | As in **Configuration** above. |
 | `SETUP_TOKEN` | Only for the first admin enrolment. |
 
-Both MongoDB users are created the first time the `mongo-data` volume is created (`mongo/init-app-user.js`). Changing the passwords later in Coolify does not change them in the database: change them with `mongosh` too (`db.changeUserPassword(...)`), or the API can't sign in.
+Both MongoDB users are created the first time the `mongo-data` volume is created (`mongo/init-app-user.js`, built into the image by `mongo/Dockerfile`). Changing the passwords later in Coolify does not change them in the database: change them with `mongosh` too (`db.changeUserPassword(...)`), or the API can't sign in.
 
 In Coolify, set the API service's domain to `https://api.dhucar.in` (container port 8080) so the tunnel reaches it through Coolify's proxy. No host port is published: the API must be reachable only through Cloudflare.
 
@@ -187,7 +187,7 @@ use portfolio
 db.settings.findOne({ _id: "security" })
 ```
 
-**Backups.** The `mongo-backup` container (`mongo/backup.sh`) dumps the `portfolio` database every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it can read `portfolio` and nothing else.
+**Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps the `portfolio` database every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it can read `portfolio` and nothing else.
 
 The dumps sit on the same disk as the database, so copy one elsewhere now and then:
 
