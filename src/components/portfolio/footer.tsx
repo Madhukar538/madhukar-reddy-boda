@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Github, Linkedin, Mail } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
 import { BuildStamp } from '@/components/portfolio/build-stamp';
+import { AwardBadge } from '@/components/portfolio/award-badge';
+import { awards } from '@/data/awards';
 
 const pages = [
   { href: '/', label: 'Blog' },
@@ -33,6 +35,13 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
           <div className="space-y-1">
             <p className="text-xl font-bold tracking-tight text-foreground">Boda Madhukar Reddy</p>
             <p className="text-sm text-muted-foreground">Senior Software Engineer · Hyderabad, India</p>
+            {awards.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-3">
+                {awards.map((award) => (
+                  <AwardBadge key={award.url} award={award} />
+                ))}
+              </div>
+            )}
           </div>
           <nav aria-label="Footer" className="grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
             {pages.map((p) => (

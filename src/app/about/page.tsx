@@ -4,6 +4,7 @@ import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
+import { Recognition } from '@/components/portfolio/recognition';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 
@@ -66,6 +67,7 @@ export default async function AboutPage() {
         <Summary />
         <Skills skillCategories={content.skillCategories} />
         <Education education={content.education} />
+        <Recognition />
       </div>
     </div>
     </>

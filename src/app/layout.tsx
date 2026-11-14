@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { awards } from '@/data/awards';
 import { Inter, Instrument_Serif, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -114,6 +115,7 @@ export default async function RootLayout({
           '@type': 'EducationalOrganization',
           name: education.institution,
         },
+        award: awards.map((a) => `${a.body} ${a.title}, ${a.project} (${a.month})`),
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Hyderabad',
