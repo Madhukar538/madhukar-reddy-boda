@@ -216,3 +216,9 @@ export type MediaItem = {
   uploadedBy: string;
   uploadedAt: string;
 };
+
+/** GetThemes: every registered theme, with the enabled ones and the default marked. */
+export type ThemeSettings = {
+  defaultTheme: string;
+  themes: { id: string; label: string; hint: string; isEnabled: boolean; isDefault: boolean }[];
+};

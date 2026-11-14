@@ -1,20 +1,29 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Palette } from 'lucide-react';
 import { useDesignStyle, type DesignStyle } from '@/lib/design-style';
 import { cn } from '@/lib/utils';
 
 /**
- * Every theme a visitor can pick. Add a theme here (and its CSS under
- * html[data-style='<id>'] in globals.css) and it shows up in the picker.
+ * How each theme looks in the picker. Which ones are offered, and the default, are set in the
+ * admin (Themes) and come from the API (lib/content getThemeSettings). A new theme needs its CSS
+ * under html[data-style='<id>'] in globals.css, an entry here, and one in the API's ThemeBAL.Registry.
  */
 export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: string }[] = [
-  { id: 'terminal', label: 'Terminal', hint: 'Light · default', swatch: 'linear-gradient(135deg, #F7F7F4 50%, #C6F432 50%)' },
+  { id: 'terminal', label: 'Terminal', hint: 'Light', swatch: 'linear-gradient(135deg, #F7F7F4 50%, #C6F432 50%)' },
   { id: 'midnight', label: 'Midnight', hint: 'Warm dark', swatch: 'linear-gradient(135deg, #110F0D 50%, #D94A54 50%)' },
   { id: 'glass', label: 'Glass', hint: 'Liquid glass', swatch: 'linear-gradient(135deg, #7DD3FC, #F0ABFC, #FDE68A)' },
 ];
+
+type ThemeOptions = { defaultTheme: DesignStyle; enabled: DesignStyle[] };
+const ThemeOptionsContext = createContext<ThemeOptions>({ defaultTheme: 'terminal', enabled: THEMES.map((t) => t.id) });
+
+/** Hands the admin's theme settings (read on the server) to every picker on the page. */
+export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions; children: ReactNode }) {
+  return <ThemeOptionsContext.Provider value={value}>{children}</ThemeOptionsContext.Provider>;
+}
 
 const MENU_W = 208;
 const MENU_H = 210;
@@ -27,11 +36,13 @@ const GAP = 8;
  */
 export function LookToggle({ className }: { className?: string }) {
   const [look, setLook] = useDesignStyle();
+  const { defaultTheme, enabled } = useContext(ThemeOptionsContext);
+  const themes = THEMES.filter((t) => enabled.includes(t.id));
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
-  const current = THEMES.find((t) => t.id === look) ?? THEMES[0];
+  const current = themes.find((t) => t.id === look) ?? themes[0] ?? THEMES[0];
 
   // Below the button when there is room, otherwise above; right edges aligned, kept on screen.
   useLayoutEffect(() => {
@@ -72,6 +83,9 @@ export function LookToggle({ className }: { className?: string }) {
     };
   }, [open]);
 
+  // One theme on offer: nothing to pick.
+  if (themes.length < 2) return null;
+
   return (
     <>
       <button
@@ -100,7 +114,7 @@ export function LookToggle({ className }: { className?: string }) {
             style={{ top: pos.top, left: pos.left, width: MENU_W }}
           >
             <p className="px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-muted-foreground">Theme</p>
-            {THEMES.map((theme) => {
+            {themes.map((theme) => {
               const selected = theme.id === look;
               return (
                 <button
@@ -120,7 +134,10 @@ export function LookToggle({ className }: { className?: string }) {
                   <span aria-hidden className="h-5 w-5 shrink-0 rounded-md ring-1 ring-foreground/20" style={{ background: theme.swatch }} />
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold leading-tight">{theme.label}</span>
-                    <span className="block text-[11px] text-muted-foreground">{theme.hint}</span>
+                    <span className="block text-[11px] text-muted-foreground">
+                      {theme.hint}
+                      {theme.id === defaultTheme && ' · default'}
+                    </span>
                   </span>
                   {selected && <Check aria-hidden className="h-3.5 w-3.5 text-primary" />}
                 </button>

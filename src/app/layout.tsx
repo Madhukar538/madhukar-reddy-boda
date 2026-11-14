@@ -17,7 +17,8 @@ import { HoverPreview } from '@/components/vault/hover-preview';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { caseStudyFor } from '@/data/case-studies';
 import { chunkReloadScript } from '@/lib/chunk-reload';
-import { getContent } from '@/lib/content';
+import { getContent, getThemeSettings } from '@/lib/content';
+import { ThemeOptionsProvider } from '@/components/look-toggle';
 import { TrackingBeacon } from '@/components/tracking-beacon';
 import { GenieLauncher } from '@/components/genie/genie-launcher';
 
@@ -60,10 +61,12 @@ const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', st
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['500', '600', '700'], display: 'swap', variable: '--font-grotesk' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
-// Terminal is the default look (rendered on <html>); Midnight is the backup a visitor can pick
-// with the look toggle (lib/design-style). Apply a stored Midnight before first paint, and clear
-// any other stored look or accent from earlier versions of the site.
-const accentScript = `try{localStorage.removeItem('portfolio-accent');var s=localStorage.getItem('portfolio-style');if(s==='midnight'){document.documentElement.removeAttribute('data-style')}else if(s&&s!=='terminal'){localStorage.removeItem('portfolio-style')}}catch(e){}`;
+// The theme the site opens in, and the ones visitors can pick, are set in the admin (Themes).
+// The default is rendered on <html>; before first paint this applies a visitor's own choice if that
+// theme is still enabled (forgetting it otherwise), and clears accents saved by older versions.
+// No data-style attribute means Midnight.
+const themeScript = (enabled: string[], fallback: string) =>
+  `try{localStorage.removeItem('portfolio-accent');var e=${JSON.stringify(enabled)},t=${JSON.stringify(fallback)},s=localStorage.getItem('portfolio-style'),h=document.documentElement;if(s&&e.indexOf(s)<0){localStorage.removeItem('portfolio-style');s=null}t=s||t;if(t==='midnight'){h.removeAttribute('data-style')}else{h.setAttribute('data-style',t)}}catch(e){}`;
 // Runs after next-themes' own script, which may have set the other theme: Midnight is dark-only, Terminal light-only.
 const midnightDarkScript = `try{var d=document.documentElement,t=d.getAttribute('data-style')==='terminal';if(t||!d.hasAttribute('data-style')){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
 
@@ -72,7 +75,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { profile, socialLinks, education, keyProjects, posts } = await getContent();
+  const [{ profile, socialLinks, education, keyProjects, posts }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   // The top bar's mega menus (components/portfolio/nav-menu.tsx).
   const menu = {
     projects: keyProjects.filter((p) => p.featured).concat(keyProjects.filter((p) => !p.featured)).slice(0, 3).map((p) => {
@@ -158,9 +161,9 @@ export default async function RootLayout({
     ],
   };
   return (
-    <html lang="en" data-style="terminal" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+    <html lang="en" data-style={themes.defaultTheme === 'midnight' ? undefined : themes.defaultTheme} className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: accentScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript(themes.enabled, themes.defaultTheme) }} />
         <script dangerouslySetInnerHTML={{ __html: chunkReloadScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       </head>
@@ -174,6 +177,7 @@ export default async function RootLayout({
           <script dangerouslySetInnerHTML={{ __html: midnightDarkScript }} />
           <MidnightDark />
           <ViewTransitions />
+          <ThemeOptionsProvider value={themes}>
           <MotionProvider>
           <OsModeProvider>
             <LiquidWallpaper />
@@ -191,6 +195,7 @@ export default async function RootLayout({
             <GenieLauncher email={profile.email} />
           </OsModeProvider>
           </MotionProvider>
+          </ThemeOptionsProvider>
         </ThemeProvider>
       </body>
     </html>

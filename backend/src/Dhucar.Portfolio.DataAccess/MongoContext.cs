@@ -71,6 +71,9 @@ public class MongoContext
     /// <summary>Owner-edited switches (one document, _id "security").</summary>
     public IMongoCollection<SecuritySettingsDocument> Settings => Database.GetCollection<SecuritySettingsDocument>("settings");
 
+    /// <summary>The theme settings: one document, id "themes".</summary>
+    public IMongoCollection<ThemeSettingsDocument> Themes => Database.GetCollection<ThemeSettingsDocument>("themes");
+
     /// <summary>Per-post reads and reactions.</summary>
     public IMongoCollection<PostStatsDocument> PostStats => Database.GetCollection<PostStatsDocument>("postStats");
 

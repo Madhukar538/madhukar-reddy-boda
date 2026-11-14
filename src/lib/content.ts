@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache';
 import { blogs, readTime, type BlogPost } from '@/data/blogs';
 import * as builtIn from '@/data/profile';
 import type { ClientProject, Experiment, ProjectCard, SkillCategory, Status } from '@/data/profile';
+import type { DesignStyle } from '@/lib/design-style';
 
 /**
  * Where the site's content comes from. With API_URL set, posts, projects and
@@ -32,7 +33,7 @@ export type SiteContent = {
 };
 
 /** Content tags the API revalidates; post:<slug> tags are accepted too. */
-export const CONTENT_TAGS = ['posts', 'projects', 'profile'] as const;
+export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes'] as const;
 
 const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
@@ -63,6 +64,7 @@ type ApiProject = {
   id: string; kind: 'key' | 'client' | 'lab'; title: string; description: string; tech: string[]; post: string;
   isFeatured: boolean; outcome: string; status: string; client: string; role: string; duration: string; url: string; responsibilities: string[];
 };
+type ApiThemes = { defaultTheme: string; themes: { id: string; isEnabled: boolean }[] };
 type ApiProfile = Omit<Profile, 'nowUpdatedAt'> & { nowUpdatedAt?: string | null; skillCategories: SkillCategory[]; experience: Experience; education: Education };
 
 const apiBase = () => (process.env.API_URL || '').replace(/\/$/, '');
@@ -86,6 +88,7 @@ const SAFETY_REFRESH_SECONDS = 300;
 const loadPosts = unstable_cache(() => callApi<ApiPost[]>('GetPosts'), ['api', 'posts'], { tags: ['posts'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadProjects = unstable_cache(() => callApi<ApiProject[]>('GetProjects'), ['api', 'projects'], { tags: ['projects'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadProfile = unstable_cache(() => callApi<ApiProfile>('GetProfile'), ['api', 'profile'], { tags: ['profile'], revalidate: SAFETY_REFRESH_SECONDS });
+const loadThemes = unstable_cache(() => callApi<ApiThemes>('GetThemes'), ['api', 'themes'], { tags: ['themes'], revalidate: SAFETY_REFRESH_SECONDS });
 
 // Warn once per section until it recovers, not once per page.
 const failing = new Set<string>();
@@ -162,4 +165,22 @@ export const getContent = cache(async (): Promise<SiteContent> => {
     ...(projects ? toProjects(projects) : {}),
     ...(profile ? toProfile(profile) : {}),
   };
+});
+
+/** Themes the site has styles for (components/look-toggle.tsx lists how each looks in the picker). */
+export const KNOWN_THEMES: DesignStyle[] = ['terminal', 'midnight', 'glass'];
+
+/** Which themes visitors can pick and which one the site opens in, set in the admin (Themes). */
+export type ThemeSettings = { defaultTheme: DesignStyle; enabled: DesignStyle[] };
+
+/** Without the API, or until it answers: every theme, opening in Terminal. */
+const BUILT_IN_THEMES: ThemeSettings = { defaultTheme: 'terminal', enabled: KNOWN_THEMES };
+
+export const getThemeSettings = cache(async (): Promise<ThemeSettings> => {
+  if (!apiBase()) return BUILT_IN_THEMES;
+  const api = await attempt('themes', loadThemes);
+  const enabled = KNOWN_THEMES.filter((id) => api?.themes.some((t) => t.id === id && t.isEnabled));
+  if (!api || enabled.length === 0) return BUILT_IN_THEMES;
+  const defaultTheme = enabled.find((id) => id === api.defaultTheme) ?? enabled[0];
+  return { defaultTheme, enabled };
 });
