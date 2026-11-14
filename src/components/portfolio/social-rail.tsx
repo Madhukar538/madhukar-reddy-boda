@@ -58,16 +58,21 @@ function usePresence() {
 
 /**
  * Docks the profile card (html[data-profile-docked], styled in globals.css)
- * whenever the big portrait isn't on screen: on pages without one, in looks
- * that hide it, and on Home and About once it has mostly scrolled away.
+ * whenever no photo of Madhukar is on screen: the big Midnight portrait, or in
+ * the other looks the hero's own avatar or profile card (.portrait-alt). So it
+ * shows on pages without one, and on Home and About once it has mostly
+ * scrolled away, never next to a photo that is already showing.
  */
 function useProfileDock(pathname: string) {
   useEffect(() => {
     const root = document.documentElement;
     const update = () => {
-      const portrait = document.querySelector('.portrait-frame');
-      const visible = portrait !== null && portrait.getClientRects().length > 0;
-      const docked = !visible || portrait.getBoundingClientRect().bottom < window.innerHeight * 0.4;
+      const shown = (el: Element) => el.getClientRects().length > 0;
+      const portrait = [...document.querySelectorAll('.portrait-frame, .portrait-alt')].find(shown);
+      // The big Midnight portrait counts as gone once mostly scrolled away; a small avatar or
+      // profile card (.portrait-alt) only once it has left the screen completely.
+      const gone = portrait?.classList.contains('portrait-frame') ? window.innerHeight * 0.4 : 0;
+      const docked = !portrait || portrait.getBoundingClientRect().bottom < gone;
       root.toggleAttribute('data-profile-docked', docked);
     };
     let frame = 0;
@@ -159,9 +164,9 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
       {/* Drawn as a node of the architecture diagram behind it: a service header,
           the portrait, then a spec sheet in mono. */}
       <aside aria-label="About Madhukar" className="profile-dock glass overflow-hidden">
-        <p className="flex items-center justify-between border-b border-foreground/10 px-4 py-2 font-mono text-[0.7rem] text-muted-foreground">
-          <span>profile.svc</span>
-          <span className="flex items-center gap-1.5" data-presence={presence?.tone}>
+        <p className="profile-dock-bar flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 border-b border-foreground/10 px-4 py-2 font-mono text-[0.7rem] text-muted-foreground">
+          <span className="flex items-center"><span aria-hidden className="agent-console-lights"><span /><span /><span /></span>profile.svc</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap" data-presence={presence?.tone}>
             <span aria-hidden className="presence-dot" /> {presence?.label ?? '···'}
           </span>
         </p>
@@ -169,15 +174,15 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
           <div className="profile-dock-photo">
             <Image src="/portrait-cutout.webp" alt="" fill quality={90} sizes="256px" className="object-cover object-[50%_12%]" />
           </div>
-          <div className="-mt-6 px-4">
-            <p className="font-serif text-[1.65rem] leading-[1.05] text-foreground group-hover:text-primary transition-colors">{profile.name}</p>
+          <div className="profile-dock-id -mt-6 px-4">
+            <p className="profile-dock-name font-serif text-[1.65rem] leading-[1.05] text-foreground group-hover:text-primary transition-colors">{profile.name}</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
               {profile.title} · {profile.company.split(' ')[0]}
             </p>
           </div>
         </Link>
 
-        <dl className="mx-4 mt-4 grid grid-cols-[4.25rem_1fr] gap-y-1.5 border-t border-foreground/10 pt-3.5 font-mono text-[0.72rem]">
+        <dl className="profile-dock-spec mx-4 mt-4 grid grid-cols-[4.25rem_1fr] gap-y-1.5 border-t border-foreground/10 pt-3.5 font-mono text-[0.72rem]">
           <dt className="text-muted-foreground">loc</dt>
           <dd className="text-foreground/85">Hyderabad, IN</dd>
           <dt className="text-muted-foreground">time</dt>
@@ -185,22 +190,22 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
           <dt className="text-muted-foreground">stack</dt>
           <dd className="text-foreground/85">.NET · RAG · MCP</dd>
           <dt className="text-muted-foreground">status</dt>
-          <dd className="text-primary">open to work</dd>
+          <dd><span className="profile-dock-status text-primary">open to work</span></dd>
           <dt className="text-muted-foreground">hours</dt>
           <dd className="text-foreground/85">Mon–Fri · {WORK_START}–{WORK_END} IST</dd>
         </dl>
 
         <div className="mx-4 mt-3.5 border-t border-foreground/10 pt-3.5">
-          <p className="font-mono text-[0.7rem] text-muted-foreground">
+          <p className="profile-dock-now font-mono text-[0.7rem] text-muted-foreground">
             now{profile.nowUpdatedAt && <span> · {nowDate(profile.nowUpdatedAt)}</span>}
           </p>
           <p className="mt-1.5 text-sm leading-relaxed text-foreground/85">{profile.now}</p>
         </div>
 
-        <div className="mt-4 grid grid-cols-[1fr_auto] border-t border-foreground/10 text-sm">
+        <div className="profile-dock-foot mt-4 grid grid-cols-[1fr_auto] border-t border-foreground/10 text-sm">
           <Link
             href="/work-with-me"
-            className="flex items-center justify-between px-4 py-3 font-medium text-foreground transition-colors hover:bg-foreground/5 hover:text-primary"
+            className="profile-dock-cta flex items-center justify-between px-4 py-3 font-medium text-foreground transition-colors hover:bg-foreground/5 hover:text-primary"
           >
             Work with me <ArrowRight aria-hidden className="h-4 w-4" />
           </Link>

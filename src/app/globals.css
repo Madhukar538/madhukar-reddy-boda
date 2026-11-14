@@ -1805,3 +1805,219 @@ html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { backgrou
   .agent-console-led { animation: none; }
   .agent-console-led { opacity: 1; }
 }
+
+/* ============================================================
+   TERMINAL: the default look (html[data-style='terminal'], set on
+   the server). Light grid paper, ink outlines with hard offset
+   shadows, a lime highlighter and violet labels; Space Grotesk
+   headings, JetBrains Mono for anything that reads like a terminal.
+   Midnight (no data-style) is the backup; the picker is
+   components/look-toggle.tsx.
+   ============================================================ */
+html[data-style='terminal'] {
+  color-scheme: light;
+  --background: 60 14% 96%;        /* #F7F7F4 paper */
+  --foreground: 240 7% 6%;         /* #0E0E10 ink */
+  --card: 0 0% 100%;
+  --card-foreground: 240 7% 6%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 7% 6%;
+  --secondary: 60 13% 94%;
+  --secondary-foreground: 240 7% 6%;
+  --muted: 60 13% 94%;
+  --muted-foreground: 60 4% 32%;   /* #55554F */
+  --border: 60 6% 82%;             /* #D4D4CE */
+  --input: 60 6% 82%;
+  --primary: 251 90% 58%;          /* #5B3BF5 violet: labels, links */
+  --primary-foreground: 0 0% 100%;
+  --accent: var(--primary);
+  --accent-foreground: 0 0% 100%;
+  --ring: 251 90% 58%;
+  --lime: 75 90% 58%;              /* #C6F432 highlighter */
+  --ink: 240 7% 6%;
+  --glass-radius: 1rem;
+  --blob-opacity: 0;
+  --sys-green: 142 72% 30%;
+  --sys-orange: 32 90% 36%;
+  --sys-teal: 186 80% 28%;
+  --sys-indigo: 251 70% 50%;
+  --sys-pink: 330 70% 42%;
+  --sys-purple: 251 80% 52%;
+}
+html[data-style='terminal'] ::selection { background: hsl(var(--lime)); color: hsl(var(--ink)); }
+html[data-style='terminal'] body {
+  background-color: hsl(var(--background));
+  background-image:
+    linear-gradient(#E6E6E0 1px, transparent 1px),
+    linear-gradient(90deg, #E6E6E0 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+html[data-style='terminal'] .liquid-wallpaper { display: none; }
+html[data-style='terminal'] :is(.card-glow, .avatar-glow) { display: none; }
+html[data-style='terminal'] .text-gradient { background: none; -webkit-text-fill-color: currentColor; color: hsl(var(--ink)); }
+
+/* Type: Space Grotesk, heavy and tight. Emphasis is a lime highlighter stroke. */
+html[data-style='terminal'] :is(h1, h2, h3) {
+  font-family: var(--font-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+html[data-style='terminal'] h1 { letter-spacing: -0.045em; line-height: 0.98; }
+html[data-style='terminal'] :is(h1, h2) em {
+  font-style: normal;
+  color: hsl(var(--ink));
+  background: linear-gradient(transparent 58%, hsl(var(--lime)) 58%);
+  padding: 0 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+html[data-style='terminal'] .eyebrow {
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  font-weight: 500;
+  color: hsl(var(--primary));
+}
+html[data-style='terminal'] .eyebrow::before { content: '// '; }
+html[data-style='terminal'] dl dd { font-family: var(--font-grotesk), 'Space Grotesk', sans-serif; letter-spacing: -0.03em; }
+
+/* Surfaces: white cards, an ink outline and a hard offset shadow. */
+html[data-style='terminal'] :is(.glass, .glass-strong) {
+  background: #fff;
+  border: 1.5px solid hsl(var(--ink));
+  box-shadow: 3px 3px 0 hsl(var(--ink));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html[data-style='terminal'] .glass-interactive { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+@media (hover: hover) {
+  html[data-style='terminal'] .glass-interactive:hover {
+    transform: translate(-2px, -2px);
+    border-color: hsl(var(--ink));
+    box-shadow: 5px 5px 0 hsl(var(--ink));
+  }
+}
+html[data-style='terminal'] .glass-interactive:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 hsl(var(--ink)); }
+html[data-style='terminal'] .glass-inset { background: #FAFAF7; border: 1px solid #E2E2DC; }
+html[data-style='terminal'] [class*='shadow-[inset_0_1px_0'] { box-shadow: none; }
+
+/* Chips read like flags on a command line. */
+html[data-style='terminal'] .chip {
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  font-weight: 500;
+  color: hsl(var(--ink));
+  background: #fff;
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+}
+html[data-style='terminal'] .chip-accent { background: hsl(var(--lime)); color: hsl(var(--ink)); box-shadow: inset 0 0 0 1.5px hsl(var(--ink)); font-weight: 700; }
+
+/* The main button: ink, with a lime offset shadow outlined in ink. */
+html[data-style='terminal'] .tinted-button {
+  border-radius: 0.75rem;
+  color: #fff;
+  background: hsl(var(--ink));
+  box-shadow: 3px 3px 0 hsl(var(--lime)), 3px 3px 0 1.5px hsl(var(--ink));
+}
+html[data-style='terminal'] .tinted-button:hover { filter: none; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 hsl(var(--lime)), 4px 4px 0 1.5px hsl(var(--ink)); }
+
+/* Navigation: mono links, the current page on a lime tab. */
+html[data-style='terminal'] .nav-link { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; border-radius: 0.5rem; color: hsl(var(--ink) / 0.75); }
+html[data-style='terminal'] .nav-link[data-active] { background: hsl(var(--lime)); color: hsl(var(--ink)); }
+html[data-style='terminal'] .nav-link[data-active]::after { display: none; }
+html[data-style='terminal'] .nav-active-pill { background: hsl(var(--lime)) !important; }
+
+/* Home hero: the text on the left, the agent console beside it from lg up. */
+@media (min-width: 1024px) {
+  html[data-style='terminal'] .home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+    column-gap: 3.5rem;
+    row-gap: 1.25rem;
+    align-content: center;
+  }
+  html[data-style='terminal'] .home-hero > * { grid-column: 1; }
+  html[data-style='terminal'] .home-hero > .now-card { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin-top: 0; }
+}
+
+/* The agent console: a dark terminal window with a lime offset shadow. */
+html[data-style='terminal'] .agent-console {
+  --foreground: 60 10% 92%;
+  --muted-foreground: 60 3% 62%;
+  --primary: 75 90% 58%;
+  color: hsl(var(--foreground));
+  background: hsl(var(--ink));
+  border: 1.5px solid hsl(var(--ink));
+  box-shadow: 6px 6px 0 hsl(var(--lime)), 6px 6px 0 1.5px hsl(var(--ink));
+}
+html[data-style='terminal'] .agent-console-bar { background: transparent; border-bottom-color: #2A2A2E; }
+.agent-console-lights { display: none; }
+html[data-style='terminal'] .agent-console-lights { display: inline-flex; gap: 0.4rem; margin-right: 0.35rem; }
+html[data-style='terminal'] .agent-console-lights span { width: 0.65rem; height: 0.65rem; border-radius: 9999px; background: #FF5F57; }
+html[data-style='terminal'] .agent-console-lights span:nth-child(2) { background: #FEBC2E; }
+html[data-style='terminal'] .agent-console-lights span:nth-child(3) { background: #28C840; }
+html[data-style='terminal'] .agent-console .now-pulse { display: none; }
+html[data-style='terminal'] .agent-console :is(.border-foreground\/10) { border-color: #2A2A2E; }
+
+/* Run logs: the number on a lime highlighter. */
+html[data-style='terminal'] .run-log { border-top-color: hsl(var(--border)); }
+html[data-style='terminal'] .run-log strong { background: hsl(var(--lime)); color: hsl(var(--ink)); padding: 0.1rem 0.4rem; border-radius: 0.25rem; }
+html[data-style='terminal'] .group:hover .run-log strong { color: hsl(var(--ink)); }
+html[data-style='terminal'] .run-log-prompt { color: hsl(var(--primary)); }
+
+/* Articles: Space Grotesk headings, violet links. */
+html[data-style='terminal'] .article-body a { color: hsl(var(--primary)); }
+/* In the narrow hero column the console's note and latest post stack. */
+@media (min-width: 1024px) {
+  html[data-style='terminal'] .home-hero > .now-card .grid { grid-template-columns: minmax(0, 1fr); }
+  html[data-style='terminal'] .home-hero > .now-card .grid > a { max-width: none; border-left: 0; padding-left: 0; padding-top: 0.75rem; border-top: 1px solid #2A2A2E; }
+}
+html[data-style='terminal'] :is(h1, h2) em { padding: 0 0.06em; }
+html[data-style='terminal'] .portrait-alt .blur-xl { display: none; }
+html[data-style='terminal'] .portrait-alt img { --tw-ring-color: hsl(var(--ink)); box-shadow: 3px 3px 0 hsl(var(--lime)), 3px 3px 0 1.5px hsl(var(--ink)); }
+/* The accent tile: an ink panel with a lime offset shadow, like the design's CTA. */
+html[data-style='terminal'] .glass.bento-accent {
+  --primary: 75 90% 58%;
+  background: hsl(var(--ink));
+  color: #fff;
+  box-shadow: 4px 4px 0 hsl(var(--lime)), 4px 4px 0 1.5px hsl(var(--ink));
+}
+/* Terminal has no serif: names and the logo set in Space Grotesk too. */
+html[data-style='terminal'] .font-serif { font-family: var(--font-grotesk), 'Space Grotesk', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+/* The docked profile card in Terminal: a terminal window with who, a spec sheet,
+   now and the call to action; no photo. It shows only once the hero's photo has left the
+   screen (social-rail.tsx), so a page never shows two photos at once. */
+html[data-style='terminal'] .profile-dock { box-shadow: 4px 4px 0 hsl(var(--ink)); }
+html[data-style='terminal'] .profile-dock-bar {
+  background: hsl(var(--ink));
+  color: hsl(60 10% 92%);
+  border-bottom: 1.5px solid hsl(var(--ink));
+  --muted-foreground: 60 3% 62%;
+}
+html[data-style='terminal'] .profile-dock-bar .agent-console-lights span { width: 0.55rem; height: 0.55rem; }
+/* No photo in the card: the hero already shows it. The identity leads instead. */
+html[data-style='terminal'] .profile-dock-photo { display: none; }
+html[data-style='terminal'] .profile-dock-id { margin-top: 0; padding-top: 1rem; padding-bottom: 1rem; border-bottom: 1.5px solid hsl(var(--ink)); }
+html[data-style='terminal'] .profile-dock-id::before {
+  content: '$ whoami';
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  font-size: 0.7rem;
+  color: hsl(var(--primary));
+}
+html[data-style='terminal'] .profile-dock-id > p:last-child { margin-top: 0.5rem; font-size: 0.8rem; line-height: 1.45; }
+html[data-style='terminal'] .profile-dock-name { font-size: 1.55rem; line-height: 1.02; }
+html[data-style='terminal'] .profile-dock-spec { row-gap: 0; border-top: 0; padding-top: 0; }
+html[data-style='terminal'] .profile-dock-spec :is(dt, dd) { padding: 0.32rem 0; border-bottom: 1px dashed hsl(var(--border)); }
+html[data-style='terminal'] .profile-dock-status {
+  background: hsl(var(--lime));
+  color: hsl(var(--ink));
+  font-weight: 700;
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.25rem;
+}
+html[data-style='terminal'] .profile-dock-now { color: hsl(var(--primary)); }
+html[data-style='terminal'] .profile-dock-now::before { content: '$ '; }
+html[data-style='terminal'] .profile-dock-spec + div { border-top: 0; }
+html[data-style='terminal'] .profile-dock-foot { border-top: 1.5px solid hsl(var(--ink)); }
+html[data-style='terminal'] .profile-dock-cta { background: hsl(var(--ink)); color: #fff; font-weight: 600; }
+html[data-style='terminal'] .profile-dock-cta:hover { background: hsl(var(--ink) / 0.88); color: hsl(var(--lime)); }
+html[data-style='terminal'] .profile-dock-foot > a:last-child { border-left: 1.5px solid hsl(var(--ink)); }

@@ -40,7 +40,7 @@ export default async function Home() {
       <LegacyHashRedirect />
 
       {/* Intro. In Midnight the portrait sits on the right; text is constrained to the left so it never overlaps the face. */}
-      <header className="portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem] portrait-text">
+      <header className="home-hero portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem] portrait-text">
         <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-4">
           <span className="relative shrink-0">
             <span aria-hidden className="absolute -inset-2 rounded-full bg-primary/25 blur-xl" />

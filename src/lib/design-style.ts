@@ -3,21 +3,21 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * The site's look: midnight (dark, the default) or glass (the original Liquid
- * Glass). The choice is stored per browser and applied to <html> as
- * data-style="glass" before first paint (see the inline script in app/layout).
- * No attribute means midnight, so the default needs no JavaScript. A stored
- * "soft" (a look that has been removed) falls back to midnight.
+ * The site's look: terminal (light, the default), midnight (warm dark, the
+ * backup) or glass (the original Liquid Glass, kept but not offered).
+ * The server renders <html data-style="terminal">; a visitor who picked
+ * Midnight has it stored, and the inline script in app/layout removes the
+ * attribute before first paint. No attribute means midnight.
  */
 
-export type DesignStyle = 'midnight' | 'glass';
+export type DesignStyle = 'terminal' | 'midnight' | 'glass';
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 
 const read = (): DesignStyle => {
-  if (typeof document === 'undefined') return 'midnight';
+  if (typeof document === 'undefined') return 'terminal';
   const style = document.documentElement.dataset.style;
-  return style === 'glass' ? 'glass' : 'midnight';
+  return style === 'glass' || style === 'terminal' ? style : 'midnight';
 };
 
 export function applyDesignStyle(style: DesignStyle) {
@@ -30,7 +30,7 @@ export function applyDesignStyle(style: DesignStyle) {
 
 /** The current look, kept in sync when it changes anywhere on the page. */
 export function useDesignStyle(): [DesignStyle, (style: DesignStyle) => void] {
-  const [style, setStyle] = useState<DesignStyle>('midnight');
+  const [style, setStyle] = useState<DesignStyle>('terminal');
 
   useEffect(() => {
     setStyle(read());

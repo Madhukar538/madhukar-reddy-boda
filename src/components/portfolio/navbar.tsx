@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, FolderKanban, Search, Tags } from 'lucide-react';
 import { openQuickSwitcher } from '@/lib/vault-client';
+import { LookToggle } from '@/components/look-toggle';
 import { cn } from '@/lib/utils';
 import { m } from 'framer-motion';
 import { MegaPanel, MegaTrigger, useMegaMenu, type NavMenuData } from '@/components/portfolio/nav-menu';
@@ -131,6 +132,7 @@ export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuDa
               <Search className="h-[1.05rem] w-[1.05rem]" />
               <kbd className="rounded px-1 font-mono text-[10px] text-muted-foreground ring-1 ring-foreground/15">⌘K</kbd>
             </button>
+            <LookToggle />
             <Link href="/work-with-me" className="tinted-button ml-1 !px-4 !py-1.5 !text-[13px]">
               Work with me
             </Link>
@@ -207,6 +209,9 @@ export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuDa
             <Search className="h-[1.05rem] w-[1.05rem]" />
           </button>
         </div>
+        <div className="nav-dock-item" style={{ '--i': navLinks.length + 8 } as React.CSSProperties}>
+          <LookToggle />
+        </div>
       </nav>
 
       {/* ── Mobile / tablet floating tab bar ── */}
@@ -240,8 +245,9 @@ export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuDa
           })}
         </nav>
 
-        {/* One detached button, like iOS 26's separate tab-bar button: search. */}
-        <div className="glass glass-strong glass-bar glass-pill pointer-events-auto p-1">
+        {/* Detached buttons, like iOS 26's separate tab-bar button: search and the theme picker. */}
+        <div className="glass glass-strong glass-bar glass-pill pointer-events-auto flex items-center p-1">
+          <LookToggle className="h-[2.9rem] w-[2.9rem]" />
           <button
             type="button"
             onClick={openQuickSwitcher}

@@ -19,6 +19,7 @@ export function NowCard({ now, updatedAt, latest }: { now: string; updatedAt: st
   return (
     <aside aria-labelledby="now-heading" className="now-card agent-console glass">
       <div className="agent-console-bar">
+        <span aria-hidden className="agent-console-lights"><span /><span /><span /></span>
         <span aria-hidden className="now-pulse" />
         <p id="now-heading" className="agent-console-title">
           now<span aria-hidden> — </span><span className="sr-only">: </span>running

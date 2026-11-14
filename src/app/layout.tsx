@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Instrument_Serif, JetBrains_Mono } from 'next/font/google';
+import { Inter, Instrument_Serif, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -56,13 +56,16 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-int
 // Midnight's headlines (h1, h2 in globals.css).
 const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], display: 'swap', variable: '--font-serif' });
 // Code blocks only, so it isn't preloaded on every page.
+// Terminal's headings.
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['500', '600', '700'], display: 'swap', variable: '--font-grotesk' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
 
-// The look and accent are fixed (Midnight, collar red) now the switcher is gone: clear any
-// choice a visitor saved earlier, so nobody is stuck on a look they can't leave.
-const accentScript = `try{localStorage.removeItem('portfolio-accent');localStorage.removeItem('portfolio-style')}catch(e){}`;
-// Runs after next-themes' own script, which may have set a light theme.
-const midnightDarkScript = `try{var d=document.documentElement;if(!d.hasAttribute('data-style')){d.classList.remove('light');d.classList.add('dark');d.style.colorScheme='dark'}}catch(e){}`;
+// Terminal is the default look (rendered on <html>); Midnight is the backup a visitor can pick
+// with the look toggle (lib/design-style). Apply a stored Midnight before first paint, and clear
+// any other stored look or accent from earlier versions of the site.
+const accentScript = `try{localStorage.removeItem('portfolio-accent');var s=localStorage.getItem('portfolio-style');if(s==='midnight'){document.documentElement.removeAttribute('data-style')}else if(s&&s!=='terminal'){localStorage.removeItem('portfolio-style')}}catch(e){}`;
+// Runs after next-themes' own script, which may have set the other theme: Midnight is dark-only, Terminal light-only.
+const midnightDarkScript = `try{var d=document.documentElement,t=d.getAttribute('data-style')==='terminal';if(t||!d.hasAttribute('data-style')){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
 
 export default async function RootLayout({
   children,
@@ -155,7 +158,7 @@ export default async function RootLayout({
     ],
   };
   return (
-    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="en" data-style="terminal" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: accentScript }} />
         <script dangerouslySetInnerHTML={{ __html: chunkReloadScript }} />
