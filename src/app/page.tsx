@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 const heroMetrics = [
   { value: '40s → 13s', label: 'RAG latency reduction' },
   { value: '5–50 ms', label: 'MongoDB query tuning' },
-  { value: '2 days', label: 'Foundation built by an agent team' },
+  { value: '2 days', label: 'Agent-built foundation' },
   { value: `${experienceSince().years}+ Years`, label: 'Production systems' },
 ];
 

@@ -109,13 +109,14 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
           </div>
 
           <h1 className="text-[clamp(2.5rem,6.5vw,4.5rem)] leading-[1.02] text-foreground">
-            I build fast .NET systems, and AI that stays on <em>your own servers</em>.
+            I build fast .NET systems, and ship them with <em>teams of AI agents</em>.
           </h1>
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
             I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
-            Senior Software Engineer in Hyderabad. I design high-throughput .NET APIs, build self-hosted AI
-            platforms (RAG, MCP and hybrid search), and load-test everything with k6 + Grafana.
+            Senior Software Engineer and agentic AI developer in Hyderabad. I lead teams of AI coding agents with
+            specs, skills and review, design high-throughput .NET APIs, build self-hosted AI platforms (RAG, MCP and
+            hybrid search), and <Link href="/blog/why-i-am-an-agentic-developer" className="font-semibold text-primary hover:underline">show the evidence</Link>.
           </p>
 
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">

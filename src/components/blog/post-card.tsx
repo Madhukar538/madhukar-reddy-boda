@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { postMetrics } from '@/data/post-metrics';
 
 export type CardPost = {
   slug: string;
@@ -31,6 +32,7 @@ function getSpecialBadge(post: CardPost) {
 /** Glass card for a post; `featured` is the large lead card. */
 export function PostCard({ post, featured = false, className }: { post: CardPost; featured?: boolean; className?: string }) {
   const badge = getSpecialBadge(post);
+  const metric = postMetrics[post.slug];
   return (
     <Link href={`/blog/${post.slug}`} className={cn('group block h-full', className)}>
       <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-10' : 'p-6 md:p-7')}>
@@ -63,6 +65,14 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
         <p className={cn('text-muted-foreground leading-relaxed', featured ? 'text-[15px] md:text-base max-w-3xl mb-7' : 'text-[15px] mb-6 line-clamp-3')}>
           {post.excerpt}
         </p>
+        {metric && (
+          <p className={cn('run-log', featured ? 'run-log-lead mb-7' : 'mb-5')}>
+            <span aria-hidden className="run-log-prompt">▸</span>
+            <span className="sr-only">Result: </span>
+            <strong>{metric.value}</strong>
+            <span className="text-muted-foreground">{metric.label}</span>
+          </p>
+        )}
         <div className="mt-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-1.5">
             {post.tags.slice(0, featured ? 5 : 3).map((tag) => (

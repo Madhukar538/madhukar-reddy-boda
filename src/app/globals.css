@@ -1745,3 +1745,63 @@ html:not([data-style]) .glass.bento-accent .bg-primary-foreground\/15 { backgrou
 .status-beats > span[data-status='down'] { background: hsl(var(--primary)); }
 .status-beats > span[data-status='pending'] { background: hsl(var(--sys-orange) / 0.8); }
 .status-beats > span[data-status='maintenance'] { background: hsl(var(--foreground) / 0.25); }
+
+/* ============================================================
+   CONTROL ROOM: the agent console (now-card.tsx), run logs on
+   post cards (post-card.tsx); the agent pipeline is in the margin
+   diagram (public/arch/left.svg). Hairlines and mono labels, no glows.
+   ============================================================ */
+.agent-console { padding: 0; overflow: hidden; }
+.agent-console-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid hsl(var(--foreground) / 0.1);
+  background: hsl(var(--foreground) / 0.035);
+}
+/* Breathing room between the metrics strip and the console. */
+.now-card.agent-console { margin-top: 0.5rem; }
+@media (min-width: 640px) { .agent-console-bar { padding-inline: 1.25rem; } }
+.agent-console-title, .agent-console-meta, .agent-console-cmd, .agent-console-agent, .run-log {
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+}
+.agent-console-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: hsl(var(--foreground) / 0.85); }
+.agent-console-meta { margin-left: auto; font-size: 0.68rem; color: hsl(var(--muted-foreground)); }
+.agent-console-cmd { font-size: 0.78rem; color: hsl(var(--foreground) / 0.8); }
+.agent-console-agent { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: hsl(var(--foreground) / 0.9); }
+.agent-console-led {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  animation: agent-led 3.2s ease-in-out infinite;
+}
+.agent-console-agent:nth-child(2) .agent-console-led { animation-delay: 0.8s; }
+.agent-console-agent:nth-child(3) .agent-console-led { animation-delay: 1.6s; }
+.agent-console-agent:nth-child(4) .agent-console-led { animation-delay: 2.4s; }
+@keyframes agent-led { 0%, 100% { opacity: 0.35; } 40% { opacity: 1; } }
+
+/* Run log: the post's headline number, as a line of console output. */
+.run-log {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  padding: 0.5rem 0 0;
+  border-top: 1px dashed hsl(var(--foreground) / 0.14);
+  font-size: 0.8rem;
+}
+.run-log strong { font-weight: 700; color: hsl(var(--foreground)); letter-spacing: -0.01em; }
+/* The lead card's number reads as the headline result. */
+.run-log-lead { font-size: 0.95rem; }
+.run-log-lead strong { font-size: 1.15rem; }
+/* Cards lift their number on hover, like a log line being selected. */
+.group:hover .run-log strong { color: hsl(var(--primary)); }
+.run-log strong { transition: color 0.15s ease; }
+.run-log-prompt { color: hsl(var(--primary)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-console-led { animation: none; }
+  .agent-console-led { opacity: 1; }
+}
