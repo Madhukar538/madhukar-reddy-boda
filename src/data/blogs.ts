@@ -28,9 +28,9 @@ const posts: Omit<BlogPost, 'readTime'>[] = [
       <p class="lead">My development team is me and nine AI agent sessions. <strong>Claude Code</strong> is the tech lead. Five <strong>Antigravity</strong> sessions are the developers, each owning one part of the codebase, and a sixth waits as backup lead. <strong>GitHub Copilot CLI</strong> reviews everything first, and <strong>Codex</strong> gives the risky changes a second review. I agree every fix before it's assigned, and I own every commit. They all run side by side in <strong>Herdr</strong>, and they talk to each other through it.</p>
 
       <h2>1. Why a Team, Not One Agent</h2>
-      <p>One agent in one terminal works until the task stops fitting in its head. On a real product (a .NET 10 gateway, an agent runtime, a voice agent, a Next.js front end, deploy scripts and docs) a single session either runs out of context or starts editing files it doesn't understand. People solve this with roles, ownership and review. It turns out agents need the same things.</p>
+      <p>One agent in one terminal works until the task stops fitting in its head. On a real product with a backend, a front end, AI features, deploy scripts and docs, a single session either runs out of context or starts editing files it doesn't understand. People solve this with roles, ownership and review. It turns out agents need the same things.</p>
       <ul>
-        <li><strong>Roles</strong> keep each session's context small: the front-end developer never loads the migrations.</li>
+        <li><strong>Roles</strong> keep each session's context small: the front-end developer never loads the database migrations.</li>
         <li><strong>Ownership</strong> means two agents never edit the same file at once.</li>
         <li><strong>Review by a different model</strong> catches what the author's model is blind to.</li>
       </ul>
@@ -54,7 +54,7 @@ herdr-app do tab.new ...     open a new member in its own tab</pre>
                    Claude Code (tech lead, researcher)
           hc send ┌───────────┼────────────┬─────────────┐
                   ▼           ▼            ▼             ▼
-          agy-backend   agy-agents   agy-frontend   agy-deploy   agy-docs
+           backend       AI         frontend      deploy        docs
                   └───────────┴─── reports ┴─────────────┘
                               ▼
                Copilot (first review) ─▶ Codex (second review, high risk)</pre>
@@ -64,17 +64,29 @@ herdr-app do tab.new ...     open a new member in its own tab</pre>
         <thead><tr><th>Member</th><th>Tool</th><th>Job</th></tr></thead>
         <tbody>
           <tr><td>Lead</td><td>Claude Code</td><td>Finds bugs and improvements, discusses them with me, writes the tasks, checks every report against the code</td></tr>
-          <tr><td>Backend</td><td>Antigravity</td><td>API, auth, data, worker services</td></tr>
-          <tr><td>Agents</td><td>Antigravity</td><td>Agent runtime, guardrails, chat hubs, voice</td></tr>
-          <tr><td>Frontend</td><td>Antigravity</td><td>Web app and mail add-in</td></tr>
-          <tr><td>Deploy</td><td>Antigravity</td><td>Install scripts, releases, admin consoles</td></tr>
-          <tr><td>Docs</td><td>Antigravity</td><td>Repo docs, then the same content synced to my Obsidian vault</td></tr>
+          <tr><td>Backend</td><td>Antigravity</td><td>APIs, auth, data access, background jobs</td></tr>
+          <tr><td>AI</td><td>Antigravity</td><td>The product's own AI features: prompts, agents, guardrails</td></tr>
+          <tr><td>Frontend</td><td>Antigravity</td><td>Web UI</td></tr>
+          <tr><td>Deploy</td><td>Antigravity</td><td>Docker files, install scripts, releases</td></tr>
+          <tr><td>Docs</td><td>Antigravity</td><td>Repo docs, then the same content synced to my notes vault</td></tr>
           <tr><td>First reviewer</td><td>GitHub Copilot CLI</td><td>Read-only review of all finished work: security, concurrency, regressions</td></tr>
-          <tr><td>Second reviewer</td><td>Codex</td><td>Second review of high-risk areas (auth, migrations, agents, voice); backup backend developer</td></tr>
+          <tr><td>Second reviewer</td><td>Codex</td><td>Second review of high-risk areas (auth, security, migrations); backup backend developer</td></tr>
           <tr><td>Backup lead</td><td>Antigravity</td><td>Takes over when Claude Code hits its limit, only when I say so</td></tr>
         </tbody>
       </table>
       <p>All of this lives in one file, <code>.claude/team.json</code>: members, the folders each one owns, how to start each tool, effort levels, workflow, rules and lessons. A new lead session reads it and knows the team. Terminal addresses change between sessions, so the file says never to trust a saved address: run <code>hc ls --json</code> first.</p>
+      <pre class="language-json">
+{
+  "lead":    { "tool": "Claude Code", "effort": "medium", "writesCode": "one-line fixes only" },
+  "members": [
+    { "id": "backend",  "tool": "Antigravity", "owns": ["src/Api", "src/Data"] },
+    { "id": "frontend", "tool": "Antigravity", "owns": ["web"] },
+    { "id": "review",   "tool": "Copilot CLI", "owns": [], "readOnly": true }
+  ],
+  "effort":   { "allowed": ["low", "medium"], "never": ["high"] },
+  "rules":    ["Edit only files you own", "No git commands", "Report with hc send"],
+  "lessons":  ["Ask for passed AND skipped test counts"]
+}</pre>
 
       <h2>4. The Lead Doesn't Write the Code</h2>
       <p>This was the most important decision. Claude Code is the <strong>researcher, analyst and task writer</strong>, not the implementer. The workflow is fixed:</p>
@@ -154,7 +166,7 @@ herdr-app do tab.new ...     open a new member in its own tab</pre>
     slug: "building-ai-email-assistant-with-a-team-of-coding-agents",
     title: "One Lead, Three Agents: Building an On-Prem AI Email Assistant with Claude Code, Codex, Cursor and Antigravity",
     excerpt: "A 260 person-day plan, and in two days a working foundation: sign-in, roles, client separation, mailbox sync, AI classification and work items, in 110 commits. How a spec, an AGENTS.md rule book, a team file and a lead agent kept four coding agents honest.",
-    date: "November 14, 2026",
+    date: "November 13, 2026",
     category: "Artificial Intelligence",
     tags: ["Claude Code", "AI Agents", "Ollama", "LLMs", ".NET Core"],
     content: `
@@ -268,58 +280,53 @@ lead ─▶ worktree per task ─▶ agent ─▶ lead review ─▶ build + tes
   {
     slug: "migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents",
     title: "Two Days, Not Two Sprints: Migrating Worker Services to .NET 10 with Skill Files and Coding Agents",
-    excerpt: "We moved legacy .NET Core 3.1 background services to cross-platform .NET 10 worker services in two days. The agent did the typing; two skill files, our API house style and a worker migration playbook, told it what done looks like.",
-    date: "November 14, 2026",
+    excerpt: "Legacy background services moved to cross-platform .NET 10 worker services in two days. The coding agent did the typing; two stacked skill files, a house style and a migration playbook, told it what done looks like.",
+    date: "November 12, 2026",
     category: "Artificial Intelligence",
     tags: [".NET Core", "Background Services", "Skills", "Claude Code", "Migration"],
     content: `
-      <p class="lead">We had a set of background worker services still on .NET Core 3.1: Windows-only, tied to hard-coded drive paths, writing a log line to disk on every step, and guarding against overlapping runs with a plain <code>bool</code>. Migrating them by hand usually costs a sprint per service, because every one carries years of local decisions. We moved them to <strong>.NET 10 worker services</strong> in <strong>two days</strong>. The speed didn't come from the agent typing faster. It came from two <strong>skill files</strong> that told the agent exactly what "done" looks like in our codebase.</p>
+      <p class="lead">Many teams still run background services on older .NET versions: Windows-only, tied to hard-coded server paths, logging every step straight to disk, and guarding against overlapping runs with a plain <code>bool</code>. Migrating them by hand often takes a sprint per service, because each one has its own history. We moved a group of them to <strong>.NET 10 worker services</strong> in <strong>two days</strong>. The speed didn't come from the agent typing faster. It came from <strong>skill files</strong> that told the coding agent exactly what "done" looks like.</p>
 
       <h2>1. Why Agents Alone Weren't Enough</h2>
-      <p>Ask a coding agent to "upgrade this worker to .NET 10" and you get a working tutorial: a fresh <code>BackgroundService</code>, a generic logger, maybe EF Core. It compiles, and it looks nothing like the other forty projects in the solution. Reviewing that output and pulling it back to house style takes longer than doing the migration yourself.</p>
+      <p>Ask a coding agent to "upgrade this worker to .NET 10" and you get a tutorial answer: a fresh <code>BackgroundService</code>, a generic logger, maybe a new ORM. It compiles, and it looks nothing like the rest of the solution. Pulling that output back in line with your conventions takes longer than doing the migration yourself.</p>
       <p>A migration at this scale needs three things the model doesn't have:</p>
       <ul>
-        <li><strong>The target shape:</strong> how our layers, logging, configuration and stored procedures are meant to look.</li>
-        <li><strong>The migration traps:</strong> what breaks when 3.1 code meets .NET 10 and Linux.</li>
+        <li><strong>The target shape:</strong> how your layers, logging, configuration and data access are meant to look.</li>
+        <li><strong>The migration traps:</strong> what breaks when old code meets .NET 10 and Linux.</li>
         <li><strong>A definition of done:</strong> a checklist the agent verifies before it says it's finished.</li>
       </ul>
       <p>A skill is how you hand an agent all three, once, instead of re-typing them in every prompt.</p>
 
       <h2>2. Two Skills, Stacked</h2>
       <pre>
-API endpoint skill  (house style)
-  layering: Controller → BAL → DAL → DTOs
-  logging:  buffered step logger
-  data:     Dapper + stored procedures, SQL rules
-  headers, naming, DTO and DAL return rules
+House-style skill  (how we write .NET)
+  layering, naming, DI style, logging, data access,
+  response and error conventions, review checklist
         │  reused by
         ▼
-Worker service skill  (migration playbook)
-  netcoreapp3.1 → net10.0, multi-RID
-  Worker → Service/BAL → DAL → DTOs
-  PeriodicTimer + reentrancy guard
-  CodeLog bridge, cross-platform paths
-  Windows Service · systemd · Docker
+Worker migration skill  (how we move a worker to .NET 10)
+  target framework + runtimes, hosting, scheduling,
+  logging adapter, paths, deployment, checklist
         │
         ▼
 Coding agent: orient → convert → build → checklist → PR</pre>
-      <p>The <strong>API endpoint skill</strong> came first. It encodes our house style for every .NET Web API: one controller per action, a business layer (BAL) that validates and builds the response, a thin data layer (DAL) over Dapper and stored procedures, defaulted DTOs, a shared response envelope, and the auth and exception filters that already exist. It also carries our SQL standards, from <code>usp&lt;Action&gt;&lt;Entity&gt;</code> naming to <code>SET NOCOUNT ON</code>, no <code>SELECT *</code>, and default values on any new parameter so existing callers don't break.</p>
-      <p>The <strong>worker service skill</strong> is built on top of it. A worker is the same layered code with a timer instead of an HTTP request, so it reuses the BAL/DAL rules, naming and comment headers, and adds what's specific to background services and to the migration itself.</p>
-      <blockquote><p>[!tip] Distil skills from real code</p><p>Both skills were written from reference implementations already in production, not from documentation. The skill says "this is how our best existing service does it", and that's what the agent copies.</p></blockquote>
+      <p>The <strong>house-style skill</strong> came first. It describes how a .NET service is written in your codebase: which layers exist and what each may do, how dependencies are registered, which logger to inject, how data access is done, and how errors are handled. Most teams already have these rules. They just live in people's heads and in old pull-request comments.</p>
+      <p>The <strong>migration skill</strong> builds on it. A worker is the same layered code with a timer instead of an HTTP request, so it reuses the house rules and adds only what's specific to background services and to the upgrade itself.</p>
+      <blockquote><p>[!tip] Distil skills from real code</p><p>Write the skill from your best existing service, not from documentation. "This is how our best service does it" is something an agent can copy faithfully. "Follow best practices" isn't.</p></blockquote>
 
       <h2>3. Step Zero: Orient Before Editing</h2>
-      <p>The most useful section of both skills is the first one. Before touching a file, the agent has to answer a fixed set of questions about the project in front of it:</p>
+      <p>The most useful section of a migration skill is the first one. Before touching a file, the agent answers a fixed set of questions about the project in front of it:</p>
       <ul>
-        <li>Does the service reference shared library projects, or carry its own copies of BAL/DAL folders? Shared libraries need to multi-target <code>netcoreapp3.1;net10.0</code> while other services still depend on them.</li>
-        <li>Which packages does it use? <code>System.Data.SqlClient</code> must become <code>Microsoft.Data.SqlClient</code>, and <code>Microsoft.Extensions.*</code> moves to 10.x.</li>
-        <li>Does anything use <code>System.Drawing.Common</code>? Since .NET 7 it's Windows-only, so image or spreadsheet rendering has to move to a non-GDI library or sit behind an OS check.</li>
-        <li>Where are the hard-coded Windows paths, the schedule interval, and the multi-site loop?</li>
+        <li>Does the service depend on shared library projects? If other services still use those libraries, they need to target both frameworks for a while.</li>
+        <li>Which packages does it use? <code>System.Data.SqlClient</code> is deprecated in favour of <code>Microsoft.Data.SqlClient</code>, and <code>Microsoft.Extensions.*</code> packages move to 10.x.</li>
+        <li>Does anything use <code>System.Drawing.Common</code>? Since .NET 7 it's Windows-only, so image or document rendering has to move to a cross-platform library or sit behind an OS check.</li>
+        <li>Where are the hard-coded Windows paths, the schedule interval, and any loop over tenants or sites?</li>
       </ul>
-      <p>This stops the agent assuming every service is a copy of the reference one. It also means the agent opens each pull request with a short inventory, so reviewing it starts with what the agent found rather than with a diff.</p>
+      <p>This stops the agent assuming every service matches the reference one. It also means each pull request opens with a short inventory, so review starts with what the agent found rather than with a diff.</p>
 
-      <h2>4. What the Worker Skill Changes</h2>
+      <h2>4. What the Migration Changes</h2>
       <h3>One project file for every platform</h3>
-      <p>Each service now targets <code>net10.0</code> with the worker SDK and declares the runtimes it can be published for:</p>
+      <p>Each service targets <code>net10.0</code> with the worker SDK and declares the runtimes it can be published for:</p>
       <pre class="language-xml">
 &lt;Project Sdk="Microsoft.NET.Sdk.Worker"&gt;
   &lt;PropertyGroup&gt;
@@ -331,7 +338,6 @@ Coding agent: orient → convert → build → checklist → PR</pre>
     &lt;PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" /&gt;
     &lt;PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.0" /&gt;
     &lt;PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" /&gt;
-    &lt;PackageReference Include="Dapper" Version="2.1.35" /&gt;
   &lt;/ItemGroup&gt;
 &lt;/Project&gt;</pre>
 
@@ -342,16 +348,15 @@ var builder = Host.CreateApplicationBuilder(args);
 
 if (OperatingSystem.IsWindows())
 {
-    builder.Services.AddWindowsService(o =&gt; o.ServiceName = "BulkInvoiceWorkerService");
+    builder.Services.AddWindowsService(o =&gt; o.ServiceName = "ReportWorker");
 }
 else if (OperatingSystem.IsLinux())
 {
     builder.Services.AddSystemd();
 }
 
-builder.Services.Configure&lt;WorkerSettings&gt;(builder.Configuration.GetSection("AppSettings"));
-builder.Services.AddScoped&lt;ICodeLogger, BufferedCodeLogger&gt;();
-builder.Services.AddScoped&lt;BulkInvoiceService&gt;();
+builder.Services.Configure&lt;WorkerOptions&gt;(builder.Configuration.GetSection("Worker"));
+builder.Services.AddScoped&lt;ReportJob&gt;();
 builder.Services.AddHostedService&lt;Worker&gt;();
 
 var host = builder.Build();
@@ -359,72 +364,64 @@ host.Services.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;().LogInformation(
     "Starting on {OS} [{Arch}], .NET {Runtime}",
     RuntimeInformation.OSDescription, RuntimeInformation.ProcessArchitecture, Environment.Version);
 await host.RunAsync();</pre>
-      <p>That startup line seems minor until a service is quietly running as x86 on a 64-bit box. It answers "what is this actually running on?" from the first log line.</p>
+      <p>That startup line seems minor until a service is quietly running as x86 on a 64-bit machine. It answers "what is this actually running on?" from the first log line.</p>
 
       <h3>PeriodicTimer and a real reentrancy guard</h3>
-      <p>The legacy workers used a timer callback plus a <code>bool IsInProcess</code> flag to skip a tick while the previous run was still going. That flag isn't thread-safe. The new <code>Worker</code> uses <code>PeriodicTimer</code>, a <code>SemaphoreSlim</code> and a fresh DI scope per tick:</p>
+      <p>Older workers often use a timer callback plus a <code>bool isRunning</code> flag to skip a tick while the previous run is still going. That flag isn't thread-safe. The migrated <code>Worker</code> uses <code>PeriodicTimer</code>, a <code>SemaphoreSlim</code> and a fresh DI scope per tick:</p>
       <pre class="language-csharp">
 protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 {
-    using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(_options.ScheduleTimer));
+    using var timer = new PeriodicTimer(_options.Interval);
 
-    await DoWorkSafelyAsync(stoppingToken);              // run once at start
+    await RunOnceAsync(stoppingToken);                   // run once at start
     while (await timer.WaitForNextTickAsync(stoppingToken))
     {
-        await DoWorkSafelyAsync(stoppingToken);
+        await RunOnceAsync(stoppingToken);
     }
 }
 
-private async Task DoWorkSafelyAsync(CancellationToken token)
+private async Task RunOnceAsync(CancellationToken token)
 {
-    if (!await _executionLock.WaitAsync(0, token))       // previous run still going
+    if (!await _gate.WaitAsync(0, token))                // previous run still going
     {
         _logger.LogWarning("Previous run still in progress, skipping this tick.");
         return;
     }
     try
     {
-        using var scope = _scopeFactory.CreateScope();     // fresh logger + services per tick
-        var service = scope.ServiceProvider.GetRequiredService&lt;BulkInvoiceService&gt;();
-        var codeLog = scope.ServiceProvider.GetRequiredService&lt;ICodeLogger&gt;();
-        await service.ProcessServiceAsync(codeLog, token);
+        using var scope = _scopeFactory.CreateScope();     // fresh services per tick
+        await scope.ServiceProvider.GetRequiredService&lt;ReportJob&gt;().RunAsync(token);
     }
     catch (Exception ex) when (ex is not OperationCanceledException)
     {
-        _logger.LogError(ex, "Cycle failed");
+        _logger.LogError(ex, "Run failed");
     }
     finally
     {
-        _executionLock.Release();
+        _gate.Release();
     }
 }</pre>
       <p>Stopping the service now cancels the wait instead of waiting for the next tick, and a slow run can never overlap the next one.</p>
 
-      <h3>One site failing doesn't stop the others</h3>
-      <p>Most of these workers loop over many client sites, each with its own database. The skill requires every site to run inside its own <code>try/catch</code>, with its own decrypted connection string, so one site's bad data logs an error and the loop moves on to the next.</p>
+      <h3>One bad item doesn't stop the batch</h3>
+      <p>If a worker loops over tenants, customers or files, the skill requires each one to run inside its own <code>try/catch</code>. One tenant's bad data logs an error and the loop moves on to the next.</p>
 
-      <h2>5. The Logging Trick: Bridge, Don't Rewrite</h2>
-      <p>Every legacy service had dozens of calls like <code>CreateCodeLogProgramWise(message, method, siteCode)</code>, and each one wrote a line to disk synchronously. In a loop over many sites every few seconds, that's a lot of disk I/O for logs nobody reads unless something fails.</p>
-      <p>Rewriting every call site would have been the slow, risky part of the migration. Instead, the skill tells the agent to change only the method body and route it to the <strong>buffered step logger</strong> our APIs already use:</p>
+      <h2>5. The Logging Trick: Adapt, Don't Rewrite</h2>
+      <p>Legacy services often have dozens of calls to an old logging helper, each one writing a line to disk synchronously. In a loop that runs every few seconds, that's a lot of I/O for logs nobody reads unless something fails.</p>
+      <p>Rewriting every call site is the slow, risky part of a migration. Instead, the skill tells the agent to change only the helper's body and route it to a <strong>buffered step logger</strong>:</p>
       <pre class="language-csharp">
-public void CreateCodeLogProgramWise(string message, string methodName, string siteCode)
+// The old helper keeps its signature, so no caller changes.
+public void LogStep(string message, string method)
 {
-    // In memory: no disk write on the happy path
-    _codeLog?.Code(methodName, $"[{siteCode}] {message}");
-
-    // Old disk logging only if no buffered logger was injected
-    if (_options.CodeLogRequired == 1 &amp;&amp; _codeLog == null)
-    {
-        LegacyFileLog.Write(message, methodName, siteCode);
-    }
+    _steps.Add(method, message);   // in memory: no disk write on the happy path
 }</pre>
-      <p>The buffered logger keeps up to 100 steps per tick in memory. On success they're discarded. When something throws, <code>codeLog.Error(...)</code> writes the whole chain of steps that led to the failure, in order. The happy path stops writing to disk, and a failure gets a more complete log than before. None of the existing callers changed.</p>
-      <blockquote><p>[!note] This is where stacking skills pays off</p><p>The buffered logger is defined in the API skill. Because the worker skill reuses it, the agent didn't invent a third logging approach. API and worker logs now read the same way.</p></blockquote>
+      <p>The step logger keeps a bounded list of steps (say, the last 100) for the current run. On success they're discarded. When something throws, the error log includes the whole chain of steps that led to the failure, in order. The happy path stops writing to disk, a failure gets a more complete log than before, and none of the existing callers changed.</p>
+      <blockquote><p>[!note] This is where stacking skills pays off</p><p>If the house-style skill already defines how services log, the migration skill just points to it. The agent doesn't invent yet another logging approach, and API and worker logs read the same way.</p></blockquote>
 
       <h2>6. Cross-Platform Paths and Deployment</h2>
-      <p>Configuration files were full of paths like <code>D:\\Live\\...\\Errorlog\\</code>. On Linux those don't fail loudly: they create a folder literally named <code>D:\\Live\\...</code> next to the binary. The skill's rule is simple: no drive letters or backslashes in code, build paths with <code>Path.Combine</code> from <code>AppContext.BaseDirectory</code>, and override per environment:</p>
+      <p>Old configuration files are often full of absolute Windows paths like <code>D:\\Logs\\MyService\\</code>. On Linux these don't fail loudly: they create a folder literally named <code>D:\\Logs\\MyService\\</code> next to the binary. The rule is simple: no drive letters or backslashes in code, build paths with <code>Path.Combine</code> from <code>AppContext.BaseDirectory</code>, and override them per environment:</p>
       <pre>
-AppSettings__ErrorLogFilePath=/var/log/workers/bulk-invoice/</pre>
+Worker__LogPath=/var/log/report-worker/</pre>
       <p>The skill also includes the deployment recipes, so the agent finishes each service with all three ready:</p>
       <ul>
         <li><strong>Windows Service</strong> via <code>sc.exe create</code>, as before.</li>
@@ -435,34 +432,34 @@ AppSettings__ErrorLogFilePath=/var/log/workers/bulk-invoice/</pre>
 dotnet publish -c Release -r linux-arm64 --self-contained true -p:PublishSingleFile=true -o ./publish/linux-arm64</pre>
 
       <h2>7. The Checklist Is the Definition of Done</h2>
-      <p>Both skills end with a checklist, and the agent is told to go through it before calling a service finished. A few of the worker items:</p>
+      <p>Each skill ends with a checklist, and the agent is told to go through it before calling a service finished. A typical migration checklist:</p>
       <ul>
-        <li>Targets <code>net10.0</code>, declares runtime identifiers, and no <code>System.Data.SqlClient</code> is left.</li>
-        <li>The host uses <code>AddWindowsService</code> / <code>AddSystemd</code> and logs OS, architecture and runtime at startup.</li>
+        <li>Targets <code>net10.0</code>, declares runtime identifiers, and no deprecated data-access package is left.</li>
+        <li>The host registers Windows Service and systemd support and logs OS, architecture and runtime at startup.</li>
         <li>No hard-coded Windows paths remain.</li>
-        <li><code>PeriodicTimer</code> plus <code>SemaphoreSlim</code>, with no unsynchronised <code>IsInProcess</code> flag.</li>
-        <li>Every site has its own error boundary, and DAL methods return empty lists, never <code>null</code>.</li>
-        <li>Stored procedures follow the API skill's SQL rules.</li>
-        <li>Publishes for <code>win-x64</code>, <code>win-x86</code>, <code>linux-x64</code> and <code>linux-arm64</code>.</li>
+        <li><code>PeriodicTimer</code> plus <code>SemaphoreSlim</code>, with no unsynchronised "is running" flag.</li>
+        <li>Every tenant or item in a batch has its own error boundary.</li>
+        <li>The code follows the house-style skill's checklist too.</li>
+        <li>Publishes for every target runtime.</li>
       </ul>
-      <p>The checklist is what made review fast. Instead of reading every diff from scratch, a reviewer confirms the agent's checklist against the code and spends their attention on the business logic, which is the part only a person who knows the system can judge.</p>
+      <p>The checklist is what made review fast. Instead of reading every diff from scratch, a reviewer confirms the agent's checklist against the code and spends their attention on the business logic, which is the part only someone who knows the system can judge.</p>
 
-      <h2>8. The Loop We Ran</h2>
+      <h2>8. The Loop</h2>
       <ol>
-        <li><strong>Write the skills from the best existing code.</strong> The API skill already existed. The worker skill was distilled from the reference worker services.</li>
-        <li><strong>Migrate one service with the agent and watch closely.</strong> Every place the agent guessed became a new rule in the skill.</li>
+        <li><strong>Write the skills from the best existing code.</strong> Start with your house style, then the migration on top of it.</li>
+        <li><strong>Migrate one service with the agent and watch closely.</strong> Every place the agent guessed becomes a new rule in the skill.</li>
         <li><strong>Run the agent across the remaining services</strong>, one branch each: orient, convert, build, publish for each runtime, run the checklist.</li>
         <li><strong>Review against the checklist</strong>, then run each service side by side with the old one before switching over.</li>
         <li><strong>Feed corrections back into the skill</strong>, so the next service needs fewer of them.</li>
       </ol>
-      <blockquote><p>[!warning] Fast doesn't mean unreviewed</p><p>The agent did the repetitive work: project files, hosting, timers, logging bridges, paths and deployment files. People still reviewed every pull request and checked each service against the one it replaced. Two days was possible because the review was focused, not because there wasn't one.</p></blockquote>
+      <blockquote><p>[!warning] Fast doesn't mean unreviewed</p><p>The agent did the repetitive work: project files, hosting, timers, logging adapters, paths and deployment files. People still reviewed every pull request and checked each service against the one it replaced. Two days was possible because the review was focused, not because there wasn't one.</p></blockquote>
 
       <h2>9. Takeaways</h2>
       <ul>
-        <li>Agents are fast but generic. A <strong>skill</strong> turns "upgrade to .NET 10" into "upgrade to <em>our</em> .NET 10".</li>
-        <li><strong>Stack skills.</strong> A migration skill that reuses your house-style skill keeps APIs and workers consistent.</li>
+        <li>Agents are fast but generic. A <strong>skill</strong> turns "upgrade to .NET 10" into "upgrade to .NET 10 <em>the way this codebase does things</em>".</li>
+        <li><strong>Stack skills.</strong> A migration skill that reuses your house-style skill keeps every service consistent.</li>
         <li>Make <strong>orientation</strong> the first step, so the agent inventories each project before changing it.</li>
-        <li><strong>Bridge legacy call sites</strong> instead of rewriting them. One method body change beat hundreds of edits.</li>
+        <li><strong>Adapt legacy call sites</strong> instead of rewriting them. One method body change beats hundreds of edits.</li>
         <li>End every skill with a <strong>checklist</strong>. It's the agent's definition of done and the reviewer's map.</li>
         <li>Every correction belongs in the skill, not in the next prompt.</li>
       </ul>
