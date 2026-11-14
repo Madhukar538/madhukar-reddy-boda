@@ -18,6 +18,121 @@ export const readTime = (html: string) => `${Math.max(1, Math.round(countWords(h
 
 const posts: Omit<BlogPost, 'readTime'>[] = [
   {
+    slug: "building-ai-email-assistant-with-a-team-of-coding-agents",
+    title: "One Lead, Three Agents: Building an On-Prem AI Email Assistant with Claude Code, Codex, Cursor and Antigravity",
+    excerpt: "A 260 person-day plan, and in two days a working foundation: sign-in, roles, client separation, mailbox sync, AI classification and work items, in 110 commits. How a spec, an AGENTS.md rule book, a team file and a lead agent kept four coding agents honest.",
+    date: "November 14, 2026",
+    category: "Artificial Intelligence",
+    tags: ["Claude Code", "AI Agents", "Ollama", "LLMs", ".NET Core"],
+    content: `
+      <p class="lead">We're building an on-premises AI email assistant: it watches client mail in Microsoft 365, gives every actionable email an owner and a deadline, escalates when nobody answers, and drafts replies that a person must approve before anything is sent. The plan put the full product at about <strong>260 person-days</strong> across three phases. In the first <strong>two days</strong> we had the foundation and a working first slice: sign-in, roles, strict client separation, mailbox sync, AI classification, an inbox and work items with deadlines, in <strong>110 commits</strong>. The work was done by four coding agents, one of them acting as the lead.</p>
+
+      <h2>1. The Team</h2>
+      <p>Every agent has a role, folders it owns, and a reviewer. That's all written in a <code>team.json</code> at the root of the repository, so it's a file the agents can read rather than something I keep repeating:</p>
+      <table>
+        <thead><tr><th>Agent</th><th>Role</th><th>Why it got that role</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude Code</strong></td><td>Lead: plans, delegates, reviews, builds, tests, merges</td><td>Holds the whole picture and the merge rights</td></tr>
+          <tr><td><strong>Codex</strong></td><td>Backend core: mail sync, work items, deadlines, alerts</td><td>Long-running, well-specified backend tasks</td></tr>
+          <tr><td><strong>Cursor</strong></td><td>Architecture, AI, access control, security</td><td>Careful edits to sensitive code, close supervision</td></tr>
+          <tr><td><strong>Antigravity</strong></td><td>Front end, multi-client setup, end-to-end tests</td><td>Building and checking UI in a browser</td></tr>
+        </tbody>
+      </table>
+      <p>Reviews are paired: Codex and Cursor review each other, Cursor reviews Antigravity, and the human tech lead approves every merge. Anything in a <em>sensitive area</em> (authentication, the client portal, draft sending, migrations) needs Cursor's review as well.</p>
+
+      <h2>2. Four Files That Make It Work</h2>
+      <pre>
+Requirements &amp; architecture spec   what to build    (FR-xxx IDs, acceptance tests)
+AGENTS.md                         how to build it  (rules every agent reads first)
+team.json                         who builds what  (ownership, reviewers, phases)
+docs/tasks/&lt;agent&gt;-phase1.md      what to do next  (one brief per agent)
+        │
+        ▼
+lead ─▶ worktree per task ─▶ agent ─▶ lead review ─▶ build + tests ─▶ merge
+                                                       │
+                       LEAD-HANDOVER.md ◀── status ────┘</pre>
+      <ul>
+        <li><strong>The spec</strong> runs to more than a thousand lines, with numbered requirements (<code>FR-001</code> to <code>FR-100</code>+), architecture, a data model, security controls, and acceptance tests in §15. Commits, branches and pull requests all reference FR IDs. If code and spec disagree, the agent stops and asks.</li>
+        <li><strong>AGENTS.md</strong> is the shared rule book. Each tool's own rules file points at it instead of copying it, so there's one version of the truth.</li>
+        <li><strong>team.json</strong> holds ownership, review pairs, sensitive paths and the phase plan.</li>
+        <li><strong>Task briefs</strong> give each agent its requirements, the folders it owns, what to reuse, its acceptance tests and its handoffs. A dependency graph in the task index shows who waits for whom.</li>
+      </ul>
+
+      <h2>3. Rules That Block a Merge</h2>
+      <p>An email assistant handles other companies' mail, so a few rules in <code>AGENTS.md</code> aren't style guidance. Breaking one blocks the merge, whatever else the change does:</p>
+      <ol>
+        <li><strong>No email is sent without a recorded human approval</strong> of that exact draft version. No job, template or acknowledgment can skip it.</li>
+        <li><strong>Every endpoint is denied by default</strong> and checks permission <em>and</em> scope (system, client, project) on the server. A hidden button is never the control.</li>
+        <li><strong>No query, cache entry, log line or AI request mixes two clients' data.</strong> A global EF Core query filter enforces it, and only reviewed code may bypass it.</li>
+        <li><strong>Email text is data, not instructions.</strong> Nothing inside an email can change a rule, assign, close or send anything.</li>
+        <li><strong>No secrets in the repository.</strong></li>
+      </ol>
+      <p>The rules are also tests. One test fails if any <code>/api</code> endpoint has no permission requirement, and every new endpoint ships with three: unauthenticated → 401, wrong permission → 403, wrong client → 404.</p>
+      <blockquote><p>[!tip] Write rules an agent can check</p><p>"Be careful with security" changes nothing. "Every endpoint calls <code>.RequirePermission(...)</code> or is explicitly anonymous with a comment saying why" is something an agent can follow, a test can enforce, and a reviewer can grep for.</p></blockquote>
+
+      <h2>4. How the Lead Runs the Agents</h2>
+      <p>Claude Code doesn't write most features. It writes the briefs, starts each agent in its own <strong>git worktree</strong> on a branch named <code>&lt;agent&gt;/&lt;FR-id&gt;-&lt;name&gt;</code>, and runs every agent in a restricted mode:</p>
+      <ul>
+        <li><strong>Codex</strong> runs headless in a workspace-write sandbox. It can edit and run builds and tests inside its worktree, and nothing else.</li>
+        <li><strong>Cursor</strong> runs in allowlist mode: edits only, no shell commands.</li>
+        <li><strong>Antigravity</strong> runs with edits accepted but nothing more.</li>
+      </ul>
+      <p>None of them commits, pushes or creates database migrations. Agents run in a terminal panel I can watch rather than as hidden background processes, so I can see what each one is doing at any moment.</p>
+      <h3>The review routine</h3>
+      <p>Every agent result goes through the same steps before it merges:</p>
+      <ol>
+        <li>Read the diff, and check it only touches folders that agent owns.</li>
+        <li>Run a rule scan that must come back empty: <code>innerHTML</code>, <code>bypassSecurity</code>, <code>localStorage</code>, <code>IgnoreQueryFilters</code> without a justifying comment, <code>eval(</code>, any secret.</li>
+        <li>Create the EF migration centrally, one per merge, so migrations from parallel agents never collide.</li>
+        <li>Build with <strong>zero warnings</strong> (warnings are errors), run the .NET tests against a real PostgreSQL in Testcontainers, and build and test the Angular apps.</li>
+        <li>Take screenshots of new screens with a headless browser inside the app's Docker network.</li>
+        <li>Commit with co-author lines for the agent, merge, run everything again on the integration branch, and report to the tech lead.</li>
+      </ol>
+      <blockquote><p>[!note] Agents report gaps honestly when asked to</p><p>Codex's status file for the work-items task listed what it didn't do and why: the API and API-test folders belonged to other agents, so it left them alone and listed the missing 401/403/404 tests for the owners. Ownership rules are what produce that kind of handoff.</p></blockquote>
+
+      <h2>5. Surviving Token Limits</h2>
+      <p>A lead running for two days will hit its usage limit. When that happens, <strong>another agent takes over as backup lead</strong> (Antigravity by default; Cursor ran one of those sessions). Continuity lives in one file, <code>docs/tasks/LEAD-HANDOVER.md</code>, which the lead keeps current: what's merged and the test counts, which agent is on which branch and worktree, which terminal it's running in, the review-and-merge routine, and the safe launch command for each agent. Its first line sets the limits: do nothing without the tech lead's go-ahead, never push or force-push, never delete a worktree that holds unmerged work.</p>
+      <p>The handover file was also useful between my own sessions. Any agent, or I, could pick up the work from a single page.</p>
+
+      <h2>6. The AI Part: Measured, Not Assumed</h2>
+      <p>Classification runs on an <strong>on-premises Ollama</strong> server, because client mail can't leave the building. The classifier decides category, priority, whether a reply is needed, whether the mail is automated noise, any deadline the client asked for, whether it's a chaser, and whether the client is saying "it's done".</p>
+      <p>Prompt changes are judged by a small evaluation harness: invented client emails (never real ones), each with the expected answer, run against the prompt in the codebase. On <code>qwen3:8b</code>:</p>
+      <table>
+        <thead><tr><th>Prompt</th><th>Thinking</th><th>Score</th><th>Avg time</th></tr></thead>
+        <tbody>
+          <tr><td>v5</td><td>default</td><td>26 / 35</td><td>—</td></tr>
+          <tr><td>v6</td><td>default</td><td>26 / 37</td><td>43 s, timeouts</td></tr>
+          <tr><td>v6</td><td>low</td><td>35 / 37</td><td>4 s</td></tr>
+          <tr><td>v6</td><td>none</td><td>33 / 37</td><td>1 s</td></tr>
+          <tr><td>v7 (whole-conversation summary)</td><td>low</td><td><strong>41 / 43</strong></td><td>4.1 s</td></tr>
+        </tbody>
+      </table>
+      <p>The biggest gain didn't come from the prompt. It came from <strong>turning thinking down</strong>: with default reasoning the model ran for 43 seconds and timed out, and with <code>low</code> it was both faster and more accurate. The two remaining misses are written down (a certificate warning flagged as needing a reply, and a banner request rated Medium), not hidden.</p>
+      <blockquote><p>[!warning] Treat the model as untrusted input</p><p>The AI only classifies and drafts. It can't send, close or reassign anything, and instructions inside an email are treated as text. Even a perfect score wouldn't change that.</p></blockquote>
+
+      <h2>7. What Two Days Produced</h2>
+      <ul>
+        <li><strong>Foundation:</strong> .NET 10 minimal APIs, EF Core 10 on PostgreSQL 18, Redis 8, Angular 22 staff app and client portal, everything in Docker Compose with live reload.</li>
+        <li><strong>Sign-in:</strong> Microsoft OIDC with an MFA check, our ERP's sign-in finished with a passkey, passkey sign-in, Redis sessions, CSRF protection.</li>
+        <li><strong>Access:</strong> nine built-in roles, a permission matrix with system/client/project scope, and a deny-by-default client filter on every client-owned table.</li>
+        <li><strong>Mail:</strong> Microsoft Graph delta sync, client identification, one conversation across several people's inboxes.</li>
+        <li><strong>Work:</strong> AI classification and a whole-conversation summary rewritten on each message, work items with business-calendar deadlines, routing, snooze, reassign, in-app notifications, and an audit log page.</li>
+      </ul>
+      <p>That's not the product. Drafting and approval, Teams and SMS escalation, the client portal and the security hardening are later phases. But the foundation is the part that usually takes weeks, and it's the part every later feature depends on being right.</p>
+
+      <h2>8. Takeaways</h2>
+      <ul>
+        <li><strong>Write the spec first.</strong> Numbered requirements and acceptance tests give agents something to build against and reviewers something to check.</li>
+        <li><strong>One rule book</strong> (<code>AGENTS.md</code>) that every tool points at, and <strong>one team file</strong> for ownership and review pairs.</li>
+        <li><strong>Pick agents by strength</strong>, give each one its own folders and worktree, and run them in restricted modes.</li>
+        <li>The lead's job is <strong>review, integration and proof</strong>: rule scans, zero-warning builds, real-database tests, screenshots.</li>
+        <li>Keep a <strong>handover file</strong> so any agent or person can take over mid-flight.</li>
+        <li><strong>Measure the AI</strong> with an eval set before and after every prompt or model change.</li>
+      </ul>
+      <p>The same idea at a smaller scale is in <a href="/blog/migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents">migrating worker services to .NET 10 with skill files</a>, and the habits behind both are in <a href="/blog/ai-development-workflow-obsidian-mcp-skills">how I use an Obsidian vault, MCP and Skills</a>.</p>
+    `,
+  },
+  {
     slug: "migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents",
     title: "Two Days, Not Two Sprints: Migrating Worker Services to .NET 10 with Skill Files and Coding Agents",
     excerpt: "We moved legacy .NET Core 3.1 background services to cross-platform .NET 10 worker services in two days. The agent did the typing; two skill files, our API house style and a worker migration playbook, told it what done looks like.",
