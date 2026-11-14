@@ -6,7 +6,7 @@
 
 export const profile = {
   name: 'Boda Madhukar Reddy',
-  title: 'Senior Software Engineer',
+  title: 'Senior Software Engineer · Agentic AI Developer',
   company: 'Revalsys Technologies',
   location: 'Hyderabad, India',
   email: 'madhukarreddyboda538@gmail.com',
@@ -17,13 +17,14 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Senior Software Engineer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
-    'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s, MongoDB query latency from up to 2 s to under 50 ms, and PR review cycle time by 30%. ' +
-    'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana, and takes ambiguous problems from investigation to production.',
+    'Senior Software Engineer and agentic AI developer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
+    'Leads teams of AI coding agents (Claude Code, Codex, Copilot and Antigravity) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. ' +
+    'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. ' +
+    'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
   // dates it; this built-in copy is used until a note is saved there.
-  now: 'Making the AI agent’s answers about twice as fast by testing a new way to run the model on our own server.',
-  nowUpdatedAt: '2026-10-18' as string | null,
+  now: 'Running a team of AI coding agents in Herdr: Claude Code leads; Antigravity, Copilot and Codex build and review.',
+  nowUpdatedAt: '2026-11-14' as string | null,
 };
 
 /** Social profiles that are filled in, for icon rows on the site. */
@@ -45,6 +46,11 @@ export const skillCategories: SkillCategory[] = [
     title: 'Languages',
     color: 'green',
     skills: ['C#', 'TypeScript', 'JavaScript', 'Python', 'SQL', 'C'],
+  },
+  {
+    title: 'Agentic Development',
+    color: 'amber',
+    skills: ['Claude Code', 'OpenAI Codex', 'GitHub Copilot CLI', 'Google Antigravity', 'Cursor', 'Herdr', 'Agent Skills', 'MCP servers', 'Multi-agent review', 'AI evals'],
   },
   {
     title: 'Backend',

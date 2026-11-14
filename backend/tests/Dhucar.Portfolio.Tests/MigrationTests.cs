@@ -39,23 +39,43 @@ public class MigrationTests
         using ApiFactory factory = new();
         factory.CreateApiClient();
 
-        // Run both again over an old profile: the bullets migration (later Id) sets the final summary and groups.
+        // Run all again over an old profile: the bullets migration sets the groups, and the agentic one (latest Id) the final summary.
         await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set("summary", "Old.").Set("Summary", "Old."));
         IMongoCollection<BsonDocument> projects = factory.Database.GetCollection<BsonDocument>("projects");
         BsonDocument jockey = await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync();
         string durationField = jockey.Contains("duration") ? "duration" : "Duration";
         await projects.UpdateOneAsync(new BsonDocument("_id", "jockey"), Builders<BsonDocument>.Update.Set(durationField, "Jan 2021 – May 2023"));
         await Migrations(factory).DeleteManyAsync(FilterDefinition<BsonDocument>.Empty);
-        Assert.Equal([MigrationId, "0002-experience-bullets"], await RunPending(factory));
+        Assert.Equal([MigrationId, "0002-experience-bullets", "0003-agentic-developer"], await RunPending(factory));
         Assert.Equal("Dec 2021 – May 2023", (await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync())[durationField].AsString);
 
         BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         string summaryField = profile.Contains("summary") ? "summary" : "Summary";
-        Assert.Equal(Migration20261030ExperienceBullets.Summary, profile[summaryField].AsString);
+        Assert.Equal(Migration20261114AgenticDeveloper.Summary, profile[summaryField].AsString);
         string experienceField = profile.Contains("experience") ? "experience" : "Experience";
         BsonDocument experience = profile[experienceField].AsBsonDocument;
         BsonArray groups = experience[experience.Contains("groups") ? "groups" : "Groups"].AsBsonArray;
         Assert.Equal(Migration20261030ExperienceBullets.Groups.Count, groups.Count);
+    }
+
+    [Fact]
+    public async Task Agentic_migration_sets_title_summary_now_and_adds_the_skill_group_once()
+    {
+        using ApiFactory factory = new();
+        factory.CreateApiClient();
+
+        BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
+        string titleField = profile.Contains("title") ? "title" : "Title";
+        string nowField = profile.Contains("now") ? "now" : "Now";
+        string skillsField = profile.Contains("skillCategories") ? "skillCategories" : "SkillCategories";
+        Assert.Equal(Migration20261114AgenticDeveloper.Title, profile[titleField].AsString);
+        Assert.Equal(Migration20261114AgenticDeveloper.Now, profile[nowField].AsString);
+
+        // Run it again: the skill group is not added twice.
+        await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0003-agentic-developer"));
+        Assert.Equal(["0003-agentic-developer"], await RunPending(factory));
+        BsonArray groups = (await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync())[skillsField].AsBsonArray;
+        Assert.Single(groups, g => g.AsBsonDocument.GetValue(g.AsBsonDocument.Contains("title") ? "title" : "Title").AsString == Migration20261114AgenticDeveloper.SkillTitle);
     }
 
     [Fact]

@@ -163,10 +163,111 @@ herdr-app do tab.new ...     open a new member in its own tab</pre>
     `,
   },
   {
+    slug: "why-i-am-an-agentic-developer",
+    title: "Why I Call Myself an Agentic Developer: The Evidence, With Links",
+    excerpt: "Everyone is agentic this year. Here is the case file instead of the claim: agentic products, the MCP tools agents use, the agent teams I run, and the numbers behind each, from 40 s to 13 s answers to a 260 person-day plan with a working foundation in two days.",
+    date: "November 13, 2026",
+    category: "Artificial Intelligence",
+    tags: ["AI Agents", "Claude Code", "MCP", "Skills", "LLMs"],
+    content: `
+      <p class="lead">"Agentic" is on every profile this year, usually with nothing behind it. So instead of a claim, this post is a case file. Agentic development, as I practise it, means four things: I <strong>build products where AI agents do real work</strong>, I <strong>build the tools agents use</strong>, I <strong>run teams of coding agents</strong> to ship software, and I <strong>measure all of it</strong> so the results hold up. Each section below links to the write-up, the numbers and, where I can share it, the working thing.</p>
+
+      <h2>1. What I Mean by "Agentic Developer"</h2>
+      <p>Prompting a chatbot isn't it, and neither is accepting autocomplete suggestions. An agentic developer works at three levels:</p>
+      <ul>
+        <li><strong>Product:</strong> designs systems in which a model plans, calls tools and takes actions, with guardrails around what it's allowed to do.</li>
+        <li><strong>Tooling:</strong> gives agents the context they lack: memory, access to real systems through MCP, and conventions packaged as skills.</li>
+        <li><strong>Process:</strong> delivers software with several agents working in parallel, assigned roles, reviewed by other agents and by a person, and merged only with proof.</li>
+      </ul>
+      <p>The test for each level is simple: is there something running, and is there a number?</p>
+
+      <h2>2. Evidence: I Build Agentic Products</h2>
+      <h3>A multi-tenant AI agent platform on .NET 10</h3>
+      <p>An embeddable assistant built on <strong>Microsoft Agent Framework</strong>: agents with MCP tools for database and document access, pgvector retrieval, text-to-SQL, guardrails for personal data, and streaming answers. It worked, but a data question took 30 to 40 seconds. I audited the whole request path, ranked the fixes, and moved the agent to Agent Framework. <strong>Most answers now arrive in about 13 seconds.</strong></p>
+      <ul>
+        <li>The audit: <a href="/blog/rag-chatbot-latency-audit">Why our RAG chatbot took 40 seconds to answer, and the plan to make it 70% faster</a></li>
+        <li>The project: <a href="/projects/multi-tenant-ai-chatbot">Multi-tenant AI chatbot</a></li>
+      </ul>
+
+      <h3>Choosing the hardware an agent runs on</h3>
+      <p>For a self-hosted agent, I benchmarked an RTX 5090 against an NVIDIA DGX Spark with the same model, the same Ollama version and the same request. The 5090 answered in about 15 seconds and the Spark in about 41. Memory bandwidth, not memory size, decided it. Running agents on your own servers means making calls like this from measurements, not spec sheets.</p>
+      <ul><li><a href="/blog/rtx-5090-vs-dgx-spark-local-llm-inference">RTX 5090 vs DGX Spark for a local AI agent: why memory bandwidth won</a></li></ul>
+
+      <h3>An AI email assistant that can't act on its own</h3>
+      <p>An on-premises assistant that classifies client email with a local model, assigns owners and deadlines, and drafts replies. The agentic part is as much about what the model <em>can't</em> do: it never sends, closes or reassigns anything, and instructions inside an email are treated as text. The classifier is measured on an evaluation set: from <strong>26/35 to 41/43</strong>, with average time down from 43 seconds (with timeouts) to about 4.</p>
+      <ul><li><a href="/blog/building-ai-email-assistant-with-a-team-of-coding-agents">One lead, three agents: building an on-prem AI email assistant</a></li></ul>
+
+      <h3>Retrieval that agents depend on</h3>
+      <p>Agents are only as good as what they retrieve. I built hybrid product search on Solr 9, fusing BM25 and vector results with Reciprocal Rank Fusion, and a RAG pipeline for developer documentation.</p>
+      <ul>
+        <li><a href="/blog/hybrid-search-solr-bm25-vector-rrf">Hybrid product search on Solr 9: BM25 + vectors + RRF in .NET</a>, with an <a href="/lab/hybrid-search">interactive visualiser</a></li>
+        <li><a href="/blog/building-rag-pipeline-internal-documentation">Building a RAG pipeline for developer knowledge discovery</a></li>
+      </ul>
+
+      <h2>3. Evidence: I Build the Tools Agents Use</h2>
+      <h3>An MCP server that maps a codebase</h3>
+      <p>Coding assistants are good with the file you have open and poor at "who calls this stored procedure?" across a 40-project solution. I built a <strong>Model Context Protocol server</strong> that analyses C# solutions with Roslyn and SQL Server schemas through catalogue views, and exposes the results as more than 40 tools. Agents answer those questions from facts instead of guesses.</p>
+      <ul><li><a href="/blog/mcp-server-code-database-intelligence">Giving AI assistants a map of your codebase: an MCP server for C# code and SQL Server schemas</a></li></ul>
+
+      <h3>This site is agent-readable</h3>
+      <p>The portfolio you're reading has its own <strong>MCP endpoint</strong>, so any MCP client can search my projects and posts, plus <code>llms.txt</code> and <code>llms-full.txt</code> for models that read the web.</p>
+      <ul><li><a href="/ai">Connect an AI assistant to this site</a></li></ul>
+
+      <h3>Memory, reach and habits</h3>
+      <p>My day-to-day setup gives every agent three things: an <strong>Obsidian vault</strong> as memory (decisions, runbooks, incidents), <strong>MCP servers</strong> as reach into real systems, and <strong>Skills</strong> as habits, so house style is applied every time rather than when someone remembers it.</p>
+      <ul><li><a href="/blog/ai-development-workflow-obsidian-mcp-skills">Memory, reach and habits: an Obsidian vault, MCP and Skills</a></li></ul>
+
+      <h2>4. Evidence: I Run Teams of Coding Agents</h2>
+      <h3>A standing agent team in Herdr</h3>
+      <p>Claude Code is the tech lead: it researches, finds the bug, discusses it with me, and delegates. Five Antigravity sessions are the developers, each owning one area of the codebase. GitHub Copilot CLI reviews everything first, and Codex gives the risky changes a second review. A standby agent takes over as lead when Claude hits its usage limit. They hand work to each other through Herdr's <code>hc send</code>, and the whole team is defined in one file.</p>
+      <ul><li><a href="/blog/herdr-ai-agent-team-claude-code-antigravity-copilot-codex">My AI dev team lives in Herdr</a></li></ul>
+
+      <h3>Spec-driven delivery with four agents</h3>
+      <p>For the email assistant, a plan of about <strong>260 person-days</strong> became a working foundation in <strong>two days and 110 commits</strong>: sign-in, roles, tenant separation, mailbox sync, AI classification and work items. That took a written spec with numbered requirements, a shared rule book, ownership per agent, a git worktree per task, and a lead that reviewed, built and tested before every merge.</p>
+      <ul><li><a href="/blog/building-ai-email-assistant-with-a-team-of-coding-agents">How a spec, a rule book and a lead agent kept four coding agents in line</a></li></ul>
+
+      <h3>Skill files that turn a sprint into two days</h3>
+      <p>A group of legacy background services moved to cross-platform .NET 10 worker services in two days. The agent didn't make that fast on its own: two stacked skills (a house style and a migration playbook) told it what "done" looks like, ending in a checklist that doubled as the reviewer's map.</p>
+      <ul><li><a href="/blog/migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents">Two days, not two sprints: migrating worker services to .NET 10 with skill files</a></li></ul>
+
+      <h3>This site, built the same way</h3>
+      <p>This portfolio is a Next.js 16 front end and a .NET API with passkeys, an admin, content sync, live presence and a status page. Of its 166 commits, <strong>105 were written with an AI agent</strong> and carry its co-author line. Every one was reviewed and merged by me.</p>
+
+      <h2>5. Evidence: I Measure, and People Stay in Charge</h2>
+      <p>The difference between agentic and reckless is proof. A few habits I hold to:</p>
+      <ul>
+        <li><strong>Evals for AI behaviour.</strong> Prompt and model changes run against a fixed evaluation set before and after. That's how the email classifier went from 26/35 to 41/43, and how we found that <em>less</em> thinking was both faster and more accurate.</li>
+        <li><strong>Measurements for performance.</strong> When this site scored poorly on mobile, Lighthouse showed 25 seconds of blocking time. One "optimisation" an assistant proposed made it worse, and only a measurement caught it. The details are in the <a href="/blog/ai-development-workflow-obsidian-mcp-skills">workflow post</a>.</li>
+        <li><strong>Load tests before release.</strong> <a href="/blog/load-testing-microservices-k6-grafana">Repeatable k6 and Grafana suites</a> catch latency regressions before code reaches staging.</li>
+        <li><strong>Review by a different model, then by me.</strong> Reviewers get checked too: one of Copilot's findings described a scenario that couldn't happen.</li>
+        <li><strong>Git and decisions stay human.</strong> Agents propose, implement and report. Nothing is assigned until I agree, nothing merges until it's proven, and agents never commit or push.</li>
+      </ul>
+      <blockquote><p>[!warning] What agentic is not</p><p>It isn't "the AI wrote it, ship it". In every project above, agents did the repetitive work and a person owned the judgement: what to build, what counts as done, and what's safe to merge.</p></blockquote>
+
+      <h2>6. The Short Version</h2>
+      <table>
+        <thead><tr><th>Claim</th><th>Proof</th><th>Number</th></tr></thead>
+        <tbody>
+          <tr><td>Builds agentic products</td><td><a href="/blog/rag-chatbot-latency-audit">Agent platform audit</a></td><td>30–40 s → ~13 s</td></tr>
+          <tr><td>Runs agents on own hardware</td><td><a href="/blog/rtx-5090-vs-dgx-spark-local-llm-inference">5090 vs DGX Spark</a></td><td>~15 s vs ~41 s</td></tr>
+          <tr><td>Measures AI behaviour</td><td><a href="/blog/building-ai-email-assistant-with-a-team-of-coding-agents">Email classifier evals</a></td><td>26/35 → 41/43</td></tr>
+          <tr><td>Builds tools for agents</td><td><a href="/blog/mcp-server-code-database-intelligence">Code-intelligence MCP server</a></td><td>40+ tools</td></tr>
+          <tr><td>Leads agent teams</td><td><a href="/blog/herdr-ai-agent-team-claude-code-antigravity-copilot-codex">Herdr team</a></td><td>9 agent sessions</td></tr>
+          <tr><td>Delivers with agents</td><td><a href="/blog/building-ai-email-assistant-with-a-team-of-coding-agents">Email assistant foundation</a></td><td>~260 PD plan → 2 days</td></tr>
+          <tr><td>Encodes conventions as skills</td><td><a href="/blog/migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents">.NET 10 migration</a></td><td>2 days</td></tr>
+          <tr><td>Dogfoods it</td><td>This site</td><td>105 of 166 commits with an agent</td></tr>
+        </tbody>
+      </table>
+
+      <h2>7. What This Means for Your Team</h2>
+      <p>If you're bringing coding agents into a real codebase, the hard part isn't installing them. It's the spec they build against, the rules they can't break, the skills that carry your conventions, the review that catches what they miss, and the evals that tell you whether the AI got better or just different. That's the work I do. I'm happy to talk through how it would fit your team: <a href="/work-with-me">work with me</a>.</p>
+    `,
+  },
+  {
     slug: "building-ai-email-assistant-with-a-team-of-coding-agents",
     title: "One Lead, Three Agents: Building an On-Prem AI Email Assistant with Claude Code, Codex, Cursor and Antigravity",
     excerpt: "A 260 person-day plan, and in two days a working foundation in 110 commits. How a spec, one rule book, a team file and a lead agent kept four coding agents in line, and how we measured the local AI instead of trusting it.",
-    date: "November 13, 2026",
+    date: "November 12, 2026",
     category: "Artificial Intelligence",
     tags: ["Claude Code", "AI Agents", "Ollama", "LLMs", ".NET Core"],
     content: `
@@ -274,7 +375,7 @@ lead ─▶ worktree per task ─▶ agent ─▶ lead review ─▶ build + tes
     slug: "migrating-worker-services-to-dotnet-10-with-skills-and-coding-agents",
     title: "Two Days, Not Two Sprints: Migrating Worker Services to .NET 10 with Skill Files and Coding Agents",
     excerpt: "Legacy background services moved to cross-platform .NET 10 worker services in two days. The coding agent did the typing; two stacked skill files, a house style and a migration playbook, told it what done looks like.",
-    date: "November 12, 2026",
+    date: "November 11, 2026",
     category: "Artificial Intelligence",
     tags: [".NET Core", "Background Services", "Skills", "Claude Code", "Migration"],
     content: `

@@ -4,7 +4,7 @@ import { experienceSince } from '@/lib/utils';
 
 export const size = OG_SIZE;
 export const contentType = 'image/jpeg';
-export const alt = 'Boda Madhukar Reddy, Senior Software Engineer: .NET, self-hosted AI and performance engineering';
+export const alt = 'Boda Madhukar Reddy, Senior Software Engineer and agentic AI developer: .NET, self-hosted AI and teams of coding agents';
 
 export default async function Image() {
   const { experience, keyProjects, clientProjects, posts } = await getContent();

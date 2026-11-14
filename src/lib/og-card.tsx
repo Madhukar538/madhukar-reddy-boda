@@ -70,7 +70,7 @@ export async function ogCard({
             <div style={{ display: 'flex', marginTop: 6, fontSize: 26, color: MUTED }}>
               <span style={{ color: ACCENT, fontWeight: 600 }}>Senior Software Engineer</span>
               <span style={{ margin: '0 12px' }}>·</span>
-              <span>Hyderabad, India</span>
+              <span>Agentic AI Developer</span>
             </div>
           </div>
 

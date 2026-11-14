@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 const heroMetrics = [
   { value: '40s → 13s', label: 'RAG latency reduction' },
   { value: '5–50 ms', label: 'MongoDB query tuning' },
-  { value: '1,792 GB/s', label: 'GPU inference bandwidth' },
+  { value: '2 days', label: 'Foundation built by an agent team' },
   { value: `${experienceSince().years}+ Years`, label: 'Production systems' },
 ];
 
@@ -48,15 +48,15 @@ export default async function Home() {
           </span>
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
-            <span className="block text-muted-foreground">Senior Software Engineer · Revalsys, Hyderabad</span>
+            <span className="block text-muted-foreground">Senior Software Engineer · Agentic AI Developer</span>
           </span>
         </Link>
         <HeroIdentity />
         <h1 className="text-[clamp(2.5rem,5.2vw,4.5rem)] leading-[1.02] text-foreground">
-          I build fast .NET systems, and AI that stays on <em>your own servers</em>.
+          I build fast .NET systems, and ship them with <em>teams of AI agents</em>.
         </h1>
         <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-          Senior backend engineer at Revalsys, Hyderabad. I work on multi-tenant RAG and MCP platforms, Solr 9 hybrid search, and e-commerce APIs that are load-tested with k6 before they ship.
+          Senior backend engineer at Revalsys, Hyderabad. I lead teams of AI coding agents (Claude Code, Codex, Copilot, Antigravity) with specs, skills and review, and take what they build to production: multi-tenant RAG and MCP platforms, Solr 9 hybrid search, and APIs load-tested with k6 before they ship.
         </p>
         {/* Phones: the two actions share a row; the résumé is a quiet link under them. */}
         <div className="grid grid-cols-2 items-center gap-2.5 pt-1 sm:flex sm:flex-wrap">
