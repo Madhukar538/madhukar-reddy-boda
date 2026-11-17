@@ -195,7 +195,7 @@ export function SocialRail({ profile, socialLinks }: { profile: Profile; socialL
           <dt className="text-muted-foreground">stack</dt>
           <dd className="text-foreground/85">.NET · RAG · MCP</dd>
           <dt className="text-muted-foreground">status</dt>
-          <dd><span className="profile-dock-status text-primary">open to work</span></dd>
+          <dd><span className="profile-dock-status text-primary">fixing bugs</span></dd>
           <dt className="text-muted-foreground">hours</dt>
           <dd className="text-foreground/85">Mon–Fri · {WORK_START}–{WORK_END} IST</dd>
         </dl>

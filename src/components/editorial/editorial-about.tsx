@@ -52,10 +52,6 @@ export function EditorialAbout({ name, education }: Props) {
           Fixing bugs and giving solutions. If something is slow, broken or stuck,{' '}
           <Link href="/fix-a-bug" className="ed-link">
             send it over <ArrowUpRight className="h-4 w-4" />
-          </Link>{' '}
-          or{' '}
-          <Link href="/work-with-me" className="ed-link">
-            work with me <ArrowUpRight className="h-4 w-4" />
           </Link>
           .
         </>

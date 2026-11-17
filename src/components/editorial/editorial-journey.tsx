@@ -47,7 +47,7 @@ export function EditorialJourney({ experience, stats }: { experience: Experience
             <dt>{s.label}</dt>
             <dd>
               {isYears(s) ? (
-                <LiveExperience />
+                <LiveExperience at={Date.now()} />
               ) : (
                 <>
                   {s.value}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { ChapterExhibit, type ExhibitKind } from './chapter-exhibit';
 
 /**
  * The Editorial homepage told as a journey: chapters from the degree to today's team of AI
@@ -15,17 +16,20 @@ type Chapter = {
   body: string;
   proof?: string;
   links?: { href: string; label: string }[];
+  exhibit: ExhibitKind;
 };
 
 const CHAPTERS: Chapter[] = [
   {
     no: '00',
+    exhibit: 'degree',
     era: 'Prologue · Karimnagar',
     title: 'It started with a B.Sc',
     body: 'Computer science at Satavahana University, Karimnagar: data structures, algorithms and the first programs that actually ran. Enough to know I wanted to build things people use.',
   },
   {
     no: '01',
+    exhibit: 'brands',
     era: 'Dec 2021 · Hyderabad',
     title: 'First job, real traffic',
     body: 'I joined Revalsys and went straight into production code: core features for high-traffic e-commerce brands such as Jockey, Speedo, Manyavar and Fossil India on Angular and .NET, and the integration with ONDC, the Open Network for Digital Commerce.',
@@ -34,6 +38,7 @@ const CHAPTERS: Chapter[] = [
   },
   {
     no: '02',
+    exhibit: 'latency',
     era: 'Making it fast',
     title: 'Learning to measure before guessing',
     body: 'Slow pages taught me to measure first. I built repeatable k6 load tests with Grafana dashboards to set real SLA baselines, and traced slow queries to full collection scans, fixed with the right MongoDB indexes.',
@@ -45,6 +50,7 @@ const CHAPTERS: Chapter[] = [
   },
   {
     no: '03',
+    exhibit: 'rnd',
     era: 'Leading R&D',
     title: 'From prototypes to systems',
     body: 'I became the sole lead for the company’s .NET R&D: moving legacy systems to modern .NET, a WebRTC video platform, IoT proofs of concept over MQTT, offline-first apps and an incident-management platform. Most of them started as a question and ended as something running.',
@@ -53,6 +59,7 @@ const CHAPTERS: Chapter[] = [
   },
   {
     no: '04',
+    exhibit: 'ai',
     era: 'AI arrives',
     title: 'Building what AI runs on',
     body: 'Then the work turned to AI: a multi-tenant RAG platform on .NET 10, an MCP server that gives assistants a map of C# code and SQL Server schemas, hybrid search on Solr 9, and models moved onto our own GPU server instead of a cloud bill.',
@@ -64,6 +71,7 @@ const CHAPTERS: Chapter[] = [
   },
   {
     no: '05',
+    exhibit: 'agents',
     era: 'Today',
     title: 'Leading a team of AI agents',
     body: 'Now I lead AI coding agents the way a tech lead leads people: Claude Code plans and delegates, Antigravity builds, Copilot and Codex review, and every change is proven before it ships. The same discipline took our RAG chatbot from 40 seconds an answer to about 13.',
@@ -109,6 +117,7 @@ export function EditorialStory() {
                 </p>
               )}
             </div>
+            <ChapterExhibit kind={c.exhibit} />
           </li>
         ))}
       </ol>

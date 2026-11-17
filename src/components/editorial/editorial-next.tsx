@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 /**
  * The link to the next part of the story at the end of a page, so the Editorial look reads as
- * one journey: Home → Experience → Projects → About → Work with me. Shown only in Editorial.
+ * one journey: Home → Experience → Projects → About → Fix a bug. Shown only in Editorial.
  */
 
 export const STORY = [
@@ -11,7 +11,7 @@ export const STORY = [
   { href: '/experience', title: 'The road so far' },
   { href: '/projects', title: 'The case files' },
   { href: '/about', title: 'In my own words' },
-  { href: '/work-with-me', title: 'What happens next' },
+  { href: '/fix-a-bug', title: 'Bring me a bug' },
 ] as const;
 
 export function EditorialNext({ from }: { from: (typeof STORY)[number]['href'] }) {

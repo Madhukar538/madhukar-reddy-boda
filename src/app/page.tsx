@@ -29,7 +29,7 @@ const heroMetrics = [
   { value: '5–50 ms', label: 'MongoDB query tuning' },
   { value: '2 days', label: 'Agent-built foundation' },
   // Counted live, to the second.
-  { value: <LiveExperience />, label: `Building since ${experienceSince().since}` },
+  { value: <LiveExperience at={Date.now()} />, label: `Building since ${experienceSince().since}` },
 ];
 
 export default async function Home() {
