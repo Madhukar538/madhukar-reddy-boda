@@ -7,7 +7,7 @@ import { PopularPosts } from '@/components/blog/post-engagement';
 import { HomeBento } from '@/components/blog/home-bento';
 import { LegacyHashRedirect } from '@/components/blog/legacy-hash-redirect';
 import { allTopics, summaries } from '@/lib/blog';
-import { getContent } from '@/lib/content';
+import { getContent, getThemeSettings } from '@/lib/content';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
@@ -31,13 +31,13 @@ const heroMetrics = [
 ];
 
 export default async function Home() {
-  const { posts, experience, keyProjects, rdProjects, profile } = await getContent();
+  const [{ posts, experience, keyProjects, rdProjects, profile }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const topics = allTopics(posts);
 
   return (
     <>
-    <PortraitBackdrop />
-    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} />
+    <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
+    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} priority={themes.defaultTheme === 'editorial'} />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 

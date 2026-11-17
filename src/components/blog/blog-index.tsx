@@ -13,6 +13,16 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const inputRef = useRef<HTMLInputElement>(null);
+  // Every post's full text, loaded the first time someone searches (titles, tags and excerpts match before it arrives).
+  const [bodies, setBodies] = useState<Record<string, string> | null>(null);
+  const loading = useRef(false);
+  const loadBodies = () => {
+    if (loading.current) return;
+    loading.current = true;
+    fetch('/search-text.json')
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setBodies, () => (loading.current = false));
+  };
 
   const categories = useMemo(() => ['All', ...Array.from(new Set(posts.map((p) => p.category)))], [posts]);
 
@@ -39,7 +49,7 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
       for (const t of terms) {
         if (head.includes(t)) score += 3;
         else if (p.excerpt.toLowerCase().includes(t)) score += 2;
-        else if (p.text.includes(t)) score += 1;
+        else if (bodies?.[p.slug]?.includes(t)) score += 1;
         else return { post: p, score: -1 };
       }
       return { post: p, score };
@@ -67,7 +77,11 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
             ref={inputRef}
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              loadBodies();
+            }}
+            onFocus={loadBodies}
             placeholder="Search posts: RAG, caching, k6…"
             aria-label="Search posts"
             className="w-full bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground/80 outline-none [&::-webkit-search-cancel-button]:hidden"

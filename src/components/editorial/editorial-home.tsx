@@ -24,7 +24,7 @@ function projectHref(project: ProjectCard) {
   return project.post ? `/blog/${project.post}` : '/projects';
 }
 
-export function EditorialHome({ projects, metrics, since }: { projects: ProjectCard[]; metrics: Metric[]; since: string }) {
+export function EditorialHome({ projects, metrics, since, priority = false }: { projects: ProjectCard[]; metrics: Metric[]; since: string; priority?: boolean }) {
   return (
     <div className="home-editorial">
       <section className="ed-hero" aria-labelledby="ed-title">
@@ -37,7 +37,7 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
           <span>{since} →</span>
         </p>
         <figure className="ed-portrait" aria-hidden>
-          <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 700px) 26vw, 1px" className="object-contain object-bottom" />
+          <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 700px) 26vw, 1px" preload={priority} className="object-contain object-bottom" />
           <figcaption>Fig. 01 — Hyderabad, IN</figcaption>
         </figure>
         <div className="ed-name" aria-hidden>
