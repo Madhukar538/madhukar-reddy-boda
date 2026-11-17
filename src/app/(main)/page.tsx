@@ -18,6 +18,9 @@ import { DuneHome } from '@/components/looks/dune-home';
 import { GazetteHome } from '@/components/looks/gazette';
 import { ReceiptHome } from '@/components/looks/receipt';
 import { ObservatoryHome } from '@/components/looks/observatory';
+import { TerminalHome } from '@/components/looks/terminal-look';
+import { BlueprintHome } from '@/components/looks/blueprint-look';
+import { GlassHome } from '@/components/looks/glass-look';
 import { experienceSince } from '@/lib/utils';
 import { LiveExperience } from '@/components/portfolio/live-experience';
 
@@ -47,7 +50,7 @@ export default async function Home() {
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
     <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} story={story} />
     {/* Each of these looks has its own homepage too (components/looks), shown only in that look. */}
-    {([['arctic', ArcticHome], ['synthwave', SynthwaveHome], ['dune', DuneHome], ['gazette', GazetteHome], ['receipt', ReceiptHome], ['observatory', ObservatoryHome]] as const).map(([look, LookHome]) => (
+    {([['arctic', ArcticHome], ['synthwave', SynthwaveHome], ['dune', DuneHome], ['gazette', GazetteHome], ['receipt', ReceiptHome], ['observatory', ObservatoryHome], ['terminal', TerminalHome], ['blueprint', BlueprintHome], ['glass', GlassHome]] as const).map(([look, LookHome]) => (
       <LookHome key={look} heading={story.hero.heading} name={profile.name} projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} posts={summaries(posts)} />
     ))}
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">

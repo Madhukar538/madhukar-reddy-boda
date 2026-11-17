@@ -9,6 +9,9 @@ import { DuneExperience } from '@/components/looks/dune-pages';
 import { GazetteExperience } from '@/components/looks/gazette';
 import { ReceiptExperience } from '@/components/looks/receipt';
 import { ObservatoryExperience } from '@/components/looks/observatory';
+import { TerminalExperience } from '@/components/looks/terminal-look';
+import { BlueprintExperience } from '@/components/looks/blueprint-look';
+import { GlassExperience } from '@/components/looks/glass-look';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
@@ -57,6 +60,9 @@ export default async function ExperiencePage() {
       <GazetteExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <ReceiptExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <ObservatoryExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <TerminalExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <BlueprintExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <GlassExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>

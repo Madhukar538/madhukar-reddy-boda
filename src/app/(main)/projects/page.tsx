@@ -12,6 +12,9 @@ import { DuneProjects } from '@/components/looks/dune-pages';
 import { GazetteProjects } from '@/components/looks/gazette';
 import { ReceiptProjects } from '@/components/looks/receipt';
 import { ObservatoryProjects } from '@/components/looks/observatory';
+import { TerminalProjects } from '@/components/looks/terminal-look';
+import { BlueprintProjects } from '@/components/looks/blueprint-look';
+import { GlassProjects } from '@/components/looks/glass-look';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 
@@ -51,6 +54,9 @@ export default async function ProjectsPage() {
       <GazetteProjects keyProjects={keyProjects} clientProjects={clientProjects} />
       <ReceiptProjects keyProjects={keyProjects} clientProjects={clientProjects} />
       <ObservatoryProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <TerminalProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <BlueprintProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <GlassProjects keyProjects={keyProjects} clientProjects={clientProjects} />
       <div className="classic-only">
         <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
       </div>
