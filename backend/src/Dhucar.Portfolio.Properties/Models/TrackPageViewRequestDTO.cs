@@ -3,8 +3,8 @@ namespace Dhucar.Portfolio.Properties.Models;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  18 Nov 2026
+ * Modified Reason :  The look the page was shown in
  * Layer           :  Properties
  * Modified By     :
  * Description     :  An anonymous page view sent by the site.
@@ -19,4 +19,7 @@ public class TrackPageViewRequestDTO
 
     /// <summary>utm_source query value.</summary>
     public string UtmSource { get; set; } = string.Empty;
+
+    /// <summary>The site look (theme) the page was shown in; kept only if it is a registered theme.</summary>
+    public string Look { get; set; } = string.Empty;
 }

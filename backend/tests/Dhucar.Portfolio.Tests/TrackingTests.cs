@@ -71,4 +71,37 @@ public class TrackingTests
         Assert.Equal("/", summary.Data.GetProperty("topPages")[0].GetProperty("key").GetString());
         Assert.Equal(2, summary.Data.GetProperty("topPages")[0].GetProperty("count").GetInt64());
     }
+
+    [Fact]
+    public async Task Summary_counts_views_by_look_and_drops_unknown_looks()
+    {
+        using ApiFactory factory = new();
+        AdminSession session = await AdminSession.SignedIn(factory);
+        HttpClient visitor = factory.CreateApiClient();
+        Dictionary<string, string> headers = new() { ["User-Agent"] = Browser };
+        await visitor.Post("TrackPageView", new { path = "/", look = "gazette" }, headers: headers);
+        await visitor.Post("TrackPageView", new { path = "/about", look = "gazette" }, headers: headers);
+        await visitor.Post("TrackPageView", new { path = "/", look = "dune" }, headers: headers);
+        await visitor.Post("TrackPageView", new { path = "/", look = "<script>" }, headers: headers);
+
+        BsonDocument odd = await factory.Database.GetCollection<BsonDocument>("pageViews").Find(Builders<BsonDocument>.Filter.Eq("Look", "<script>")).FirstOrDefaultAsync();
+        Assert.Null(odd);
+        ApiResult summary = await session.Client.Post("GetTrafficSummary", new { days = 7 }, token: session.AccessToken);
+        JsonElementAssert(summary, "gazette", 2);
+        JsonElementAssert(summary, "dune", 1);
+        Assert.Equal(2, summary.Data.GetProperty("looks").GetArrayLength());
+    }
+
+    private static void JsonElementAssert(ApiResult summary, string look, long count)
+    {
+        foreach (System.Text.Json.JsonElement item in summary.Data.GetProperty("looks").EnumerateArray())
+        {
+            if (item.GetProperty("key").GetString() == look)
+            {
+                Assert.Equal(count, item.GetProperty("count").GetInt64());
+                return;
+            }
+        }
+        Assert.Fail($"No count for {look}.");
+    }
 }

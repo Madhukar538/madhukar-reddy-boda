@@ -117,6 +117,8 @@ export type TrafficSummary = {
   topReferrers: CountItem[];
   devices: CountItem[];
   countries: CountItem[];
+  /** Views by site look (theme); absent from an API older than this field. */
+  looks?: CountItem[];
 };
 
 export type AuditEntry = {

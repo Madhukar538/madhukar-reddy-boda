@@ -41,4 +41,7 @@ public class PageViewDocument
 
     /// <summary>Daily-salted hash for counting unique visitors; the salt is deleted after two days.</summary>
     public string VisitorHash { get; set; } = string.Empty;
+
+    /// <summary>The site look (theme) the page was shown in, or empty.</summary>
+    public string Look { get; set; } = string.Empty;
 }
