@@ -151,7 +151,7 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
           {older.length > 0 && (
             <div className="glass mt-2 p-2 md:p-3">
               <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">More posts</p>
-              <ul className="divide-y divide-foreground/10">
+              <ul className="post-index divide-y divide-foreground/10">
                 {older.map((p) => (
                   <li key={p.slug}>
                     <Link href={`/blog/${p.slug}`} className="group flex items-baseline gap-4 rounded-xl px-3 py-3.5 hover:bg-foreground/5 transition-colors">
