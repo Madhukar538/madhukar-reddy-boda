@@ -4,20 +4,21 @@ import { useCallback, useEffect, useState } from 'react';
 
 /**
  * The site's look: terminal (light, the default), midnight (warm dark, the
- * backup) or glass (the original Liquid Glass, kept but not offered).
+ * backup), blueprint (interactive architect's drawing, dark) or glass (the
+ * original Liquid Glass).
  * The server renders <html data-style="terminal">; a visitor who picked
  * Midnight has it stored, and the inline script in app/layout removes the
  * attribute before first paint. No attribute means midnight.
  */
 
-export type DesignStyle = 'terminal' | 'midnight' | 'glass';
+export type DesignStyle = 'terminal' | 'midnight' | 'blueprint' | 'glass';
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 
 const read = (): DesignStyle => {
   if (typeof document === 'undefined') return 'terminal';
   const style = document.documentElement.dataset.style;
-  return style === 'glass' || style === 'terminal' ? style : 'midnight';
+  return style === 'glass' || style === 'terminal' || style === 'blueprint' ? style : 'midnight';
 };
 
 export function applyDesignStyle(style: DesignStyle) {

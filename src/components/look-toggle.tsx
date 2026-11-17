@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: string }[] = [
   { id: 'terminal', label: 'Terminal', hint: 'Light', swatch: 'linear-gradient(135deg, #F7F7F4 50%, #C6F432 50%)' },
   { id: 'midnight', label: 'Midnight', hint: 'Warm dark', swatch: 'linear-gradient(135deg, #110F0D 50%, #D94A54 50%)' },
+  { id: 'blueprint', label: 'Blueprint', hint: 'Interactive', swatch: 'linear-gradient(135deg, #0B2545 50%, #5CE1E6 50%)' },
   { id: 'glass', label: 'Glass', hint: 'Liquid glass', swatch: 'linear-gradient(135deg, #7DD3FC, #F0ABFC, #FDE68A)' },
 ];
 
@@ -26,7 +27,7 @@ export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions;
 }
 
 const MENU_W = 208;
-const MENU_H = 210;
+const MENU_H = 262;
 const GAP = 8;
 
 /**

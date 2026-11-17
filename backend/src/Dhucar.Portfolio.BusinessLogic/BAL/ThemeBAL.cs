@@ -10,10 +10,10 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  14 Nov 2026
- * Modified Date   :
- * Modified Reason :
+ * Modified Date   :  17 Nov 2026
+ * Modified Reason :  Blueprint theme added to the registry
  * Layer           :  BusinessLogic
- * Modified By     :
+ * Modified By     :  Boda Madhukar Reddy
  * Description     :  The theme registry, and which themes are enabled and the default (set in the admin).
  */
 public class ThemeBAL(ThemeDAL themeDAL, RevalidationBAL revalidationBAL, AuditBAL auditBAL, IContextService contextService, ICodeLogger codeLog)
@@ -26,6 +26,7 @@ public class ThemeBAL(ThemeDAL themeDAL, RevalidationBAL revalidationBAL, AuditB
     [
         ("terminal", "Terminal", "Light"),
         ("midnight", "Midnight", "Warm dark"),
+        ("blueprint", "Blueprint", "Interactive"),
         ("glass", "Glass", "Liquid glass"),
     ];
 
