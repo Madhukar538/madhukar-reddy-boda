@@ -13,7 +13,7 @@ type Status =
   | { state: 'sent'; ticket: string; priority?: string; trace?: TraceStep[] };
 
 const fieldClass =
-  'w-full rounded-2xl bg-foreground/[0.04] dark:bg-white/[0.05] px-4 py-3 text-[0.95rem] text-foreground placeholder:text-muted-foreground/70 ring-1 ring-foreground/10 outline-none transition focus:ring-2 focus:ring-primary';
+  'bug-field w-full rounded-2xl bg-foreground/[0.04] dark:bg-white/[0.05] px-4 py-3 text-[0.95rem] text-foreground placeholder:text-muted-foreground/70 ring-1 ring-foreground/10 outline-none transition focus:ring-2 focus:ring-primary';
 
 function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: ReactNode }) {
   return (
@@ -39,7 +39,7 @@ function Choice<T extends string>({ name, options, value, onChange }: { name: st
           aria-checked={value === option}
           onClick={() => onChange(option)}
           className={cn(
-            'rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 transition-all active:scale-95',
+            'bug-choice rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 transition-all active:scale-95',
             value === option
               ? 'bg-foreground text-background ring-foreground'
               : 'ring-foreground/15 text-foreground/75 hover:bg-foreground/[0.06] hover:text-foreground'
@@ -157,7 +157,7 @@ export function BugReportForm() {
   const fields = status.state === 'error' ? status.fields ?? {} : {};
 
   return (
-    <form onSubmit={onSubmit} className="glass p-6 md:p-8 space-y-6" noValidate>
+    <form onSubmit={onSubmit} className="bug-form glass p-6 md:p-8 space-y-6" noValidate>
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Your name" error={fields.name}>
           <input name="name" required autoComplete="name" className={fieldClass} placeholder="Ada Lovelace" />
@@ -217,7 +217,7 @@ export function BugReportForm() {
         <button
           type="submit"
           disabled={sending}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:brightness-110 active:scale-95 disabled:opacity-70"
+          className="bug-send inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:brightness-110 active:scale-95 disabled:opacity-70"
         >
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           {sending ? 'Filing ticket…' : 'File the ticket'}
@@ -236,11 +236,12 @@ export function BugProcess({ email }: { email: string }) {
     { title: 'We fix it', body: "I reply with next steps: a quick answer, a call or a proper fix." },
   ];
   return (
-    <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+    <ol className="bug-steps grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
       {steps.map((s, i) => (
         <li key={s.title} className="glass p-5 flex gap-4">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+          <span className="bug-step-num flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
             {i === 0 ? <Bug className="h-4 w-4" /> : i + 1}
+            <span className="bug-step-n" aria-hidden>{String(i + 1).padStart(2, '0')}</span>
           </span>
           <div>
             <p className="font-semibold">{s.title}</p>

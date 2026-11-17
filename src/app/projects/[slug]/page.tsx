@@ -119,7 +119,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const graph = study.post ? localGraph(content, study.post) : null;
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-20">
+    <div className="ed-case container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-20">
       {/* Reading progress, driven by the page scroll (CSS only). */}
       <div aria-hidden className="cs-progress fixed inset-x-0 top-0 z-50 h-[3px] origin-left bg-primary" />
 
@@ -130,9 +130,12 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       {/* Hero */}
       <header className="mb-16 md:mb-24 max-w-4xl space-y-5">
         <p className="eyebrow">Case study · {study.project}</p>
+        <p className="ed-only ed-case-stamp" aria-hidden>
+          Case file · {String(caseStudies.indexOf(study) + 1).padStart(2, '0')} · {study.chapters.length} chapters
+        </p>
         <h1 className="text-[2.3rem] sm:text-5xl lg:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground">{study.title}</h1>
         <p className="max-w-3xl text-base md:text-lg leading-relaxed text-muted-foreground">{study.summary}</p>
-        <dl className="grid gap-4 pt-4 sm:grid-cols-3">
+        <dl className="cs-stats grid gap-4 pt-4 sm:grid-cols-3">
           {study.stats.map((s) => (
             <div key={s.label} className="glass flex flex-col gap-1 p-5">
               <dt className="order-2 text-sm text-muted-foreground">{s.label}</dt>
@@ -160,7 +163,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         {study.chapters.map((chapter, i) => (
           <section key={chapter.id} id={chapter.id} aria-labelledby={`${chapter.id}-title`} className="scroll-mt-28 grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12">
             <div className="lg:sticky lg:top-32 lg:self-start">
-              <p className="text-5xl md:text-6xl font-bold tracking-tight tabular-nums text-primary/80">{String(i + 1).padStart(2, '0')}</p>
+              <p className="cs-num text-5xl md:text-6xl font-bold tracking-tight tabular-nums text-primary/80">{String(i + 1).padStart(2, '0')}</p>
               <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{chapter.label}</p>
             </div>
             <div className="min-w-0 space-y-5">

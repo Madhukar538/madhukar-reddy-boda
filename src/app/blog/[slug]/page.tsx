@@ -63,6 +63,8 @@ export default async function BlogPost({ params }: Props) {
   const related = relatedPosts(content.posts, post);
   const { newer, older } = adjacentPosts(content.posts, post);
   const links = postLinks(content, post);
+  // "Field note No. 12": posts are newest first, so the oldest is No. 1.
+  const number = content.posts.length - content.posts.findIndex((p) => p.slug === post.slug);
 
   const base = siteUrl();
   const jsonLd = {
@@ -126,7 +128,9 @@ export default async function BlogPost({ params }: Props) {
   };
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-8 lg:pt-36 pb-12 lg:pb-16">
+    <div className="ed-post container mx-auto max-w-6xl px-4 md:px-6 pt-8 lg:pt-36 pb-12 lg:pb-16">
+      {/* Editorial: an orange reading line across the top (CSS scroll timeline). */}
+      <div aria-hidden className="ed-only ed-read-progress cs-progress" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
       <Link
@@ -142,6 +146,11 @@ export default async function BlogPost({ params }: Props) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] items-start">
         <article className="article-shell glass p-6 md:p-10 min-w-0">
           <header className="mb-8 space-y-5">
+            <p className="ed-only ed-post-mast" aria-hidden>
+              <span>Field note № {String(number).padStart(2, '0')}</span>
+              <span>{post.category}</span>
+              <span>{post.date}</span>
+            </p>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">{post.title}</h1>
             <Properties post={post} words={words} links={links.backlinks.length + links.mentions.length + links.outgoing.length} />
           </header>
@@ -208,7 +217,7 @@ export default async function BlogPost({ params }: Props) {
       </div>
 
       {(newer || older) && (
-        <nav aria-label="More posts" className="mt-6 grid gap-4 sm:grid-cols-2">
+        <nav aria-label="More posts" className="post-pager mt-6 grid gap-4 sm:grid-cols-2">
           {older ? (
             <Link href={`/blog/${older.slug}`} className="group glass glass-interactive p-5">
               <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
