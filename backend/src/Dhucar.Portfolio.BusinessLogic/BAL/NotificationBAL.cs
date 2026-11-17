@@ -1,5 +1,6 @@
 using System.Net;
 using Dhucar.Portfolio.Common.Logging;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Options;
 
@@ -40,7 +41,8 @@ public class NotificationBAL(IHttpClientFactory httpClientFactory, IOptions<Port
     public async Task<bool> SendAlert(string html)
     {
         TelegramSettings telegram = options.Value.Telegram;
-        if (telegram.BotToken.Length == 0 || telegram.ChatId.Length == 0)
+        // Configured for the primary site only (its pages, its owner's phone): other sites get their own in a later phase.
+        if (!TenantScope.IsPrimary || telegram.BotToken.Length == 0 || telegram.ChatId.Length == 0)
         {
             return false;
         }

@@ -1,6 +1,8 @@
 using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.BusinessLogic.BAL;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.DataAccess;
+using Dhucar.Portfolio.Properties.Documents;
 using MongoDB.Driver;
 
 namespace Dhucar.Portfolio.Api.Services;
@@ -95,8 +97,18 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
         await scope.ServiceProvider.GetRequiredService<SeedBAL>().SeedIfEmpty();
         // Once: read counts start from the page views already stored.
         await scope.ServiceProvider.GetRequiredService<EngagementBAL>().BackfillReads();
-        // Each release's data changes (BusinessLogic/Migrations), once per database.
+        // Each release's data changes (BusinessLogic/Migrations), once per database. They edit the
+        // primary site's own content, so they run there only; other sites start empty and stay theirs.
         await scope.ServiceProvider.GetRequiredService<MigrationBAL>().RunPending();
+        // Every other site's database: the same indexes and default switches (new indexes reach existing sites).
+        foreach (TenantDocument tenant in await scope.ServiceProvider.GetRequiredService<TenantDAL>().GetActiveTenantsDB())
+        {
+            using (TenantScope.Use(new TenantInfo(tenant.Id, tenant.Database)))
+            {
+                await serviceProvider.GetRequiredService<MongoContext>().EnsureIndexes();
+                await scope.ServiceProvider.GetRequiredService<SettingsDAL>().EnsureSecuritySettingsDB();
+            }
+        }
     }
 
     //****************************************************************************************************

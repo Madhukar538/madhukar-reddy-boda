@@ -1,3 +1,4 @@
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Properties.Documents;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Options;
@@ -8,8 +9,8 @@ namespace Dhucar.Portfolio.DataAccess;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  31 Oct 2026
- * Modified Reason :  Optional username and password apart from the connection string
+ * Modified Date   :  17 Nov 2026
+ * Modified Reason :  One database per site: the database follows the current site (TenantScope)
  * Layer           :  DataAccess
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Single MongoDB client and typed collections; creates indexes (including TTL retention) at startup.
@@ -17,6 +18,8 @@ namespace Dhucar.Portfolio.DataAccess;
 public class MongoContext
 {
     private readonly int _retentionDays;
+    private readonly MongoClient _client;
+    private readonly string _primaryDatabaseName;
 
     public MongoContext(IOptions<PortfolioSettings> options)
     {
@@ -30,13 +33,22 @@ public class MongoContext
         {
             clientSettings.Credential = MongoCredential.CreateCredential(settings.Mongo.Database, settings.Mongo.Username, settings.Mongo.Password);
         }
-        MongoClient client = new MongoClient(clientSettings);
-        Database = client.GetDatabase(settings.Mongo.Database);
+        _client = new MongoClient(clientSettings);
+        _primaryDatabaseName = settings.Mongo.Database;
+        PrimaryDatabase = _client.GetDatabase(_primaryDatabaseName);
         _retentionDays = Math.Clamp(settings.Tracking.RetentionDays, 1, 3650);
     }
 
-    /// <summary>The application database.</summary>
-    public IMongoDatabase Database { get; }
+    /// <summary>The primary site's database (the configured one); it also holds the site registry.</summary>
+    public IMongoDatabase PrimaryDatabase { get; }
+
+    /// <summary>The current site's database (TenantScope); the primary database when no other site is in scope.</summary>
+    public IMongoDatabase Database => TenantScope.Current is { Database.Length: > 0 } tenant && tenant.Database != _primaryDatabaseName
+        ? _client.GetDatabase(tenant.Database)
+        : PrimaryDatabase;
+
+    /// <summary>The sites on the platform besides the primary one (always in the primary database).</summary>
+    public IMongoCollection<TenantDocument> Tenants => PrimaryDatabase.GetCollection<TenantDocument>("tenants");
 
     /// <summary>Admin users.</summary>
     public IMongoCollection<AdminUserDocument> Users => Database.GetCollection<AdminUserDocument>("adminUsers");
@@ -154,5 +166,13 @@ public class MongoContext
             new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.ResolvedAt), new CreateIndexOptions { Sparse = true }),
         ]);
         await Media.Indexes.CreateOneAsync(new CreateIndexModel<MediaDocument>(Builders<MediaDocument>.IndexKeys.Descending(x => x.UploadedAt)));
+        if (TenantScope.IsPrimary)
+        {
+            // A host serves one site at most.
+            await Tenants.Indexes.CreateOneAsync(new CreateIndexModel<TenantDocument>(
+                Builders<TenantDocument>.IndexKeys.Ascending(x => x.Hosts),
+                // Only sites with a host: two sites without one yet must not collide on the empty list.
+                new CreateIndexOptions<TenantDocument> { Unique = true, PartialFilterExpression = Builders<TenantDocument>.Filter.Exists("Hosts.0") }));
+        }
     }
 }

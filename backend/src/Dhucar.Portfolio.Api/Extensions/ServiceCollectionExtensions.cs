@@ -81,6 +81,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RecoveryCodeService>();
         services.AddSingleton<GlobalExceptionMiddleware>();
         services.AddSingleton<SecurityHeadersMiddleware>();
+        services.AddSingleton<TenantMiddleware>();
         services.AddHostedService<StartupTasks>();
 
         // Live presence on blog posts: tiny messages only, one shared tracker, pushed once a second.
@@ -113,7 +114,7 @@ public static class ServiceCollectionExtensions
             .Configure<IOptions<PortfolioSettings>>((cors, portfolio) => cors.AddPolicy(CorsPolicy, policy => policy
                 .WithOrigins(portfolio.Value.Security.AllowedOrigins.ToArray())
                 .WithMethods("GET", "POST")
-                .WithHeaders("Content-Type", "Authorization", "X-Requested-With")
+                .WithHeaders("Content-Type", "Authorization", "X-Requested-With", TenantMiddleware.HeaderName)
                 .AllowCredentials()
                 .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
 

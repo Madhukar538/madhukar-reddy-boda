@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Dhucar.Portfolio.Common.Logging;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Common.Security;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,8 @@ public class RevalidationBAL(IHttpClientFactory httpClientFactory, IOptions<Port
     public async Task<bool> Revalidate(IEnumerable<string> tags)
     {
         SiteSettings site = options.Value.Site;
-        if (site.RevalidateUrl.Length == 0 || site.RevalidateSecret.Length < 32)
+        // Configured for the primary site only (its pages, its owner's phone): other sites get their own in a later phase.
+        if (!TenantScope.IsPrimary || site.RevalidateUrl.Length == 0 || site.RevalidateSecret.Length < 32)
         {
             return false;
         }
