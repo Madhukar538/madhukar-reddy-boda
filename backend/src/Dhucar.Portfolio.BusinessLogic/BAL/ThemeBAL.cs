@@ -29,6 +29,9 @@ public class ThemeBAL(ThemeDAL themeDAL, RevalidationBAL revalidationBAL, AuditB
         ("blueprint", "Blueprint", "Interactive"),
         ("editorial", "Editorial", "Kinetic type"),
         ("glass", "Glass", "Liquid glass"),
+        ("arctic", "Arctic", "Cool light"),
+        ("synthwave", "Synthwave", "Neon dark"),
+        ("dune", "Dune", "Warm serif"),
     ];
 
     /// <summary>Used until an admin saves the settings: Terminal by default, every theme enabled.</summary>
