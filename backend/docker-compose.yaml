@@ -47,6 +47,24 @@ services:
     volumes:
       - mongo-backups:/backups
 
+  # Copies those dumps off this server, encrypted, to Cloudflare R2 (or any S3-compatible storage).
+  # Idle until the OFFSITE_* variables are set (offsite/offsite.sh).
+  mongo-offsite:
+    build: ./offsite
+    restart: unless-stopped
+    depends_on:
+      - mongo-backup
+    environment:
+      OFFSITE_ENDPOINT: "${OFFSITE_ENDPOINT:-}"
+      OFFSITE_BUCKET: "${OFFSITE_BUCKET:-}"
+      OFFSITE_ACCESS_KEY_ID: "${OFFSITE_ACCESS_KEY_ID:-}"
+      OFFSITE_SECRET_ACCESS_KEY: "${OFFSITE_SECRET_ACCESS_KEY:-}"
+      OFFSITE_ENCRYPTION_PASSWORD: "${OFFSITE_ENCRYPTION_PASSWORD:-}"
+      OFFSITE_KEEP_DAYS: "${OFFSITE_KEEP_DAYS:-60}"
+      OFFSITE_EVERY_HOURS: "${OFFSITE_EVERY_HOURS:-6}"
+    volumes:
+      - mongo-backups:/backups:ro
+
   api:
     build: .
     restart: unless-stopped
@@ -79,5 +97,5 @@ services:
 volumes:
   # The database files. Survives redeploys; removing this volume deletes the data.
   mongo-data:
-  # The nightly dumps. On the same disk as the data: copy them elsewhere now and then.
+  # The nightly dumps. On the same disk as the data: mongo-offsite copies them off the server.
   mongo-backups:
