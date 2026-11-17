@@ -13,6 +13,7 @@ import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
 import { EditorialHome } from '@/components/editorial/editorial-home';
 import { experienceSince } from '@/lib/utils';
+import { LiveExperience } from '@/components/portfolio/live-experience';
 
 export const metadata: Metadata = {
   // og:url for link previews (WhatsApp, LinkedIn); page-level openGraph replaces the layout's, so it is repeated.
@@ -27,7 +28,8 @@ const heroMetrics = [
   { value: '40s → 13s', label: 'RAG latency reduction' },
   { value: '5–50 ms', label: 'MongoDB query tuning' },
   { value: '2 days', label: 'Agent-built foundation' },
-  { value: `${experienceSince().years}+ Years`, label: 'Production systems' },
+  // Counted live, to the second.
+  { value: <LiveExperience />, label: `Building since ${experienceSince().since}` },
 ];
 
 export default async function Home() {

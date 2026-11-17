@@ -72,6 +72,10 @@ export function EditorialFx() {
 
     const hero = document.querySelector<HTMLElement>('.ed-hero');
     const story = document.querySelector<HTMLElement>('.ed-chapters');
+    const storyFill = story?.querySelector<HTMLElement>('.ed-chapters-fill');
+    // The name's lines slide apart as you scroll, at these rates (px per px scrolled).
+    const lines = Array.from(document.querySelectorAll<HTMLElement>('.ed-line'));
+    const LINE_RATES = [-0.35, 0.3, -0.2];
     const chars = Array.from(document.querySelectorAll<HTMLElement>('.ed-char'));
     const ticker = document.querySelector<HTMLElement>('.ed-ticker-track');
     const tickerAnimation = ticker?.getAnimations()[0];
@@ -115,45 +119,54 @@ export function EditorialFx() {
       ring.toggleAttribute('data-link', !!target?.closest('a, button, [role="button"], input, textarea'));
     };
 
+    let heroHeight = hero?.offsetHeight ?? 0;
+    let pointerMoved = false;
+
+    // Each frame reads every position it needs first, then writes: reading layout after a write
+    // would make the browser recalculate it again mid-frame, which is what makes scrolling stutter.
     const draw = () => {
       frame = 0;
+      // ---- Read.
       const y = window.scrollY;
+      const vh = window.innerHeight;
+      const storyRect = story?.getBoundingClientRect();
+      const galleryTop = gallery && travel ? gallery.getBoundingClientRect().top : 0;
+      const nearChars = fine && pointerMoved && y < heroHeight ? chars.map((ch) => ch.getBoundingClientRect()) : null;
+      const under = ring && scrolled && px > -1e3 ? document.elementFromPoint(px, py) : undefined;
+
+      // ---- Compute and write.
       velocity = velocity * 0.85 + (y - lastY) * 0.15;
       lastY = y;
-
-      if (hero) hero.style.setProperty('--ed-s', String(Math.min(y, 900)));
+      // Transforms on the moving elements themselves: a variable on a parent would restyle everything inside it.
+      if (y < heroHeight + 200) {
+        const s = Math.min(y, 900);
+        lines.forEach((line, i) => (line.style.transform = `translate3d(${s * (LINE_RATES[i] ?? 0)}px, 0, 0)`));
+      }
       // How far through the chapters the reader is (the line down the left fills with it).
-      if (story) {
-        const r = story.getBoundingClientRect();
-        const p = Math.min(1, Math.max(0, (window.innerHeight * 0.6 - r.top) / Math.max(r.height, 1)));
-        story.style.setProperty('--story-p', p.toFixed(4));
+      if (storyFill && storyRect) {
+        const p = Math.min(1, Math.max(0, (vh * 0.6 - storyRect.top) / Math.max(storyRect.height, 1)));
+        storyFill.style.transform = `scaleY(${p.toFixed(4)})`;
       }
-
-      // Letters toward the pointer get wider and heavier.
-      if (fine && chars.length && hero && y < hero.offsetHeight) {
-        for (const ch of chars) {
-          const r = ch.getBoundingClientRect();
-          const d = Math.hypot(px - (r.left + r.width / 2), py - (r.top + r.height / 2));
-          const k = Math.max(0, 1 - d / near);
-          ch.style.setProperty('--wd', String(Math.round(62 + k * 60)));
-          ch.style.setProperty('--wg', String(Math.round(780 + k * 120)));
-        }
+      // Letters toward the pointer get wider and heavier (only when the pointer has moved).
+      if (nearChars) {
+        pointerMoved = false;
+        nearChars.forEach((r, i) => {
+          const k = Math.max(0, 1 - Math.hypot(px - (r.left + r.width / 2), py - (r.top + r.height / 2)) / near);
+          chars[i].style.setProperty('--wd', String(Math.round(62 + k * 60)));
+          chars[i].style.setProperty('--wg', String(Math.round(780 + k * 120)));
+        });
       }
-
       if (tickerAnimation) {
         const speed = 1 + Math.min(6, Math.abs(velocity) / 6);
         tickerAnimation.playbackRate = velocity < -0.5 ? -speed : speed;
       }
-
       if (gallery && track && travel) {
-        const top = gallery.getBoundingClientRect().top;
-        const progress = Math.min(1, Math.max(0, -top / travel));
+        const progress = Math.min(1, Math.max(0, -galleryTop / travel));
         track.style.transform = `translate3d(${-progress * travel}px, 0, 0)`;
       }
-
       if (ring) {
         // After a scroll something else can be under a pointer that hasn't moved.
-        if (scrolled && px > -1e3) aim(document.elementFromPoint(px, py));
+        if (under !== undefined) aim(under);
         scrolled = false;
         rx += (px - rx) * 0.22;
         ry += (py - ry) * 0.22;
@@ -170,6 +183,7 @@ export function EditorialFx() {
       if (e.pointerType !== 'mouse') return;
       px = e.clientX;
       py = e.clientY;
+      pointerMoved = true;
       if (ring) {
         aim(e.target instanceof Element ? e.target : null);
         ring.toggleAttribute('data-on', true);
@@ -179,6 +193,7 @@ export function EditorialFx() {
     const onLeave = (e: MouseEvent) => {
       if (!e.relatedTarget) {
         px = py = -1e4;
+        pointerMoved = true; // let the letters settle back
         ring?.removeAttribute('data-on');
         queue();
       }
@@ -189,6 +204,7 @@ export function EditorialFx() {
     };
     const onResize = () => {
       measure();
+      heroHeight = hero?.offsetHeight ?? 0;
       queue();
     };
 
@@ -203,6 +219,8 @@ export function EditorialFx() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       document.removeEventListener('mouseout', onLeave);
+      lines.forEach((line) => (line.style.transform = ''));
+      if (storyFill) storyFill.style.transform = '';
       chars.forEach((ch) => {
         ch.style.removeProperty('--wd');
         ch.style.removeProperty('--wg');

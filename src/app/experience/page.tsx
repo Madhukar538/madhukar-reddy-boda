@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
 import { EditorialJourney } from '@/components/editorial/editorial-journey';
+import { EditorialNext } from '@/components/editorial/editorial-next';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
@@ -47,6 +48,7 @@ export default async function ExperiencePage() {
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>
+      <EditorialNext from="/experience" />
     </PageShell>
   );
 }

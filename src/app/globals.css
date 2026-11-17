@@ -1276,11 +1276,14 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
 
 /* ============================================================
    PAGE TRANSITIONS (components/view-transitions.tsx)
-   The whole page cross-fades; the menu stays put; the portrait and
-   the page title glide to their new place and size.
+   The old page fades out quickly, then the new one fades in as it rises
+   a few pixels, so the two are never seen on top of each other; the
+   menu stays put and the Midnight portrait glides to its new place.
    ============================================================ */
-::view-transition-old(root),
-::view-transition-new(root) { animation-duration: 0.28s; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+::view-transition-old(root) { animation: vt-out 0.16s cubic-bezier(0.4, 0, 1, 1) both; }
+::view-transition-new(root) { animation: vt-in 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s both; }
 /* The desktop nav flowing to the right edge (navbar.tsx). Scrolling down: the capsule runs
    along the top edge into the top-right corner and narrows to a drop, then the tabs pour down
    the right edge one after another. Scrolling up runs it backwards. */
@@ -1443,9 +1446,8 @@ button.nav-link[data-active]::after { right: 1.85rem; }
 .vt-nav { view-transition-name: site-nav; }
 .vt-tabbar { view-transition-name: site-tabbar; }
 .portrait-frame { view-transition-name: portrait; }
-main h1 { view-transition-name: page-title; }
-::view-transition-group(portrait),
-::view-transition-group(page-title) { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+/* (Page titles are not morphed: two different titles at different sizes stretch as they blend.) */
+::view-transition-group(portrait) { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 /* The entrance slide would fight the transition, so it only runs without one. */
 @supports (view-transition-name: none) {
   .page-enter { animation: none; }
@@ -2316,9 +2318,10 @@ html[data-style='editorial'] .article-body a { color: hsl(var(--primary)); }
 
 /* Headings below the fold rise into place (only once the script is running). */
 html[data-style='editorial'][data-ed-js] [data-ed-wait] {
-  transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), clip-path 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity: 0; transform: translateY(2.5rem); clip-path: inset(0 0 100% 0); }
+/* Opacity and a short rise only: both run on the compositor, so scrolling stays smooth. */
+html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity: 0; transform: translateY(1.25rem); }
 
 /* Smaller headings: wider and a touch lighter, so mixed-case titles read easily. */
 html[data-style='editorial'] h3 { font-variation-settings: 'wdth' 92; font-weight: 700; letter-spacing: -0.015em; }
@@ -2357,12 +2360,13 @@ html[data-style='editorial'] .ed-story-head h2 {
   font-size: clamp(2rem, 4.6vw, 4.25rem); line-height: 0.98; text-transform: none;
   font-variation-settings: 'wdth' 80; font-weight: 700; letter-spacing: -0.02em;
 }
-.ed-chapters { --story-p: 0; position: relative; display: grid; gap: clamp(3.5rem, 10vh, 7rem); }
+.ed-chapters { position: relative; display: grid; gap: clamp(3.5rem, 10vh, 7rem); }
 /* The line, and its filled part. */
-.ed-chapters::before, .ed-chapters::after {
+.ed-chapters::before, .ed-chapters-fill {
   content: ''; position: absolute; top: 0; bottom: 0; left: clamp(2.75rem, 6vw, 5.25rem); width: 1px; background: hsl(var(--ink) / 0.18);
 }
-.ed-chapters::after { background: hsl(var(--ed-accent)); width: 3px; margin-left: -1px; transform-origin: top; transform: scaleY(var(--story-p)); }
+/* The filled part: editorial-fx.tsx scales this one element as you read (not a variable the whole list inherits). */
+.ed-chapters-fill { background: hsl(var(--ed-accent)); width: 3px; margin-left: -1px; transform-origin: top; transform: scaleY(0); will-change: transform; }
 .ed-chapter { display: grid; grid-template-columns: clamp(5.5rem, 12vw, 10.5rem) minmax(0, 1fr); gap: clamp(1rem, 4vw, 4rem); align-items: start; }
 .ed-chapter-mark { position: sticky; top: 22vh; z-index: 1; }
 .ed-chapter-no {
@@ -2386,7 +2390,7 @@ html[data-style='editorial'] .ed-chapter h3 {
 .ed-chapter-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.75rem; margin-top: 1.25rem; }
 @media (max-width: 699px) {
   .ed-chapter { grid-template-columns: 3.5rem minmax(0, 1fr); gap: 1rem; }
-  .ed-chapters::before, .ed-chapters::after { left: 1.6rem; }
+  .ed-chapters::before, .ed-chapters-fill { left: 1.6rem; }
   .ed-chapter-no { font-size: 2.6rem; }
   .ed-chapter-mark { top: 1.5rem; }
 }
@@ -2444,6 +2448,57 @@ html[data-style='editorial'] .ed-act h2 { margin-top: 0.75rem; font-size: clamp(
 .ed-qa dd { font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.65; color: hsl(var(--ink) / 0.85); }
 .ed-qa dd strong { color: hsl(var(--ink)); }
 
+/* Projects: case files, then the client log. */
+.ed-files-intro { padding-bottom: 0.9rem; border-bottom: 1px solid hsl(var(--ink)); font: 500 0.78rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--primary)); }
+.ed-file-list { display: grid; gap: clamp(2rem, 5vh, 3rem); margin-top: clamp(2rem, 5vh, 3rem); }
+.ed-file-tab {
+  display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.9rem; background: hsl(var(--ink)); color: hsl(var(--background));
+  font: 600 0.72rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.ed-file-flag { padding: 0.2rem 0.45rem; background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
+.ed-file-body { padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid hsl(var(--ink)); background: hsl(var(--card)); transition: box-shadow 0.3s ease; }
+@media (hover: hover) { .ed-file:hover .ed-file-body { box-shadow: 8px 8px 0 hsl(var(--ed-accent)); } }
+html[data-style='editorial'] .ed-file-body h2 { font-size: clamp(2rem, 4.5vw, 3.75rem); }
+.ed-file-cols { display: grid; gap: 1.5rem 3rem; margin-top: 1.5rem; }
+@media (min-width: 900px) { .ed-file-cols { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+.ed-file-label { margin-bottom: 0.5rem; font: 600 0.7rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--primary)); }
+.ed-file-cols p:not(.ed-file-label) { font-size: 1.02rem; line-height: 1.6; color: hsl(var(--ink) / 0.85); }
+.ed-file-cols .ed-file-result {
+  margin-bottom: 1.5rem; padding-left: 0.9rem; border-left: 3px solid hsl(var(--ed-accent));
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 90; font-weight: 600; font-size: 1.15rem; line-height: 1.35; color: hsl(var(--ink));
+}
+.ed-file-tech { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ed-file-tech li { padding: 0.3rem 0.55rem; border: 1px solid hsl(var(--ink) / 0.4); font: 500 0.72rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; }
+.ed-file-more { margin-top: 1.25rem; }
+.ed-log { margin-top: clamp(3.5rem, 9vh, 6rem); }
+html[data-style='editorial'] .ed-log h2 { font-size: clamp(2.25rem, 5vw, 4rem); padding-bottom: 1rem; border-bottom: 1px solid hsl(var(--ink)); }
+.ed-log li { position: relative; display: grid; gap: 0.35rem 2rem; padding: 1.25rem 2.5rem 1.25rem 0; border-bottom: 1px solid hsl(var(--ink) / 0.18); }
+@media (min-width: 900px) { .ed-log li { grid-template-columns: 9rem minmax(0, 4fr) minmax(0, 6fr); align-items: baseline; } }
+.ed-log-when { font: 600 0.78rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; color: hsl(var(--primary)); }
+.ed-log-what strong { display: block; font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 80; font-weight: 800; font-size: 1.35rem; text-transform: uppercase; line-height: 1.05; }
+.ed-log-what span { font-size: 0.85rem; color: hsl(var(--muted-foreground)); }
+.ed-log-desc { font-size: 0.95rem; line-height: 1.55; color: hsl(var(--ink) / 0.8); }
+.ed-log-go { position: absolute; right: 0; top: 1.35rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid hsl(var(--ink)); transition: background-color 0.2s ease, color 0.2s ease; }
+.ed-log-go:hover { background: hsl(var(--ink)); color: hsl(var(--background)); }
+
+/* The next chapter, at the end of each story page. */
+html[data-style='editorial'] .ed-next { margin-top: clamp(3.5rem, 9vh, 6rem); }
+.ed-home-next { padding: 0 clamp(1rem, 4vw, 3.5rem) clamp(2rem, 6vh, 4rem); }
+.ed-next-link { display: block; padding: clamp(1.5rem, 4vh, 2.5rem) 0; border-top: 1px solid hsl(var(--ink)); border-bottom: 1px solid hsl(var(--ink)); color: hsl(var(--ink)); }
+.ed-next-kicker { display: block; font: 500 0.75rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; color: hsl(var(--primary)); }
+.ed-next-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.75rem;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 66; font-weight: 800;
+  font-size: clamp(2.25rem, 6.5vw, 5.5rem); line-height: 0.9; text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+.ed-next-title svg { flex-shrink: 0; width: 0.7em; height: 0.7em; transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@media (hover: hover) {
+  .ed-next-link:hover .ed-next-title { color: hsl(var(--ed-accent)); }
+  .ed-next-link:hover .ed-next-title svg { transform: translateX(0.2em); }
+}
+.ed-next-link:focus-visible { outline: 3px solid hsl(var(--ed-accent)); outline-offset: 4px; }
+
 /* The footer's closing line. */
 .ed-cta { display: none; }
 html[data-style='editorial'] .ed-cta { display: block; padding: clamp(3rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem); border-top: 1px solid hsl(var(--ink)); }
@@ -2485,7 +2540,6 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
 
 /* ---- The homepage ---- */
 .ed-hero {
-  --ed-s: 0;
   position: relative;
   min-height: 100svh;
   display: flex;
@@ -2546,9 +2600,8 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
   .ed-name { font-size: 27vw; }
 }
 .ed-line { display: block; white-space: nowrap; will-change: transform; }
-.ed-line[data-line='0'] { transform: translate3d(calc(var(--ed-s) * -0.35px), 0, 0); }
-.ed-line[data-line='1'] { padding-left: 18vw; transform: translate3d(calc(var(--ed-s) * 0.3px), 0, 0); color: hsl(var(--ed-accent)); }
-.ed-line[data-line='2'] { padding-left: 6vw; transform: translate3d(calc(var(--ed-s) * -0.2px), 0, 0); }
+.ed-line[data-line='1'] { padding-left: 18vw; color: hsl(var(--ed-accent)); }
+.ed-line[data-line='2'] { padding-left: 6vw; }
 .ed-char {
   --wd: 62;
   --wg: 780;
@@ -2688,3 +2741,18 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
   .ed-badge svg { animation: none; }
   .ed-panel, .ed-panel-no, .ed-panel-go { transition: none; }
 }
+
+/* The live experience counter (components/portfolio/live-experience.tsx). */
+.live-xp { display: inline-flex; flex-direction: column; gap: 0.3em; font-variant-numeric: tabular-nums; }
+.live-xp-clock {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  font: 600 0.5em/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; letter-spacing: 0.02em;
+  color: hsl(var(--primary));
+}
+.live-xp-dot { width: 0.5em; height: 0.5em; border-radius: 9999px; background: currentColor; animation: live-xp-pulse 1s steps(2, jump-none) infinite; }
+@keyframes live-xp-pulse { 50% { opacity: 0.25; } }
+/* In Editorial's big figures the clock line stays readable rather than huge. */
+:is(.ed-metrics, .ed-journey-stats) .live-xp-clock { font-size: clamp(0.85rem, 1.2vw, 1.05rem); }
+@media (prefers-reduced-motion: reduce) { .live-xp-dot { animation: none; } }
+:is(.ed-metrics, .ed-journey-stats) .live-xp-main { white-space: nowrap; }
+.ed-journey-stats .live-xp-main { font-size: 0.66em; }
