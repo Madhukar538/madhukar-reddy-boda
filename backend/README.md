@@ -170,7 +170,11 @@ The API can serve more than one portfolio. **Each site has its own MongoDB datab
 - **Which site a request is for** (`TenantMiddleware`): the `X-Tenant` header (sent by a site's server), else the browser's `Origin` host, else the primary site. A named site that is unknown or suspended gets `404 Unknown site.` and never falls back to another site's data.
 - **Sign-in is per site.** Tokens carry the site (`tid`) and are refused anywhere else; tokens without one (issued before this) belong to the primary site.
 - **Per-site in memory too:** the engagement caches and live-presence rooms are keyed by site.
-- **Primary site only, for now:** page revalidation, Telegram alerts, passkeys (one relying party), CORS origins and data migrations. Giving each site its own settings for these is the next phase.
+- **Browsers:** CORS allows the primary site's configured origins plus `https://<host>` for each host a registered site claims (`SiteCorsPolicyProvider`); the presence hub checks the same. A page whose origin belongs to one site can't name another with `X-Tenant` (404).
+- **Passkeys:** each site is its own relying party (`PasskeyRelyingParty`): the primary site as configured, any other site its first host. A site with no host has no passkeys yet.
+- **Sessions:** each site has its own refresh cookie (`__Host-rt_<slug>`), so a browser signed in to two sites keeps both.
+- **Images:** another site's image URLs name it (`/media/<file>?site=<slug>`), because browsers fetch images without headers.
+- **Primary site only, for now:** page revalidation, Telegram alerts and data migrations.
 
 The database user needs `readWrite` on each site's database as well as `portfolio`: grant it when adding a site, or use a role that covers `site_*`. Nothing changes for the primary site.
 

@@ -103,7 +103,7 @@ public class StartupTasks(IServiceProvider serviceProvider, ILogger<StartupTasks
         // Every other site's database: the same indexes and default switches (new indexes reach existing sites).
         foreach (TenantDocument tenant in await scope.ServiceProvider.GetRequiredService<TenantDAL>().GetActiveTenantsDB())
         {
-            using (TenantScope.Use(new TenantInfo(tenant.Id, tenant.Database)))
+            using (TenantScope.Use(new TenantInfo(tenant.Id, tenant.Database, tenant.Hosts)))
             {
                 await serviceProvider.GetRequiredService<MongoContext>().EnsureIndexes();
                 await scope.ServiceProvider.GetRequiredService<SettingsDAL>().EnsureSecuritySettingsDB();

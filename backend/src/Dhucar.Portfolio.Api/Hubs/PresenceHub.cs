@@ -44,9 +44,13 @@ public partial class PresenceHub(PresenceTracker tracker, EngagementBAL engageme
     /// </summary>
     public override Task OnConnectedAsync()
     {
-        // WebSockets skip CORS, so check the page's origin here.
+        // WebSockets skip CORS, so check the page's origin here: the primary site's origins, or the connecting site's own hosts.
         string origin = Context.GetHttpContext()?.Request.Headers.Origin.ToString() ?? string.Empty;
-        if (!options.Value.Security.AllowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+        TenantInfo? site = Context.GetHttpContext()?.Items[TenantMiddleware.ItemKey] as TenantInfo;
+        bool isAllowed = site is null or { Slug: TenantScope.PrimarySlug }
+            ? options.Value.Security.AllowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase)
+            : site.Hosts.Any(host => string.Equals(origin, $"https://{host}", StringComparison.OrdinalIgnoreCase));
+        if (!isAllowed)
         {
             Context.Abort();
         }

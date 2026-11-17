@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -20,7 +21,8 @@ public class ContextService(IHttpContextAccessor httpContextAccessor, IOptions<P
     private readonly bool _isCookieSecure = options.Value.Security.IsCookieSecure;
 
     // __Host- cookies must be Secure, path "/" and have no Domain, so they can't be set or read by other subdomains.
-    private string RefreshCookieName => _isCookieSecure ? "__Host-dhucar_rt" : "dhucar_rt";
+    // One per site: signing in to one site never replaces or reuses another site's session.
+    private string RefreshCookieName => (_isCookieSecure ? "__Host-" : string.Empty) + (TenantScope.IsPrimary ? "dhucar_rt" : $"rt_{TenantScope.Slug}");
 
     //****************************************************************************************************
     // Layer                 :   Common
