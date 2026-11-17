@@ -22,4 +22,7 @@ public class UpdateTicketRequestDTO
 
     /// <summary>A note to add, or empty.</summary>
     public string Note { get; set; } = string.Empty;
+
+    /// <summary>True to show the note to the reporter on their status page.</summary>
+    public bool IsNotePublic { get; set; }
 }

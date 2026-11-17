@@ -10,7 +10,7 @@ type Status =
   | { state: 'idle' }
   | { state: 'sending' }
   | { state: 'error'; message: string; fields?: Record<string, string> }
-  | { state: 'sent'; ticket: string; priority?: string; trace?: TraceStep[] };
+  | { state: 'sent'; ticket: string; priority?: string; trace?: TraceStep[]; statusUrl?: string };
 
 const fieldClass =
   'bug-field w-full rounded-2xl bg-foreground/[0.04] dark:bg-white/[0.05] px-4 py-3 text-[0.95rem] text-foreground placeholder:text-muted-foreground/70 ring-1 ring-foreground/10 outline-none transition focus:ring-2 focus:ring-primary';
@@ -114,7 +114,7 @@ export function BugReportForm() {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.ticket) setStatus({ state: 'sent', ticket: data.ticket, priority: data.priority, trace: data.trace });
+      if (res.ok && data.ticket) setStatus({ state: 'sent', ticket: data.ticket, priority: data.priority, trace: data.trace, statusUrl: data.statusUrl });
       else setStatus({ state: 'error', message: data.error ?? 'Something went wrong. Please try again.', fields: data.fields });
     } catch {
       setStatus({ state: 'error', message: "You seem to be offline. Please try again when you're connected." });
@@ -130,6 +130,16 @@ export function BugReportForm() {
           <p className="text-muted-foreground">I&apos;ll reply on the contact you gave. Here&apos;s what just happened to your report:</p>
         </div>
         <TicketTrace ticket={status.ticket} trace={status.trace} />
+        {status.statusUrl && (
+          <div className="glass-inset flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">Track it here.</span> A private link to this ticket&apos;s status. Bookmark it: only you have it.
+            </p>
+            <a href={status.statusUrl} className="tinted-button !px-4 !py-2 shrink-0">
+              Track ticket <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-foreground/10 pt-5">
           <button
             type="button"

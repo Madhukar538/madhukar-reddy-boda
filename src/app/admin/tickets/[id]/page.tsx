@@ -54,6 +54,7 @@ function TicketDetail({ id }: { id: string }) {
   const [status, setStatus] = useState<TicketStatus>('open');
   const [priority, setPriority] = useState<TicketPriority>('P4');
   const [note, setNote] = useState('');
+  const [isNotePublic, setIsNotePublic] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
@@ -87,8 +88,10 @@ function TicketDetail({ id }: { id: string }) {
         status: status !== ticket.status ? status : '',
         priority: priority !== ticket.priority ? priority : '',
         note: note.trim(),
+        isNotePublic,
       });
       setNote('');
+      setIsNotePublic(false);
       setMessage({ kind: 'success', text: 'Saved.' });
       await load();
     } catch (err) {
@@ -158,6 +161,7 @@ function TicketDetail({ id }: { id: string }) {
                   <li key={i} className="glass-inset rounded-xl px-4 py-3">
                     <p className="text-xs text-muted-foreground">
                       {formatDateTime(n.at)} · {n.by}
+                      {n.publicText ? <span className="ml-2 font-semibold text-primary">· Reporter sees: {n.publicText === n.text ? 'this note' : n.publicText}</span> : null}
                     </p>
                     <p className="mt-1 whitespace-pre-line break-words text-sm">{n.text}</p>
                   </li>
@@ -187,6 +191,13 @@ function TicketDetail({ id }: { id: string }) {
               <Field label="Add a note" hint={`${note.length}/2000`}>
                 <textarea rows={4} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} placeholder="What you found, what you replied, what's next…" className={`${fieldClass} resize-y`} />
               </Field>
+              <label className="flex items-start gap-2.5 text-sm">
+                <input type="checkbox" checked={isNotePublic} onChange={(e) => setIsNotePublic(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]" />
+                <span>
+                  Show this note to the reporter
+                  <span className="block text-xs text-muted-foreground">On their private status page. Status changes always show there; priority and your notes don&apos;t unless you tick this.</span>
+                </span>
+              </label>
               <button type="submit" disabled={busy || !isChanged} className="tinted-button w-full justify-center disabled:opacity-50">
                 {busy ? 'Saving…' : 'Save'}
               </button>

@@ -118,4 +118,50 @@ public class TicketTests
             Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.Post(action, new { id = "BUG-261018-BBBBBB", status = "closed" })).Status);
         }
     }
+
+    [Fact]
+    public async Task Reporters_see_their_ticket_only_with_the_secret_and_only_what_is_shared()
+    {
+        using ApiFactory factory = new();
+        HttpClient site = factory.CreateApiClient();
+        const string secret = "k3Y_for-THE-status-link-0123456789abcdef";
+        object withLink = new { id = "BUG-261117-LINK01", name = "Asha", contact = "asha@example.com", category = "Bug", title = "Login loops", description = "Redirects forever.", urgency = "This week", priority = "P2", statusToken = secret };
+        Assert.Equal(HttpStatusCode.OK, (await CreateSigned(site, withLink)).Status);
+        // A malformed secret is refused rather than stored.
+        object badSecret = new { id = "BUG-261117-LINK02", name = "A", contact = "a@example.com", category = "Bug", title = "T", description = "D", urgency = "Low", priority = "P4", statusToken = "short<script>" };
+        Assert.Equal(HttpStatusCode.BadRequest, (await CreateSigned(site, badSecret)).Status);
+        // Filed without a secret (before links existed): no status page at all.
+        await CreateSigned(site, Ticket("BUG-261117-NOLINK"));
+
+        AdminSession session = await AdminSession.SignedIn(factory);
+        await session.Client.Post("UpdateTicket", new { id = "BUG-261117-LINK01", status = "in-progress", priority = "P1", note = "Internal: their session cookie is SameSite=None." }, token: session.AccessToken);
+        await session.Client.Post("UpdateTicket", new { id = "BUG-261117-LINK01", note = "Found it: a redirect loop in the auth middleware.", isNotePublic = true }, token: session.AccessToken);
+
+        HttpClient anonymous = factory.CreateApiClient();
+        ApiResult status = await anonymous.Post("GetTicketStatus", new { id = "bug-261117-link01", token = secret });
+        Assert.Equal(HttpStatusCode.OK, status.Status);
+        Assert.Equal("in-progress", status.Data.GetProperty("status").GetString());
+        string[] timeline = status.Data.GetProperty("timeline").EnumerateArray().Select(x => x.GetProperty("text").GetString()!).ToArray();
+        Assert.Equal(["Status: Received", "Status: Looking into it", "Found it: a redirect loop in the auth middleware."], timeline);
+        // Nothing private comes back: no contact, description, private notes or admin names.
+        string body = status.Body.GetRawText();
+        foreach (string hidden in new[] { "asha@example.com", "Redirects forever", "SameSite", "Internal", "contact", "description", "statusTokenHash", "\"by\"" })
+        {
+            Assert.DoesNotContain(hidden, body);
+        }
+
+        // Wrong secret, missing secret, unknown id and a ticket without a link all answer the same.
+        foreach (object probe in new object[]
+        {
+            new { id = "BUG-261117-LINK01", token = secret.Replace('k', 'K') },
+            new { id = "BUG-261117-LINK01", token = string.Empty },
+            new { id = "BUG-000000-NOPE00", token = secret },
+            new { id = "BUG-261117-NOLINK", token = secret },
+        })
+        {
+            ApiResult refused = await anonymous.Post("GetTicketStatus", probe);
+            Assert.Equal(HttpStatusCode.NotFound, refused.Status);
+            Assert.Equal("Ticket not found.", refused.Body.GetProperty("returnMessage").GetString());
+        }
+    }
 }

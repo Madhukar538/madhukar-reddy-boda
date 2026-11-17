@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import type { BugReport, Priority } from '@/lib/bug-triage';
 
 /**
@@ -12,7 +12,13 @@ const secret = () => process.env.REVALIDATE_SECRET ?? '';
 
 export const ticketStoreConfigured = () => apiBase().length > 0 && secret().length >= 32;
 
-export async function saveTicket(id: string, report: BugReport, priority: Priority, reasons: string[]) {
+/** The secret in a reporter's status link (32 URL-safe characters). The API keeps only its hash. */
+export const newStatusToken = () => randomBytes(24).toString('base64url');
+
+/** The reporter's private page for their ticket. */
+export const statusPath = (id: string, token: string) => `/ticket/${encodeURIComponent(id)}?k=${token}`;
+
+export async function saveTicket(id: string, report: BugReport, priority: Priority, reasons: string[], statusToken: string) {
   const body = JSON.stringify({
     id,
     name: report.name,
@@ -26,6 +32,7 @@ export async function saveTicket(id: string, report: BugReport, priority: Priori
     page: report.page ?? '',
     priority,
     triageReasons: reasons,
+    statusToken,
   });
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const signature = `sha256=${createHmac('sha256', secret()).update(`${timestamp}.${body}`).digest('hex')}`;

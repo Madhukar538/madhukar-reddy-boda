@@ -46,4 +46,7 @@ public class CreateTicketRequestDTO
 
     /// <summary>Triage reasons.</summary>
     public List<string> TriageReasons { get; set; } = new();
+
+    /// <summary>The secret for the reporter's status link, made by the site (32–128 URL-safe characters); only its hash is stored.</summary>
+    public string StatusToken { get; set; } = string.Empty;
 }
