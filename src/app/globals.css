@@ -2855,3 +2855,149 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
 @media (min-width: 1280px) {
   :is(.ed-story, .ed-metrics, .ed-gallery-head) { padding-right: max(clamp(1rem, 4vw, 3.5rem), 6rem); }
 }
+
+/* ============================================================
+   EDITORIAL: the inside pages. Blog posts read as numbered field
+   notes, case studies as stamped case files with outlined chapter
+   numbers, Fix a bug as a ticket desk, and the 404 as a missing
+   chapter. Classes are hooks only: the other looks ignore them.
+   ============================================================ */
+.bug-step-n { display: none; }
+.ed-mono-label {
+  font: 500 0.72rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+/* Shared: callouts and the chat button in ink and orange. */
+html[data-style='editorial'] .callout {
+  border-radius: 0;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--ink));
+  border-left: 6px solid hsl(var(--callout));
+}
+html[data-style='editorial'] .callout-title { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; }
+html[data-style='editorial'] :is(.genie-button, .genie-orb) { background: hsl(var(--ink)); color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .genie-button { border-radius: 0; box-shadow: 6px 6px 0 hsl(var(--ed-accent)); }
+html[data-style='editorial'] .genie-button::after { border-color: hsl(var(--ed-accent)); }
+
+/* ---- Blog posts: field notes. */
+html[data-style='editorial'] .ed-read-progress { position: fixed; inset: 0 0 auto 0; z-index: 60; height: 4px; transform-origin: left center; background: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ed-post .article-shell.glass { background: transparent; border: 0; box-shadow: none; padding-inline: 0; padding-top: 0; }
+html[data-style='editorial'] .ed-post .article-shell.glass::before,
+html[data-style='editorial'] .ed-post .article-shell.glass::after { content: none; }
+html[data-style='editorial'] .ed-post-mast {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem;
+  padding-bottom: 0.8rem; border-bottom: 1px solid hsl(var(--ink));
+  font: 500 0.72rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--muted-foreground));
+}
+html[data-style='editorial'] .ed-post-mast span:first-child { color: hsl(var(--primary)); font-weight: 700; }
+html[data-style='editorial'] .ed-post h1 { font-size: clamp(2.5rem, 5.6vw, 5.25rem); font-variation-settings: 'wdth' 66; line-height: 0.9; }
+html[data-style='editorial'] .ed-post .article-body { counter-reset: ed-sec; border-top-color: hsl(var(--ink)); }
+html[data-style='editorial'] .ed-post .article-body > h2 {
+  counter-increment: ed-sec;
+  margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--ink));
+  font-size: clamp(1.75rem, 3.2vw, 2.6rem);
+}
+html[data-style='editorial'] .ed-post .article-body > h2::before {
+  content: '§ ' counter(ed-sec, decimal-leading-zero);
+  display: block; margin-bottom: 0.6rem;
+  font: 600 0.72rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  letter-spacing: 0.12em; color: hsl(var(--primary));
+}
+html[data-style='editorial'] .ed-post .article-body blockquote:not(.callout) {
+  margin: 2.5rem 0; padding: 1.1rem 0 0; border: 0; border-top: 4px solid hsl(var(--ed-accent));
+  background: none; font-style: normal; color: hsl(var(--ink));
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 85; font-weight: 600; font-size: clamp(1.35rem, 2.3vw, 1.9rem); line-height: 1.15;
+}
+html[data-style='editorial'] .ed-post .article-body :is(pre, img, table) { border-radius: 0; }
+/* Older and newer: big type on a rule instead of two boxes. */
+html[data-style='editorial'] .post-pager { gap: 0 2rem; margin-top: 3rem; }
+html[data-style='editorial'] .post-pager a.glass { background: transparent; border: 0; border-top: 1px solid hsl(var(--ink)); padding: 1.1rem 0 0; box-shadow: none; }
+html[data-style='editorial'] .post-pager a > span:last-child {
+  margin-top: 0.6rem;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 72; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(1.2rem, 2.2vw, 1.85rem); line-height: 0.98;
+}
+html[data-style='editorial'] .post-pager a > span:first-child { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* ---- Case studies: stamped case files. */
+html[data-style='editorial'] .ed-case-stamp {
+  display: inline-block; padding: 0.4rem 0.75rem; transform: rotate(-2.5deg);
+  border: 2px solid hsl(var(--primary)); color: hsl(var(--primary));
+  font: 700 0.75rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  text-transform: uppercase; letter-spacing: 0.14em;
+}
+html[data-style='editorial'] .ed-case h1 { font-size: clamp(2.5rem, 6vw, 5.5rem); font-variation-settings: 'wdth' 66; line-height: 0.9; }
+html[data-style='editorial'] .ed-case .cs-stats { gap: 0 2rem; }
+html[data-style='editorial'] .ed-case .cs-stats > div.glass { background: transparent; border: 0; border-top: 1px solid hsl(var(--ink)); padding: 1rem 0 0; }
+html[data-style='editorial'] .ed-case .cs-stats dd {
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 64; font-weight: 800; font-size: clamp(2.75rem, 5.5vw, 4.75rem); line-height: 0.9;
+}
+html[data-style='editorial'] .ed-case .cs-stats > div:nth-child(2) dd { color: hsl(var(--primary)); }
+html[data-style='editorial'] .ed-case .cs-num {
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 58; font-weight: 900; font-size: clamp(5rem, 9vw, 8.5rem); line-height: 0.8;
+  color: transparent; -webkit-text-stroke: 2px hsl(var(--ink));
+}
+html[data-style='editorial'] .ed-case .rounded-full { border-radius: 0; }
+html[data-style='editorial'] .ed-case .cs-bar.bg-primary { background: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ed-case .cs-bar:not(.bg-primary) { background: hsl(var(--ink)); }
+html[data-style='editorial'] .ed-case .cs-progress { background: hsl(var(--ed-accent)); height: 4px; }
+
+/* ---- Fix a bug: a ticket desk. */
+html[data-style='editorial'] .ed-trouble { margin: 0 calc(50% - 50vw) clamp(2.5rem, 6vh, 4rem); }
+html[data-style='editorial'] .ed-trouble .ed-ticker-run > span { font-size: clamp(1.3rem, 3vw, 2.4rem); padding-block: 0.75rem; }
+html[data-style='editorial'] .bug-form.glass { border-width: 1px; box-shadow: 10px 10px 0 hsl(var(--ink)); }
+html[data-style='editorial'] .bug-form :is(label > span:first-child, .space-y-2 > span:first-child) {
+  font: 600 0.72rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+html[data-style='editorial'] .bug-field {
+  border-radius: 0; background: transparent; box-shadow: none;
+  border: 0; border-bottom: 2px solid hsl(var(--ink) / 0.3);
+  padding-inline: 0; font-size: 1.05rem;
+  transition: border-color 0.2s ease;
+}
+html[data-style='editorial'] textarea.bug-field { border: 1px solid hsl(var(--ink) / 0.3); padding: 0.75rem; }
+html[data-style='editorial'] .bug-field:focus { box-shadow: none; border-color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .bug-choice { border-radius: 0; font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+html[data-style='editorial'] .bug-choice[aria-checked='true'] { background: hsl(var(--ink)); box-shadow: inset 0 -3px 0 hsl(var(--ed-accent)); }
+html[data-style='editorial'] .bug-send {
+  border-radius: 0; background: hsl(var(--ink)); color: hsl(var(--background)); box-shadow: none;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 80; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+}
+html[data-style='editorial'] .bug-send:hover { filter: none; background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
+html[data-style='editorial'] .bug-steps { gap: 0; }
+html[data-style='editorial'] .bug-steps > li.glass { background: transparent; border: 0; border-top: 1px solid hsl(var(--ink)); padding: 1.1rem 0; }
+html[data-style='editorial'] .bug-step-num { width: auto; height: auto; align-items: flex-start; background: none; font-size: 0; }
+html[data-style='editorial'] .bug-step-num > svg { display: none; }
+html[data-style='editorial'] .bug-step-n {
+  display: inline; min-width: 2.6rem;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 60; font-weight: 900; font-size: 2.4rem; line-height: 0.8;
+  color: transparent; -webkit-text-stroke: 1.5px hsl(var(--ink));
+}
+html[data-style='editorial'] .bug-steps > li:hover .bug-step-n { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+
+/* ---- 404: the missing chapter. */
+html[data-style='editorial'] .nf-page .trace-404 { display: none; }
+html[data-style='editorial'] .ed-404 { padding-bottom: 1rem; border-bottom: 1px solid hsl(var(--ink)); }
+html[data-style='editorial'] .ed-404-kicker {
+  font: 600 0.75rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--primary));
+}
+html[data-style='editorial'] .ed-404-num {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-size: clamp(9rem, 34vw, 22rem); line-height: 0.8; margin-top: 0.75rem;
+  color: hsl(var(--ink)); user-select: none;
+}
+html[data-style='editorial'] .ed-404-num .ed-char:nth-child(2) { color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ed-404-num { justify-content: center; gap: 0.04em; }
+@media (max-width: 699px) { html[data-style='editorial'] .ed-404-num { font-size: 52vw; } }
+@media (max-width: 767px) { html[data-style='editorial'] .bug-form.glass { box-shadow: 5px 5px 0 hsl(var(--ink)); margin-right: 5px; } }

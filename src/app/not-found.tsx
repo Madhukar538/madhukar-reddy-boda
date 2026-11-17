@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Bug } from 'lucide-react';
@@ -50,8 +51,20 @@ export default async function NotFound() {
   const latest = posts.slice(0, 3);
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 md:px-6 pt-16 lg:pt-36 pb-16 lg:pb-24">
+    <div className="nf-page container mx-auto max-w-3xl px-4 md:px-6 pt-16 lg:pt-36 pb-16 lg:pb-24">
       <Trace />
+
+      {/* Editorial: a huge 404 whose figures widen toward the pointer (editorial-fx.tsx, like the home name). */}
+      <div className="ed-only ed-404" aria-hidden>
+        <p className="ed-404-kicker">( Chapter not found )</p>
+        <p className="ed-404-num">
+          {['4', '0', '4'].map((ch, i) => (
+            <span key={i} className="ed-char" style={{ '--i': i } as CSSProperties}>
+              {ch}
+            </span>
+          ))}
+        </p>
+      </div>
 
       <p className="mt-10 font-mono text-xs text-primary">404 · route not found</p>
       <h1 className="mt-3 text-[clamp(2.5rem,7vw,4rem)] leading-[1.02] text-foreground">

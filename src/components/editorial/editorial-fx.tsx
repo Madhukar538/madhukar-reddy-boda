@@ -70,7 +70,8 @@ export function EditorialFx() {
       });
     });
 
-    const hero = document.querySelector<HTMLElement>('.ed-hero');
+    // The home name, or the 404's figures: letters in either widen toward the pointer.
+    const hero = document.querySelector<HTMLElement>('.ed-hero, .ed-404');
     const story = document.querySelector<HTMLElement>('.ed-chapters');
     const storyFill = story?.querySelector<HTMLElement>('.ed-chapters-fill');
     // The name's lines slide apart as you scroll, at these rates (px per px scrolled).
