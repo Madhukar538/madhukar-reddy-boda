@@ -20,6 +20,9 @@ export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: str
   { id: 'arctic', label: 'Arctic', hint: 'Cool light', swatch: 'linear-gradient(135deg, #EEF2F7 50%, #165FC8 50%)' },
   { id: 'synthwave', label: 'Synthwave', hint: 'Neon dark', swatch: 'linear-gradient(135deg, #11052A 50%, #FF3DA5 50%)' },
   { id: 'dune', label: 'Dune', hint: 'Warm serif', swatch: 'linear-gradient(135deg, #F3EADB 50%, #A63F25 50%)' },
+  { id: 'gazette', label: 'Gazette', hint: 'Newspaper', swatch: 'linear-gradient(135deg, #F4F1EA 50%, #151515 50%)' },
+  { id: 'receipt', label: 'Receipt', hint: 'Till slip', swatch: 'linear-gradient(135deg, #FFFEFA 50%, #C62E2E 50%)' },
+  { id: 'observatory', label: 'Observatory', hint: 'Star atlas', swatch: 'linear-gradient(135deg, #070B18 50%, #F5C46B 50%)' },
 ];
 
 type ThemeOptions = { defaultTheme: DesignStyle; enabled: DesignStyle[] };

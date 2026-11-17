@@ -6,15 +6,16 @@ import { useCallback, useEffect, useState } from 'react';
  * The site's look: terminal (light, the default), midnight (warm dark, the
  * backup), blueprint (interactive architect's drawing, dark), editorial (kinetic
  * type on paper, light), glass (the original Liquid Glass), arctic (cool, light),
- * synthwave (neon, dark) or dune (warm sand and serif, light).
+ * synthwave (neon, dark), dune (warm sand and serif, light), gazette (a newspaper, light),
+ * receipt (a till receipt, light) or observatory (a star atlas, dark).
  * The server renders <html data-style="terminal">; a visitor who picked
  * Midnight has it stored, and the inline script in app/layout removes the
  * attribute before first paint. No attribute means midnight.
  */
 
-export type DesignStyle = 'terminal' | 'midnight' | 'blueprint' | 'editorial' | 'glass' | 'arctic' | 'synthwave' | 'dune';
+export type DesignStyle = 'terminal' | 'midnight' | 'blueprint' | 'editorial' | 'glass' | 'arctic' | 'synthwave' | 'dune' | 'gazette' | 'receipt' | 'observatory';
 
-const NAMED: DesignStyle[] = ['terminal', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune'];
+const NAMED: DesignStyle[] = ['terminal', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune', 'gazette', 'receipt', 'observatory'];
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 

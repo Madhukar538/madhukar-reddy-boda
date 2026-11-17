@@ -10,6 +10,9 @@ import { EditorialNext } from '@/components/editorial/editorial-next';
 import { ArcticAbout } from '@/components/looks/arctic-pages';
 import { SynthwaveAbout } from '@/components/looks/synthwave-pages';
 import { DuneAbout } from '@/components/looks/dune-pages';
+import { GazetteAbout } from '@/components/looks/gazette';
+import { ReceiptAbout } from '@/components/looks/receipt';
+import { ObservatoryAbout } from '@/components/looks/observatory';
 import { experienceSince } from '@/lib/utils';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
@@ -58,6 +61,9 @@ export default async function AboutPage() {
       <ArcticAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <SynthwaveAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <DuneAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <GazetteAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <ReceiptAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <ObservatoryAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <div className="classic-only">
       <HomeHero
         content={{

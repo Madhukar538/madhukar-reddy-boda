@@ -6,6 +6,9 @@ import { EditorialNext } from '@/components/editorial/editorial-next';
 import { ArcticExperience } from '@/components/looks/arctic-pages';
 import { SynthwaveExperience } from '@/components/looks/synthwave-pages';
 import { DuneExperience } from '@/components/looks/dune-pages';
+import { GazetteExperience } from '@/components/looks/gazette';
+import { ReceiptExperience } from '@/components/looks/receipt';
+import { ObservatoryExperience } from '@/components/looks/observatory';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
@@ -51,6 +54,9 @@ export default async function ExperiencePage() {
       <ArcticExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <SynthwaveExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <DuneExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <GazetteExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <ReceiptExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <ObservatoryExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>
