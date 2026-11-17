@@ -11,16 +11,9 @@ import { getContent, getThemeSettings } from '@/lib/content';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
-import { EditorialHome } from '@/components/editorial/editorial-home';
-import { ArcticHome } from '@/components/looks/arctic-home';
-import { SynthwaveHome } from '@/components/looks/synthwave-home';
-import { DuneHome } from '@/components/looks/dune-home';
-import { GazetteHome } from '@/components/looks/gazette';
-import { ReceiptHome } from '@/components/looks/receipt';
-import { ObservatoryHome } from '@/components/looks/observatory';
-import { TerminalHome } from '@/components/looks/terminal-look';
-import { BlueprintHome } from '@/components/looks/blueprint-look';
-import { GlassHome } from '@/components/looks/glass-look';
+import { EditorialView } from '@/components/looks/editorial-view';
+import { LookView } from '@/components/looks/look-view';
+import { withHrefs } from '@/components/looks/server';
 import { experienceSince } from '@/lib/utils';
 import { LiveExperience } from '@/components/portfolio/live-experience';
 
@@ -48,11 +41,13 @@ export default async function Home() {
   return (
     <>
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
-    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} story={story} />
-    {/* Each of these looks has its own homepage too (components/looks), shown only in that look. */}
-    {([['arctic', ArcticHome], ['synthwave', SynthwaveHome], ['dune', DuneHome], ['gazette', GazetteHome], ['receipt', ReceiptHome], ['observatory', ObservatoryHome], ['terminal', TerminalHome], ['blueprint', BlueprintHome], ['glass', GlassHome]] as const).map(([look, LookHome]) => (
-      <LookHome key={look} heading={story.hero.heading} name={profile.name} projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} posts={summaries(posts)} />
-    ))}
+    <EditorialView page="home" defaultLook={themes.defaultTheme} props={{ projects: keyProjects, metrics: heroMetrics, since: experienceSince().since, story }} />
+    {/* The other looks' own homepages (components/looks): only the active one is in the page. */}
+    <LookView
+      page="home"
+      defaultLook={themes.defaultTheme}
+      props={{ heading: story.hero.heading, name: profile.name, projects: withHrefs(keyProjects), metrics: heroMetrics, since: experienceSince().since, posts: summaries(posts).slice(0, 5) }}
+    />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 

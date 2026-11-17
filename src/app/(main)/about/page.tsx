@@ -5,20 +5,12 @@ import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
 import { Recognition } from '@/components/portfolio/recognition';
-import { EditorialAbout } from '@/components/editorial/editorial-about';
+import { EditorialView } from '@/components/looks/editorial-view';
 import { EditorialNext } from '@/components/editorial/editorial-next';
-import { ArcticAbout } from '@/components/looks/arctic-pages';
-import { SynthwaveAbout } from '@/components/looks/synthwave-pages';
-import { DuneAbout } from '@/components/looks/dune-pages';
-import { GazetteAbout } from '@/components/looks/gazette';
-import { ReceiptAbout } from '@/components/looks/receipt';
-import { ObservatoryAbout } from '@/components/looks/observatory';
-import { TerminalAbout } from '@/components/looks/terminal-look';
-import { BlueprintAbout } from '@/components/looks/blueprint-look';
-import { GlassAbout } from '@/components/looks/glass-look';
+import { LookView } from '@/components/looks/look-view';
 import { experienceSince } from '@/lib/utils';
 import { allTopics, siteUrl } from '@/lib/blog';
-import { getContent } from '@/lib/content';
+import { getContent, getThemeSettings } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'About — Boda Madhukar Reddy',
@@ -27,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const content = await getContent();
+  const [content, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const { posts } = content;
   const aboutValues = { name: content.profile.name, degree: content.education.degree, institution: content.education.institution, location: content.education.location, since: experienceSince().since };
   const base = siteUrl();
@@ -60,16 +52,8 @@ export default async function AboutPage() {
     />
     <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
-      <EditorialAbout name={content.profile.name} education={content.education} about={content.story.about} />
-      <ArcticAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <SynthwaveAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <DuneAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <GazetteAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <ReceiptAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <ObservatoryAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <TerminalAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <BlueprintAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
-      <GlassAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <EditorialView page="about" defaultLook={themes.defaultTheme} props={{ name: content.profile.name, education: content.education, about: content.story.about }} />
+      <LookView page="about" defaultLook={themes.defaultTheme} props={{ name: content.profile.name, values: aboutValues, about: content.story.about }} />
       <div className="classic-only">
       <HomeHero
         content={{

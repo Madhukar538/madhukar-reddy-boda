@@ -4,18 +4,11 @@ import { ArrowRight, FlaskConical } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Projects } from '@/components/portfolio/projects';
 import { BlogStrip } from '@/components/blog/blog-strip';
-import { EditorialCaseFiles } from '@/components/editorial/editorial-case-files';
+import { EditorialView } from '@/components/looks/editorial-view';
 import { EditorialNext } from '@/components/editorial/editorial-next';
-import { ArcticProjects } from '@/components/looks/arctic-pages';
-import { SynthwaveProjects } from '@/components/looks/synthwave-pages';
-import { DuneProjects } from '@/components/looks/dune-pages';
-import { GazetteProjects } from '@/components/looks/gazette';
-import { ReceiptProjects } from '@/components/looks/receipt';
-import { ObservatoryProjects } from '@/components/looks/observatory';
-import { TerminalProjects } from '@/components/looks/terminal-look';
-import { BlueprintProjects } from '@/components/looks/blueprint-look';
-import { GlassProjects } from '@/components/looks/glass-look';
-import { getContent } from '@/lib/content';
+import { LookView } from '@/components/looks/look-view';
+import { withHrefs } from '@/components/looks/server';
+import { getContent, getThemeSettings } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
@@ -25,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const { posts, keyProjects, clientProjects } = await getContent();
+  const [{ posts, keyProjects, clientProjects }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const base = siteUrl();
 
   const jsonLd = {
@@ -47,16 +40,8 @@ export default async function ProjectsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <EditorialCaseFiles keyProjects={keyProjects} clientProjects={clientProjects} />
-      <ArcticProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <SynthwaveProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <DuneProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <GazetteProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <ReceiptProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <ObservatoryProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <TerminalProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <BlueprintProjects keyProjects={keyProjects} clientProjects={clientProjects} />
-      <GlassProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <EditorialView page="projects" defaultLook={themes.defaultTheme} props={{ keyProjects, clientProjects }} />
+      <LookView page="projects" defaultLook={themes.defaultTheme} props={{ keyProjects: withHrefs(keyProjects), clientProjects }} />
       <div className="classic-only">
         <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
       </div>

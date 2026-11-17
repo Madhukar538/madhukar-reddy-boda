@@ -19,7 +19,8 @@ const NAMED: DesignStyle[] = ['terminal', 'blueprint', 'editorial', 'glass', 'ar
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 
-const read = (): DesignStyle => {
+/** The look on the page now (from <html data-style>; none means Midnight). */
+export const currentDesignStyle = (): DesignStyle => {
   if (typeof document === 'undefined') return 'terminal';
   const style = document.documentElement.dataset.style;
   return NAMED.includes(style as DesignStyle) ? (style as DesignStyle) : 'midnight';
@@ -38,8 +39,8 @@ export function useDesignStyle(): [DesignStyle, (style: DesignStyle) => void] {
   const [style, setStyle] = useState<DesignStyle>('terminal');
 
   useEffect(() => {
-    setStyle(read());
-    const observer = new MutationObserver(() => setStyle(read()));
+    setStyle(currentDesignStyle());
+    const observer = new MutationObserver(() => setStyle(currentDesignStyle()));
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-style'] });
     return () => observer.disconnect();
   }, []);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useDesignStyle } from '@/lib/design-style';
 
@@ -22,6 +22,14 @@ export function EditorialFx() {
   const [look] = useDesignStyle();
   const pathname = usePathname();
   const active = look === 'editorial';
+  // Editorial's blocks can arrive after this runs (they load on demand, components/looks/editorial-view):
+  // each tells us when it has mounted, and the effects are set up again over the whole page.
+  const [mounts, setMounts] = useState(0);
+  useEffect(() => {
+    const bump = () => setMounts((n) => n + 1);
+    window.addEventListener('editorial:mounted', bump);
+    return () => window.removeEventListener('editorial:mounted', bump);
+  }, []);
 
   useEffect(() => {
     if (!active) return;
@@ -230,7 +238,7 @@ export function EditorialFx() {
     });
 
     return () => cleanups.forEach((fn) => fn());
-  }, [active, pathname]);
+  }, [active, pathname, mounts]);
 
   return null;
 }

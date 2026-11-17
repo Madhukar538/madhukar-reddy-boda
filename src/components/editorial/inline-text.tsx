@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { isSafeHref } from '@/lib/story';
+import { isSafeHref } from '@/lib/story-text';
 
 /**
  * Story text with its only markup: **bold**, *emphasis* and [label](/path) links (to a page on the

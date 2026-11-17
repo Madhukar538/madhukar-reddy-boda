@@ -1,18 +1,10 @@
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
-import { EditorialJourney } from '@/components/editorial/editorial-journey';
+import { EditorialView } from '@/components/looks/editorial-view';
 import { EditorialNext } from '@/components/editorial/editorial-next';
-import { ArcticExperience } from '@/components/looks/arctic-pages';
-import { SynthwaveExperience } from '@/components/looks/synthwave-pages';
-import { DuneExperience } from '@/components/looks/dune-pages';
-import { GazetteExperience } from '@/components/looks/gazette';
-import { ReceiptExperience } from '@/components/looks/receipt';
-import { ObservatoryExperience } from '@/components/looks/observatory';
-import { TerminalExperience } from '@/components/looks/terminal-look';
-import { BlueprintExperience } from '@/components/looks/blueprint-look';
-import { GlassExperience } from '@/components/looks/glass-look';
-import { getContent } from '@/lib/content';
+import { LookView } from '@/components/looks/look-view';
+import { getContent, getThemeSettings } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
 
@@ -23,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ExperiencePage() {
-  const { experience, clientProjects, keyProjects, rdProjects, story } = await getContent();
+  const [{ experience, clientProjects, keyProjects, rdProjects, story }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const base = siteUrl();
 
   const jsonLd = {
@@ -53,16 +45,8 @@ export default async function ExperiencePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <EditorialJourney experience={experience} stats={stats} journey={story.journey} />
-      <ArcticExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <SynthwaveExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <DuneExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <GazetteExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <ReceiptExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <ObservatoryExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <TerminalExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <BlueprintExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
-      <GlassExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <EditorialView page="experience" defaultLook={themes.defaultTheme} props={{ experience, stats, journey: story.journey }} />
+      <LookView page="experience" defaultLook={themes.defaultTheme} props={{ experience, clientProjects, journey: story.journey }} />
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>
