@@ -35,7 +35,7 @@ export function PostCard({ post, featured = false, className }: { post: CardPost
   const metric = postMetrics[post.slug];
   return (
     <Link href={`/blog/${post.slug}`} className={cn('group block h-full', className)}>
-      <article className={cn('glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-10' : 'p-6 md:p-7')}>
+      <article className={cn('post-card glass glass-interactive flex h-full flex-col overflow-hidden', featured ? 'p-6 md:p-10' : 'p-6 md:p-7')}>
         {featured && (
           <div aria-hidden className="card-glow pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl !z-0" />
         )}

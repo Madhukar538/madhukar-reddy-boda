@@ -44,7 +44,7 @@ export default async function ExperiencePage() {
     <PageShell
       eyebrow="Experience"
       title="Where I've built."
-      description="Five years of shipping backend systems — from R&D prototypes to high-traffic retail platforms."
+      description="Building since December 2021: from R&D prototypes to high-traffic retail platforms."
     >
       <script
         type="application/ld+json"
