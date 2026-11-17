@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Fido2" Version="4.1.0" />
+    <!-- Fido2 4.1.0 brings in 9.0.0, which has a known advisory (GHSA-vmv3-wvjp-wqpj): pin the patched release. -->
+    <PackageReference Include="System.Formats.Cbor" Version="9.0.24" />
     <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
   </ItemGroup>
 
