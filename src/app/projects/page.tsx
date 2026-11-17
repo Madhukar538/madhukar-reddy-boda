@@ -4,6 +4,8 @@ import { ArrowRight, FlaskConical } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Projects } from '@/components/portfolio/projects';
 import { BlogStrip } from '@/components/blog/blog-strip';
+import { EditorialCaseFiles } from '@/components/editorial/editorial-case-files';
+import { EditorialNext } from '@/components/editorial/editorial-next';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 
@@ -36,7 +38,10 @@ export default async function ProjectsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <EditorialCaseFiles keyProjects={keyProjects} clientProjects={clientProjects} />
+      <div className="classic-only">
+        <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
+      </div>
 
       <BlogStrip posts={posts} className="mt-14" />
 
@@ -50,6 +55,7 @@ export default async function ProjectsPage() {
         </span>
         <ArrowRight className="h-5 w-5 text-primary transition-transform group-hover:translate-x-1" />
       </Link>
+      <EditorialNext from="/projects" />
     </PageShell>
   );
 }

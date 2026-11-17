@@ -5,7 +5,7 @@ import { ArrowUpRight } from 'lucide-react';
  * The Editorial homepage told as a journey: chapters from the degree to today's team of AI
  * agents. Every fact here is also on the Experience page, the projects or the posts it links to.
  * Each chapter's number stays pinned beside it while you read it; a line down the left fills as
- * you go (components/editorial/editorial-fx.tsx sets --story-p).
+ * you go (components/editorial/editorial-fx.tsx scales .ed-chapters-fill).
  */
 
 type Chapter = {
@@ -85,6 +85,7 @@ export function EditorialStory() {
         </h2>
       </header>
       <ol className="ed-chapters">
+        <li aria-hidden className="ed-chapters-fill" />
         {CHAPTERS.map((c) => (
           <li key={c.no} className="ed-chapter">
             <div className="ed-chapter-mark" aria-hidden>

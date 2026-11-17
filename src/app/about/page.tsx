@@ -6,6 +6,7 @@ import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
 import { Recognition } from '@/components/portfolio/recognition';
 import { EditorialAbout } from '@/components/editorial/editorial-about';
+import { EditorialNext } from '@/components/editorial/editorial-next';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 
@@ -75,6 +76,7 @@ export default async function AboutPage() {
         <Education education={content.education} />
         <Recognition />
       </div>
+      <EditorialNext from="/about" />
     </div>
     </>
   );

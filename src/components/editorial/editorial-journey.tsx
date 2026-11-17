@@ -1,4 +1,5 @@
 import type { Experience } from '@/lib/content';
+import { LiveExperience } from '@/components/portfolio/live-experience';
 
 /**
  * The Experience page in the Editorial look: the role told in acts, from shipping for real users
@@ -17,6 +18,9 @@ const ORDER = Object.keys(ACTS);
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 type Stat = { value: number; suffix?: string; label: string };
+
+/** The years stat is shown as the live counter instead. */
+const isYears = (s: Stat) => /years/i.test(s.label);
 
 export function EditorialJourney({ experience, stats }: { experience: Experience; stats: Stat[] }) {
   const groups = [...experience.groups].sort((a, b) => {
@@ -42,8 +46,14 @@ export function EditorialJourney({ experience, stats }: { experience: Experience
           <div key={s.label}>
             <dt>{s.label}</dt>
             <dd>
-              {s.value}
-              {s.suffix}
+              {isYears(s) ? (
+                <LiveExperience />
+              ) : (
+                <>
+                  {s.value}
+                  {s.suffix}
+                </>
+              )}
             </dd>
           </div>
         ))}

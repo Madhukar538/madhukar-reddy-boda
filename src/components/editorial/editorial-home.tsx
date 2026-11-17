@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, FileDown } from 'lucide-react';
 import type { ProjectCard } from '@/data/profile';
 import { caseStudyFor } from '@/data/case-studies';
 import { EditorialStory } from './editorial-story';
+import { EditorialNext } from './editorial-next';
 
 /**
  * The Editorial look's homepage: a kinetic name, a running ticker, the numbers and a
@@ -23,7 +24,7 @@ const INDEX: [string, string][] = [
 ];
 const TICKER = ['AI Architect', '.NET 8–10', 'Agentic AI', 'RAG', 'MCP', 'Solr 9 hybrid search', 'k6 load testing', 'MongoDB', 'Hyderabad'];
 
-type Metric = { value: string; label: string };
+type Metric = { value: React.ReactNode; label: string };
 
 function projectHref(project: ProjectCard) {
   const study = caseStudyFor(project.title);
@@ -171,6 +172,10 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
           </ol>
         </div>
       </section>
+
+      <div className="ed-home-next">
+        <EditorialNext from="/" />
+      </div>
     </div>
   );
 }
