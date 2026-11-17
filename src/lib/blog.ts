@@ -173,10 +173,10 @@ export function renderPost(post: BlogPost): RenderedPost {
     const body = known ? hljs.highlight(source, { language: lang, ignoreIllegals: true }).value : escapeHtml(source);
     const kind = lang ? 'code' : /[─│▶◀┌└├]/.test(source) ? 'diagram' : 'text';
     const label = lang ? LABELS[lang] ?? lang : kind === 'diagram' ? 'Diagram' : 'Text';
-    return `<figure class="code-block" data-kind="${kind}"><figcaption>${label}</figcaption><pre><code class="hljs">${body}</code></pre></figure>`;
+    return `<figure class="code-block" data-kind="${kind}"><figcaption>${label}</figcaption><pre tabindex="0"><code class="hljs">${body}</code></pre></figure>`;
   });
 
-  // Tables scroll sideways on narrow screens; a keyboard can only scroll what it can focus.
+  // Tables and code blocks (above) can scroll sideways; a keyboard can only scroll what it can focus.
   html = html.replace(/<table(?=[\s>])/g, '<table tabindex="0"');
 
   return { html, toc, words: countWords(post.content) };
