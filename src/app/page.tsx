@@ -33,13 +33,13 @@ const heroMetrics = [
 ];
 
 export default async function Home() {
-  const [{ posts, experience, keyProjects, rdProjects, profile }, themes] = await Promise.all([getContent(), getThemeSettings()]);
+  const [{ posts, experience, keyProjects, rdProjects, profile, story }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const topics = allTopics(posts);
 
   return (
     <>
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
-    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} />
+    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} story={story} />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
