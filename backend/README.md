@@ -207,6 +207,22 @@ docker exec <mongo-container> sh -c 'mongorestore -u root -p "$MONGO_INITDB_ROOT
 
 Then restart the API.
 
+**Offsite copies.** The dumps above sit on the same disk as the database, so a lost server loses both. The `mongo-offsite` container (`offsite/offsite.sh`) copies each finished dump every 6 hours to Cloudflare R2, or any S3-compatible storage. Each file is encrypted before it leaves the server, so the bucket only holds ciphertext. Copies older than 60 days are removed from the bucket. It stays idle until these are set in Coolify's environment variables:
+
+| Variable | Value |
+| --- | --- |
+| `OFFSITE_ENDPOINT` | `https://<account id>.r2.cloudflarestorage.com` |
+| `OFFSITE_BUCKET` | the bucket's name, e.g. `portfolio-backups` (create it first, private) |
+| `OFFSITE_ACCESS_KEY_ID`, `OFFSITE_SECRET_ACCESS_KEY` | an R2 API token with Object Read & Write on that bucket only |
+| `OFFSITE_ENCRYPTION_PASSWORD` | a long random password. **Keep a copy outside the server** (a password manager): without it the copies cannot be read. |
+| `OFFSITE_KEEP_DAYS`, `OFFSITE_EVERY_HOURS` | optional, default `60` and `6` |
+
+Its log says "copied, N dumps in the bucket" after each run. To restore from the bucket on any machine with rclone, set the same `RCLONE_CONFIG_*` values the script sets, then decrypt a dump while downloading it, and restore it as above:
+
+```sh
+rclone copy sealed:portfolio-2026-10-31T210000Z.gz .
+```
+
 **Moving from MongoDB Atlas.** Deploy once, so the empty database is seeded. Then replace it with your Atlas data, so admin users, passkeys, posts, comments, tickets and media come across:
 
 ```sh

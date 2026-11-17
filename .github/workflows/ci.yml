@@ -1,0 +1,49 @@
+# Checks every pull request and every push to main: the site's types and production build,
+# and the API's test suite. Coolify deploys main on its own; this is the gate before merging.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Site (typecheck + build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      # Also renders the résumé PDF (prebuild), so a broken résumé fails here too.
+      - run: npm run build
+
+  api:
+    name: API (.NET tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      # The tests start their own throwaway MongoDB (Mongo2Go): no services needed.
+      - run: dotnet test Dhucar.Portfolio.sln --configuration Release
