@@ -34,7 +34,7 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-1">
             <p className="text-xl font-bold tracking-tight text-foreground">Boda Madhukar Reddy</p>
-            <p className="text-sm text-muted-foreground">Senior Software Engineer · Hyderabad, India</p>
+            <p className="text-sm text-muted-foreground">Senior Software Engineer · AI Architect · Hyderabad, India</p>
             {awards.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-3">
                 {awards.map((award) => (

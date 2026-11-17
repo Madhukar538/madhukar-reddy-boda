@@ -114,7 +114,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
 
           <p className="mx-auto lg:mx-0 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
             I&apos;m <span className="font-semibold text-foreground">Boda Madhukar Reddy</span>, a
-            Senior Software Engineer and agentic AI developer in Hyderabad. I lead teams of AI coding agents with
+            Senior Software Engineer, AI architect and agentic AI developer in Hyderabad. I lead teams of AI coding agents with
             specs, skills and review, design high-throughput .NET APIs, build self-hosted AI platforms (RAG, MCP and
             hybrid search), and <Link href="/blog/why-i-am-an-agentic-developer" className="font-semibold text-primary hover:underline">show the evidence</Link>.
           </p>
@@ -151,7 +151,7 @@ export function HomeHero({ content, stats }: { content: HeroContent; stats: Site
               </div>
             </div>
             <p className="text-xl font-bold text-foreground">Boda Madhukar Reddy</p>
-            <p className="text-sm font-medium text-primary">Senior Software Engineer</p>
+            <p className="text-sm font-medium text-primary">Senior Software Engineer · AI Architect</p>
             <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" /> Hyderabad, India
             </p>

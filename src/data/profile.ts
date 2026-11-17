@@ -6,7 +6,7 @@
 
 export const profile = {
   name: 'Boda Madhukar Reddy',
-  title: 'Senior Software Engineer · Agentic AI Developer',
+  title: 'Senior Software Engineer · AI Architect · Agentic AI Developer',
   company: 'Revalsys Technologies',
   location: 'Hyderabad, India',
   email: 'madhukarreddyboda538@gmail.com',
@@ -17,7 +17,7 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Senior Software Engineer and agentic AI developer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
+    'Senior Software Engineer, AI architect and agentic AI developer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
     'Leads teams of AI coding agents (Claude Code, Codex, Copilot and Antigravity) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. ' +
     'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. ' +
     'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.',
