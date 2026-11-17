@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ExperiencePage() {
-  const { experience, clientProjects, keyProjects, rdProjects } = await getContent();
+  const { experience, clientProjects, keyProjects, rdProjects, story } = await getContent();
   const base = siteUrl();
 
   const jsonLd = {
@@ -44,7 +44,7 @@ export default async function ExperiencePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <EditorialJourney experience={experience} stats={stats} />
+      <EditorialJourney experience={experience} stats={stats} journey={story.journey} />
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>

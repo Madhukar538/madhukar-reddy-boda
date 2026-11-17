@@ -90,7 +90,7 @@ function StoryEditor() {
     <form onSubmit={save}>
       <Panel
         title="Homepage story"
-        description="The Editorial homepage: hero, running band, and the chapters with the exhibit beside each. Text is plain; **bold** and *emphasis* are the only markup. Exhibit kinds: none, ticket, list, bars, tree, grid, team."
+        description="The Editorial look's story: the homepage (hero, running band, chapters with an exhibit beside each), and optionally the Experience page's acts (journey) and the About page's Q&A (about). Text is plain: **bold**, *emphasis* and [label](/path) links are the only markup; {name}, {degree}, {institution}, {location} and {since} fill in from the profile. Exhibit kinds: none, ticket, list, bars, tree, grid, team."
       >
         <p className="mb-3 text-sm text-muted-foreground">
           {isCustom ? 'The site shows this saved story.' : 'Nothing saved yet: the site shows the built-in story, loaded below to start from.'}
