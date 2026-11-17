@@ -176,6 +176,9 @@ export function renderPost(post: BlogPost): RenderedPost {
     return `<figure class="code-block" data-kind="${kind}"><figcaption>${label}</figcaption><pre><code class="hljs">${body}</code></pre></figure>`;
   });
 
+  // Tables scroll sideways on narrow screens; a keyboard can only scroll what it can focus.
+  html = html.replace(/<table(?=[\s>])/g, '<table tabindex="0"');
+
   return { html, toc, words: countWords(post.content) };
 }
 
