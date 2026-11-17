@@ -39,19 +39,19 @@ public class MigrationTests
         using ApiFactory factory = new();
         factory.CreateApiClient();
 
-        // Run all again over an old profile: the bullets migration sets the groups, and the agentic one (latest Id) the final summary.
+        // Run all again over an old profile: the bullets migration sets the groups, and the AI architect one (latest Id) the final summary.
         await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set("summary", "Old.").Set("Summary", "Old."));
         IMongoCollection<BsonDocument> projects = factory.Database.GetCollection<BsonDocument>("projects");
         BsonDocument jockey = await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync();
         string durationField = jockey.Contains("duration") ? "duration" : "Duration";
         await projects.UpdateOneAsync(new BsonDocument("_id", "jockey"), Builders<BsonDocument>.Update.Set(durationField, "Jan 2021 – May 2023"));
         await Migrations(factory).DeleteManyAsync(FilterDefinition<BsonDocument>.Empty);
-        Assert.Equal([MigrationId, "0002-experience-bullets", "0003-agentic-developer"], await RunPending(factory));
+        Assert.Equal([MigrationId, "0002-experience-bullets", "0003-agentic-developer", "0004-ai-architect"], await RunPending(factory));
         Assert.Equal("Dec 2021 – May 2023", (await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync())[durationField].AsString);
 
         BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         string summaryField = profile.Contains("summary") ? "summary" : "Summary";
-        Assert.Equal(Migration20261114AgenticDeveloper.Summary, profile[summaryField].AsString);
+        Assert.Equal(Migration20261117AiArchitect.Summary, profile[summaryField].AsString);
         string experienceField = profile.Contains("experience") ? "experience" : "Experience";
         BsonDocument experience = profile[experienceField].AsBsonDocument;
         BsonArray groups = experience[experience.Contains("groups") ? "groups" : "Groups"].AsBsonArray;
@@ -68,7 +68,8 @@ public class MigrationTests
         string titleField = profile.Contains("title") ? "title" : "Title";
         string nowField = profile.Contains("now") ? "now" : "Now";
         string skillsField = profile.Contains("skillCategories") ? "skillCategories" : "SkillCategories";
-        Assert.Equal(Migration20261114AgenticDeveloper.Title, profile[titleField].AsString);
+        // The AI architect migration runs after it and sets the final title; the Now note is the agentic one's.
+        Assert.Equal(Migration20261117AiArchitect.Title, profile[titleField].AsString);
         Assert.Equal(Migration20261114AgenticDeveloper.Now, profile[nowField].AsString);
 
         // Run it again: the skill group is not added twice.
@@ -122,5 +123,30 @@ public class MigrationTests
         await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set(titleField, "Principal Engineer"));
         Assert.Empty(await RunPending(factory));
         Assert.Equal("Principal Engineer", (await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync())[titleField].AsString);
+    }
+
+    [Fact]
+    public async Task Ai_architect_migration_sets_title_and_summary_and_keeps_the_now_note()
+    {
+        using ApiFactory factory = new();
+        factory.CreateApiClient();
+
+        BsonDocument before = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
+        string titleField = before.Contains("title") ? "title" : "Title";
+        string summaryField = before.Contains("summary") ? "summary" : "Summary";
+        string nowField = before.Contains("now") ? "now" : "Now";
+        await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, new BsonDocument("$set", new BsonDocument
+        {
+            { titleField, Migration20261114AgenticDeveloper.Title },
+            { summaryField, Migration20261114AgenticDeveloper.Summary },
+            { nowField, "Edited by hand." },
+        }));
+        await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0004-ai-architect"));
+
+        Assert.Equal(["0004-ai-architect"], await RunPending(factory));
+        BsonDocument after = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
+        Assert.Equal(Migration20261117AiArchitect.Title, after[titleField].AsString);
+        Assert.Contains("AI architect", after[summaryField].AsString);
+        Assert.Equal("Edited by hand.", after[nowField].AsString);
     }
 }

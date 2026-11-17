@@ -48,7 +48,7 @@ export default async function Home() {
           </span>
           <span className="text-sm leading-tight">
             <span className="block font-semibold text-foreground group-hover:text-primary transition-colors">Boda Madhukar Reddy</span>
-            <span className="block text-muted-foreground">Senior Software Engineer · Agentic AI Developer</span>
+            <span className="block text-muted-foreground">Senior Software Engineer · AI Architect · Agentic AI Developer</span>
           </span>
         </Link>
         <HeroIdentity />
