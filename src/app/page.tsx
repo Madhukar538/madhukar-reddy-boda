@@ -37,7 +37,7 @@ export default async function Home() {
   return (
     <>
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
-    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} priority={themes.defaultTheme === 'editorial'} />
+    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 

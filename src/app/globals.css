@@ -2347,34 +2347,37 @@ html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity
   color: hsl(var(--ink));
   user-select: none;
 }
-/* The portrait stands on the rule under the name, as tall as the name block, an orange disc
-   behind the head; grey, and in colour on hover. The name runs in front of it. */
-.ed-stage { position: relative; border-bottom: 1px solid hsl(var(--ink)); }
-.ed-name { position: relative; z-index: 1; }
-.ed-portrait {
-  position: absolute; z-index: 0; right: 0; bottom: 0; margin: 0;
-  height: 100%; aspect-ratio: 3 / 4;
+/* The name over a rule, with a short index of facts at the bottom right. */
+.ed-stage { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; border-bottom: 1px solid hsl(var(--ink)); padding-bottom: 1.25rem; }
+.ed-aside { order: 2; display: flex; flex-direction: column; align-items: flex-end; gap: clamp(1.5rem, 4vh, 3rem); width: min(22rem, 30vw); }
+.ed-index { display: grid; gap: 0.9rem; width: 100%; padding-bottom: 0.5rem; }
+/* The turning badge. */
+.ed-badge { position: relative; display: block; width: clamp(8.5rem, 11vw, 11.5rem); aspect-ratio: 1; color: hsl(var(--ink)); border-radius: 9999px; }
+.ed-badge svg { width: 100%; height: 100%; overflow: visible; animation: ed-spin 22s linear infinite; }
+.ed-badge text { font: 600 15px/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; fill: currentColor; letter-spacing: 0.04em; }
+.ed-badge-core {
+  position: absolute; inset: 27%; display: grid; place-items: center; border-radius: 9999px;
+  background: hsl(var(--ed-accent)); color: hsl(var(--ink));
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease, color 0.3s ease;
 }
-.ed-portrait img { filter: grayscale(1) contrast(1.12); transition: filter 0.6s ease; }
-/* The source photo's shoulders end in straight cuts: fade the lower corners out (the head stays whole). */
-.ed-portrait img {
-  -webkit-mask-image: linear-gradient(#000 0 52%, transparent 52%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
-  mask-image: linear-gradient(#000 0 52%, transparent 52%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+.ed-badge-core svg { width: 42%; height: 42%; animation: none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.ed-badge:hover .ed-badge-core { transform: scale(1.12); background: hsl(var(--ink)); color: hsl(var(--background)); }
+.ed-badge:hover .ed-badge-core svg { transform: rotate(45deg); }
+.ed-badge:hover svg:first-child { animation-duration: 7s; }
+.ed-badge:focus-visible { outline: 3px solid hsl(var(--ed-accent)); outline-offset: 4px; }
+@keyframes ed-spin { to { transform: rotate(360deg); } }
+.ed-index > div { padding-top: 0.6rem; border-top: 1px solid hsl(var(--ink) / 0.2); }
+.ed-index dt { font: 500 0.68rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--muted-foreground)); }
+.ed-index dd {
+  margin-top: 0.3rem;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 85; font-weight: 600; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.15;
 }
-.ed-portrait:hover img { filter: none; }
-.ed-portrait::before {
-  content: ''; position: absolute; z-index: -1; right: -6%; top: 2%;
-  width: 84%; aspect-ratio: 1; border-radius: 9999px; background: hsl(var(--ed-accent));
-  transform: scale(calc(1 + min(var(--ed-s), 400) / 4000));
-}
-.ed-portrait figcaption {
-  position: absolute; left: -1.75rem; bottom: 0.25rem;
-  writing-mode: vertical-rl; transform: rotate(180deg);
-  font: 500 0.68rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em;
-}
+.ed-index > div:last-child dd { color: hsl(var(--primary)); }
+.ed-index > div:last-child dd::before { content: ''; display: inline-block; width: 0.5em; height: 0.5em; margin-right: 0.45em; border-radius: 9999px; background: hsl(var(--ed-accent)); vertical-align: 0.12em; }
 .ed-hero { isolation: isolate; }
 @media (max-width: 699px) {
-  .ed-portrait { display: none; }
+  .ed-aside { display: none; }
   .ed-hero { min-height: 0; justify-content: flex-start; padding-top: 2.25rem; }
   .ed-meta span:nth-child(2) { display: none; }
   .ed-name { font-size: 27vw; }
@@ -2519,5 +2522,6 @@ html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity
   .ed-char { animation: none; transition: none; }
   .ed-line { transform: none !important; }
   .ed-ticker-track { animation: none; }
+  .ed-badge svg { animation: none; }
   .ed-panel, .ed-panel-no, .ed-panel-go { transition: none; }
 }

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, FileDown } from 'lucide-react';
 import type { ProjectCard } from '@/data/profile';
@@ -14,6 +13,13 @@ import { caseStudyFor } from '@/data/case-studies';
 const NAME = ['Madhu—', 'kar', 'Reddy'];
 /** Panels in the sideways gallery before the "All projects" one: enough to show range, short enough to scroll. */
 const SHOWN = 6;
+/** The index beside the name (the same facts are in the page's text for screen readers). */
+const INDEX: [string, string][] = [
+  ['Role', 'Senior Software Engineer, Revalsys'],
+  ['Focus', 'AI architecture · .NET · RAG · MCP'],
+  ['Based', 'Hyderabad, India'],
+  ['Status', 'Open to work'],
+];
 const TICKER = ['AI Architect', '.NET 8–10', 'Agentic AI', 'RAG', 'MCP', 'Solr 9 hybrid search', 'k6 load testing', 'MongoDB', 'Hyderabad'];
 
 type Metric = { value: string; label: string };
@@ -24,7 +30,7 @@ function projectHref(project: ProjectCard) {
   return project.post ? `/blog/${project.post}` : '/projects';
 }
 
-export function EditorialHome({ projects, metrics, since, priority = false }: { projects: ProjectCard[]; metrics: Metric[]; since: string; priority?: boolean }) {
+export function EditorialHome({ projects, metrics, since }: { projects: ProjectCard[]; metrics: Metric[]; since: string }) {
   return (
     <div className="home-editorial">
       <section className="ed-hero" aria-labelledby="ed-title">
@@ -38,12 +44,34 @@ export function EditorialHome({ projects, metrics, since, priority = false }: { 
           <span>Senior Software Engineer · AI Architect</span>
           <span>{since} →</span>
         </p>
-        {/* The name and the portrait share a baseline: the photo stands on the rule under "Reddy". */}
+        {/* The name, with a short index of who and where on the right, over a rule. */}
         <div className="ed-stage">
-        <figure className="ed-portrait" aria-hidden>
-          <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 700px) 34vw, 1px" preload={priority} className="object-contain object-bottom" />
-          <figcaption>Fig. 01 — Hyderabad, IN</figcaption>
-        </figure>
+          <div className="ed-aside">
+          {/* A slowly turning badge: what he does, round an orange button to get in touch. */}
+          <Link href="/work-with-me" className="ed-badge" aria-label="Work with me">
+            <svg viewBox="0 0 200 200" aria-hidden>
+              <defs>
+                <path id="ed-badge-ring" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
+              </defs>
+              <text>
+                <textPath href="#ed-badge-ring" textLength="500" lengthAdjust="spacing">
+                  AI ARCHITECT ✶ .NET ENGINEER ✶ OPEN TO WORK ✶
+                </textPath>
+              </text>
+            </svg>
+            <span className="ed-badge-core" aria-hidden>
+              <ArrowUpRight />
+            </span>
+          </Link>
+          <dl className="ed-index" aria-hidden>
+            {INDEX.map(([k, v], i) => (
+              <div key={k}>
+                <dt>({String(i + 1).padStart(2, '0')}) {k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+          </div>
         <div className="ed-name" aria-hidden>
           {NAME.map((line, l) => (
             <span key={line} className="ed-line" data-line={l}>
