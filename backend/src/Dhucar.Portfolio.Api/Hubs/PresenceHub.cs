@@ -1,6 +1,8 @@
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.BusinessLogic.Presence;
+using Dhucar.Portfolio.Api.Middlewares;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
@@ -48,6 +50,8 @@ public partial class PresenceHub(PresenceTracker tracker, EngagementBAL engageme
         {
             Context.Abort();
         }
+        // The connection's site (TenantMiddleware ran on its first request): later calls run in its scope.
+        Context.Items[TenantMiddleware.ItemKey] = Context.GetHttpContext()?.Items[TenantMiddleware.ItemKey];
         return Task.CompletedTask;
     }
 
@@ -72,10 +76,18 @@ public partial class PresenceHub(PresenceTracker tracker, EngagementBAL engageme
     public async Task Join(string slug)
     {
         slug = (slug ?? string.Empty).Trim();
-        if (!SlugPattern().IsMatch(slug) || !await engagementBAL.IsPublishedPost(slug))
+        TenantInfo? tenant = Context.Items[TenantMiddleware.ItemKey] as TenantInfo;
+        bool isPublished;
+        using (TenantScope.Use(tenant is { Slug: not TenantScope.PrimarySlug } ? tenant : null))
+        {
+            isPublished = SlugPattern().IsMatch(slug) && await engagementBAL.IsPublishedPost(slug);
+        }
+        if (!isPublished)
         {
             return;
         }
+        // Readers are counted per site: the same slug on two sites is two rooms.
+        slug = (tenant?.Slug ?? TenantScope.PrimarySlug) + "/" + slug;
         string? previous = tracker.Leave(Context.ConnectionId);
         if (previous != null)
         {

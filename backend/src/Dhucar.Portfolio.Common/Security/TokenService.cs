@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Properties.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -205,7 +206,8 @@ public class TokenService
         {
             Issuer = _settings.JwtIssuer,
             Audience = audience,
-            Claims = claims,
+            // The site it was issued for: a token is refused on any other site.
+            Claims = new Dictionary<string, object>(claims) { ["tid"] = TenantScope.Slug },
             IssuedAt = DateTime.UtcNow,
             NotBefore = DateTime.UtcNow,
             Expires = expiresAt,
@@ -234,6 +236,12 @@ public class TokenService
             RequireSignedTokens = true,
             ClockSkew = TimeSpan.FromSeconds(30),
         });
-        return result.IsValid ? result.ClaimsIdentity : null;
+        if (!result.IsValid)
+        {
+            return null;
+        }
+        // Tokens from before sites existed carry no site: they belong to the primary site.
+        string site = result.ClaimsIdentity.FindFirst("tid")?.Value ?? TenantScope.PrimarySlug;
+        return site == TenantScope.Slug ? result.ClaimsIdentity : null;
     }
 }

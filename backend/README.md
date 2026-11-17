@@ -161,6 +161,19 @@ On every start, after seeding, `MigrationBAL.RunPending()` applies each migratio
 
 To change live data in a release: add a migration (and update `src/data/profile.ts` and the seed with `scripts/export-content.ts`, so a fresh database gets the same result), deploy, and the first start applies it.
 
+## Sites (multi-tenant)
+
+The API can serve more than one portfolio. **Each site has its own MongoDB database**, so one site's posts, comments, tickets, media, admins and sign-ins can never be read or changed from another. The data-access code is the same for every site: only the database changes.
+
+- **The primary site** (dhucar.in) is the configured database (`Portfolio:Mongo:Database`) and the slug `main`. Every request that names no other site is for it, so everything here works as it did before sites existed.
+- **Other sites** are listed in the `tenants` collection of the primary database: slug, name, hosts, database (`site_<slug>`) and status. `TenantBAL.Provision` adds one, creating its indexes and default settings. Signing up is not exposed yet.
+- **Which site a request is for** (`TenantMiddleware`): the `X-Tenant` header (sent by a site's server), else the browser's `Origin` host, else the primary site. A named site that is unknown or suspended gets `404 Unknown site.` and never falls back to another site's data.
+- **Sign-in is per site.** Tokens carry the site (`tid`) and are refused anywhere else; tokens without one (issued before this) belong to the primary site.
+- **Per-site in memory too:** the engagement caches and live-presence rooms are keyed by site.
+- **Primary site only, for now:** page revalidation, Telegram alerts, passkeys (one relying party), CORS origins and data migrations. Giving each site its own settings for these is the next phase.
+
+The database user needs `readWrite` on each site's database as well as `portfolio`: grant it when adding a site, or use a role that covers `site_*`. Nothing changes for the primary site.
+
 ## Deploy (Coolify)
 
 `docker-compose.yaml` (Coolify's default name) runs two containers: the API and its MongoDB (`mongo:8.0`). The database has no published port and is reachable only from the API on the compose network, so there is no IP allow-list to keep up to date. Its files live in the `mongo-data` volume, which survives redeploys.

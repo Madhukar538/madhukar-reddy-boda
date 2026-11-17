@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Common.Logging;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Common.Services;
 using Dhucar.Portfolio.DataAccess;
 using Dhucar.Portfolio.Properties;
@@ -272,7 +273,7 @@ public partial class EngagementBAL(
         try
         {
             int limit = Math.Clamp(objAPIRequest.Limit, 1, 20);
-            List<PopularPostDTO> popular = await memoryCache.GetOrCreateAsync("popular-posts", async entry =>
+            List<PopularPostDTO> popular = await memoryCache.GetOrCreateAsync($"{TenantScope.Slug}:popular-posts", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = PopularCacheTime;
                 Dictionary<string, string> posts = await PublishedPosts();
@@ -519,7 +520,7 @@ public partial class EngagementBAL(
     /// <summary>Slug to title for published posts, cached for a minute (checked on every engagement call).</summary>
     private async Task<Dictionary<string, string>> PublishedPosts()
     {
-        return await memoryCache.GetOrCreateAsync("published-posts", async entry =>
+        return await memoryCache.GetOrCreateAsync($"{TenantScope.Slug}:published-posts", async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = PostsCacheTime;
             return (await postDAL.GetPostsDB(true)).ToDictionary(x => x.Id, x => x.Title);
@@ -534,7 +535,7 @@ public partial class EngagementBAL(
 
     private static string EngagementKey(string slug)
     {
-        return $"engagement:{slug}";
+        return $"{TenantScope.Slug}:engagement:{slug}";
     }
 
     /// <summary>Trims, drops control characters (keeping line breaks in a comment) and collapses runs of blank lines.</summary>

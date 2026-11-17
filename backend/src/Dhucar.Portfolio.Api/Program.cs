@@ -40,6 +40,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors(Dhucar.Portfolio.Api.Extensions.ServiceCollectionExtensions.CorsPolicy);
+// Which site the request is for (its own database); after CORS, so preflights are answered first.
+app.UseMiddleware<TenantMiddleware>();
 app.UseRateLimiter();
 app.MapControllers();
 app.MapHub<PresenceHub>("/hubs/presence");
