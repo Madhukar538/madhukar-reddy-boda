@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { allTopics, isoDate, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { caseStudies } from '@/data/case-studies';
+import { bugLog } from '@/data/bug-log';
 
 // Rendered per request from the tagged data cache (lib/content.ts), so it is
 // current as soon as content changes; static route handlers aren't revalidated by tag.
@@ -21,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/lab/hybrid-search', priority: 0.85, changeFrequency: 'monthly' as const },
     { path: '/work-with-me', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/fix-a-bug', priority: 0.7, changeFrequency: 'monthly' as const },
+    ...(bugLog.length > 0 ? [{ path: '/bug-log', priority: 0.6, changeFrequency: 'monthly' as const }] : []),
     { path: '/graph', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/ai', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/status', priority: 0.4, changeFrequency: 'daily' as const },

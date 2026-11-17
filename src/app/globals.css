@@ -3001,3 +3001,18 @@ html[data-style='editorial'] .ed-404-num .ed-char:nth-child(2) { color: hsl(var(
 html[data-style='editorial'] .ed-404-num { justify-content: center; gap: 0.04em; }
 @media (max-width: 699px) { html[data-style='editorial'] .ed-404-num { font-size: 52vw; } }
 @media (max-width: 767px) { html[data-style='editorial'] .bug-form.glass { box-shadow: 5px 5px 0 hsl(var(--ink)); margin-right: 5px; } }
+
+/* ---- Ticket status page (app/ticket/[id]): three steps, the reached ones filled. */
+.ticket-step { border-right: 1px solid hsl(var(--foreground) / 0.1); color: hsl(var(--muted-foreground)); }
+.ticket-step:last-child { border-right: 0; }
+.ticket-step[data-done] { color: hsl(var(--foreground)); }
+.ticket-step-mark {
+  display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 9999px;
+  font: 600 0.75rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  border: 1px solid hsl(var(--foreground) / 0.2);
+}
+.ticket-step[data-done] .ticket-step-mark { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+.ticket-step[aria-current='step'] .ticket-step-mark { box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2); }
+html[data-style='editorial'] .ticket-step-mark { border-radius: 0; }
+html[data-style='editorial'] .ticket-step[data-done] .ticket-step-mark { background: hsl(var(--ink)); border-color: hsl(var(--ink)); color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ticket-step { border-right-color: hsl(var(--ink)); }

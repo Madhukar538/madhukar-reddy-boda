@@ -19,4 +19,7 @@ public class TicketNoteItem
 
     /// <summary>Admin email.</summary>
     public string By { get; set; } = string.Empty;
+
+    /// <summary>What the reporter sees for this entry on their status page; empty keeps it private.</summary>
+    public string PublicText { get; set; } = string.Empty;
 }

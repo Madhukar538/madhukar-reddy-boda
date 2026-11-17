@@ -180,7 +180,8 @@ export type TicketListItem = {
   updatedAt: string;
 };
 
-export type TicketNote = { at: string; text: string; by: string };
+/** publicText: what the reporter sees on their status page; empty when the entry is private. */
+export type TicketNote = { at: string; text: string; by: string; publicText?: string };
 
 export type Ticket = TicketListItem & {
   contact: string;

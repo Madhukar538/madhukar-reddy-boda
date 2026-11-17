@@ -65,4 +65,7 @@ public class TicketDocument
 
     /// <summary>UTC time it was first resolved or closed.</summary>
     public DateTime? ResolvedAt { get; set; }
+
+    /// <summary>SHA-256 (hex) of the secret in the reporter's status link; empty for tickets filed before links existed. The secret itself is never stored.</summary>
+    public string StatusTokenHash { get; set; } = string.Empty;
 }

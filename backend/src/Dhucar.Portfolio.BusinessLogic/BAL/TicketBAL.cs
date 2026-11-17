@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Services;
@@ -31,6 +33,15 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
         ["closed"] = "Closed",
     };
 
+    /// <summary>Status names as the reporter reads them on their status page.</summary>
+    public static readonly Dictionary<string, string> ReporterStatusLabels = new()
+    {
+        ["open"] = "Received",
+        ["in-progress"] = "Looking into it",
+        ["resolved"] = "Fixed",
+        ["closed"] = "Closed",
+    };
+
     /// <summary>Statuses that still need work.</summary>
     public static readonly string[] ActiveStatuses = ["open", "in-progress"];
 
@@ -41,6 +52,9 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
 
     [GeneratedRegex("^[A-Z]{2,8}-[A-Z0-9-]{4,40}$")]
     private static partial Regex TicketIdPattern();
+
+    [GeneratedRegex("^[A-Za-z0-9_-]{32,128}$")]
+    private static partial Regex StatusTokenPattern();
 
     //****************************************************************************************************
     // Layer                 :   BusinessLogic
@@ -71,6 +85,7 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
                 : !Priorities.Contains(priority) ? "Priority must be P1 to P4."
                 : Clip(objAPIRequest.Title, 200).Length == 0 ? "Title is required."
                 : Clip(objAPIRequest.Description, 8000).Length == 0 ? "Description is required."
+                : (objAPIRequest.StatusToken ?? string.Empty).Length > 0 && !StatusTokenPattern().IsMatch(objAPIRequest.StatusToken!) ? "Invalid status token."
                 : string.Empty;
             if (error.Length > 0)
             {
@@ -94,6 +109,7 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
                 Priority = priority,
                 TriageReasons = (objAPIRequest.TriageReasons ?? []).Select(x => Clip(x, 200)).Where(x => x.Length > 0).Take(10).ToList(),
                 Status = "open",
+                StatusTokenHash = (objAPIRequest.StatusToken ?? string.Empty).Length > 0 ? HashToken(objAPIRequest.StatusToken!) : string.Empty,
                 CreatedAt = now,
                 UpdatedAt = now,
             });
@@ -286,11 +302,13 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
             }
             if (changes.Count > 0)
             {
-                notes.Add(new TicketNoteItem { At = now, By = by, Text = "Changed " + string.Join(", ", changes) + "." });
+                // The reporter sees status changes only (never the priority or who made them).
+                string publicText = status.Length > 0 ? $"Status: {ReporterStatusLabels[status]}" : string.Empty;
+                notes.Add(new TicketNoteItem { At = now, By = by, Text = "Changed " + string.Join(", ", changes) + ".", PublicText = publicText });
             }
             if (note.Length > 0)
             {
-                notes.Add(new TicketNoteItem { At = now, By = by, Text = note });
+                notes.Add(new TicketNoteItem { At = now, By = by, Text = note, PublicText = objAPIRequest.IsNotePublic ? note : string.Empty });
             }
             if (notes.Count == 0)
             {
@@ -369,6 +387,81 @@ public partial class TicketBAL(TicketDAL ticketDAL, AuditBAL auditBAL, IContextS
             objResponse.ServerDate = DateTime.UtcNow;
         }
         return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetTicketStatus
+    // Method Description    :   A reporter's view of their own ticket, for the secret in their status link: status, dates and the entries shared with them.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetTicketStatus : </c> A reporter's view of their own ticket, for the secret in their status link: status, dates and the entries shared with them.
+    /// </summary>
+    public async Task<Response<object>> GetTicketStatus(GetTicketStatusRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            string ticketId = Clip(objAPIRequest.Id, 60).ToUpperInvariant();
+            string token = (objAPIRequest.Token ?? string.Empty).Trim();
+            TicketDocument? ticket = TicketIdPattern().IsMatch(ticketId) && StatusTokenPattern().IsMatch(token) ? await ticketDAL.GetTicketDB(ticketId) : null;
+            // A wrong secret answers exactly like a missing ticket, so ids cannot be probed.
+            if (ticket == null || ticket.StatusTokenHash.Length == 0 || !SameHash(ticket.StatusTokenHash, HashToken(token)))
+            {
+                objResponse.ReturnCode = (int)ErrorCode.NotFound;
+                objResponse.ReturnMessage = "Ticket not found.";
+                return objResponse;
+            }
+            List<TicketStatusEventDTO> timeline = [new TicketStatusEventDTO { At = ticket.CreatedAt, Text = "Status: Received" }];
+            timeline.AddRange(ticket.Notes.Where(x => x.PublicText.Length > 0).Select(x => new TicketStatusEventDTO { At = x.At, Text = x.PublicText }));
+            objResponse.Data = new TicketStatusDTO
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Category = ticket.Category,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                CreatedAt = ticket.CreatedAt,
+                UpdatedAt = ticket.UpdatedAt,
+                ResolvedAt = ticket.ResolvedAt,
+                Timeline = timeline,
+            };
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Success.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetTicketStatus", string.Empty, nameof(GetTicketStatus));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    /// <summary>SHA-256 of a status-link secret, as lower-case hex.</summary>
+    private static string HashToken(string token)
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
+    }
+
+    /// <summary>Compares two hashes in constant time.</summary>
+    private static bool SameHash(string a, string b)
+    {
+        return CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(a), Encoding.ASCII.GetBytes(b));
     }
 
     private static TicketListItemDTO ToListItem(TicketDocument x)

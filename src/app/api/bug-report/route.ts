@@ -1,6 +1,6 @@
 import { bugReportSchema, ticketId, triage, type BugReport, type Priority, type TraceStep } from '@/lib/bug-triage';
 import { escapeHtml, missingTelegramVars, sendTelegramMessage, telegramConfigured } from '@/lib/telegram';
-import { saveTicket, ticketStoreConfigured } from '@/lib/tickets';
+import { newStatusToken, saveTicket, statusPath, ticketStoreConfigured } from '@/lib/tickets';
 
 // "Hire me for a bug": validates a report, triages it into a ticket, stores it
 // in the API (managed under /admin/tickets) and pings Telegram.
@@ -110,6 +110,7 @@ export async function POST(request: Request) {
   }
 
   const id = ticketId();
+  const statusToken = newStatusToken();
   const { priority, reasons } = triage(report);
   // Each delivery's own duration, for the trace the form shows afterwards.
   const timed = async (work: () => Promise<unknown>) => {
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
   };
   // Stored and pinged in parallel; the report counts as received if either works.
   const [stored, pinged] = await Promise.allSettled([
-    canStore ? timed(() => saveTicket(id, report, priority, reasons)) : Promise.reject(new Error('Ticket store not configured')),
+    canStore ? timed(() => saveTicket(id, report, priority, reasons, statusToken)) : Promise.reject(new Error('Ticket store not configured')),
     canPing ? timed(() => sendTelegramMessage(formatTicket(id, report, priority, reasons))) : Promise.reject(new Error('Telegram not configured')),
   ]);
   if (stored.status === 'rejected' && canStore) console.error('[bug-report] store', stored.reason);
@@ -135,5 +136,7 @@ export async function POST(request: Request) {
     { step: 'store', ok: stored.status === 'fulfilled', ms: stored.status === 'fulfilled' ? stored.value : undefined },
     { step: 'notify', ok: pinged.status === 'fulfilled', ms: pinged.status === 'fulfilled' ? pinged.value : undefined },
   ];
-  return Response.json({ ok: true, ticket: id, priority, trace });
+  // The status link only works if the ticket (and so the secret's hash) was stored.
+  const statusUrl = stored.status === 'fulfilled' ? statusPath(id, statusToken) : undefined;
+  return Response.json({ ok: true, ticket: id, priority, trace, statusUrl });
 }
