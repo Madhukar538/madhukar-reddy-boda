@@ -38,7 +38,7 @@ export type SiteContent = {
 /** Content tags the API revalidates; post:<slug> tags are accepted too. */
 export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes', 'story'] as const;
 
-const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+export const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
 const socialLinksOf = (profile: Profile): SocialLink[] =>
   (
@@ -63,13 +63,13 @@ export const BUILT_IN_CONTENT: SiteContent = {
 
 // ---- API ----------------------------------------------------------------
 
-type ApiPost = { id: string; title: string; excerpt: string; content: string; date: string; category: string; tags: string[] };
-type ApiProject = {
+export type ApiPost = { id: string; title: string; excerpt: string; content: string; date: string; category: string; tags: string[] };
+export type ApiProject = {
   id: string; kind: 'key' | 'client' | 'lab'; title: string; description: string; tech: string[]; post: string;
   isFeatured: boolean; outcome: string; status: string; client: string; role: string; duration: string; url: string; responsibilities: string[];
 };
 type ApiThemes = { defaultTheme: string; themes: { id: string; isEnabled: boolean }[] };
-type ApiProfile = Omit<Profile, 'nowUpdatedAt'> & { nowUpdatedAt?: string | null; skillCategories: SkillCategory[]; experience: Experience; education: Education };
+export type ApiProfile = Omit<Profile, 'nowUpdatedAt'> & { nowUpdatedAt?: string | null; skillCategories: SkillCategory[]; experience: Experience; education: Education };
 
 const apiBase = () => (process.env.API_URL || '').replace(/\/$/, '');
 
@@ -111,7 +111,7 @@ async function attempt<T>(label: string, load: () => Promise<T>): Promise<T | nu
   }
 }
 
-const toPost = (p: ApiPost): BlogPost => ({
+export const toPost = (p: ApiPost): BlogPost => ({
   slug: p.id,
   title: p.title,
   excerpt: p.excerpt,
@@ -124,7 +124,7 @@ const toPost = (p: ApiPost): BlogPost => ({
 
 const optional = (value: string) => (value ? value : undefined);
 
-function toProjects(list: ApiProject[]) {
+export function toProjects(list: ApiProject[]) {
   return {
     keyProjects: list.filter((p) => p.kind === 'key').map((p): ProjectCard => ({
       title: p.title, description: p.description, tech: p.tech ?? [], post: optional(p.post), featured: p.isFeatured || undefined, outcome: optional(p.outcome),
@@ -141,7 +141,7 @@ function toProjects(list: ApiProject[]) {
 
 const SKILL_COLORS = ['green', 'cyan', 'amber'];
 
-function toProfile(p: ApiProfile) {
+export function toProfile(p: ApiProfile) {
   const profile: Profile = {
     name: p.name, title: p.title, company: p.company, location: p.location, email: p.email, phone: p.phone,
     phoneHref: p.phoneHref, github: p.github, linkedin: p.linkedin ?? '', twitter: p.twitter ?? '', summary: p.summary,

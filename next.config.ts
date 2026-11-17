@@ -74,6 +74,13 @@ const nextConfig: NextConfig = {
   },
   // No "X-Powered-By: Next.js" (don't advertise the stack).
   poweredByHeader: false,
+  // The share images moved to stable addresses when the pages went into a route group; old links still work.
+  async redirects() {
+    return [
+      { source: '/opengraph-image', destination: '/og', permanent: true },
+      { source: '/blog/:slug/opengraph-image', destination: '/og/blog/:slug', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

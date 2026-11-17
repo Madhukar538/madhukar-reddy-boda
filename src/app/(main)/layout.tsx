@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { awards } from '@/data/awards';
 import { Anybody, Inter, Instrument_Serif, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import './globals.css';
+import '../globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { MidnightDark } from '@/components/midnight-dark';

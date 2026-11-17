@@ -15,7 +15,8 @@ namespace Dhucar.Portfolio.Api.Middlewares;
  * Layer           :  Middleware
  * Modified By     :
  * Description     :  Picks the site each request is for and scopes it (TenantScope), so its data comes from that
- *                    site's database: the X-Tenant header (a site's server), else the browser's Origin host, else
+ *                    site's database: the X-Tenant header (a site's server), else X-Tenant-Host (a site's domain, from
+ *                    the Next.js app serving it), else the browser's Origin host, else
  *                    the primary site. A named site that is unknown or suspended gets 404, never another site's data.
  *                    Sign-in is per site as well: a token carries its site and is refused on any other.
  */
@@ -23,6 +24,9 @@ public class TenantMiddleware(IOptions<PortfolioSettings> options) : IMiddleware
 {
     /// <summary>The header a site's server names its site with.</summary>
     public const string HeaderName = "X-Tenant";
+
+    /// <summary>The header a site's server names its site with by domain (the Next.js app serving that domain).</summary>
+    public const string HostHeaderName = "X-Tenant-Host";
 
     /// <summary>The query parameter that names the site on a public image URL (/media/x.webp?site=asha), which browsers fetch without headers.</summary>
     public const string MediaQueryName = "site";
@@ -47,6 +51,7 @@ public class TenantMiddleware(IOptions<PortfolioSettings> options) : IMiddleware
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
     //  1.1        Boda Madhukar Reddy    17 Nov 2026       Origin and named site must agree; ?site= on images
+    //  1.2        Boda Madhukar Reddy    17 Nov 2026       X-Tenant-Host names a site by its domain
     //****************************************************************************************************
     /// <summary>
     /// <c>InvokeAsync : </c> Resolves the request's site, then runs the rest of the pipeline in its scope.
@@ -71,7 +76,10 @@ public class TenantMiddleware(IOptions<PortfolioSettings> options) : IMiddleware
             originSite = await tenantBAL.ResolveHost(uri.Host);
         }
 
-        TenantInfo? tenant = named.Length > 0 ? await tenantBAL.Resolve(named) : originSite ?? Primary;
+        string namedHost = context.Request.Headers[HostHeaderName].ToString().Trim();
+        TenantInfo? tenant = named.Length > 0 ? await tenantBAL.Resolve(named)
+            : namedHost.Length > 0 ? await tenantBAL.ResolveHost(namedHost)
+            : originSite ?? Primary;
         // A page on one site can't ask for another site (its token and data belong to its own).
         if (tenant != null && originSite != null && originSite.Slug != tenant.Slug)
         {

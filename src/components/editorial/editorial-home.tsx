@@ -27,7 +27,12 @@ function projectHref(project: ProjectCard) {
   return project.post ? `/blog/${project.post}` : '/projects';
 }
 
-export function EditorialHome({ projects, metrics, since, story }: { projects: ProjectCard[]; metrics: Metric[]; since: string; story: Story }) {
+/**
+ * variant "site" is another site on the platform (app/(sites)): its own pages only, so the links to
+ * this site's Fix a bug, Work with me, résumé and project pages are left out.
+ */
+export function EditorialHome({ projects, metrics, since, story, variant = 'primary' }: { projects: ProjectCard[]; metrics: Metric[]; since: string; story: Story; variant?: 'primary' | 'site' }) {
+  const isPrimary = variant === 'primary';
   const { hero, ticker } = story;
   return (
     <div className="home-editorial">
@@ -48,7 +53,7 @@ export function EditorialHome({ projects, metrics, since, story }: { projects: P
           {hero.showAgentMap && <EditorialAgentMap />}
           <div className="ed-aside">
           {/* A slowly turning badge: what he does, round an orange button to send him a bug. */}
-          <Link href="/fix-a-bug" className="ed-badge" aria-label="Send me a bug">
+          <Link href={isPrimary ? '/fix-a-bug' : '/about'} className="ed-badge" aria-label={isPrimary ? 'Send me a bug' : 'About'}>
             <svg viewBox="0 0 200 200" aria-hidden>
               <defs>
                 <path id="ed-badge-ring" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
@@ -89,17 +94,28 @@ export function EditorialHome({ projects, metrics, since, story }: { projects: P
             <InlineText text={hero.lede} />
           </p>
           <p className="ed-body">{hero.body}</p>
-          <div className="ed-actions">
-            <Link href="/projects" className="tinted-button">
-              Explore work <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/work-with-me" className="ed-link">
-              Work with me <ArrowUpRight className="h-4 w-4" />
-            </Link>
-            <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="ed-link">
-              Résumé <FileDown className="h-4 w-4" />
-            </a>
-          </div>
+          {isPrimary ? (
+            <div className="ed-actions">
+              <Link href="/projects" className="tinted-button">
+                Explore work <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/work-with-me" className="ed-link">
+                Work with me <ArrowUpRight className="h-4 w-4" />
+              </Link>
+              <a href="/resume.pdf" download="Boda-Madhukar-Reddy-Resume.pdf" className="ed-link">
+                Résumé <FileDown className="h-4 w-4" />
+              </a>
+            </div>
+          ) : (
+            <div className="ed-actions">
+              <Link href="/experience" className="tinted-button">
+                The road so far <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/about" className="ed-link">
+                About <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -133,6 +149,7 @@ export function EditorialHome({ projects, metrics, since, story }: { projects: P
 
       <EditorialStory story={story.story} />
 
+      {isPrimary && (
       <section className="ed-gallery" aria-labelledby="ed-work">
         <div className="ed-sticky">
           <header className="ed-gallery-head">
@@ -169,10 +186,13 @@ export function EditorialHome({ projects, metrics, since, story }: { projects: P
           </ol>
         </div>
       </section>
+      )}
 
-      <div className="ed-home-next">
-        <EditorialNext from="/" />
-      </div>
+      {isPrimary && (
+        <div className="ed-home-next">
+          <EditorialNext from="/" />
+        </div>
+      )}
     </div>
   );
 }
