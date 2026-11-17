@@ -36,9 +36,14 @@ public sealed class AdminSession
         return totp.ComputeCode(Secret, totp.CurrentStep());
     }
 
-    public static async Task<AdminSession> Enroll(ApiFactory factory)
+    /// <summary>Enrols the first admin; with a site, on that site (every request names it with X-Tenant).</summary>
+    public static async Task<AdminSession> Enroll(ApiFactory factory, string? site = null)
     {
         HttpClient client = factory.CreateApiClient();
+        if (site != null)
+        {
+            client.DefaultRequestHeaders.Add("X-Tenant", site);
+        }
         ApiResult setup = await client.Post("SetupAdmin", new { setupToken = ApiFactory.SetupToken, email = Email, password = Password });
         Assert.Equal(HttpStatusCode.OK, setup.Status);
         AdminSession session = new(factory, client, setup.Data.GetProperty("totpSecret").GetString()!);
@@ -48,9 +53,9 @@ public sealed class AdminSession
         return session;
     }
 
-    public static async Task<AdminSession> SignedIn(ApiFactory factory)
+    public static async Task<AdminSession> SignedIn(ApiFactory factory, string? site = null)
     {
-        AdminSession session = await Enroll(factory);
+        AdminSession session = await Enroll(factory, site);
         await session.SignIn();
         return session;
     }

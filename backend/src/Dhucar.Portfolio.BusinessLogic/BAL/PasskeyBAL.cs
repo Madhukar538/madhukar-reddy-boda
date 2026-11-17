@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Dhucar.Portfolio.BusinessLogic.Passkeys;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Security;
 using Dhucar.Portfolio.Common.Services;
@@ -22,7 +23,7 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  * Description     :  Passkeys (WebAuthn): registration for the signed-in admin and phishing-resistant, passwordless sign-in.
  */
 public class PasskeyBAL(
-    IFido2 fido2,
+    PasskeyRelyingParty relyingParty,
     PasskeyDAL passkeyDAL,
     ChallengeDAL challengeDAL,
     UserDAL userDAL,
@@ -34,6 +35,9 @@ public class PasskeyBAL(
     ICodeLogger codeLog)
 {
     private const int MaxPasskeys = 10;
+
+    /// <summary>The current site's relying party (each site's passkeys belong to its own domain).</summary>
+    private IFido2 fido2 => relyingParty.Current;
     private const string SignInFailed = "Passkey sign-in failed.";
 
     //****************************************************************************************************

@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Common.Logging;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.Common.Services;
 using Dhucar.Portfolio.DataAccess;
 using Dhucar.Portfolio.Properties;
@@ -273,7 +274,8 @@ public partial class MediaBAL(MediaDAL mediaDAL, AuditBAL auditBAL, IContextServ
         return new MediaItemDTO
         {
             Id = x.Id,
-            Url = $"/media/{x.Id}.{Extensions.GetValueOrDefault(x.ContentType, "bin")}",
+            // Browsers fetch images without headers, so another site's image URL names its site.
+            Url = $"/media/{x.Id}.{Extensions.GetValueOrDefault(x.ContentType, "bin")}" + (TenantScope.IsPrimary ? string.Empty : $"?site={TenantScope.Slug}"),
             ContentType = x.ContentType,
             Name = x.Name,
             Width = x.Width,

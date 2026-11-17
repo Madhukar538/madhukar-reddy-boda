@@ -5,6 +5,7 @@ using Dhucar.Portfolio.Api.Services;
 using Dhucar.Portfolio.BusinessLogic;
 using Dhucar.Portfolio.BusinessLogic.BAL;
 using Dhucar.Portfolio.BusinessLogic.Migrations;
+using Dhucar.Portfolio.BusinessLogic.Passkeys;
 using Dhucar.Portfolio.BusinessLogic.Presence;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Security;
@@ -92,31 +93,16 @@ public static class ServiceCollectionExtensions
         });
         services.AddSingleton<PresenceTracker>();
         services.AddHostedService<PresenceBroadcaster>();
-        services.AddSingleton<IFido2>(serviceProvider =>
-        {
-            PasskeySettings passkeys = serviceProvider.GetRequiredService<IOptions<PortfolioSettings>>().Value.Passkeys;
-            return new Fido2(new Fido2Configuration
-            {
-                RPID = passkeys.RpId,
-                RPName = passkeys.RpName,
-                Origins = passkeys.Origins.ToHashSet(),
-                TimestampDriftTolerance = 300_000,
-            }, null!);
-        });
+        // Passkeys: one relying party per site (its own domain).
+        services.AddSingleton<PasskeyRelyingParty>();
         services.AddMemoryCache();
         services.AddHttpClient(NotificationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5));
         services.AddHttpClient(RevalidationBAL.HttpClientName, client => client.Timeout = TimeSpan.FromSeconds(5))
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 
-        // Resolved lazily from options, so the allowed origins always come from the final configuration.
+        // Per request: the primary site's configured origins plus each registered site's own hosts.
         services.AddCors();
-        services.AddOptions<Microsoft.AspNetCore.Cors.Infrastructure.CorsOptions>()
-            .Configure<IOptions<PortfolioSettings>>((cors, portfolio) => cors.AddPolicy(CorsPolicy, policy => policy
-                .WithOrigins(portfolio.Value.Security.AllowedOrigins.ToArray())
-                .WithMethods("GET", "POST")
-                .WithHeaders("Content-Type", "Authorization", "X-Requested-With", TenantMiddleware.HeaderName)
-                .AllowCredentials()
-                .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
+        services.Replace(ServiceDescriptor.Transient<Microsoft.AspNetCore.Cors.Infrastructure.ICorsPolicyProvider, SiteCorsPolicyProvider>());
 
         services.AddRateLimiter(options =>
         {

@@ -7,6 +7,7 @@ namespace Dhucar.Portfolio.Common.Tenancy;
  * Modified Reason :
  * Layer           :  Common
  * Modified By     :
- * Description     :  A resolved site: its slug and the MongoDB database that holds its data.
+ * Description     :  A resolved site: its slug, the MongoDB database that holds its data, and the host names that serve it
+ *                    (none for the primary site, whose origins come from configuration).
  */
-public sealed record TenantInfo(string Slug, string Database);
+public sealed record TenantInfo(string Slug, string Database, IReadOnlyList<string> Hosts);

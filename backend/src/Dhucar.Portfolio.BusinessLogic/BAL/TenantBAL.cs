@@ -61,7 +61,7 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
         slug = (slug ?? string.Empty).Trim().ToLowerInvariant();
         if (slug == TenantScope.PrimarySlug)
         {
-            return new TenantInfo(TenantScope.PrimarySlug, string.Empty);
+            return new TenantInfo(TenantScope.PrimarySlug, string.Empty, []);
         }
         if (!SlugPattern().IsMatch(slug))
         {
@@ -160,7 +160,7 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
                 return objResponse;
             }
             // The new site's own database: the same indexes and default switches every site starts with.
-            using (TenantScope.Use(new TenantInfo(tenant.Id, tenant.Database)))
+            using (TenantScope.Use(new TenantInfo(tenant.Id, tenant.Database, tenant.Hosts)))
             {
                 await mongoContext.EnsureIndexes();
                 await settingsDAL.EnsureSecuritySettingsDB();
@@ -187,6 +187,6 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
     /// <summary>A registry entry as a resolved site; null unless it is active.</summary>
     private static TenantInfo? ToInfo(TenantDocument? tenant)
     {
-        return tenant is { Status: "active" } ? new TenantInfo(tenant.Id, tenant.Database) : null;
+        return tenant is { Status: "active" } ? new TenantInfo(tenant.Id, tenant.Database, tenant.Hosts) : null;
     }
 }
