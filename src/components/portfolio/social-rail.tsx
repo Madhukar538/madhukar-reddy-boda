@@ -61,13 +61,18 @@ function usePresence() {
  * whenever no photo of Madhukar is on screen: the big Midnight portrait, or in
  * the other looks the hero's own avatar or profile card (.portrait-alt). So it
  * shows on pages without one, and on Home and About once it has mostly
- * scrolled away, never next to a photo that is already showing.
+ * scrolled away, never next to a photo that is already showing. Never on the
+ * Editorial homepage: it runs edge to edge, so there is no gutter to dock in.
  */
 function useProfileDock(pathname: string) {
   useEffect(() => {
     const root = document.documentElement;
     const update = () => {
       const shown = (el: Element) => el.getClientRects().length > 0;
+      if ([...document.querySelectorAll('.home-editorial')].some(shown)) {
+        root.removeAttribute('data-profile-docked');
+        return;
+      }
       const portrait = [...document.querySelectorAll('.portrait-frame, .portrait-alt')].find(shown);
       // The big Midnight portrait counts as gone once mostly scrolled away; a small avatar or
       // profile card (.portrait-alt) only once it has left the screen completely.

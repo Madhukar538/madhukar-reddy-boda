@@ -38,8 +38,10 @@ export function EditorialHome({ projects, metrics, since, priority = false }: { 
           <span>Senior Software Engineer · AI Architect</span>
           <span>{since} →</span>
         </p>
+        {/* The name and the portrait share a baseline: the photo stands on the rule under "Reddy". */}
+        <div className="ed-stage">
         <figure className="ed-portrait" aria-hidden>
-          <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 700px) 26vw, 1px" preload={priority} className="object-contain object-bottom" />
+          <Image src="/portrait-cutout.webp" alt="" fill sizes="(min-width: 700px) 34vw, 1px" preload={priority} className="object-contain object-bottom" />
           <figcaption>Fig. 01 — Hyderabad, IN</figcaption>
         </figure>
         <div className="ed-name" aria-hidden>
@@ -52,6 +54,7 @@ export function EditorialHome({ projects, metrics, since, priority = false }: { 
               ))}
             </span>
           ))}
+        </div>
         </div>
         <div className="ed-intro">
           <p className="ed-lede" aria-hidden>

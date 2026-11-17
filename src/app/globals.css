@@ -2347,21 +2347,32 @@ html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity
   color: hsl(var(--ink));
   user-select: none;
 }
-/* The portrait: a grey editorial photo the name runs past; colour comes back on hover. */
+/* The portrait stands on the rule under the name, as tall as the name block, an orange disc
+   behind the head; grey, and in colour on hover. The name runs in front of it. */
+.ed-stage { position: relative; border-bottom: 1px solid hsl(var(--ink)); }
+.ed-name { position: relative; z-index: 1; }
 .ed-portrait {
-  position: absolute; z-index: -1; right: clamp(1rem, 4vw, 3.5rem); top: 9.5rem;
-  width: min(26vw, 24rem); aspect-ratio: 3 / 4; margin: 0;
-  transform: translate3d(0, calc(var(--ed-s) * 0.12px), 0);
+  position: absolute; z-index: 0; right: 0; bottom: 0; margin: 0;
+  height: 100%; aspect-ratio: 3 / 4;
 }
 .ed-portrait img { filter: grayscale(1) contrast(1.12); transition: filter 0.6s ease; }
+/* The source photo's shoulders end in straight cuts: fade the lower corners out (the head stays whole). */
+.ed-portrait img {
+  -webkit-mask-image: linear-gradient(#000 0 52%, transparent 52%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(#000 0 52%, transparent 52%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
 .ed-portrait:hover img { filter: none; }
-.ed-portrait::after { content: ''; position: absolute; left: 6%; right: 0; bottom: 0; height: 64%; background: hsl(var(--ed-accent)); z-index: -1; }
+.ed-portrait::before {
+  content: ''; position: absolute; z-index: -1; right: -6%; top: 2%;
+  width: 84%; aspect-ratio: 1; border-radius: 9999px; background: hsl(var(--ed-accent));
+  transform: scale(calc(1 + min(var(--ed-s), 400) / 4000));
+}
 .ed-portrait figcaption {
-  position: absolute; left: 0; top: calc(100% + 1.1rem);
-  font: 500 0.68rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em;
+  position: absolute; left: -1.75rem; bottom: 0.25rem;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font: 500 0.68rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em;
 }
 .ed-hero { isolation: isolate; }
-.ed-portrait { pointer-events: auto; }
 @media (max-width: 699px) {
   .ed-portrait { display: none; }
   .ed-hero { min-height: 0; justify-content: flex-start; padding-top: 2.25rem; }
