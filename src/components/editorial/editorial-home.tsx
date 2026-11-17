@@ -28,9 +28,11 @@ export function EditorialHome({ projects, metrics, since, priority = false }: { 
   return (
     <div className="home-editorial">
       <section className="ed-hero" aria-labelledby="ed-title">
-        <h1 id="ed-title" className="sr-only">
+        {/* A heading for screen readers in this look; a role rather than a second <h1> in the page's HTML
+            (the other looks' <h1> is in the same page, hidden here). */}
+        <p id="ed-title" role="heading" aria-level={1} className="sr-only">
           Boda Madhukar Reddy: I build fast .NET systems, and ship them with teams of AI agents.
-        </h1>
+        </p>
         <p className="ed-meta" aria-hidden>
           <span>Portfolio</span>
           <span>Senior Software Engineer · AI Architect</span>

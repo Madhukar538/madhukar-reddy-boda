@@ -4,6 +4,7 @@ import { BugProcess, BugReportForm } from '@/components/portfolio/bug-report-for
 import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/fix-a-bug' },
   title: 'Fix a bug — Boda Madhukar Reddy',
   description:
     'Stuck on a bug, a slow API or an architecture question? Describe it and it becomes a triaged ticket on my phone.',

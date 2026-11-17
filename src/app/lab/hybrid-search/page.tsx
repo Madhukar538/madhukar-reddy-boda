@@ -6,7 +6,7 @@ import { HybridSearchVisualizer } from '@/components/portfolio/hybrid-search-vis
 import { siteUrl } from '@/lib/blog';
 
 export const metadata: Metadata = {
-  title: 'Hybrid Search Visualizer (BM25 vs Vector vs RRF) — Boda Madhukar Reddy',
+  title: { absolute: 'Hybrid Search Visualizer: BM25 vs Vector vs RRF' },
   description:
     'Interactive visualization comparing Okapi BM25 keyword search, dense vector kNN semantic search, and Reciprocal Rank Fusion (RRF) on Solr 9 and .NET.',
   alternates: { canonical: '/lab/hybrid-search' },

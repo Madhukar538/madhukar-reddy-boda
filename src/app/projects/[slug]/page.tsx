@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const study = caseStudies.find((c) => c.slug === slug);
   if (!study) return {};
   return {
-    title: `${study.project}: case study — Boda Madhukar Reddy`,
+    title: `${study.project}: case study`.length > 40 ? { absolute: `${study.project}: case study` } : `${study.project}: case study — Boda Madhukar Reddy`,
     description: clampMetaDescription(study.summary, 155),
     alternates: { canonical: `/projects/${study.slug}` },
   };

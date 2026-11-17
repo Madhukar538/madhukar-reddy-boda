@@ -28,7 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Post not found' };
   const description = clampMetaDescription(post.excerpt, 155);
   return {
-    title: `${post.title} — Boda Madhukar Reddy`,
+    // Search results show about 60 characters: long titles go without the name suffix.
+    title: post.title.length > 40 ? { absolute: post.title } : `${post.title} — Boda Madhukar Reddy`,
     description,
     keywords: post.tags,
     alternates: { canonical: `/blog/${post.slug}` },
