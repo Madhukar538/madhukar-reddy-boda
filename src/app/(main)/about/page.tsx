@@ -13,6 +13,9 @@ import { DuneAbout } from '@/components/looks/dune-pages';
 import { GazetteAbout } from '@/components/looks/gazette';
 import { ReceiptAbout } from '@/components/looks/receipt';
 import { ObservatoryAbout } from '@/components/looks/observatory';
+import { TerminalAbout } from '@/components/looks/terminal-look';
+import { BlueprintAbout } from '@/components/looks/blueprint-look';
+import { GlassAbout } from '@/components/looks/glass-look';
 import { experienceSince } from '@/lib/utils';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
@@ -64,6 +67,9 @@ export default async function AboutPage() {
       <GazetteAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <ReceiptAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <ObservatoryAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <TerminalAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <BlueprintAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
+      <GlassAbout name={content.profile.name} values={aboutValues} about={content.story.about} />
       <div className="classic-only">
       <HomeHero
         content={{
