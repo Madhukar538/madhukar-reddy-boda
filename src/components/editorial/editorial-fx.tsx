@@ -71,6 +71,7 @@ export function EditorialFx() {
     });
 
     const hero = document.querySelector<HTMLElement>('.ed-hero');
+    const story = document.querySelector<HTMLElement>('.ed-chapters');
     const chars = Array.from(document.querySelectorAll<HTMLElement>('.ed-char'));
     const ticker = document.querySelector<HTMLElement>('.ed-ticker-track');
     const tickerAnimation = ticker?.getAnimations()[0];
@@ -121,6 +122,12 @@ export function EditorialFx() {
       lastY = y;
 
       if (hero) hero.style.setProperty('--ed-s', String(Math.min(y, 900)));
+      // How far through the chapters the reader is (the line down the left fills with it).
+      if (story) {
+        const r = story.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (window.innerHeight * 0.6 - r.top) / Math.max(r.height, 1)));
+        story.style.setProperty('--story-p', p.toFixed(4));
+      }
 
       // Letters toward the pointer get wider and heavier.
       if (fine && chars.length && hero && y < hero.offsetHeight) {

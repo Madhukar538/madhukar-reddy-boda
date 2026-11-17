@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, FileDown } from 'lucide-react';
 import type { ProjectCard } from '@/data/profile';
 import { caseStudyFor } from '@/data/case-studies';
+import { EditorialStory } from './editorial-story';
 
 /**
  * The Editorial look's homepage: a kinetic name, a running ticker, the numbers and a
@@ -40,7 +41,7 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
           Boda Madhukar Reddy: I build fast .NET systems, and ship them with teams of AI agents.
         </p>
         <p className="ed-meta" aria-hidden>
-          <span>Portfolio</span>
+          <span>A story in chapters</span>
           <span>Senior Software Engineer · AI Architect</span>
           <span>{since} →</span>
         </p>
@@ -132,10 +133,12 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         ))}
       </dl>
 
+      <EditorialStory />
+
       <section className="ed-gallery" aria-labelledby="ed-work">
         <div className="ed-sticky">
           <header className="ed-gallery-head">
-            <h2 id="ed-work">Selected work</h2>
+            <h2 id="ed-work">The evidence</h2>
             <p>
               {String(projects.length).padStart(2, '0')} projects <span aria-hidden>· scroll →</span>
             </p>
