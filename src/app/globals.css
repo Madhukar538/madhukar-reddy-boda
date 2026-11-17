@@ -2391,6 +2391,59 @@ html[data-style='editorial'] .ed-chapter h3 {
   .ed-chapter-mark { top: 1.5rem; }
 }
 
+/* Blocks that exist in only one kind of look (Editorial's story pages vs the classic ones). */
+.ed-only { display: none; }
+html[data-style='editorial'] .ed-only { display: block; }
+html[data-style='editorial'] .classic-only { display: none; }
+
+/* Experience: the road so far, in acts. */
+.ed-journey-role {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem;
+  padding-bottom: 0.9rem; border-bottom: 1px solid hsl(var(--ink));
+  font: 500 0.78rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.ed-journey-role p:first-child { color: hsl(var(--primary)); }
+.ed-journey-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-bottom: 1px solid hsl(var(--ink)); }
+@media (min-width: 900px) { .ed-journey-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ed-journey-stats > div { display: flex; flex-direction: column-reverse; gap: 0.5rem; padding: 1.75rem 1rem 1.75rem 0; }
+.ed-journey-stats dt { font: 500 0.72rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); }
+.ed-journey-stats dd { font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 62; font-weight: 800; font-size: clamp(2.75rem, 6vw, 5rem); line-height: 0.85; }
+.ed-acts { display: grid; }
+.ed-act { display: grid; gap: 1.5rem 3rem; padding: clamp(2.5rem, 7vh, 4.5rem) 0; border-bottom: 1px solid hsl(var(--ink) / 0.2); }
+@media (min-width: 900px) { .ed-act { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } .ed-act-head { position: sticky; top: 7rem; align-self: start; } }
+.ed-act-no {
+  display: block; font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 60; font-weight: 800;
+  font-size: clamp(3.5rem, 8vw, 7rem); line-height: 0.85; text-transform: uppercase;
+  color: transparent; -webkit-text-stroke: 1.5px hsl(var(--ink));
+}
+.ed-act:last-child .ed-act-no { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ed-act h2 { margin-top: 0.75rem; font-size: clamp(1.75rem, 3.2vw, 2.75rem); }
+.ed-act-label { margin-top: 0.6rem; font: 500 0.72rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--primary)); }
+.ed-beats { display: grid; }
+.ed-beats li { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.75rem; padding: 1.1rem 0; border-top: 1px solid hsl(var(--ink) / 0.15); }
+.ed-beats li:first-child { border-top: 0; padding-top: 0.25rem; }
+.ed-beat-no { font: 600 0.78rem/1.6 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; color: hsl(var(--primary)); }
+.ed-beats p { font-size: 1.02rem; line-height: 1.6; color: hsl(var(--ink) / 0.85); }
+
+/* About: in his own words. */
+.ed-about-head { padding-bottom: clamp(2rem, 6vh, 3.5rem); border-bottom: 1px solid hsl(var(--ink)); }
+.ed-about-title {
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 62; font-weight: 800;
+  font-size: clamp(3.25rem, 10vw, 9rem); line-height: 0.84; text-transform: uppercase; letter-spacing: -0.01em;
+}
+.ed-about-title em { display: block; font-style: normal; color: hsl(var(--ed-accent)); }
+.ed-about-byline { margin-top: 1.5rem; font: 500 0.78rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+.ed-qa { display: grid; margin-bottom: clamp(2rem, 6vh, 4rem); }
+.ed-qa > div { display: grid; gap: 0.75rem 3rem; padding: clamp(2rem, 5vh, 3rem) 0; border-bottom: 1px solid hsl(var(--ink) / 0.2); }
+@media (min-width: 900px) { .ed-qa > div { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.ed-qa dt {
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 76; font-weight: 800;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem); line-height: 1; text-transform: uppercase;
+}
+.ed-qa dt span { display: block; margin-bottom: 0.6rem; font: 600 0.78rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; color: hsl(var(--primary)); letter-spacing: 0.08em; }
+.ed-qa dd { font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.65; color: hsl(var(--ink) / 0.85); }
+.ed-qa dd strong { color: hsl(var(--ink)); }
+
 /* The footer's closing line. */
 .ed-cta { display: none; }
 html[data-style='editorial'] .ed-cta { display: block; padding: clamp(3rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem); border-top: 1px solid hsl(var(--ink)); }
