@@ -3016,3 +3016,9 @@ html[data-style='editorial'] .ed-404-num { justify-content: center; gap: 0.04em;
 html[data-style='editorial'] .ticket-step-mark { border-radius: 0; }
 html[data-style='editorial'] .ticket-step[data-done] .ticket-step-mark { background: hsl(var(--ink)); border-color: hsl(var(--ink)); color: hsl(var(--ed-accent)); }
 html[data-style='editorial'] .ticket-step { border-right-color: hsl(var(--ink)); }
+
+/* ---- Other sites on the platform (app/(sites)): a plain masthead and footer in Editorial. */
+.site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; padding: 1.25rem clamp(1rem, 4vw, 3.5rem); border-bottom: 1px solid hsl(var(--ink)); }
+.site-nav nav { display: flex; gap: 1.5rem; }
+.site-nav-name { font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 72; font-weight: 800; text-transform: uppercase; font-size: 1.25rem; }
+.site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 2rem clamp(1rem, 4vw, 3.5rem); border-top: 1px solid hsl(var(--ink)); font: 500 0.75rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); }

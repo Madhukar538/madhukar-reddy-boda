@@ -80,7 +80,7 @@ export default async function BlogPost({ params }: Props) {
         keywords: post.tags.join(', '),
         articleSection: post.category,
         url: `${base}/blog/${post.slug}`,
-        image: `${base}/blog/${post.slug}/opengraph-image`,
+        image: `${base}/og/blog/${post.slug}`,
         author: {
           '@type': 'Person',
           name: 'Boda Madhukar Reddy',

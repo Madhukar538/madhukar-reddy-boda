@@ -176,6 +176,7 @@ The API can serve more than one portfolio. **Each site has its own MongoDB datab
 - **Sessions:** each site has its own refresh cookie (`__Host-rt_<slug>`), so a browser signed in to two sites keeps both.
 - **Images:** another site's image URLs name it (`/media/<file>?site=<slug>`), because browsers fetch images without headers.
 - **Primary site only, for now:** page revalidation, Telegram alerts and data migrations.
+- **On their own domains** (the Next.js app): with `SITES_ENABLED=true`, `src/proxy.ts` rewrites any host not in `PRIMARY_HOSTS` (default `dhucar.in,www.dhucar.in,localhost,127.0.0.1`) to `/sites/<host>/…` (`src/app/(sites)`): that site's own layout, Editorial homepage, Experience and About, loaded from the API by `X-Tenant-Host`, with no fallback to this site's content. Every other path on such a domain is a 404 in the site's own layout. Off by default; `/sites/…` can never be opened directly. Point a site's DNS (and Cloudflare) at the app before turning it on.
 
 The database user needs `readWrite` on each site's database as well as `portfolio`: grant it when adding a site, or use a role that covers `site_*`. Nothing changes for the primary site.
 

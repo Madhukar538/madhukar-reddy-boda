@@ -141,4 +141,23 @@ public class TenancyTests
         // Its own token does.
         Assert.Equal(HttpStatusCode.OK, (await client.Post("SetupAdmin", Setup(firstToken), headers: Site(first))).Status);
     }
+
+    [Fact]
+    public async Task A_sites_server_can_name_it_by_domain()
+    {
+        using ApiFactory factory = new();
+        string slug = NewSlug();
+        string host = slug + ".example.com";
+        await Provision(factory, slug, "Asha", host);
+        HttpClient server = factory.CreateApiClient();
+        // The site's own (empty) content, by its domain.
+        Assert.Equal(0, (await server.Post("GetPosts", headers: new() { ["X-Tenant-Host"] = host })).Data.GetArrayLength());
+        Assert.Equal(HttpStatusCode.NotFound, (await server.Post("GetProfile", headers: new() { ["X-Tenant-Host"] = host })).Status);
+        // A domain no site claims is refused, never answered with another site's data.
+        foreach (string unknown in new[] { "unclaimed.example.org", "dhucar.in", "not a host" })
+        {
+            ApiResult refused = await server.Post("GetPosts", headers: new() { ["X-Tenant-Host"] = unknown });
+            Assert.Equal(HttpStatusCode.NotFound, refused.Status);
+        }
+    }
 }
