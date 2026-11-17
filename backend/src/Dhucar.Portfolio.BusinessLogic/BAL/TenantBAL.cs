@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Common.Logging;
+using Dhucar.Portfolio.Common.Services;
 using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.DataAccess;
 using Dhucar.Portfolio.Properties;
@@ -21,7 +22,7 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  * Description     :  Sites on the platform: resolving the site a request is for (by slug or host, cached briefly)
  *                    and adding a site, each with its own database.
  */
-public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, SettingsDAL settingsDAL, IMemoryCache memoryCache, ICodeLogger codeLog)
+public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, SettingsDAL settingsDAL, AuditBAL auditBAL, IContextService contextService, IMemoryCache memoryCache, ICodeLogger codeLog)
 {
     /// <summary>How long a lookup is remembered; a new or suspended site takes effect within this.</summary>
     private static readonly TimeSpan CacheFor = TimeSpan.FromSeconds(60);
@@ -186,6 +187,150 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
         {
             objResponse.ServerDate = DateTime.UtcNow;
         }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   GetSites
+    // Method Description    :   Every site on the platform, for the primary admin only.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetSites : </c> Every site on the platform, for the primary admin only.
+    /// </summary>
+    public async Task<Response<object>> GetSites()
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            if (!TenantScope.IsPrimary)
+            {
+                return Refuse(objResponse);
+            }
+            objResponse.Data = (await tenantDAL.GetAllTenantsDB()).Select(x => new SiteListItemDTO { Id = x.Id, Name = x.Name, Hosts = x.Hosts, Status = x.Status, CreatedAt = x.CreatedAt }).ToList();
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = "Sites.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step GetSites", string.Empty, nameof(GetSites));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   CreateSite
+    // Method Description    :   Adds a site from the primary admin and returns its setup token once.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>CreateSite : </c> Adds a site from the primary admin and returns its setup token once.
+    /// </summary>
+    public async Task<Response<object>> CreateSite(ProvisionTenantRequestDTO objAPIRequest)
+    {
+        if (!TenantScope.IsPrimary)
+        {
+            return Refuse(new Response<object> { ServerDate = DateTime.UtcNow });
+        }
+        Response<object> objResponse = await Provision(objAPIRequest);
+        await auditBAL.Write("site.created", objResponse.ReturnCode == (int)ErrorCode.Success, contextService.GetUserId(), contextService.GetEmail(), (objAPIRequest.Slug ?? string.Empty).Trim().ToLowerInvariant());
+        return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   SetSiteStatus
+    // Method Description    :   Suspends or reactivates a site from the primary admin; a suspended site answers like an unknown one.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   objAPIRequest
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   Response
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>SetSiteStatus : </c> Suspends or reactivates a site from the primary admin; a suspended site answers like an unknown one.
+    /// </summary>
+    public async Task<Response<object>> SetSiteStatus(SetSiteStatusRequestDTO objAPIRequest)
+    {
+        Response<object> objResponse = new Response<object>();
+        try
+        {
+            if (!TenantScope.IsPrimary)
+            {
+                return Refuse(objResponse);
+            }
+            string slug = (objAPIRequest.Slug ?? string.Empty).Trim().ToLowerInvariant();
+            string status = (objAPIRequest.Status ?? string.Empty).Trim().ToLowerInvariant();
+            if (status is not ("active" or "suspended"))
+            {
+                objResponse.ReturnCode = (int)ErrorCode.ValidationFailed;
+                objResponse.ReturnMessage = "Status must be active or suspended.";
+                return objResponse;
+            }
+            TenantDocument? tenant = SlugPattern().IsMatch(slug) ? await tenantDAL.GetTenantDB(slug) : null;
+            if (tenant == null || !await tenantDAL.SetTenantStatusDB(slug, status))
+            {
+                objResponse.ReturnCode = (int)ErrorCode.NotFound;
+                objResponse.ReturnMessage = "No such site.";
+                return objResponse;
+            }
+            // Takes effect at once on this server (other servers within the cache time).
+            memoryCache.Remove($"tenant:slug:{slug}");
+            tenant.Hosts.ForEach(x => memoryCache.Remove($"tenant:host:{x}"));
+            await auditBAL.Write("site.status", true, contextService.GetUserId(), contextService.GetEmail(), $"{slug}: {status}");
+            objResponse.Data = new SaveResultDTO { Id = slug };
+            objResponse.ReturnCode = (int)ErrorCode.Success;
+            objResponse.ReturnMessage = status == "active" ? "Site reactivated." : "Site suspended.";
+        }
+        catch (Exception ex)
+        {
+            objResponse.ReturnCode = (int)ErrorCode.TechnicalError;
+            objResponse.ReturnMessage = "Technical Error.";
+            codeLog.Error(ex, "Step SetSiteStatus", string.Empty, nameof(SetSiteStatus));
+        }
+        finally
+        {
+            objResponse.ServerDate = DateTime.UtcNow;
+        }
+        return objResponse;
+    }
+
+    /// <summary>Only the primary site's admin manages sites: any other site's admin is refused.</summary>
+    private static Response<object> Refuse(Response<object> objResponse)
+    {
+        objResponse.ReturnCode = (int)ErrorCode.Forbidden;
+        objResponse.ReturnMessage = "Only the platform's own admin can manage sites.";
         return objResponse;
     }
 
