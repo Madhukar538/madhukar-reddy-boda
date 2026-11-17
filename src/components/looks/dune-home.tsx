@@ -51,7 +51,7 @@ export function DuneHome({ heading, name, projects, metrics, since, posts }: Loo
                 <span className="du-num">{ROMAN[i]}</span>
                 <span className="du-entry">{c.title}</span>
                 <span className="du-leader" aria-hidden />
-                <span className="du-page">{c.page}</span>
+                <span className="du-pg">{c.page}</span>
               </Link>
             </li>
           ))}

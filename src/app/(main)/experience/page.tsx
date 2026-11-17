@@ -3,6 +3,9 @@ import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
 import { EditorialJourney } from '@/components/editorial/editorial-journey';
 import { EditorialNext } from '@/components/editorial/editorial-next';
+import { ArcticExperience } from '@/components/looks/arctic-pages';
+import { SynthwaveExperience } from '@/components/looks/synthwave-pages';
+import { DuneExperience } from '@/components/looks/dune-pages';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
@@ -45,6 +48,9 @@ export default async function ExperiencePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <EditorialJourney experience={experience} stats={stats} journey={story.journey} />
+      <ArcticExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <SynthwaveExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
+      <DuneExperience experience={experience} clientProjects={clientProjects} journey={story.journey} />
       <div className="classic-only">
         <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
       </div>
