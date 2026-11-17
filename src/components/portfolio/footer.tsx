@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { ArrowUpRight, Github, Linkedin, Mail } from 'lucide-react';
 import type { Profile, SocialLink } from '@/lib/content';
 import { BuildStamp } from '@/components/portfolio/build-stamp';
 import { AwardBadge } from '@/components/portfolio/award-badge';
@@ -30,6 +30,28 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
   return (
     // Bottom padding on mobile keeps the footer clear of the floating tab bar.
     <footer className="container mx-auto max-w-6xl px-4 md:px-6 pb-28 lg:pb-10">
+      {/* Editorial's closing line (globals.css shows it only in that look). */}
+      <section className="ed-cta" aria-labelledby="ed-cta-title">
+        <p className="ed-cta-kicker">( What&apos;s next )</p>
+        <Link href="/work-with-me" className="ed-cta-link">
+          <span id="ed-cta-title" className="ed-cta-big">
+            <span>Let&apos;s build</span>
+            <span>something fast</span>
+          </span>
+          <span className="ed-cta-go" aria-hidden>
+            <ArrowUpRight />
+          </span>
+        </Link>
+        <div className="ed-cta-row">
+          <a href={`mailto:${profile.email}`} className="ed-link">
+            {profile.email}
+          </a>
+          <span>Hyderabad, India · IST</span>
+          <Link href="/fix-a-bug" className="ed-link">
+            Or send me a bug
+          </Link>
+        </div>
+      </section>
       <div className="border-t border-foreground/10 pt-8 md:pt-10">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-1">

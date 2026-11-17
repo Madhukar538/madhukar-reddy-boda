@@ -2320,6 +2320,74 @@ html[data-style='editorial'][data-ed-js] [data-ed-wait] {
 }
 html[data-style='editorial'][data-ed-js] [data-ed-wait]:not([data-in]) { opacity: 0; transform: translateY(2.5rem); clip-path: inset(0 0 100% 0); }
 
+/* Smaller headings: wider and a touch lighter, so mixed-case titles read easily. */
+html[data-style='editorial'] h3 { font-variation-settings: 'wdth' 92; font-weight: 700; letter-spacing: -0.015em; }
+html[data-style='editorial'] .ed-panel h3 { font-variation-settings: 'wdth' 72; font-weight: 800; letter-spacing: -0.01em; }
+
+/* Articles: an orange drop cap, square tags. */
+html[data-style='editorial'] .article-body > p:first-of-type::first-letter {
+  float: left; margin: 0.06em 0.12em 0 0;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 70; font-weight: 800; font-size: 4.4em; line-height: 0.78;
+  color: hsl(var(--ed-accent));
+}
+html[data-style='editorial'] .vault-tag { border-radius: 0; background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45); }
+html[data-style='editorial'] .vault-tag:hover { background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
+
+/* Older posts: a numbered index; a row turns to ink with an arrow on hover. */
+html[data-style='editorial'] .post-index { counter-reset: post; }
+html[data-style='editorial'] .post-index a { position: relative; border-radius: 0; transition: background-color 0.25s ease, color 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+html[data-style='editorial'] .post-index a::before {
+  counter-increment: post; content: counter(post, decimal-leading-zero);
+  font: 500 0.72rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; color: hsl(var(--primary));
+}
+html[data-style='editorial'] .post-index a::after { content: '→'; opacity: 0; margin-left: -0.5rem; transition: opacity 0.25s ease, margin 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@media (hover: hover) {
+  html[data-style='editorial'] .post-index a:hover { background: hsl(var(--ink)); padding-left: 1.25rem; }
+  html[data-style='editorial'] .post-index a:hover :is(span, *) { color: hsl(var(--background)); }
+  html[data-style='editorial'] .post-index a:hover::before { color: hsl(var(--ed-accent)); }
+  html[data-style='editorial'] .post-index a:hover::after { opacity: 1; margin-left: 0; color: hsl(var(--ed-accent)); }
+}
+
+/* The footer's closing line. */
+.ed-cta { display: none; }
+html[data-style='editorial'] .ed-cta { display: block; padding: clamp(3rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem); border-top: 1px solid hsl(var(--ink)); }
+.ed-cta-kicker { font: 500 0.75rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.12em; color: hsl(var(--primary)); }
+.ed-cta-link { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-top: 1.25rem; color: hsl(var(--ink)); }
+.ed-cta-big {
+  display: flex; flex-direction: column;
+  font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 64; font-weight: 800;
+  font-size: clamp(2.5rem, 8.6vw, 8.25rem); line-height: 0.86; text-transform: uppercase; letter-spacing: -0.01em;
+  min-width: 0;
+  transition: font-variation-settings 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
+}
+.ed-cta-big span { white-space: nowrap; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease; }
+.ed-cta-big span:last-child { color: hsl(var(--ed-accent)); }
+.ed-cta-go {
+  flex-shrink: 0; display: grid; place-items: center;
+  width: clamp(4rem, 9vw, 8rem); aspect-ratio: 1; border-radius: 9999px;
+  background: hsl(var(--ink)); color: hsl(var(--background));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease, color 0.3s ease;
+}
+.ed-cta-go svg { width: 40%; height: 40%; }
+@media (hover: hover) {
+  /* The two lines swap colours and slide apart: lively, and the width never changes. */
+  .ed-cta-link:hover .ed-cta-big span:first-child { color: hsl(var(--ed-accent)); transform: translateX(0.18em); }
+  .ed-cta-link:hover .ed-cta-big span:last-child { color: hsl(var(--ink)); transform: translateX(-0.06em); }
+  .ed-cta-link:hover .ed-cta-go { transform: rotate(45deg); background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
+}
+.ed-cta-link:focus-visible { outline: 3px solid hsl(var(--ed-accent)); outline-offset: 6px; }
+.ed-cta-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 2rem; margin-top: 2rem;
+  font: 500 0.8rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+}
+.ed-cta-row .ed-link { font-weight: 500; }
+html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--ink)); }
+@media (prefers-reduced-motion: reduce) {
+  .ed-cta-big, .ed-cta-big span, .ed-cta-go { transition: none; }
+}
+
 /* ---- The homepage ---- */
 .ed-hero {
   --ed-s: 0;
