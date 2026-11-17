@@ -19,7 +19,7 @@ jobs:
   web:
     name: Site (typecheck + build)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -32,6 +32,21 @@ jobs:
       - run: npm run typecheck
       # Also renders the résumé PDF (prebuild), so a broken résumé fails here too.
       - run: npm run build
+      # Every look on the main pages, at desktop and phone widths (scripts/check-looks.mjs): each
+      # keeps its look, shows its own blocks, doesn't scroll sideways on a phone and logs no errors.
+      - run: npx playwright install --with-deps chromium
+      - name: Check every look
+        run: |
+          npm start -- -p 3000 > next.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3000/ && break; sleep 1; done
+          BASE_URL=http://localhost:3000 node scripts/check-looks.mjs
+      # The screenshots, one per look and page, to look through on any pull request.
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: look-shots
+          path: look-shots/
+          retention-days: 14
 
   api:
     name: API (.NET tests)
