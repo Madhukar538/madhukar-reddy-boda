@@ -1,6 +1,6 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-// The MCP SDK validates with zod 4; the rest of the app still uses zod 3.
-import { z } from 'zod4';
+// zod 4, as the MCP SDK expects (the whole app uses it).
+import { z } from 'zod';
 import type { Profile, SiteContent } from '@/lib/content';
 import { postToText, searchBlog } from '@/lib/portfolio-text';
 

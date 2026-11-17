@@ -3,6 +3,7 @@ using System.Text;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Security;
 using Dhucar.Portfolio.Common.Services;
+using Dhucar.Portfolio.Common.Tenancy;
 using Dhucar.Portfolio.DataAccess;
 using Dhucar.Portfolio.Properties;
 using Dhucar.Portfolio.Properties.Documents;
@@ -34,6 +35,7 @@ public class AuthBAL(
     TokenService tokenService,
     SessionBAL sessionBAL,
     AuditBAL auditBAL,
+    TenantBAL tenantBAL,
     IContextService contextService,
     IOptions<PortfolioSettings> options,
     ICodeLogger codeLog)
@@ -68,11 +70,16 @@ public class AuthBAL(
         Response<object> objResponse = new Response<object>();
         try
         {
-            if (_security.SetupToken.Length < 32)
+            // The primary site uses the server's setup token; every other site only its own, made when the
+            // site was created, so one token can never claim another site's first admin.
+            bool isTokenValid = TenantScope.IsPrimary
+                ? _security.SetupToken.Length >= 32 && FixedTimeEquals(objAPIRequest.SetupToken, _security.SetupToken)
+                : await tenantBAL.IsSetupToken(objAPIRequest.SetupToken);
+            if (TenantScope.IsPrimary && _security.SetupToken.Length < 32)
             {
                 return Fail(objResponse, ErrorCode.Forbidden, "Setup is disabled.");
             }
-            if (!FixedTimeEquals(objAPIRequest.SetupToken, _security.SetupToken))
+            if (!isTokenValid)
             {
                 await auditBAL.Write("setup.denied", false, string.Empty, string.Empty, "bad setup token");
                 return Fail(objResponse, ErrorCode.Forbidden, "Setup is disabled.");

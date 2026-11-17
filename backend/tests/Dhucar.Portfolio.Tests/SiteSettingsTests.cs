@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Dhucar.Portfolio.BusinessLogic.BAL;
+using Dhucar.Portfolio.Properties;
 using Dhucar.Portfolio.Properties.Models;
 using Dhucar.Portfolio.Tests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,14 +15,14 @@ public class SiteSettingsTests
 {
     private static readonly byte[] Png = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
 
-    private static async Task<(string Slug, string Host)> NewSite(ApiFactory factory, bool withHost = true)
+    private static async Task<(string Slug, string Host, string SetupToken)> NewSite(ApiFactory factory, bool withHost = true)
     {
         string slug = "site-" + Guid.NewGuid().ToString("N")[..10];
         string host = slug + ".example.com";
         using IServiceScope scope = factory.Services.CreateScope();
         Properties.Response<object> created = await scope.ServiceProvider.GetRequiredService<TenantBAL>().Provision(new ProvisionTenantRequestDTO { Slug = slug, Name = "Asha", Hosts = withHost ? [host] : [] });
         Assert.Equal(1, created.ReturnCode);
-        return (slug, host);
+        return (slug, host, ((ProvisionResultDTO)created.Data!).SetupToken);
     }
 
     private static async Task<HttpResponseMessage> Preflight(HttpClient client, string origin)
@@ -40,7 +41,7 @@ public class SiteSettingsTests
     public async Task Browsers_are_let_in_from_each_sites_own_origin_only()
     {
         using ApiFactory factory = new();
-        (string slug, string host) = await NewSite(factory);
+        (string slug, string host, _) = await NewSite(factory);
         HttpClient client = factory.CreateApiClient();
 
         Assert.Equal(ApiFactory.Origin, AllowedOrigin(await Preflight(client, ApiFactory.Origin)));
@@ -60,8 +61,8 @@ public class SiteSettingsTests
     public async Task Each_site_has_its_own_admin_session_passkeys_and_images()
     {
         using ApiFactory factory = new();
-        (string slug, string host) = await NewSite(factory);
-        AdminSession site = await AdminSession.SignedIn(factory, slug);
+        (string slug, string host, string setupToken) = await NewSite(factory);
+        AdminSession site = await AdminSession.SignedIn(factory, slug, setupToken);
 
         // Its own refresh cookie, so a browser signed in to two sites keeps both sessions.
         ApiResult refreshed = await site.Client.Post("RefreshToken", headers: new() { ["X-Requested-With"] = "dhucar-admin" });
@@ -107,8 +108,8 @@ public class SiteSettingsTests
     public async Task A_site_without_a_domain_has_no_passkeys_yet()
     {
         using ApiFactory factory = new();
-        (string slug, _) = await NewSite(factory, withHost: false);
-        AdminSession site = await AdminSession.SignedIn(factory, slug);
+        (string slug, _, string setupToken) = await NewSite(factory, withHost: false);
+        AdminSession site = await AdminSession.SignedIn(factory, slug, setupToken);
         Assert.NotEqual(HttpStatusCode.OK, (await site.Client.Post("PasskeyRegisterOptions", token: site.AccessToken)).Status);
     }
 }

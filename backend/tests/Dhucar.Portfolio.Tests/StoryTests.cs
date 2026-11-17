@@ -53,11 +53,13 @@ public class StoryTests
     {
         using ApiFactory factory = new();
         string slug = "site-" + Guid.NewGuid().ToString("N")[..10];
+        string setupToken;
         using (IServiceScope scope = factory.Services.CreateScope())
         {
-            await scope.ServiceProvider.GetRequiredService<TenantBAL>().Provision(new ProvisionTenantRequestDTO { Slug = slug, Name = "Asha" });
+            Properties.Response<object> created = await scope.ServiceProvider.GetRequiredService<TenantBAL>().Provision(new ProvisionTenantRequestDTO { Slug = slug, Name = "Asha" });
+            setupToken = ((Properties.ProvisionResultDTO)created.Data!).SetupToken;
         }
-        AdminSession site = await AdminSession.SignedIn(factory, slug);
+        AdminSession site = await AdminSession.SignedIn(factory, slug, setupToken);
         Assert.Equal(HttpStatusCode.OK, (await site.Client.Post("SaveStory", new { json = Story }, token: site.AccessToken)).Status);
 
         HttpClient anonymous = factory.CreateApiClient();
