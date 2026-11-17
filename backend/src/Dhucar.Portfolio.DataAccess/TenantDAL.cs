@@ -85,6 +85,53 @@ public class TenantDAL(MongoContext context)
 
     //****************************************************************************************************
     // Layer                 :   DataAccess
+    // Method Name           :   GetAllTenantsDB
+    // Method Description    :   Every site, newest first, for the primary admin.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   none
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   List of TenantDocument
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>GetAllTenantsDB : </c> Every site, newest first, for the primary admin.
+    /// </summary>
+    public async Task<List<TenantDocument>> GetAllTenantsDB()
+    {
+        return await context.Tenants.Find(FilterDefinition<TenantDocument>.Empty).SortByDescending(x => x.CreatedAt).ToListAsync();
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
+    // Method Name           :   SetTenantStatusDB
+    // Method Description    :   Sets a site's status; returns false when there is no such site.
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   slug, status
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   bool
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>SetTenantStatusDB : </c> Sets a site's status; returns false when there is no such site.
+    /// </summary>
+    public async Task<bool> SetTenantStatusDB(string slug, string status)
+    {
+        UpdateResult result = await context.Tenants.UpdateOneAsync(x => x.Id == slug, Builders<TenantDocument>.Update.Set(x => x.Status, status));
+        return result.MatchedCount > 0;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   DataAccess
     // Method Name           :   InsertTenantDB
     // Method Description    :   Adds a site; returns false when the slug or one of its hosts is taken.
     // Author                :   Boda Madhukar Reddy

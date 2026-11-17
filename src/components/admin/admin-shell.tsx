@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, FileText, FolderKanban, LifeBuoy, LogOut, MessageSquare, Palette, RefreshCw, ShieldCheck, UserRound, BookOpenText } from 'lucide-react';
+import { BarChart3, FileText, FolderKanban, LifeBuoy, LogOut, MessageSquare, Palette, RefreshCw, ShieldCheck, UserRound, BookOpenText, Globe2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAdmin } from './session';
 import { Notice, Spinner, secondaryButton } from './ui';
@@ -17,6 +17,7 @@ const NAV = [
   { href: '/admin/profile', label: 'Profile', icon: UserRound },
   { href: '/admin/story', label: 'Story', icon: BookOpenText },
   { href: '/admin/themes', label: 'Themes', icon: Palette },
+  { href: '/admin/sites', label: 'Sites', icon: Globe2 },
   { href: '/admin/security', label: 'Security', icon: ShieldCheck },
 ];
 
