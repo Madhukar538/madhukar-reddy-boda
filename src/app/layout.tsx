@@ -27,9 +27,11 @@ import { GenieLauncher } from '@/components/genie/genie-launcher';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: 'Boda Madhukar Reddy — Senior Software Engineer, AI Architect & Agentic AI Developer',
+  // About 60 characters: search results show it whole.
+  title: 'Boda Madhukar Reddy — AI Architect & Senior .NET Engineer',
   description:
-    'Senior Software Engineer, AI architect and agentic AI developer: .NET, high-throughput APIs, self-hosted AI platforms (RAG, MCP, hybrid search), teams of AI coding agents and k6 performance engineering.',
+    // Under 160 characters, so search results show it whole.
+    'Senior Software Engineer and AI architect: fast .NET APIs, self-hosted AI platforms (RAG, MCP, hybrid search) and teams of AI coding agents. Hyderabad, India.',
   alternates: {
     types: { 'application/rss+xml': [{ url: '/rss.xml', title: 'Boda Madhukar Reddy — Engineering blog' }] },
   },

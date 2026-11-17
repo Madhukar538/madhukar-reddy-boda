@@ -10,7 +10,7 @@ import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'About — Boda Madhukar Reddy',
-  description: 'Senior Software Engineer, AI architect and agentic AI developer: leads teams of AI coding agents; .NET 10, Next.js, Solr, SQL Server, Redis, k6 performance engineering, RAG, MCP and self-hosted LLMs.',
+  description: 'Senior Software Engineer and AI architect leading teams of AI coding agents: .NET 10, Next.js, Solr, SQL Server, Redis, k6, RAG, MCP and self-hosted LLMs.',
   alternates: { canonical: '/about' },
 };
 
