@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import sharp from 'sharp';
+import { getThemeSettings } from '@/lib/content';
+import type { DesignStyle } from '@/lib/design-style';
 
 // The cut-out portrait, inlined so the card needs no extra request.
 const portrait = `data:image/png;base64,${readFileSync(join(process.cwd(), 'public/og/portrait.png')).toString('base64')}`;
@@ -19,10 +21,38 @@ const fonts = [
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-// Midnight's warm editorial palette: paper on warm black, with the collar red.
-const INK = '#ede8e1';
-const MUTED = '#a1978c';
-const ACCENT = '#db5760';
+/**
+ * The card's colours follow the site's default look (Admin, Themes), so a shared link looks like the
+ * site it opens: background, its lighter corner, ink, muted text, accent, and whether the title is set in the serif.
+ */
+type Palette = { bg: string; glow: string; ink: string; muted: string; accent: string; serif: boolean };
+const PALETTES: Record<DesignStyle, Palette> = {
+  midnight: { bg: '#110f0d', glow: '#2a221b', ink: '#ede8e1', muted: '#a1978c', accent: '#db5760', serif: true },
+  terminal: { bg: '#f7f7f4', glow: '#ffffff', ink: '#0e0e10', muted: '#55554f', accent: '#5b3bf5', serif: false },
+  blueprint: { bg: '#0b2545', glow: '#163f6e', ink: '#e8f1ff', muted: '#9dbbd9', accent: '#5ce1e6', serif: false },
+  editorial: { bg: '#f1efea', glow: '#ffffff', ink: '#111111', muted: '#555555', accent: '#ff4d00', serif: false },
+  glass: { bg: '#eef2f8', glow: '#ffffff', ink: '#1c1c1e', muted: '#6b6b70', accent: '#0a84ff', serif: false },
+  arctic: { bg: '#f1f3f4', glow: '#ffffff', ink: '#10161f', muted: '#4f5966', accent: '#1a4fd6', serif: false },
+  synthwave: { bg: '#140a24', glow: '#2a1350', ink: '#f3ebdd', muted: '#b3a8c9', accent: '#fb4ba0', serif: false },
+  dune: { bg: '#efe6d6', glow: '#f7efe2', ink: '#2b1d14', muted: '#6b5646', accent: '#a33e24', serif: true },
+  gazette: { bg: '#f4f1ea', glow: '#faf8f3', ink: '#151515', muted: '#555555', accent: '#b3261e', serif: true },
+  receipt: { bg: '#fffefa', glow: '#f1efea', ink: '#222222', muted: '#666666', accent: '#c62e2e', serif: false },
+  observatory: { bg: '#070b18', glow: '#141c3a', ink: '#e6e9f2', muted: '#9aa3bf', accent: '#f5c46b', serif: false },
+};
+
+async function palette(): Promise<Palette> {
+  try {
+    return PALETTES[(await getThemeSettings()).defaultTheme] ?? PALETTES.midnight;
+  } catch {
+    return PALETTES.midnight;
+  }
+}
+
+/** A colour as rgba with the given alpha, for hairlines in the palette's colours. */
+const alpha = (hex: string, a: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+};
 
 type Stat = { value: string; label: string };
 
@@ -46,6 +76,7 @@ export async function ogCard({
   stack?: string[];
 }) {
   const titleSize = title.length > 80 ? 40 : title.length > 55 ? 46 : 54;
+  const { bg, glow, ink: INK, muted: MUTED, accent: ACCENT, serif } = await palette();
   const png = new ImageResponse(
     (
       <div
@@ -54,8 +85,8 @@ export async function ogCard({
           height: '100%',
           display: 'flex',
           position: 'relative',
-          backgroundColor: '#110f0d',
-          backgroundImage: 'radial-gradient(ellipse 70% 90% at 85% 10%, #2a221b 0%, #110f0d 70%)',
+          backgroundColor: bg,
+          backgroundImage: `radial-gradient(ellipse 70% 90% at 85% 10%, ${glow} 0%, ${bg} 70%)`,
           fontFamily: 'Inter',
         }}
       >
@@ -85,12 +116,12 @@ export async function ogCard({
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: ACCENT,
-                borderBottom: '1px solid rgba(219,87,96,0.5)',
+                borderBottom: `1px solid ${alpha(ACCENT, 0.5)}`,
               }}
             >
               {eyebrow}
             </div>
-            <div style={{ display: 'flex', marginTop: 18, fontFamily: 'Instrument Serif', fontSize: titleSize * 1.18, fontWeight: 400, lineHeight: 1.04, letterSpacing: '-0.01em', color: INK }}>
+            <div style={{ display: 'flex', marginTop: 18, fontFamily: serif ? 'Instrument Serif' : 'Inter', fontSize: serif ? titleSize * 1.18 : titleSize, fontWeight: serif ? 400 : 800, lineHeight: 1.04, letterSpacing: '-0.01em', color: INK }}>
               {title}
             </div>
             {meta && <div style={{ display: 'flex', marginTop: 14, fontSize: 22, color: MUTED }}>{meta}</div>}
@@ -113,7 +144,7 @@ export async function ogCard({
               {stack.map((t) => (
                 <span
                   key={t}
-                  style={{ display: 'flex', padding: '5px 14px', borderRadius: 6, fontSize: 18, color: INK, border: '1px solid rgba(237,232,225,0.18)' }}
+                  style={{ display: 'flex', padding: '5px 14px', borderRadius: 6, fontSize: 18, color: INK, border: `1px solid ${alpha(INK, 0.18)}` }}
                 >
                   {t}
                 </span>
