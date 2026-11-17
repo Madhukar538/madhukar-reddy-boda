@@ -58,13 +58,14 @@ export const viewport: Viewport = {
 // Self-hosted at build time: no render-blocking request to Google, and the files are preloaded.
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
 // Midnight's headlines (h1, h2 in globals.css).
-const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], display: 'swap', variable: '--font-serif' });
-// Code blocks only, so it isn't preloaded on every page.
+// Not preloaded: only Midnight uses it, and the default look is set in the admin.
+const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], display: 'swap', variable: '--font-serif', preload: false });
 // Terminal's headings.
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['500', '600', '700'], display: 'swap', variable: '--font-grotesk' });
 // Editorial's display type: a variable font whose width and weight move with the pointer.
 const anybody = Anybody({ subsets: ['latin'], axes: ['wdth'], display: 'swap', variable: '--font-display', preload: false });
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono', preload: false });
+// Preloaded: Terminal, Blueprint and Editorial set their navigation and labels in it, above the fold.
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', variable: '--font-jetbrains-mono' });
 
 // The theme the site opens in, and the ones visitors can pick, are set in the admin (Themes).
 // The default is rendered on <html>; before first paint this applies a visitor's own choice if that

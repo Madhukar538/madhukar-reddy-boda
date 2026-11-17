@@ -585,9 +585,9 @@
 .article-body .copy-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--foreground) / 0.14); }
 
 /* Syntax colours (highlight.js classes), tuned per theme */
-.hljs-comment, .hljs-quote { color: hsl(var(--foreground) / 0.45); font-style: italic; }
+.hljs-comment, .hljs-quote { color: hsl(var(--foreground) / 0.62); font-style: italic; }
 .hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword { color: hsl(var(--sys-pink)); }
-.hljs-string, .hljs-regexp, .hljs-template-string, .hljs-addition { color: hsl(135 55% 36%); }
+.hljs-string, .hljs-regexp, .hljs-template-string, .hljs-addition { color: hsl(135 60% 27%); }
 .hljs-number, .hljs-literal, .hljs-symbol, .hljs-variable.language_ { color: hsl(var(--sys-orange)); }
 .hljs-title, .hljs-title.function_, .hljs-title.class_, .hljs-section { color: hsl(var(--primary)); }
 .hljs-type, .hljs-params, .hljs-attr, .hljs-property, .hljs-attribute { color: hsl(var(--sys-purple)); }
@@ -663,6 +663,8 @@
   gap: 0.5rem;
   font-weight: 600;
   color: hsl(var(--callout));
+  /* Pulled toward the text colour so small titles stay readable on the tinted box in every look. */
+  color: color-mix(in oklab, hsl(var(--callout)) 72%, hsl(var(--foreground)));
 }
 .callout-icon { width: 1.05rem; height: 1.05rem; flex-shrink: 0; }
 .callout-content { margin-top: 0.4rem; color: hsl(var(--foreground) / 0.85); }

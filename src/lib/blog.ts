@@ -223,22 +223,15 @@ export function postsForTopic(posts: BlogPost[], slug: string) {
   return posts.filter((p) => slugify(p.category) === slug || p.tags.some((t) => slugify(t) === slug));
 }
 
-/** Compact data the client-side search and cards need. */
-export type PostSummary = Pick<BlogPost, 'slug' | 'title' | 'excerpt' | 'date' | 'readTime' | 'category' | 'tags'> & {
-  text: string;
-};
+/** Compact data the cards and the search box need (the posts' full text is fetched separately, on demand). */
+export type PostSummary = Pick<BlogPost, 'slug' | 'title' | 'excerpt' | 'date' | 'readTime' | 'category' | 'tags'>;
 
 export const summaries = (list: BlogPost[]): PostSummary[] =>
-  list.map(({ slug, title, excerpt, date, readTime, category, tags, content }) => ({
-    slug,
-    title,
-    excerpt,
-    date,
-    readTime,
-    category,
-    tags,
-    text: plainText(content).toLowerCase(),
-  }));
+  list.map(({ slug, title, excerpt, date, readTime, category, tags }) => ({ slug, title, excerpt, date, readTime, category, tags }));
+
+/** Each post's plain text, lower-cased: served at /search-text.json for full-text search. */
+export const searchText = (list: BlogPost[]): Record<string, string> =>
+  Object.fromEntries(list.map((p) => [p.slug, plainText(p.content).toLowerCase()]));
 
 /** Absolute site URL for metadata, feeds and social cards. SITE_URL overrides it (e.g. for a staging deploy). */
 export const siteUrl = () => (process.env.SITE_URL || 'https://dhucar.in').replace(/\/$/, '');

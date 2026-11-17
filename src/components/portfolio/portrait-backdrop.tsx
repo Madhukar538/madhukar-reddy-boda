@@ -6,7 +6,7 @@ import Image from 'next/image';
  * the page, beside the headline. Phones: across the top, above the headline.
  * Decorative: the page already names Madhukar in text.
  */
-export function PortraitBackdrop() {
+export function PortraitBackdrop({ priority = false }: { priority?: boolean }) {
   return (
     <div aria-hidden className="portrait-backdrop pointer-events-none absolute inset-x-0 top-0 -z-10 overflow-hidden">
       <div className="portrait-frame">
@@ -14,9 +14,10 @@ export function PortraitBackdrop() {
           src="/portrait-cutout.webp"
           alt=""
           fill
-          preload
-          // The largest thing on screen (the LCP image): fetch it ahead of everything else.
-          fetchPriority="high"
+          // When Midnight is the site's default this is the largest thing on screen (the LCP image):
+          // fetch it ahead of everything else. In any other look it is hidden, so it isn't fetched at all.
+          preload={priority}
+          fetchPriority={priority ? 'high' : 'auto'}
           quality={60}
           sizes="(min-width: 1024px) 720px, 100vw"
           className="object-cover object-[50%_15%] lg:object-[68%_20%]"
