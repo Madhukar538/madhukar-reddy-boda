@@ -28,12 +28,13 @@ const load = {
   terminal: { home: () => import('./terminal-look').then((m) => m.TerminalHome), pages: () => import('./terminal-look') },
   blueprint: { home: () => import('./blueprint-look').then((m) => m.BlueprintHome), pages: () => import('./blueprint-look') },
   glass: { home: () => import('./glass-look').then((m) => m.GlassHome), pages: () => import('./glass-look') },
+  bazaar: { home: () => import('./bazaar').then((m) => m.BazaarHome), pages: () => import('./bazaar') },
 } as const;
 
 type Look = keyof typeof load;
 const NAMES: Record<Look, string> = {
   arctic: 'Arctic', synthwave: 'Synthwave', dune: 'Dune', gazette: 'Gazette', receipt: 'Receipt',
-  observatory: 'Observatory', terminal: 'Terminal', blueprint: 'Blueprint', glass: 'Glass',
+  observatory: 'Observatory', terminal: 'Terminal', blueprint: 'Blueprint', glass: 'Glass', bazaar: 'Bazaar',
 };
 const SUFFIX = { experience: 'Experience', about: 'About', projects: 'Projects' } as const;
 

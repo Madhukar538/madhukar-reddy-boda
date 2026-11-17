@@ -11,7 +11,7 @@ export function MidnightDark() {
   useEffect(() => {
     if (!resolvedTheme) return;
     if ((look === 'midnight' || look === 'blueprint' || look === 'synthwave' || look === 'observatory') && resolvedTheme !== 'dark') setTheme('dark');
-    if ((look === 'terminal' || look === 'editorial' || look === 'arctic' || look === 'dune' || look === 'gazette' || look === 'receipt') && resolvedTheme !== 'light') setTheme('light');
+    if ((look === 'terminal' || look === 'editorial' || look === 'arctic' || look === 'dune' || look === 'gazette' || look === 'receipt' || look === 'bazaar') && resolvedTheme !== 'light') setTheme('light');
   }, [look, resolvedTheme, setTheme]);
   return null;
 }

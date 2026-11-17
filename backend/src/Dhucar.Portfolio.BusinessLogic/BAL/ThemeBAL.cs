@@ -35,6 +35,7 @@ public class ThemeBAL(ThemeDAL themeDAL, RevalidationBAL revalidationBAL, AuditB
         ("gazette", "Gazette", "Newspaper"),
         ("receipt", "Receipt", "Till slip"),
         ("observatory", "Observatory", "Star atlas"),
+        ("bazaar", "Bazaar", "General store"),
     ];
 
     /// <summary>Used until an admin saves the settings: Terminal by default, every theme enabled.</summary>

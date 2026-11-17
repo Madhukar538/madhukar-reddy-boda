@@ -16,7 +16,7 @@ public class ThemeTests
         using ApiFactory factory = new();
         JsonElement data = (await factory.CreateApiClient().Post("GetThemes")).Data;
         Assert.Equal("terminal", data.GetProperty("defaultTheme").GetString());
-        Assert.Equal(["terminal", "midnight", "blueprint", "editorial", "glass", "arctic", "synthwave", "dune", "gazette", "receipt", "observatory"], Enabled(data));
+        Assert.Equal(["terminal", "midnight", "blueprint", "editorial", "glass", "arctic", "synthwave", "dune", "gazette", "receipt", "observatory", "bazaar"], Enabled(data));
     }
 
     [Fact]

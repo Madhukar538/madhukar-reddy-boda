@@ -23,6 +23,7 @@ export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: str
   { id: 'gazette', label: 'Gazette', hint: 'Newspaper', swatch: 'linear-gradient(135deg, #F4F1EA 50%, #151515 50%)' },
   { id: 'receipt', label: 'Receipt', hint: 'Till slip', swatch: 'linear-gradient(135deg, #FFFEFA 50%, #C62E2E 50%)' },
   { id: 'observatory', label: 'Observatory', hint: 'Star atlas', swatch: 'linear-gradient(135deg, #070B18 50%, #F5C46B 50%)' },
+  { id: 'bazaar', label: 'Bazaar', hint: 'General store', swatch: 'linear-gradient(135deg, #F2B705 50%, #C8102E 50%)' },
 ];
 
 type ThemeOptions = { defaultTheme: DesignStyle; enabled: DesignStyle[] };

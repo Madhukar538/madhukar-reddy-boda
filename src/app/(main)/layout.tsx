@@ -78,7 +78,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', vari
 const themeScript = (enabled: string[], fallback: string) =>
   `try{localStorage.removeItem('portfolio-accent');var e=${JSON.stringify(enabled)},k=${JSON.stringify(KNOWN_THEMES)},t=${JSON.stringify(fallback)},h=document.documentElement,p=new URLSearchParams(location.search).get('look');if(p&&k.indexOf(p)>=0){t=p}else{var s=localStorage.getItem('portfolio-style');if(s&&e.indexOf(s)<0){localStorage.removeItem('portfolio-style');s=null}t=s||t}if(t==='midnight'){h.removeAttribute('data-style')}else{h.setAttribute('data-style',t)}}catch(e){}`;
 // Runs after next-themes' own script, which may have set the other theme: Midnight is dark-only, Terminal light-only.
-const midnightDarkScript = `try{var d=document.documentElement,s=d.getAttribute('data-style'),t=s==='terminal'||s==='editorial'||s==='arctic'||s==='dune'||s==='gazette'||s==='receipt';if(t||!s||s==='blueprint'||s==='synthwave'||s==='observatory'){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
+const midnightDarkScript = `try{var d=document.documentElement,s=d.getAttribute('data-style'),t=s==='terminal'||s==='editorial'||s==='arctic'||s==='dune'||s==='gazette'||s==='receipt'||s==='bazaar';if(t||!s||s==='blueprint'||s==='synthwave'||s==='observatory'){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
 
 export default async function RootLayout({
   children,
