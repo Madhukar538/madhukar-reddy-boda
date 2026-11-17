@@ -5,6 +5,7 @@ import { Summary } from '@/components/portfolio/summary';
 import { Skills } from '@/components/portfolio/skills';
 import { Education } from '@/components/portfolio/education';
 import { Recognition } from '@/components/portfolio/recognition';
+import { EditorialAbout } from '@/components/editorial/editorial-about';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 
@@ -47,6 +48,8 @@ export default async function AboutPage() {
     />
     <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
+      <EditorialAbout name={content.profile.name} education={content.education} />
+      <div className="classic-only">
       <HomeHero
         content={{
           profile: content.profile,
@@ -63,8 +66,11 @@ export default async function AboutPage() {
           updated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         }}
       />
+      </div>
       <div className="mt-14 md:mt-20">
-        <Summary />
+        <div className="classic-only">
+          <Summary />
+        </div>
         <Skills skillCategories={content.skillCategories} />
         <Education education={content.education} />
         <Recognition />

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
+import { EditorialJourney } from '@/components/editorial/editorial-journey';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 import { experienceSince } from '@/lib/utils';
@@ -42,7 +43,10 @@ export default async function ExperiencePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
+      <EditorialJourney experience={experience} stats={stats} />
+      <div className="classic-only">
+        <Experience experience={experience} clientProjects={clientProjects} stats={stats} />
+      </div>
     </PageShell>
   );
 }
