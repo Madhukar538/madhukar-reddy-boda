@@ -7,32 +7,46 @@ import { newStatusToken, saveTicket, statusPath, ticketStoreConfigured } from '@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Best-effort, per-instance rate limit: 3 delivered reports per IP per 10 minutes.
-// Only successful deliveries count, so failed attempts (e.g. while Telegram
-// isn't configured yet) don't lock a visitor out.
+// Best-effort, per-instance rate limits. Only delivered reports count, so failed attempts (e.g. while
+// Telegram isn't configured yet) don't lock a visitor out.
+// - Per visitor: 3 reports per 10 minutes.
+// - Site-wide: 20 per 10 minutes, so no trick with addresses can flood the phone with pings.
 const WINDOW_MS = 10 * 60 * 1000;
 const LIMIT = 3;
+const SITE_LIMIT = 20;
+const MAX_TRACKED = 5000;
 const hits = new Map<string, number[]>();
+let siteHits: number[] = [];
 
-const recentHits = (ip: string) => (hits.get(ip) ?? []).filter((t) => Date.now() - t < WINDOW_MS);
+const fresh = (times: number[]) => times.filter((t) => Date.now() - t < WINDOW_MS);
+const recentHits = (ip: string) => fresh(hits.get(ip) ?? []);
 
 function rateLimited(ip: string) {
-  return recentHits(ip).length >= LIMIT;
+  siteHits = fresh(siteHits);
+  return siteHits.length >= SITE_LIMIT || recentHits(ip).length >= LIMIT;
 }
 
 function recordReport(ip: string) {
-  if (hits.size > 5000) hits.clear();
+  // Drop visitors whose window has passed; if still full, the oldest go first. Never clear the
+  // whole map: that would hand everyone a fresh allowance.
+  if (hits.size >= MAX_TRACKED) {
+    for (const [key, times] of hits) if (fresh(times).length === 0) hits.delete(key);
+    for (const key of hits.keys()) {
+      if (hits.size < MAX_TRACKED) break;
+      hits.delete(key);
+    }
+  }
   hits.set(ip, [...recentHits(ip), Date.now()]);
+  siteHits.push(Date.now());
 }
 
-/** Visitor IP: Cloudflare's header first (the site sits behind Cloudflare), then the proxy chain. */
+/**
+ * The visitor's IP as Cloudflare saw it. The site is only reachable through Cloudflare, which sets
+ * CF-Connecting-IP itself; X-Forwarded-For and X-Real-IP are not used, because a client can write
+ * them. Without Cloudflare's header every visitor shares one allowance (and the site-wide cap holds).
+ */
 function clientIp(request: Request) {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  return request.headers.get('cf-connecting-ip')?.trim() || 'unknown';
 }
 
 const PRIORITY_ICON: Record<Priority, string> = { P1: '🔴', P2: '🟠', P3: '🟡', P4: '🟢' };

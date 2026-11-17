@@ -31,6 +31,9 @@ public class TenantDocument
     /// <summary>active or suspended; a suspended site answers like an unknown one.</summary>
     public string Status { get; set; } = string.Empty;
 
+    /// <summary>SHA-256 (hex) of the site's own setup token, which creates its first admin; the token itself is shown once, at creation.</summary>
+    public string SetupTokenHash { get; set; } = string.Empty;
+
     /// <summary>UTC time it was created.</summary>
     public DateTime CreatedAt { get; set; }
 }

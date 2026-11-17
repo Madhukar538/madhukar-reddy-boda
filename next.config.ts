@@ -92,6 +92,16 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // A reporter's private ticket page (its secret is in the URL): never stored by a browser or
+        // an edge cache, even if a "cache everything" rule is turned on in Cloudflare.
+        source: '/ticket/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-store' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
+      {
         // Never let the HTTP cache serve an old service worker.
         source: '/sw.js',
         headers: [

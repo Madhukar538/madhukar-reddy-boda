@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Dhucar.Portfolio.Common.Logging;
 using Dhucar.Portfolio.Common.Tenancy;
@@ -144,6 +146,8 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
                 objResponse.ReturnMessage = error;
                 return objResponse;
             }
+            // The site's own setup token: only its hash is kept, so it can't be read back later.
+            string setupToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
             TenantDocument tenant = new TenantDocument
             {
                 Id = slug,
@@ -151,6 +155,7 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
                 Hosts = hosts,
                 Database = "site_" + slug,
                 Status = "active",
+                SetupTokenHash = HashToken(setupToken),
                 CreatedAt = DateTime.UtcNow,
             };
             if (!await tenantDAL.InsertTenantDB(tenant))
@@ -167,7 +172,7 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
             }
             memoryCache.Remove($"tenant:slug:{slug}");
             hosts.ForEach(x => memoryCache.Remove($"tenant:host:{x}"));
-            objResponse.Data = new SaveResultDTO { Id = slug };
+            objResponse.Data = new ProvisionResultDTO { Id = slug, SetupToken = setupToken };
             objResponse.ReturnCode = (int)ErrorCode.Success;
             objResponse.ReturnMessage = "Site created.";
         }
@@ -182,6 +187,40 @@ public partial class TenantBAL(TenantDAL tenantDAL, MongoContext mongoContext, S
             objResponse.ServerDate = DateTime.UtcNow;
         }
         return objResponse;
+    }
+
+    //****************************************************************************************************
+    // Layer                 :   BusinessLogic
+    // Method Name           :   IsSetupToken
+    // Method Description    :   True when the token is the current site's own setup token (compared by hash, in constant time).
+    // Author                :   Boda Madhukar Reddy
+    // Creation Date         :   17 Nov 2026
+    // Input Parameters      :   token
+    // Modified Date         :
+    // Modified Reason       :
+    // Return Values         :   bool
+    //----------------------------------------------------------------------------------------------------
+    //  Version    Author                 Date              Remarks
+    //----------------------------------------------------------------------------------------------------
+    //  1.0        Boda Madhukar Reddy    17 Nov 2026       Creation
+    //****************************************************************************************************
+    /// <summary>
+    /// <c>IsSetupToken : </c> True when the token is the current site's own setup token (compared by hash, in constant time).
+    /// </summary>
+    public async Task<bool> IsSetupToken(string token)
+    {
+        TenantDocument? tenant = await tenantDAL.GetTenantDB(TenantScope.Slug);
+        if (tenant == null || tenant.SetupTokenHash.Length == 0 || string.IsNullOrEmpty(token))
+        {
+            return false;
+        }
+        return CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(HashToken(token)), Encoding.ASCII.GetBytes(tenant.SetupTokenHash));
+    }
+
+    /// <summary>SHA-256 of a token, as lower-case hex.</summary>
+    private static string HashToken(string token)
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
     }
 
     /// <summary>A registry entry as a resolved site; null unless it is active.</summary>

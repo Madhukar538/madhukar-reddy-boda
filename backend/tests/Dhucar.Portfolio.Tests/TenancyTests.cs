@@ -109,4 +109,36 @@ public class TenancyTests
         Assert.Equal(1, (await Provision(factory, NewSlug(), "No host 1")).ReturnCode);
         Assert.Equal(1, (await Provision(factory, NewSlug(), "No host 2")).ReturnCode);
     }
+
+    [Fact]
+    public async Task Each_site_has_its_own_setup_token()
+    {
+        using ApiFactory factory = new();
+        string first = NewSlug();
+        string second = NewSlug();
+        string firstToken;
+        string secondToken;
+        using (IServiceScope scope = factory.Services.CreateScope())
+        {
+            TenantBAL tenants = scope.ServiceProvider.GetRequiredService<TenantBAL>();
+            firstToken = ((Properties.ProvisionResultDTO)(await tenants.Provision(new ProvisionTenantRequestDTO { Slug = first, Name = "First" })).Data!).SetupToken;
+            secondToken = ((Properties.ProvisionResultDTO)(await tenants.Provision(new ProvisionTenantRequestDTO { Slug = second, Name = "Second" })).Data!).SetupToken;
+        }
+        Assert.True(firstToken.Length >= 40);
+        Assert.NotEqual(firstToken, secondToken);
+        // Only the hash is stored.
+        Assert.DoesNotContain(firstToken, (await factory.Database.GetCollection<BsonDocument>("tenants").Find(new BsonDocument("_id", first)).FirstAsync()).ToJson());
+
+        HttpClient client = factory.CreateApiClient();
+        object Setup(string token) => new { setupToken = token, email = "owner@example.com", password = "correct horse battery staple 42" };
+        // The server's token, another site's token, or nothing: refused on a site.
+        foreach (string wrong in new[] { ApiFactory.SetupToken, secondToken, string.Empty })
+        {
+            Assert.Equal(HttpStatusCode.Forbidden, (await client.Post("SetupAdmin", Setup(wrong), headers: Site(first))).Status);
+        }
+        // A site's token doesn't work on the primary site either.
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.Post("SetupAdmin", Setup(firstToken))).Status);
+        // Its own token does.
+        Assert.Equal(HttpStatusCode.OK, (await client.Post("SetupAdmin", Setup(firstToken), headers: Site(first))).Status);
+    }
 }
