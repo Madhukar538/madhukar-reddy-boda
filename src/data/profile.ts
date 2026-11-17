@@ -200,7 +200,7 @@ export const keyProjects: ProjectCard[] = [
   {
     title: 'dhucar.in: Portfolio Platform',
     description:
-      'This site, built and run end to end: Next.js 16 pages kept fresh by on-demand revalidation from a .NET 8 API, self-hosted MongoDB, passkey sign-in for the admin, live presence over SignalR, a read-only MCP endpoint for AI assistants and five switchable designs, deployed with Coolify behind a Cloudflare Tunnel.',
+      'This site, built and run end to end: Next.js 16 pages kept fresh by on-demand revalidation from a .NET 8 API, self-hosted MongoDB, passkey sign-in for the admin, live presence over SignalR, a read-only MCP endpoint for AI assistants and eight switchable designs, deployed with Coolify behind a Cloudflare Tunnel.',
     tech: ['Next.js 16', '.NET 8', 'MongoDB', 'SignalR', 'MCP', 'Coolify'],
   },
   {
