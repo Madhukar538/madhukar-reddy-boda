@@ -35,6 +35,8 @@ export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions;
   // the saved look is applied here instead; on every other page it is already in place and this does nothing.
   useEffect(() => {
     try {
+      // A ?look= preview (Admin > Themes) keeps the look it asked for.
+      if (new URLSearchParams(window.location.search).has('look')) return;
       const saved = localStorage.getItem(STYLE_STORAGE_KEY) as DesignStyle | null;
       if (!saved || !value.enabled.includes(saved)) return;
       const current = document.documentElement.dataset.style ?? 'midnight';

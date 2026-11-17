@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { errorMessage } from '@/lib/admin/api';
 import type { SaveResult, ThemeSettings } from '@/lib/admin/types';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ function ThemesEditor() {
   const [loadError, setLoadError] = useState('');
   const [busy, setBusy] = useState<'save' | 'delete' | null>(null);
   const [status, setStatus] = useState<Status>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -83,6 +85,13 @@ function ThemesEditor() {
   return (
     <form onSubmit={save}>
       <Panel
+        title={`Preview: ${settings.themes.find((t) => t.id === (preview ?? form.defaultTheme))?.label ?? ''}`}
+        description="The homepage as visitors see it in this theme, live. Pick a theme below to preview it; nothing changes until you save."
+      >
+        <ThemePreview look={preview ?? form.defaultTheme} />
+      </Panel>
+      <div className="h-6" />
+      <Panel
         title="Site themes"
         description="Enabled themes appear in the site's theme menu. The default is what new visitors see; anyone who picked a theme you disable goes back to the default."
       >
@@ -93,7 +102,14 @@ function ThemesEditor() {
             const isDefault = form.defaultTheme === theme.id;
             return (
               <li key={theme.id} className="flex flex-wrap items-center gap-4 py-3.5">
-                <span aria-hidden className="h-9 w-9 shrink-0 rounded-lg ring-1 ring-foreground/20" style={{ background: look?.swatch }} />
+                <button
+                  type="button"
+                  onClick={() => setPreview(theme.id)}
+                  aria-label={`Preview ${theme.label}`}
+                  aria-pressed={(preview ?? form.defaultTheme) === theme.id}
+                  className={cn('h-9 w-9 shrink-0 rounded-lg ring-1 ring-foreground/20', (preview ?? form.defaultTheme) === theme.id && 'ring-2 ring-primary ring-offset-2 ring-offset-background')}
+                  style={{ background: look?.swatch }}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">
                     {theme.label}
@@ -101,6 +117,9 @@ function ThemesEditor() {
                   </p>
                   <p className="text-sm text-muted-foreground">{theme.hint} · <code className="text-xs">{theme.id}</code></p>
                 </div>
+                <button type="button" onClick={() => setPreview(theme.id)} className="text-sm font-medium text-primary hover:underline">
+                  Preview
+                </button>
                 <label className={cn('flex items-center gap-2 text-sm', isDefault && 'opacity-60')}>
                   <input
                     type="checkbox"
@@ -131,6 +150,40 @@ function ThemesEditor() {
       </Panel>
       <SaveBar busy={busy} dirty={dirty} status={status} />
     </form>
+  );
+}
+
+/** The site's own homepage in a theme (?look=, applied for that view only), scaled down to fit. */
+function ThemePreview({ look }: { look: string }) {
+  const frame = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.5);
+  useEffect(() => {
+    const el = frame.current;
+    if (!el) return;
+    const fit = () => setScale(el.clientWidth / 1280);
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const src = `/?look=${encodeURIComponent(look)}`;
+  return (
+    <div>
+      <div ref={frame} className="relative overflow-hidden rounded-lg ring-1 ring-foreground/15" style={{ height: 800 * scale }}>
+        <iframe
+          key={look}
+          src={src}
+          title={`The homepage in the ${look} theme`}
+          tabIndex={-1}
+          loading="lazy"
+          className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
+          style={{ width: 1280, height: 800, transform: `scale(${scale})` }}
+        />
+      </div>
+      <a href={src} target="_blank" rel="noopener" className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+        Open full page <ExternalLink className="h-3.5 w-3.5" />
+      </a>
+    </div>
   );
 }
 

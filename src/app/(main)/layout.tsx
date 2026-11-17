@@ -20,7 +20,7 @@ import { HoverPreview } from '@/components/vault/hover-preview';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { caseStudyFor } from '@/data/case-studies';
 import { chunkReloadScript } from '@/lib/chunk-reload';
-import { getContent, getThemeSettings } from '@/lib/content';
+import { KNOWN_THEMES, getContent, getThemeSettings } from '@/lib/content';
 import { ThemeOptionsProvider } from '@/components/look-toggle';
 import { TrackingBeacon } from '@/components/tracking-beacon';
 import { GenieLauncher } from '@/components/genie/genie-launcher';
@@ -73,8 +73,10 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', vari
 // The default is rendered on <html>; before first paint this applies a visitor's own choice if that
 // theme is still enabled (forgetting it otherwise), and clears accents saved by older versions.
 // No data-style attribute means Midnight.
+// ?look=<theme> shows a page in any known theme for that view only, without saving it (the admin's
+// theme previews, Admin > Themes).
 const themeScript = (enabled: string[], fallback: string) =>
-  `try{localStorage.removeItem('portfolio-accent');var e=${JSON.stringify(enabled)},t=${JSON.stringify(fallback)},s=localStorage.getItem('portfolio-style'),h=document.documentElement;if(s&&e.indexOf(s)<0){localStorage.removeItem('portfolio-style');s=null}t=s||t;if(t==='midnight'){h.removeAttribute('data-style')}else{h.setAttribute('data-style',t)}}catch(e){}`;
+  `try{localStorage.removeItem('portfolio-accent');var e=${JSON.stringify(enabled)},k=${JSON.stringify(KNOWN_THEMES)},t=${JSON.stringify(fallback)},h=document.documentElement,p=new URLSearchParams(location.search).get('look');if(p&&k.indexOf(p)>=0){t=p}else{var s=localStorage.getItem('portfolio-style');if(s&&e.indexOf(s)<0){localStorage.removeItem('portfolio-style');s=null}t=s||t}if(t==='midnight'){h.removeAttribute('data-style')}else{h.setAttribute('data-style',t)}}catch(e){}`;
 // Runs after next-themes' own script, which may have set the other theme: Midnight is dark-only, Terminal light-only.
 const midnightDarkScript = `try{var d=document.documentElement,s=d.getAttribute('data-style'),t=s==='terminal'||s==='editorial'||s==='arctic'||s==='dune'||s==='gazette'||s==='receipt';if(t||!s||s==='blueprint'||s==='synthwave'||s==='observatory'){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
 
