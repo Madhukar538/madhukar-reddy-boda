@@ -4,6 +4,8 @@
  * so the two never drift apart. Keep this file free of React/UI imports.
  */
 
+import { careerLength } from '../lib/utils';
+
 export const profile = {
   name: 'Boda Madhukar Reddy',
   title: 'Senior Software Engineer · AI Architect · Agentic AI Developer',
@@ -17,8 +19,8 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/madhukar-reddy-boda',
   twitter: '',
   summary:
-    'Senior Software Engineer, AI architect and agentic AI developer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. ' +
-    'Leads teams of AI coding agents (Claude Code, Codex, Copilot and Antigravity) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. ' +
+    `AI architect and senior .NET engineer with ${careerLength()} of building and scaling high-traffic .NET systems and self-hosted AI platforms. ` +
+    'Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. ' +
     'Cut a multi-tenant RAG chatbot\'s answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. ' +
     'Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.',
   // What he is focused on now (the profile card and the home page). Edited in the admin, which
@@ -109,6 +111,7 @@ export const experience = {
     {
       label: 'AI platforms',
       items: [
+        'Runs a team of AI coding agents in Herdr: Claude Code leads and plans, Antigravity builds, Copilot and Codex review, guided by written specs, agent skills and multi-agent review, with every change owned and merged by hand.',
         'Architected a multi-tenant RAG chatbot platform on .NET 10 (Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming), then led an end-to-end latency audit that cut typical answer time from 30–40 s to about 13 s.',
         'Built an MCP (Model Context Protocol) server exposing 40+ tools that give AI assistants a map of C# codebases and SQL Server schemas, using Roslyn code analysis and schema extraction synced to MongoDB.',
         'Designed a hybrid product search engine on Solr 9 that fuses BM25 keyword and kNN vector results with Reciprocal Rank Fusion.',
@@ -193,6 +196,12 @@ export const keyProjects: ProjectCard[] = [
       'Uptime Kuma as a headless check engine behind a custom .NET 10 API and React admin: incidents, maintenance windows, FCM push alerts, flapping suppression, self-healing hooks and ticketing.',
     tech: ['.NET 10', 'Uptime Kuma', 'React Router', 'PostgreSQL', 'Docker'],
     featured: true,
+  },
+  {
+    title: 'dhucar.in: Portfolio Platform',
+    description:
+      'This site, built and run end to end: Next.js 16 pages kept fresh by on-demand revalidation from a .NET 8 API, self-hosted MongoDB, passkey sign-in for the admin, live presence over SignalR, a read-only MCP endpoint for AI assistants and five switchable designs, deployed with Coolify behind a Cloudflare Tunnel.',
+    tech: ['Next.js 16', '.NET 8', 'MongoDB', 'SignalR', 'MCP', 'Coolify'],
   },
   {
     title: 'Real-Time IoT Data Platform',

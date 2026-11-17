@@ -171,7 +171,7 @@ export function ResumeDocument() {
         <View style={s.header}>
           <View style={{ flex: 1 }}>
             <Text style={s.name}>{profile.name}</Text>
-            <Text style={s.headline}>{experience.title} | .NET and Self-Hosted AI | Problem Solving</Text>
+            <Text style={s.headline}>AI Architect & Senior .NET Engineer | Agentic AI | Self-Hosted LLMs</Text>
             <View style={s.contactRow}>
               {contacts.map((c) => (
                 <View key={c.text} style={s.contactItem}>

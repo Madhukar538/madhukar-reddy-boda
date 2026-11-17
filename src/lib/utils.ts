@@ -31,5 +31,11 @@ export function experienceSince(duration: string = CAREER_START, now: Date = new
   // A month only counts once its day has come round.
   const months = (now.getFullYear() - year) * 12 + (now.getMonth() - monthIndex) - (now.getDate() < day ? 1 : 0);
   const label = match?.[2] ? `${match[2]} ${year}` : String(year);
-  return { years: Math.max(0, Math.floor(months / 12)), since: label };
+  return { years: Math.max(0, Math.floor(months / 12)), months: Math.max(0, months), since: label };
+}
+
+/** Career length in words for prose: "nearly 5 years" in the last quarter before an anniversary, else "4+ years". */
+export function careerLength(now: Date = new Date()) {
+  const { years, months } = experienceSince(CAREER_START, now);
+  return months % 12 >= 9 ? `nearly ${years + 1} years` : `${years}+ years`;
 }
