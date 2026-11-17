@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BarChart3, FileText, FolderKanban, LifeBuoy, LogOut, MessageSquare, Palette, RefreshCw, ShieldCheck, UserRound, BookOpenText, Globe2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { isPlatformHost } from '@/lib/admin/api';
 import { useAdmin } from './session';
 import { Notice, Spinner, secondaryButton } from './ui';
 
@@ -20,6 +21,9 @@ const NAV = [
   { href: '/admin/sites', label: 'Sites', icon: Globe2 },
   { href: '/admin/security', label: 'Security', icon: ShieldCheck },
 ];
+
+/** What another site's admin has: no tickets (they come from this site's bug reports), themes or sites. */
+const PLATFORM_ONLY = ['/admin/tickets', '/admin/themes', '/admin/sites'];
 
 /** Frame for every signed-in admin page: sends signed-out visitors to the sign-in page. */
 export function AdminShell({ title, actions, children }: { title: string; actions?: ReactNode; children: ReactNode }) {
@@ -47,7 +51,8 @@ export function AdminShell({ title, actions, children }: { title: string; action
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <nav aria-label="Admin" className="glass glass-pill flex max-w-full gap-1 overflow-x-auto p-1">
-          {NAV.map(({ href, label, icon: Icon }) => {
+          {/* Only rendered once signed in (client-side), so reading the host here can't mismatch the server. */}
+          {NAV.filter((item) => isPlatformHost() || !PLATFORM_ONLY.includes(item.href)).map(({ href, label, icon: Icon }) => {
             const active = href === '/admin' ? pathname === '/admin' : pathname.startsWith(href);
             return (
               <Link

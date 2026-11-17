@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, ShieldCheck } from 'lucide-react';
-import { apiCall, errorMessage } from '@/lib/admin/api';
+import { apiCall, isPlatformHost, errorMessage } from '@/lib/admin/api';
 import type { RecoveryCodes, SetupResult, SignInOptions } from '@/lib/admin/types';
 import { Field, Notice, Spinner, fieldClass } from '@/components/admin/ui';
 import { RecoveryCodeList } from '@/components/admin/recovery-codes';
@@ -22,6 +22,9 @@ export default function SetupPage() {
   const [error, setError] = useState('');
 
   const [setupToken, setSetupToken] = useState('');
+  // Which setup token to ask for: known only in the browser (the page is pre-rendered).
+  const [isPlatform, setIsPlatform] = useState(true);
+  useEffect(() => setIsPlatform(isPlatformHost()), []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -118,7 +121,7 @@ export default function SetupPage() {
 
         {step === 0 && (
           <form onSubmit={createAccount} className="space-y-4">
-            <Field label="Setup token" hint="The SETUP_TOKEN value from the API's environment. It works until the admin account exists.">
+            <Field label="Setup token" hint={isPlatform ? "The SETUP_TOKEN value from the API's environment. It works until the admin account exists." : "The setup token you were given when this site was created. It works until the admin account exists."}>
               <input required autoComplete="off" spellCheck={false} value={setupToken} onChange={(e) => setSetupToken(e.target.value)} className={`${fieldClass} font-mono`} />
             </Field>
             <Field label="Email">
