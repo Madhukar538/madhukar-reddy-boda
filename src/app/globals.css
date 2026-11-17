@@ -3022,3 +3022,342 @@ html[data-style='editorial'] .ticket-step { border-right-color: hsl(var(--ink));
 .site-nav nav { display: flex; gap: 1.5rem; }
 .site-nav-name { font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 72; font-weight: 800; text-transform: uppercase; font-size: 1.25rem; }
 .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 2rem clamp(1rem, 4vw, 3.5rem); border-top: 1px solid hsl(var(--ink)); font: 500 0.75rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); }
+
+/* ============================================================
+   TYPE DETAILS for every look: headings break into even lines,
+   paragraphs avoid a lone last word, figures line up in columns,
+   and links sit a little below the text instead of cutting it.
+   ============================================================ */
+:is(h1, h2, h3) { text-wrap: balance; }
+:is(p, li, dd, blockquote) { text-wrap: pretty; }
+:is(dl dd, .live-xp, table, time) { font-variant-numeric: tabular-nums; }
+.article-body a { text-underline-offset: 0.2em; text-decoration-thickness: from-font; }
+html[data-style='glass'] ::selection { background: hsl(var(--primary) / 0.22); }
+
+/* Terminal: a block cursor after the home headline, blinking like a prompt (still with reduced motion). */
+html[data-style='terminal'] .home-hero h1::after {
+  content: '';
+  display: inline-block;
+  width: 0.42em;
+  height: 0.78em;
+  margin-left: 0.08em;
+  vertical-align: -0.04em;
+  background: hsl(var(--ink));
+  animation: terminal-cursor 1.06s steps(1) infinite;
+}
+@keyframes terminal-cursor { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-style='terminal'] .home-hero h1::after { animation: none; }
+}
+
+/* ============================================================
+   ARCTIC, SYNTHWAVE, DUNE: three looks built on the classic pages
+   (the same layout as Terminal, restyled). Each borrows from a real
+   medium rather than a template: Swiss transit signage, an 80s VHS
+   tape on a CRT, and a letterpress book. Arctic and Dune are
+   light-only, Synthwave dark-only (components/midnight-dark.tsx
+   keeps the scheme in step), so their light/dark switch is hidden.
+   ============================================================ */
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) .theme-toggle { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) :is(.liquid-wallpaper, .card-glow, .avatar-glow) { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) [class*='shadow-[inset_0_1px_0'] { box-shadow: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) .text-gradient { background: none; -webkit-text-fill-color: currentColor; color: inherit; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) :is(.glass, .glass-strong) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* No soft glow behind the photo: a plain ring in the ink colour. */
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) .portrait-alt .blur-xl { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune']) .portrait-alt img { --tw-ring-color: hsl(var(--foreground) / 0.85); box-shadow: none; }
+/* Buttons and the menu bar take each look's corners, not the round glass capsule. */
+html[data-style='arctic'] :is(.glass-pill, .sm\:glass-pill) { border-radius: 0.25rem; }
+html:is([data-style='synthwave'], [data-style='dune']) :is(.glass-pill, .sm\:glass-pill) { border-radius: 0.125rem; }
+
+/* ---- ARCTIC: Swiss transit signage. Cold paper, a twelve-column grid, black type, one cobalt. ---- */
+html[data-style='arctic'] {
+  color-scheme: light;
+  --background: 200 12% 95%;       /* #F1F3F4 cold paper */
+  --foreground: 213 30% 9%;        /* #10161F */
+  --card: 0 0% 100%;
+  --card-foreground: 213 30% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 213 30% 9%;
+  --secondary: 200 10% 91%;
+  --secondary-foreground: 213 30% 9%;
+  --muted: 200 10% 91%;
+  --muted-foreground: 210 9% 35%;
+  --border: 205 10% 82%;
+  --input: 205 10% 82%;
+  --primary: 224 78% 47%;          /* #1A4FD6 cobalt */
+  --primary-foreground: 0 0% 100%;
+  --accent: var(--primary);
+  --accent-foreground: 0 0% 100%;
+  --ring: 224 78% 47%;
+  --glass-radius: 0.25rem;
+  --blob-opacity: 0;
+  --sys-green: 152 70% 26%;
+  --sys-orange: 26 90% 38%;
+  --sys-teal: 190 80% 28%;
+  --sys-indigo: 224 70% 45%;
+  --sys-pink: 340 65% 42%;
+  --sys-purple: 258 50% 46%;
+}
+html[data-style='arctic'] ::selection { background: hsl(var(--primary)); color: #fff; }
+/* The grid the page is set on: twelve columns as faint hairlines, fixed behind the content. */
+html[data-style='arctic'] body {
+  background-color: hsl(var(--background));
+  background-image: repeating-linear-gradient(90deg, hsl(var(--foreground) / 0.045) 0 1px, transparent 1px calc(100% / 12));
+  background-attachment: fixed;
+}
+html[data-style='arctic'] :is(h1, h2, h3, .font-serif) {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+html[data-style='arctic'] h1 { line-height: 0.98; letter-spacing: -0.05em; }
+html[data-style='arctic'] :is(h1, h2) em { font-style: normal; color: hsl(var(--primary)); }
+/* Labels read like platform signs: a solid square, then upper case. */
+html[data-style='arctic'] .eyebrow { color: hsl(var(--foreground)); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.7rem; }
+html[data-style='arctic'] .eyebrow::before { content: ''; display: inline-block; width: 0.6em; height: 0.6em; margin-right: 0.5em; background: hsl(var(--primary)); vertical-align: 0.02em; }
+html[data-style='arctic'] :is(.rounded-2xl, .rounded-3xl, .rounded-xl) { border-radius: 0.25rem; }
+html[data-style='arctic'] :is(.glass, .glass-strong) {
+  background: #fff;
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+}
+/* Hover: the card's top edge takes the cobalt line, like the coloured band on a sign. */
+@media (min-width: 640px) {
+  html[data-style='arctic'] .sm\:glass { background: #fff; border: 1px solid hsl(var(--border)); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+html[data-style='arctic'] .glass-interactive { transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+@media (hover: hover) {
+  html[data-style='arctic'] .glass-interactive:hover { border-color: hsl(var(--foreground)); box-shadow: inset 0 3px 0 hsl(var(--primary)); }
+}
+html[data-style='arctic'] .glass-inset { background: hsl(200 12% 97%); border: 1px solid hsl(var(--border)); }
+html[data-style='arctic'] .chip { border-radius: 0.125rem; color: hsl(var(--foreground)); background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.25); font-weight: 500; }
+html[data-style='arctic'] .chip-accent { color: #fff; background: hsl(var(--primary)); box-shadow: none; }
+html[data-style='arctic'] .tinted-button { border-radius: 0.25rem; color: #fff; background: hsl(var(--foreground)); box-shadow: none; }
+html[data-style='arctic'] .tinted-button:hover { filter: none; transform: none; background: hsl(var(--primary)); }
+html[data-style='arctic'] .nav-link[data-active] { color: hsl(var(--foreground)); font-weight: 600; }
+html[data-style='arctic'] .nav-link[data-active]::after { background: hsl(var(--primary)); height: 3px; }
+html[data-style='arctic'] .nav-active-pill { background: hsl(var(--foreground) / 0.07) !important; }
+html[data-style='arctic'] .article-body a { color: hsl(var(--primary)); }
+html[data-style='arctic'] dl dd { letter-spacing: -0.04em; font-weight: 700; }
+html[data-style='arctic'] .glass.bento-accent { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: #fff; }
+html[data-style='arctic'] .glass.bento-accent * { color: #fff; }
+html[data-style='arctic'] .agent-console {
+  --foreground: 200 15% 92%;
+  --muted-foreground: 205 10% 64%;
+  --primary: 216 95% 72%;
+  color: hsl(var(--foreground));
+  background: hsl(213 30% 11%);
+  border-color: hsl(213 30% 11%);
+}
+html[data-style='arctic'] .profile-dock-cta { background: hsl(var(--foreground)); color: #fff; }
+html[data-style='arctic'] .profile-dock-cta:hover { background: hsl(var(--primary)); }
+
+/* ---- SYNTHWAVE: an 80s tape on a CRT. Scanlines, misregistered colour, flat neon, a horizon grid. ---- */
+html[data-style='synthwave'] {
+  color-scheme: dark;
+  --background: 258 58% 9%;        /* #140A24 */
+  --foreground: 40 45% 92%;        /* #F3EBDD warm phosphor white */
+  --card: 258 48% 13%;
+  --card-foreground: 40 45% 92%;
+  --popover: 258 48% 13%;
+  --popover-foreground: 40 45% 92%;
+  --secondary: 258 40% 17%;
+  --secondary-foreground: 40 45% 92%;
+  --muted: 258 40% 17%;
+  --muted-foreground: 255 18% 72%;
+  --border: 270 30% 27%;
+  --input: 270 30% 27%;
+  --primary: 330 95% 64%;          /* #FB4BA0 tape-label pink */
+  --primary-foreground: 258 58% 9%;
+  --accent: var(--primary);
+  --accent-foreground: 258 58% 9%;
+  --ring: 330 95% 64%;
+  --sw-cyan: 180 85% 55%;          /* #26EDED */
+  --sw-sun: 38 100% 60%;
+  --glass-radius: 0.125rem;
+  --blob-opacity: 0;
+  --sys-green: 150 75% 58%;
+  --sys-orange: 36 100% 62%;
+  --sys-teal: 180 85% 55%;
+  --sys-indigo: 240 85% 76%;
+  --sys-pink: 330 95% 70%;
+  --sys-purple: 275 85% 76%;
+}
+html[data-style='synthwave'] ::selection { background: hsl(var(--sw-cyan)); color: hsl(var(--primary-foreground)); }
+html[data-style='synthwave'] body { background-color: hsl(var(--background)); }
+/* The horizon grid, fixed along the bottom of the screen and fading up into the dark. */
+html[data-style='synthwave'] body::before {
+  content: '';
+  position: fixed;
+  inset: auto -20% 0 -20%;
+  height: 34vh;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.28) 1px, transparent 1px);
+  background-size: 72px 36px;
+  transform: perspective(300px) rotateX(60deg);
+  transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 85%);
+  mask-image: linear-gradient(to top, #000, transparent 85%);
+}
+/* Scanlines over everything, faint enough to read through. */
+html[data-style='synthwave'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.07) 2px 3px);
+}
+@media print { html[data-style='synthwave'] body::after, html[data-style='synthwave'] body::before { display: none; } }
+html[data-style='synthwave'] :is(h1, h2, h3, .font-serif) {
+  font-family: var(--font-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+/* The headline's colour slips a pixel each way, like a worn tape. */
+html[data-style='synthwave'] h1 { line-height: 1; text-shadow: -1.5px 0 hsl(var(--primary) / 0.7), 1.5px 0 hsl(var(--sw-cyan) / 0.55); }
+html[data-style='synthwave'] :is(h1, h2) em { font-style: normal; color: hsl(var(--sw-sun)); }
+html[data-style='synthwave'] h1 em { text-shadow: -1.5px 0 hsl(var(--primary) / 0.75), 1.5px 0 hsl(var(--sw-cyan) / 0.45); }
+html[data-style='synthwave'] .eyebrow {
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  color: hsl(var(--sw-cyan));
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+}
+html[data-style='synthwave'] .eyebrow::before { content: '\25B6\FE0E  '; font-size: 0.8em; }
+html[data-style='synthwave'] :is(.rounded-2xl, .rounded-3xl, .rounded-xl) { border-radius: 0.125rem; }
+html[data-style='synthwave'] :is(.glass, .glass-strong) {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+}
+/* Hover: a hard cyan offset, like a second exposure. */
+@media (min-width: 640px) {
+  html[data-style='synthwave'] .sm\:glass { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+html[data-style='synthwave'] .glass-interactive { transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease; }
+@media (hover: hover) {
+  html[data-style='synthwave'] .glass-interactive:hover { transform: translate(-2px, -2px); border-color: hsl(var(--primary)); box-shadow: 4px 4px 0 hsl(var(--sw-cyan)); }
+}
+html[data-style='synthwave'] .glass-inset { background: hsl(258 58% 7%); border: 1px solid hsl(var(--border)); }
+html[data-style='synthwave'] .chip {
+  border-radius: 0.125rem;
+  font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace;
+  color: hsl(var(--sw-cyan));
+  background: transparent;
+  box-shadow: inset 0 0 0 1px hsl(var(--sw-cyan) / 0.45);
+}
+html[data-style='synthwave'] .chip-accent { color: hsl(var(--primary-foreground)); background: hsl(var(--sw-sun)); box-shadow: none; font-weight: 700; }
+html[data-style='synthwave'] .tinted-button {
+  border-radius: 0.125rem;
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+  box-shadow: 3px 3px 0 hsl(var(--sw-cyan));
+}
+html[data-style='synthwave'] .tinted-button:hover { filter: none; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 hsl(var(--sw-cyan)); }
+html[data-style='synthwave'] .nav-link { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; }
+html[data-style='synthwave'] .nav-link[data-active] { color: hsl(var(--sw-sun)); }
+html[data-style='synthwave'] .nav-link[data-active]::after { background: hsl(var(--sw-sun)); }
+html[data-style='synthwave'] .nav-active-pill { background: hsl(var(--foreground) / 0.08) !important; }
+html[data-style='synthwave'] .article-body a { color: hsl(var(--sw-cyan)); }
+html[data-style='synthwave'] dl dd { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; letter-spacing: -0.04em; }
+html[data-style='synthwave'] .glass.bento-accent { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+html[data-style='synthwave'] .glass.bento-accent * { color: hsl(var(--primary-foreground)); }
+html[data-style='synthwave'] .agent-console { --primary: 38 100% 60%; background: hsl(258 58% 6%); border-color: hsl(var(--border)); }
+html[data-style='synthwave'] .profile-dock-cta { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 600; }
+
+/* ---- DUNE: a letterpress book. Grained sand paper, a serif, terracotta ink, an olive for labels. ---- */
+html[data-style='dune'] {
+  color-scheme: light;
+  --background: 38 40% 90%;        /* #EFE6D6 sand */
+  --foreground: 22 35% 12%;        /* #2B1D14 umber */
+  --card: 40 50% 95%;
+  --card-foreground: 22 35% 12%;
+  --popover: 40 50% 95%;
+  --popover-foreground: 22 35% 12%;
+  --secondary: 36 32% 85%;
+  --secondary-foreground: 22 35% 12%;
+  --muted: 36 32% 85%;
+  --muted-foreground: 25 18% 33%;
+  --border: 33 25% 74%;
+  --input: 33 25% 74%;
+  --primary: 13 63% 39%;           /* #A33E24 terracotta */
+  --primary-foreground: 40 50% 95%;
+  --accent: var(--primary);
+  --accent-foreground: 40 50% 95%;
+  --ring: 13 63% 39%;
+  --dune-olive: 70 22% 30%;
+  --glass-radius: 0.125rem;
+  --blob-opacity: 0;
+  --sys-green: 90 35% 27%;
+  --sys-orange: 28 85% 35%;
+  --sys-teal: 180 40% 25%;
+  --sys-indigo: 225 35% 36%;
+  --sys-pink: 350 55% 36%;
+  --sys-purple: 280 30% 36%;
+}
+html[data-style='dune'] ::selection { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+/* Paper grain: fine noise, multiplied into the sand, fixed so it doesn't swim when scrolling. */
+html[data-style='dune'] body {
+  background-color: hsl(var(--background));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+html[data-style='dune'] :is(h1, h2, h3, .font-serif) {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+html[data-style='dune'] h1 { line-height: 1.02; }
+html[data-style='dune'] h2.text-2xl { font-size: 2.125rem; line-height: 1.1; }
+@media (min-width: 768px) {
+  html[data-style='dune'] h2.md\:text-3xl { font-size: 2.75rem; }
+}
+html[data-style='dune'] :is(h1, h2) em { font-style: italic; color: hsl(var(--primary)); }
+/* Labels in small capitals, the way a book sets its running heads. */
+html[data-style='dune'] .eyebrow { color: hsl(var(--dune-olive)); font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: 0.1em; font-size: 0.85rem; text-transform: none; }
+html[data-style='dune'] dl dd { font-family: var(--font-serif), Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
+html[data-style='dune'] :is(.rounded-2xl, .rounded-3xl, .rounded-xl) { border-radius: 0.125rem; }
+html[data-style='dune'] :is(.glass, .glass-strong) {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+}
+@media (min-width: 640px) {
+  html[data-style='dune'] .sm\:glass { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+html[data-style='dune'] .glass-interactive { transition: border-color 0.2s ease; }
+@media (hover: hover) {
+  html[data-style='dune'] .glass-interactive:hover { border-color: hsl(var(--foreground)); }
+}
+html[data-style='dune'] .glass-inset { background: hsl(38 40% 92%); border: 1px solid hsl(var(--border)); }
+html[data-style='dune'] .chip { color: hsl(var(--foreground) / 0.85); background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--border)); border-radius: 0.125rem; }
+html[data-style='dune'] .chip-accent { color: hsl(var(--primary-foreground)); background: hsl(var(--primary)); box-shadow: none; }
+html[data-style='dune'] .tinted-button { border-radius: 0.125rem; color: hsl(var(--primary-foreground)); background: hsl(var(--foreground)); box-shadow: none; }
+html[data-style='dune'] .tinted-button:hover { filter: none; transform: none; background: hsl(var(--primary)); }
+html[data-style='dune'] .nav-link[data-active] { color: hsl(var(--primary)); }
+html[data-style='dune'] .nav-link[data-active]::after { background: hsl(var(--primary)); }
+html[data-style='dune'] .nav-active-pill { background: hsl(var(--primary) / 0.1) !important; }
+/* Posts open like a chapter: a terracotta initial. */
+html[data-style='dune'] .article-body > p:first-of-type::first-letter { float: left; font-family: var(--font-serif), Georgia, serif; font-size: 3.6em; line-height: 0.82; padding: 0.06em 0.08em 0 0; color: hsl(var(--primary)); }
+html[data-style='dune'] .article-body a { color: hsl(var(--primary)); }
+html[data-style='dune'] .glass.bento-accent { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+html[data-style='dune'] .glass.bento-accent * { color: hsl(var(--primary-foreground)); }
+html[data-style='dune'] .agent-console {
+  --foreground: 38 45% 90%;
+  --muted-foreground: 34 18% 68%;
+  --primary: 28 80% 60%;
+  color: hsl(var(--foreground));
+  background: hsl(22 30% 14%);
+  border-color: hsl(22 30% 14%);
+}
+html[data-style='dune'] .profile-dock-cta { background: hsl(var(--foreground)); color: hsl(var(--primary-foreground)); }
+html[data-style='dune'] .profile-dock-cta:hover { background: hsl(var(--primary)); }

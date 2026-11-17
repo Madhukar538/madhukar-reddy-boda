@@ -17,6 +17,9 @@ export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: str
   { id: 'blueprint', label: 'Blueprint', hint: 'Interactive', swatch: 'linear-gradient(135deg, #0B2545 50%, #5CE1E6 50%)' },
   { id: 'editorial', label: 'Editorial', hint: 'Kinetic type', swatch: 'linear-gradient(135deg, #F1EFEA 50%, #FF4D00 50%)' },
   { id: 'glass', label: 'Glass', hint: 'Liquid glass', swatch: 'linear-gradient(135deg, #7DD3FC, #F0ABFC, #FDE68A)' },
+  { id: 'arctic', label: 'Arctic', hint: 'Cool light', swatch: 'linear-gradient(135deg, #EEF2F7 50%, #165FC8 50%)' },
+  { id: 'synthwave', label: 'Synthwave', hint: 'Neon dark', swatch: 'linear-gradient(135deg, #11052A 50%, #FF3DA5 50%)' },
+  { id: 'dune', label: 'Dune', hint: 'Warm serif', swatch: 'linear-gradient(135deg, #F3EADB 50%, #A63F25 50%)' },
 ];
 
 type ThemeOptions = { defaultTheme: DesignStyle; enabled: DesignStyle[] };
@@ -28,7 +31,8 @@ export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions;
 }
 
 const MENU_W = 208;
-const MENU_H = 314;
+/** The menu's height: its label plus one row per theme (kept in step with the rows' padding). */
+const menuHeight = (count: number) => 38 + count * 55;
 const GAP = 8;
 
 /**
@@ -49,6 +53,7 @@ export function LookToggle({ className }: { className?: string }) {
   // Below the button when there is room, otherwise above; right edges aligned, kept on screen.
   useLayoutEffect(() => {
     if (!open || !button.current) return;
+    const MENU_H = Math.min(menuHeight(themes.length), window.innerHeight - 2 * GAP);
     const place = () => {
       const r = button.current!.getBoundingClientRect();
       const below = r.bottom + GAP + MENU_H <= window.innerHeight;
@@ -62,7 +67,7 @@ export function LookToggle({ className }: { className?: string }) {
       window.removeEventListener('resize', place);
       window.removeEventListener('scroll', place);
     };
-  }, [open]);
+  }, [open, themes.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -113,7 +118,7 @@ export function LookToggle({ className }: { className?: string }) {
             role="radiogroup"
             aria-label="Theme"
             className="theme-menu glass glass-strong fixed z-[400] p-1.5"
-            style={{ top: pos.top, left: pos.left, width: MENU_W }}
+            style={{ top: pos.top, left: pos.left, width: MENU_W, maxHeight: `calc(100vh - ${2 * GAP}px)`, overflowY: 'auto' }}
           >
             <p className="px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-muted-foreground">Theme</p>
             {themes.map((theme) => {
