@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { fill } from '@/lib/story';
+import { fill } from '@/lib/story-text';
 import { InlineText } from '@/components/editorial/inline-text';
 import { projectHref, shortDate, type LookHomeProps } from './types';
 import { actTitle, type AboutProps, type ExperienceProps, type ProjectsProps } from './pages-types';

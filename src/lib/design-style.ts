@@ -7,19 +7,20 @@ import { useCallback, useEffect, useState } from 'react';
  * backup), blueprint (interactive architect's drawing, dark), editorial (kinetic
  * type on paper, light), glass (the original Liquid Glass), arctic (cool, light),
  * synthwave (neon, dark), dune (warm sand and serif, light), gazette (a newspaper, light),
- * receipt (a till receipt, light) or observatory (a star atlas, dark).
+ * receipt (a till receipt, light), observatory (a star atlas, dark) or bazaar (a general store, light).
  * The server renders <html data-style="terminal">; a visitor who picked
  * Midnight has it stored, and the inline script in app/layout removes the
  * attribute before first paint. No attribute means midnight.
  */
 
-export type DesignStyle = 'terminal' | 'midnight' | 'blueprint' | 'editorial' | 'glass' | 'arctic' | 'synthwave' | 'dune' | 'gazette' | 'receipt' | 'observatory';
+export type DesignStyle = 'terminal' | 'midnight' | 'blueprint' | 'editorial' | 'glass' | 'arctic' | 'synthwave' | 'dune' | 'gazette' | 'receipt' | 'observatory' | 'bazaar';
 
-const NAMED: DesignStyle[] = ['terminal', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune', 'gazette', 'receipt', 'observatory'];
+const NAMED: DesignStyle[] = ['terminal', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune', 'gazette', 'receipt', 'observatory', 'bazaar'];
 
 export const STYLE_STORAGE_KEY = 'portfolio-style';
 
-const read = (): DesignStyle => {
+/** The look on the page now (from <html data-style>; none means Midnight). */
+export const currentDesignStyle = (): DesignStyle => {
   if (typeof document === 'undefined') return 'terminal';
   const style = document.documentElement.dataset.style;
   return NAMED.includes(style as DesignStyle) ? (style as DesignStyle) : 'midnight';
@@ -38,8 +39,8 @@ export function useDesignStyle(): [DesignStyle, (style: DesignStyle) => void] {
   const [style, setStyle] = useState<DesignStyle>('terminal');
 
   useEffect(() => {
-    setStyle(read());
-    const observer = new MutationObserver(() => setStyle(read()));
+    setStyle(currentDesignStyle());
+    const observer = new MutationObserver(() => setStyle(currentDesignStyle()));
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-style'] });
     return () => observer.disconnect();
   }, []);

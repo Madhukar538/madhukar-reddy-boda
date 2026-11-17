@@ -23,6 +23,7 @@ export const THEMES: { id: DesignStyle; label: string; hint: string; swatch: str
   { id: 'gazette', label: 'Gazette', hint: 'Newspaper', swatch: 'linear-gradient(135deg, #F4F1EA 50%, #151515 50%)' },
   { id: 'receipt', label: 'Receipt', hint: 'Till slip', swatch: 'linear-gradient(135deg, #FFFEFA 50%, #C62E2E 50%)' },
   { id: 'observatory', label: 'Observatory', hint: 'Star atlas', swatch: 'linear-gradient(135deg, #070B18 50%, #F5C46B 50%)' },
+  { id: 'bazaar', label: 'Bazaar', hint: 'General store', swatch: 'linear-gradient(135deg, #F2B705 50%, #C8102E 50%)' },
 ];
 
 type ThemeOptions = { defaultTheme: DesignStyle; enabled: DesignStyle[] };
@@ -35,6 +36,8 @@ export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions;
   // the saved look is applied here instead; on every other page it is already in place and this does nothing.
   useEffect(() => {
     try {
+      // A ?look= preview (Admin > Themes) keeps the look it asked for.
+      if (new URLSearchParams(window.location.search).has('look')) return;
       const saved = localStorage.getItem(STYLE_STORAGE_KEY) as DesignStyle | null;
       if (!saved || !value.enabled.includes(saved)) return;
       const current = document.documentElement.dataset.style ?? 'midnight';

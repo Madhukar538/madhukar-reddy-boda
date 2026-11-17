@@ -1,5 +1,6 @@
 import { experienceSince } from '@/lib/utils';
-import { fill, type StoryAbout } from '@/lib/story';
+import { fill } from '@/lib/story-text';
+import type { StoryAbout } from '@/lib/story';
 import { InlineText } from './inline-text';
 
 /**

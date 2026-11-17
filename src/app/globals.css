@@ -3058,17 +3058,17 @@ html[data-style='terminal'] .home-hero h1::after {
    light-only, Synthwave dark-only (components/midnight-dark.tsx
    keeps the scheme in step), so their light/dark switch is hidden.
    ============================================================ */
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .theme-toggle { display: none; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) :is(.liquid-wallpaper, .card-glow, .avatar-glow) { display: none; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) [class*='shadow-[inset_0_1px_0'] { box-shadow: none; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .text-gradient { background: none; -webkit-text-fill-color: currentColor; color: inherit; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) :is(.glass, .glass-strong) {
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .theme-toggle { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) :is(.liquid-wallpaper, .card-glow, .avatar-glow) { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) [class*='shadow-[inset_0_1px_0'] { box-shadow: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .text-gradient { background: none; -webkit-text-fill-color: currentColor; color: inherit; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) :is(.glass, .glass-strong) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 /* No soft glow behind the photo: a plain ring in the ink colour. */
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .portrait-alt .blur-xl { display: none; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .portrait-alt img { --tw-ring-color: hsl(var(--foreground) / 0.85); box-shadow: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .portrait-alt .blur-xl { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .portrait-alt img { --tw-ring-color: hsl(var(--foreground) / 0.85); box-shadow: none; }
 /* Buttons and the menu bar take each look's corners, not the round glass capsule. */
 html[data-style='arctic'] :is(.glass-pill, .sm\:glass-pill) { border-radius: 0.25rem; }
 html:is([data-style='synthwave'], [data-style='dune']) :is(.glass-pill, .sm\:glass-pill) { border-radius: 0.125rem; }
@@ -3372,7 +3372,7 @@ html[data-style='dune'] .profile-dock-cta:hover { background: hsl(var(--primary)
 html[data-style='arctic'] .home-arctic,
 html[data-style='synthwave'] .home-synthwave,
 html[data-style='dune'] .home-dune { display: block; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) :is(.home-classic, .portrait-backdrop) { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) :is(.home-classic, .portrait-backdrop) { display: none; }
 .look-home { width: 100%; max-width: 72rem; margin: 0 auto; padding: 7.5rem 1rem 1rem; }
 @media (min-width: 768px) { .look-home { padding: 9rem 1.5rem 1rem; } }
 .look-home a { text-decoration: none; }
@@ -3610,7 +3610,7 @@ html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [d
 html[data-style='arctic'] .only-arctic,
 html[data-style='synthwave'] .only-synthwave,
 html[data-style='dune'] .only-dune { display: block; }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .classic-only { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .classic-only { display: none; }
 :is(.ar-page, .sw-page, .du-page) a { text-decoration: none; }
 
 /* ---- Arctic ---- */
@@ -4059,7 +4059,7 @@ html[data-style='observatory'] .article-body a { color: hsl(var(--primary)); }
    gradient orb, glossy card and glow halo everywhere.
    ============================================================ */
 /* The chat button: flat, in the look's ink, with its corners and its one kind of shadow. */
-html:is([data-style='terminal'], [data-style='blueprint'], [data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .genie-orb { box-shadow: none; }
+html:is([data-style='terminal'], [data-style='blueprint'], [data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .genie-orb { box-shadow: none; }
 html[data-style='terminal'] :is(.genie-button, .genie-orb) { background: hsl(var(--ink)); color: hsl(var(--lime)); }
 html[data-style='terminal'] .genie-button { border-radius: 0.75rem; box-shadow: 4px 4px 0 hsl(var(--lime)), 4px 4px 0 1.5px hsl(var(--ink)); }
 html[data-style='blueprint'] :is(.genie-button, .genie-orb) { background: hsl(var(--background)); color: hsl(var(--bp-line)); }
@@ -4076,7 +4076,7 @@ html[data-style='receipt'] :is(.genie-button, .genie-orb) { background: hsl(var(
 html[data-style='receipt'] .genie-button { border-radius: 0; box-shadow: inset 0 0 0 2px hsl(var(--foreground)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
 html[data-style='observatory'] :is(.genie-button, .genie-orb) { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
 html[data-style='observatory'] .genie-button { box-shadow: 0 0 0 5px hsl(var(--background)), 0 0 0 6px hsl(var(--primary) / 0.5); }
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .genie-button::after { border-color: hsl(var(--foreground) / 0.4); }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .genie-button::after { border-color: hsl(var(--foreground) / 0.4); }
 
 /* Blueprint: a ring in the line colour round the photo, not a blurred halo. */
 html[data-style='blueprint'] .portrait-alt .blur-xl { display: none; }
@@ -4084,7 +4084,7 @@ html[data-style='blueprint'] .portrait-alt img { --tw-ring-color: hsl(var(--bp-l
 html[data-style='blueprint'] :is(.glass-pill, .sm\:glass-pill):not(.nav-flow-capsule) { border-radius: 0.375rem; }
 
 /* Blog cards, look by look. */
-html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory']) .post-card .card-glow { display: none; }
+html:is([data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='bazaar']) .post-card .card-glow { display: none; }
 /* Arctic: a card with a cobalt band on top, like a sign. */
 html[data-style='arctic'] .post-card { border-top: 4px solid hsl(var(--primary)); }
 /* Synthwave: a cassette label, the coloured strip across the top. */
@@ -4383,3 +4383,189 @@ html:is([data-style='dune'], [data-style='gazette']) .cs-num { font-family: var(
   html[data-style='observatory'] .nav-dock-tab[data-active] { color: hsl(var(--primary)); box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5); }
   html[data-style='observatory'] .nav-dock-cta { box-shadow: 0 0 0 3px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.5); }
 }
+
+/* ============================================================
+   BAZAAR: a general store in Hyderabad (components/looks/bazaar.tsx).
+   A painted signboard under a striped awning, packed goods on
+   wooden shelves with paper price tags, offer stickers, a chalk
+   board of specials, aisle signs, a corkboard at the counter and
+   Project Facts panels on the packs. Light-only.
+   ============================================================ */
+html[data-style='bazaar'] .home-bazaar,
+html[data-style='bazaar'] .only-bazaar { display: block; }
+html[data-style='bazaar'] {
+  color-scheme: light;
+  --background: 41 58% 92%;        /* #F6EFDF shop wall */
+  --foreground: 20 40% 12%;        /* #2A1A12 */
+  --card: 42 80% 97%;
+  --card-foreground: 20 40% 12%;
+  --popover: 42 80% 97%;
+  --popover-foreground: 20 40% 12%;
+  --secondary: 40 40% 86%;
+  --secondary-foreground: 20 40% 12%;
+  --muted: 40 40% 86%;
+  --muted-foreground: 25 18% 36%;
+  --border: 32 30% 74%;
+  --input: 32 30% 74%;
+  --primary: 350 85% 42%;          /* #C8102E sign red */
+  --primary-foreground: 45 100% 96%;
+  --accent: var(--primary);
+  --accent-foreground: 45 100% 96%;
+  --ring: 350 85% 42%;
+  --bz-mustard: 44 96% 48%;        /* #F2B705 */
+  --bz-wood: 28 52% 36%;           /* #8B5A2B */
+  --bz-green: 152 45% 24%;
+  --bz-chalk: 150 15% 15%;         /* #1F2A24 */
+  --glass-radius: 0.375rem;
+  --blob-opacity: 0;
+}
+html[data-style='bazaar'] body { background-color: hsl(var(--background)); }
+html[data-style='bazaar'] :is(h1, h2, h3, .font-serif) { font-family: var(--font-display), var(--font-grotesk), sans-serif; font-weight: 800; letter-spacing: -0.01em; font-stretch: 112%; }
+html[data-style='bazaar'] :is(h1, h2) em { font-style: normal; color: hsl(var(--primary)); }
+html[data-style='bazaar'] .eyebrow { color: hsl(var(--bz-green)); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.72rem; }
+html[data-style='bazaar'] :is(.glass, .glass-strong) { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 0 hsl(var(--bz-wood) / 0.25); }
+html[data-style='bazaar'] .glass-interactive:hover { border-color: hsl(var(--primary) / 0.6); }
+html[data-style='bazaar'] .glass-inset { background: hsl(42 60% 94%); border: 1px solid hsl(var(--border)); }
+html[data-style='bazaar'] :is(.glass-pill, .sm\:glass-pill) { border-radius: 0.375rem; }
+html[data-style='bazaar'] .chip { background: hsl(var(--bz-mustard) / 0.22); color: hsl(var(--foreground)); box-shadow: none; border-radius: 0.25rem; }
+html[data-style='bazaar'] .chip-accent { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+html[data-style='bazaar'] .tinted-button { border-radius: 0.375rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 3px 0 hsl(350 85% 30%); }
+html[data-style='bazaar'] .tinted-button:hover { filter: none; transform: translateY(1px); box-shadow: 0 2px 0 hsl(350 85% 30%); }
+html[data-style='bazaar'] .nav-link[data-active] { color: hsl(var(--primary)); }
+html[data-style='bazaar'] .nav-link[data-active]::after { background: hsl(var(--primary)); }
+html[data-style='bazaar'] .article-body a { color: hsl(var(--primary)); }
+html[data-style='bazaar'] .article-body blockquote { border-left: 4px solid hsl(var(--bz-mustard)); background: hsl(var(--bz-mustard) / 0.12); padding: 0.75rem 1rem; }
+html[data-style='bazaar'] :is(.genie-button, .genie-orb) { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+html[data-style='bazaar'] .genie-button { border-radius: 0.5rem; box-shadow: 0 4px 0 hsl(350 85% 30%); }
+html[data-style='bazaar'] .post-card { border-top: 5px solid hsl(var(--bz-mustard)); }
+html[data-style='bazaar'] .nf-page::before { content: 'Out of stock: this page'; display: block; margin-bottom: 1rem; font-weight: 700; color: hsl(var(--primary)); }
+@media (min-width: 1024px) {
+  html[data-style='bazaar'] .nav-dock { --dock-r: 0.5rem; --dock-tab-r: 0.375rem; }
+  html[data-style='bazaar'] .nav-dock-tab[data-active] { background: hsl(var(--bz-mustard) / 0.35); }
+  html[data-style='bazaar'] .nav-dock-cta { box-shadow: 0 3px 0 hsl(350 85% 30%); }
+}
+.bz-page a { text-decoration: none; }
+/* The hand-lettered labels: the display face, condensed and slanted a touch, like a shop's own signs. */
+.bz-hand { font-family: var(--font-display), sans-serif; font-weight: 700; font-stretch: 80%; font-style: italic; color: hsl(var(--bz-green)); font-size: 1.6rem; letter-spacing: 0.01em; }
+
+/* The shop front: a scalloped striped awning over a painted board. */
+.bz-front { position: relative; }
+.bz-awning {
+  height: 3.25rem;
+  background: repeating-linear-gradient(90deg, hsl(var(--primary)) 0 3rem, hsl(45 100% 96%) 3rem 6rem);
+  -webkit-mask: radial-gradient(1.5rem at 50% 100%, #0000 98%, #000) bottom / 3rem 100%;
+  mask: radial-gradient(1.5rem at 50% 100%, #0000 98%, #000) bottom / 3rem 100%;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+.bz-sign {
+  position: relative;
+  margin: -0.75rem 1rem 0;
+  padding: 1.5rem 1.25rem 1.6rem;
+  text-align: center;
+  background: hsl(var(--bz-mustard));
+  color: hsl(20 60% 12%);
+  border: 6px solid hsl(var(--bz-wood));
+  border-radius: 0.375rem;
+  box-shadow: inset 0 0 0 2px hsl(20 60% 12% / 0.65), 0 10px 0 -4px hsl(var(--bz-wood) / 0.35);
+}
+.bz-sign-top { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.bz-sign-name { margin: 0.4rem 0 0.25rem; font-family: var(--font-display), sans-serif; font-weight: 900; font-stretch: 125%; font-size: clamp(2rem, 6.5vw, 5rem); line-height: 0.95; letter-spacing: -0.02em; color: hsl(var(--primary)); text-shadow: 3px 3px 0 hsl(20 60% 12%); text-wrap: balance; }
+.bz-sign-sub { font-weight: 600; font-size: 1rem; }
+
+/* Offer stickers: round, scalloped, a little crooked. */
+.bz-offers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin: 2.5rem 0 1rem; }
+@media (min-width: 1024px) { .bz-offers { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.bz-sticker {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem;
+  aspect-ratio: 1; max-width: 11rem; margin: 0 auto; width: 100%; padding: 1rem; text-align: center;
+  background: var(--tone); color: var(--tone-ink);
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 63%, #0000 64%), repeating-conic-gradient(#000 0 6deg, #0000 6deg 12deg);
+  -webkit-mask-composite: source-over;
+  clip-path: polygon(50% 0%, 61% 4%, 72% 2%, 79% 10%, 90% 12%, 92% 23%, 99% 31%, 96% 42%, 100% 52%, 95% 62%, 97% 73%, 89% 79%, 86% 90%, 75% 92%, 66% 99%, 55% 96%, 45% 100%, 35% 95%, 24% 98%, 18% 89%, 8% 86%, 6% 75%, 0% 66%, 4% 56%, 0% 45%, 6% 35%, 3% 24%, 12% 18%, 14% 7%, 25% 6%, 34% 0%, 44% 4%);
+  transform: rotate(-6deg);
+}
+.bz-offers > :nth-child(2n) { transform: rotate(5deg); }
+.bz-sticker-value { font-family: var(--font-display), sans-serif; font-weight: 900; font-stretch: 90%; font-size: clamp(1.15rem, 2.4vw, 1.6rem); line-height: 1; }
+.bz-sticker-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.2; max-width: 8rem; }
+.bz-c1 { --tone: #C8102E; --tone-ink: #FFF7E6; }
+.bz-c2 { --tone: #F2B705; --tone-ink: #2A1A12; }
+.bz-c3 { --tone: #1E6B4A; --tone-ink: #FFF7E6; }
+.bz-c4 { --tone: #2B4C9B; --tone-ink: #FFF7E6; }
+.bz-c5 { --tone: #E8742A; --tone-ink: #2A1A12; }
+
+/* Shelves: wooden planks with packs of different shapes standing on them. */
+.bz-shelves { margin-top: 2.5rem; }
+.bz-shelf { display: flex; align-items: flex-end; justify-content: space-around; gap: 1rem; min-height: 14rem; padding: 0 1rem; margin-top: 2.5rem; border-bottom: 1rem solid hsl(var(--bz-wood)); box-shadow: 0 0.6rem 0 hsl(var(--bz-wood) / 0.35); }
+@media (max-width: 767px) { .bz-shelf { flex-wrap: wrap; min-height: 0; padding-top: 1rem; } }
+.bz-shelf > li { position: relative; flex: 1; max-width: 12rem; display: flex; flex-direction: column; align-items: center; }
+@media (max-width: 767px) { .bz-shelf > li { flex: 1 1 40%; margin-bottom: 1rem; } }
+.bz-pack { display: flex; flex-direction: column; justify-content: center; gap: 0.35rem; width: 100%; padding: 0.9rem 0.7rem; text-align: center; background: var(--tone); color: var(--tone-ink); transition: transform 0.15s ease; }
+.bz-pack:hover { transform: translateY(-6px) rotate(-1deg); }
+.bz-pack-brand { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+.bz-pack-name { font-family: var(--font-display), sans-serif; font-weight: 800; font-stretch: 88%; font-size: 1rem; line-height: 1.08; }
+.bz-box .bz-pack { height: 10rem; border-radius: 0.2rem; box-shadow: inset -10px 0 0 rgb(0 0 0 / 0.12); }
+.bz-tall .bz-pack { height: 12.5rem; }
+.bz-jar .bz-pack { height: 9.5rem; border-radius: 1.4rem 1.4rem 0.8rem 0.8rem; box-shadow: inset 0 14px 0 rgb(0 0 0 / 0.18); }
+.bz-tin .bz-pack { height: 8rem; border-radius: 0.6rem / 1.2rem; box-shadow: inset 0 -8px 0 rgb(0 0 0 / 0.15), inset 0 8px 0 rgb(255 255 255 / 0.18); }
+.bz-wide { max-width: 14rem !important; }
+.bz-bag .bz-pack { height: 10.5rem; border-radius: 0.4rem 0.4rem 1.2rem 1.2rem; clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%); }
+/* The paper price tag, on a string from the pack. */
+.bz-tag { position: absolute; top: -1.6rem; right: -0.4rem; padding: 0.15rem 0.5rem 0.15rem 0.9rem; background: hsl(45 100% 96%); color: hsl(var(--primary)); border: 1px solid hsl(var(--border)); font-family: var(--font-display), sans-serif; font-style: italic; font-weight: 700; font-stretch: 80%; font-size: 0.8rem; clip-path: polygon(0.55rem 0, 100% 0, 100% 100%, 0.55rem 100%, 0 50%); transform: rotate(8deg); }
+.bz-tag::before { content: ''; position: absolute; left: 0.35rem; top: 50%; width: 0.3rem; height: 0.3rem; margin-top: -0.15rem; border-radius: 9999px; background: hsl(var(--border)); }
+.bz-shelf-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 2rem; font-weight: 700; }
+.bz-shelf-foot a:first-child { color: hsl(var(--bz-green)); }
+.bz-order { padding: 0.6rem 1.1rem; border-radius: 0.375rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 3px 0 hsl(350 85% 30%); }
+
+/* The chalk board: a framed slate with chalky writing. */
+.bz-board { margin-top: 3.5rem; padding: 1.75rem 1.5rem; background: radial-gradient(ellipse at 30% 20%, hsl(150 12% 22%), hsl(var(--bz-chalk)) 70%); border: 10px solid hsl(var(--bz-wood)); border-radius: 0.375rem; color: #EDEBE3; box-shadow: inset 0 0 40px rgb(0 0 0 / 0.45); }
+.bz-board h2 { font-family: var(--font-display), sans-serif !important; font-style: italic; font-stretch: 80%; font-size: 2rem; color: #F5E6A8; text-shadow: 0 0 1px #F5E6A8; }
+.bz-board li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px dashed rgb(237 235 227 / 0.25); }
+.bz-board a { font-size: 1.05rem; text-shadow: 0 0 1px #EDEBE3; }
+.bz-board a:hover { color: #F5E6A8; }
+.bz-board span { flex-shrink: 0; font-family: var(--font-display), sans-serif; font-style: italic; font-stretch: 80%; color: #F5E6A8; }
+
+/* Inside: aisle signs over shelf labels. */
+.bz-page > * + * { margin-top: 3rem; }
+.bz-aisle-sign { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.45rem 1rem; background: hsl(var(--bz-green)); color: #FFF7E6; border-radius: 0.25rem; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; box-shadow: 0 -1.2rem 0 -1.1rem hsl(var(--foreground) / 0.4); }
+.bz-aisle-sign span { padding: 0.1rem 0.45rem; background: hsl(var(--bz-mustard)); color: hsl(20 60% 12%); border-radius: 0.2rem; }
+.bz-aisle h2 { font-size: clamp(1.6rem, 3.5vw, 2.25rem); margin: 0.6rem 0 1rem; }
+.bz-aisle ul { display: grid; gap: 0.6rem; }
+@media (min-width: 900px) { .bz-aisle ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Each achievement as a shelf-edge label. */
+.bz-aisle li { padding: 0.75rem 0.9rem; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-bottom: 4px solid hsl(var(--bz-mustard)); line-height: 1.55; font-size: 0.95rem; }
+.bz-register { padding: 1.5rem; background: hsl(42 80% 97%); border: 1px solid hsl(var(--border)); background-image: repeating-linear-gradient(transparent 0 2.15rem, hsl(210 50% 70% / 0.35) 2.15rem calc(2.15rem + 1px)); }
+.bz-register table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+.bz-register th { text-align: left; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: hsl(var(--primary)); padding: 0.4rem 0.75rem 0.4rem 0; border-bottom: 2px solid hsl(var(--primary) / 0.6); }
+.bz-register td { padding: 0.45rem 0.75rem 0.45rem 0; }
+.bz-register td:first-child { width: 3rem; color: hsl(var(--primary)); font-weight: 700; border-right: 2px solid hsl(var(--primary) / 0.45); }
+.bz-register td:nth-child(2) { padding-left: 0.75rem; font-weight: 600; }
+.bz-register td:last-child { white-space: nowrap; text-align: right; }
+@media (max-width: 639px) { .bz-hide-sm { display: none; } }
+
+/* The counter: a corkboard of pinned cards. */
+.bz-counter-title { font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.05; margin: 0.25rem 0 0.5rem; font-family: var(--font-display), sans-serif; font-weight: 900; font-stretch: 112%; }
+.bz-counter-by { color: hsl(var(--muted-foreground)); }
+.bz-cork { display: grid; gap: 1.5rem; padding: 1.75rem; background: radial-gradient(circle at 20% 30%, #c39a6b 0 1px, transparent 2px) 0 0 / 11px 11px, radial-gradient(circle at 70% 60%, #a77b4c 0 1px, transparent 2px) 0 0 / 13px 13px, #b88b5a; border: 10px solid hsl(var(--bz-wood)); border-radius: 0.375rem; }
+@media (min-width: 900px) { .bz-cork { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bz-cork li { position: relative; padding: 1.4rem 1.2rem 1.1rem; background: #FFFDF5; background-image: repeating-linear-gradient(transparent 0 1.55rem, hsl(210 60% 75% / 0.45) 1.55rem calc(1.55rem + 1px)); border-top: 2.2rem solid #FFFDF5; box-shadow: 0 6px 14px -8px rgb(0 0 0 / 0.5); transform: rotate(-1.2deg); line-height: 1.55rem; }
+.bz-cork li:nth-child(2n) { transform: rotate(1deg); }
+.bz-cork li::before { content: ''; position: absolute; top: -1.6rem; right: 1rem; width: 0.9rem; height: 0.9rem; border-radius: 9999px; background: radial-gradient(circle at 35% 35%, #ff8a8a, #C8102E 60%); box-shadow: 0 2px 2px rgb(0 0 0 / 0.35); }
+.bz-card-q { position: absolute; top: -1.75rem; left: 1.2rem; right: 2.6rem; font-weight: 800; color: hsl(var(--primary)); line-height: 1.2; }
+.bz-cork a { color: hsl(var(--primary)); text-decoration: underline; }
+
+/* Projects: packs with a Project Facts panel on the back. */
+.bz-packs { display: grid; gap: 1.5rem; }
+@media (min-width: 900px) { .bz-packs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bz-product { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 13rem); height: 100%; border: 1px solid hsl(var(--border)); background: hsl(var(--card)); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.bz-product:hover { transform: translateY(-3px); box-shadow: 0 6px 0 hsl(var(--bz-wood) / 0.3); }
+@media (max-width: 639px) { .bz-product { grid-template-columns: minmax(0, 1fr); } }
+.bz-product-front { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.1rem; background: var(--tone); color: var(--tone-ink); }
+.bz-product-name { font-family: var(--font-display), sans-serif; font-weight: 900; font-stretch: 95%; font-size: 1.4rem; line-height: 1.05; }
+.bz-product-desc { font-size: 0.88rem; line-height: 1.5; opacity: 0.92; }
+.bz-facts { display: flex; flex-direction: column; margin: 0.75rem; padding: 0.35rem 0.55rem 0.55rem; background: #fff; color: #000; border: 1.5px solid #000; font-family: 'Helvetica Neue', Arial, var(--font-inter), sans-serif; font-size: 0.72rem; line-height: 1.3; }
+.bz-facts-title { font-weight: 900; font-size: 1.25rem; letter-spacing: -0.02em; border-bottom: 1px solid #000; padding-bottom: 0.1rem; }
+.bz-facts-row { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.2rem 0; border-bottom: 1px solid #000; }
+.bz-facts-thick { height: 0.45rem; background: #000; margin: 0.1rem 0; }
+.bz-facts-strong { font-weight: 800; font-size: 0.82rem; }
+.bz-facts-note { padding: 0.3rem 0; border-bottom: 4px solid #000; font-weight: 600; }
+.bz-facts-ing { padding-top: 0.35rem; }

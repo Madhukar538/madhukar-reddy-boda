@@ -97,11 +97,8 @@ export type StoryJourney = NonNullable<Story['journey']>;
 export type StoryAbout = NonNullable<Story['about']>;
 export type StoryExhibit = Story['story']['chapters'][number]['exhibit'];
 
-/** Where an inline link in story text may point (the same rule as chapter links). */
-export const isSafeHref = (value: string) => /^\/(?!\/)/.test(value) || /^https:\/\//.test(value);
-
-/** Fills {name}-style placeholders from the given values; unknown ones stay as written. */
-export const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
+/** isSafeHref and fill live in lib/story-text (no zod), so client components can use them. */
+export { isSafeHref, fill } from './story-text';
 
 /** A stored story, or null when it is missing or doesn't validate (then the built-in one is used). */
 export function parseStory(json: string | null | undefined): Story | null {

@@ -38,6 +38,7 @@ const PALETTES: Record<DesignStyle, Palette> = {
   gazette: { bg: '#f4f1ea', glow: '#faf8f3', ink: '#151515', muted: '#555555', accent: '#b3261e', serif: true },
   receipt: { bg: '#fffefa', glow: '#f1efea', ink: '#222222', muted: '#666666', accent: '#c62e2e', serif: false },
   observatory: { bg: '#070b18', glow: '#141c3a', ink: '#e6e9f2', muted: '#9aa3bf', accent: '#f5c46b', serif: false },
+  bazaar: { bg: '#f6efdf', glow: '#fff8e8', ink: '#2a1a12', muted: '#6e5a48', accent: '#c8102e', serif: false },
 };
 
 async function palette(): Promise<Palette> {
