@@ -6,7 +6,6 @@ import type {NextConfig} from 'next';
 const buildId =
   process.env.SOURCE_COMMIT ||
   process.env.GIT_COMMIT_SHA ||
-  process.env.VERCEL_GIT_COMMIT_SHA ||
   Date.now().toString(36);
 
 const isDev = process.env.NODE_ENV !== 'production';
