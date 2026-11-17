@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Palette } from 'lucide-react';
-import { useDesignStyle, type DesignStyle } from '@/lib/design-style';
+import { STYLE_STORAGE_KEY, applyDesignStyle, useDesignStyle, type DesignStyle } from '@/lib/design-style';
 import { cn } from '@/lib/utils';
 
 /**
@@ -30,6 +30,17 @@ const ThemeOptionsContext = createContext<ThemeOptions>({ defaultTheme: 'termina
 
 /** Hands the admin's theme settings (read on the server) to every picker on the page. */
 export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions; children: ReactNode }) {
+  // The inline script in the layout applies the visitor's saved look before first paint. A page Next
+  // renders as an error shell (the 404) is built in the browser, where inline scripts don't run, so
+  // the saved look is applied here instead; on every other page it is already in place and this does nothing.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STYLE_STORAGE_KEY) as DesignStyle | null;
+      if (!saved || !value.enabled.includes(saved)) return;
+      const current = document.documentElement.dataset.style ?? 'midnight';
+      if (current !== saved) applyDesignStyle(saved);
+    } catch {}
+  }, [value.enabled]);
   return <ThemeOptionsContext.Provider value={value}>{children}</ThemeOptionsContext.Provider>;
 }
 

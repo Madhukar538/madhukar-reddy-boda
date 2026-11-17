@@ -4284,3 +4284,70 @@ html:is([data-style='terminal'], [data-style='blueprint'], [data-style='glass'])
 .gl-get { margin-left: auto; padding: 0.3rem 0.9rem; border-radius: 9999px; background: hsl(var(--foreground) / 0.08); color: hsl(var(--primary)); font-weight: 700; font-size: 0.8rem; }
 .gl-card-desc { font-size: 0.92rem; line-height: 1.55; color: hsl(var(--foreground) / 0.8); }
 .gl-card-out { font-size: 0.85rem; font-weight: 600; color: hsl(var(--sys-green)); }
+
+/* ============================================================
+   POSTS, CASE STUDIES, FIX A BUG AND 404 in every look with its
+   own pages: the article frame, its headings and quotes, and a
+   line over the 404 in each look's voice.
+   ============================================================ */
+.article-body :is(h2, h3) { scroll-margin-top: 6rem; }
+/* Terminal: headings as markdown, quotes as a lime bar. */
+html[data-style='terminal'] .article-body h2::before { content: '## '; color: hsl(var(--primary)); font-family: var(--font-jetbrains-mono), monospace; font-weight: 500; }
+html[data-style='terminal'] .article-body blockquote { border-left: 4px solid hsl(var(--lime)); background: hsl(var(--lime) / 0.12); padding: 0.75rem 1rem; }
+/* Blueprint: a cross before each heading, quotes as a dashed note box. */
+html[data-style='blueprint'] .article-body h2::before { content: '+ '; color: hsl(var(--bp-line)); }
+html[data-style='blueprint'] .article-body blockquote { border: 1px dashed hsl(var(--bp-line)); padding: 0.75rem 1rem; font-family: var(--font-jetbrains-mono), monospace; font-size: 0.92em; }
+/* Arctic: a sign square before headings, a cobalt rail for quotes, and a cobalt band on the article. */
+html[data-style='arctic'] .article-shell { border-top: 6px solid hsl(var(--primary)); }
+html[data-style='arctic'] .article-body h2::before { content: ''; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.45em; background: hsl(var(--primary)); vertical-align: 0.08em; }
+html[data-style='arctic'] .article-body blockquote { border-left: 6px solid hsl(var(--primary)); padding-left: 1rem; font-weight: 500; }
+/* Synthwave: a tape-label strip on the article, headings with the slipped colour. */
+html[data-style='synthwave'] .article-shell { border-top: 0.6rem solid hsl(var(--primary)); }
+html[data-style='synthwave'] .article-body h2 { text-transform: uppercase; text-shadow: -1px 0 hsl(var(--primary) / 0.7), 1px 0 hsl(var(--sw-cyan) / 0.6); }
+html[data-style='synthwave'] .article-body blockquote { border-left: 3px solid hsl(var(--sw-cyan)); padding-left: 1rem; color: hsl(var(--sw-cyan)); }
+/* Dune: the article as a page of the book, no box; quotes centred in italic between ornaments. */
+html[data-style='dune'] .article-shell { background: transparent; border: 0; box-shadow: none; padding-left: 0 !important; padding-right: 0 !important; }
+html[data-style='dune'] .article-body blockquote { border: 0; text-align: center; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-size: 1.3em; line-height: 1.35; padding: 0.5rem 1.5rem; }
+html[data-style='dune'] .article-body blockquote::before, html[data-style='dune'] .article-body blockquote::after { content: '❦'; display: block; font-style: normal; font-size: 0.8em; color: hsl(var(--primary)); }
+/* Gazette: the story on the page: a big serif headline, justified Georgia, quotes between rules. */
+html[data-style='gazette'] .article-shell { background: transparent; border: 0; border-top: 4px double hsl(var(--foreground)); box-shadow: none; padding-left: 0 !important; padding-right: 0 !important; }
+html[data-style='gazette'] .article-shell h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 0.98; font-weight: 400; }
+html[data-style='gazette'] .article-body > :is(p, li) { font-family: Georgia, 'Times New Roman', serif; font-size: 1.08rem; text-align: justify; hyphens: auto; }
+html[data-style='gazette'] .article-body > p:first-of-type::first-letter { float: left; font-family: var(--font-serif), Georgia, serif; font-size: 3.6em; line-height: 0.8; padding: 0.06em 0.08em 0 0; }
+html[data-style='gazette'] .article-body blockquote { border: 0; border-top: 1px solid hsl(var(--foreground)); border-bottom: 1px solid hsl(var(--foreground)); padding: 0.75rem 0; text-align: center; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-size: 1.35em; }
+/* Receipt: the article on a torn slip, headings over a dashed rule. */
+html[data-style='receipt'] .article-shell {
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x;
+  mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x;
+  padding-bottom: 3rem !important;
+}
+html[data-style='receipt'] .article-body h2 { text-transform: uppercase; padding-bottom: 0.4rem; border-bottom: 2px dashed hsl(var(--foreground) / 0.5); }
+html[data-style='receipt'] .article-body blockquote { border: 1px dashed hsl(var(--foreground) / 0.5); padding: 0.75rem 1rem; }
+/* Observatory: a star before each heading, a gold rail for quotes. */
+html[data-style='observatory'] .article-body h2::before { content: '\2726\00A0'; color: hsl(var(--primary)); }
+html[data-style='observatory'] .article-body blockquote { border-left: 2px solid hsl(var(--primary)); padding-left: 1rem; }
+
+/* The 404, with a line above the heading in the look's own voice. */
+.nf-page { position: relative; }
+html:is([data-style='terminal'], [data-style='blueprint'], [data-style='arctic'], [data-style='synthwave'], [data-style='dune'], [data-style='gazette'], [data-style='receipt'], [data-style='observatory'], [data-style='glass']) .nf-page::before {
+  display: block;
+  margin-bottom: 1rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.85rem;
+  color: hsl(var(--primary));
+}
+html[data-style='terminal'] .nf-page::before { content: 'zsh: no such file or directory'; }
+html[data-style='blueprint'] .nf-page::before { content: 'SHEET MISSING FROM SET'; letter-spacing: 0.12em; }
+html[data-style='arctic'] .nf-page::before { content: 'This service is not in the timetable'; font-family: inherit; font-weight: 700; }
+html[data-style='synthwave'] .nf-page::before { content: '\25A0 STOP · NO SIGNAL'; letter-spacing: 0.12em; }
+html[data-style='dune'] .nf-page::before { content: 'A page torn from the book'; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-size: 1.2rem; }
+html[data-style='gazette'] .nf-page::before { content: 'Correction: this page does not exist'; font-family: var(--font-inter), sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; }
+html[data-style='receipt'] .nf-page::before { content: '** VOID **'; font-weight: 800; letter-spacing: 0.2em; font-size: 1.1rem; transform: rotate(-3deg); }
+html[data-style='observatory'] .nf-page::before { content: 'No object at these coordinates'; }
+html[data-style='glass'] .nf-page::before { content: 'App not found'; font-family: inherit; font-weight: 600; }
+
+/* Case studies and Fix a bug: the boxes take each look's corners and surface (glass, glass-inset); the
+   step numbers and stat figures take its accent and type. */
+html:is([data-style='gazette'], [data-style='receipt']) :is(.cs-stats, .bug-steps) * { border-radius: 0 !important; }
+html[data-style='receipt'] :is(.cs-num, .bug-step-num, .bug-step-n) { font-family: var(--font-jetbrains-mono), monospace; }
+html:is([data-style='dune'], [data-style='gazette']) .cs-num { font-family: var(--font-serif), Georgia, serif; font-weight: 400; }
