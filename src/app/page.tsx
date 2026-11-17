@@ -11,6 +11,7 @@ import { getContent } from '@/lib/content';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
+import { EditorialHome } from '@/components/editorial/editorial-home';
 import { experienceSince } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -36,11 +37,12 @@ export default async function Home() {
   return (
     <>
     <PortraitBackdrop />
+    <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
       {/* Intro. In Midnight the portrait sits on the right; text is constrained to the left so it never overlaps the face. */}
-      <header className="home-hero portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem] portrait-text">
+      <header className="home-classic home-hero portrait-offset relative mb-10 md:mb-14 flex flex-col justify-center gap-5 lg:min-h-[28rem] portrait-text">
         <Link href="/about" className="portrait-alt group inline-flex w-fit items-center gap-4">
           <span className="relative shrink-0">
             <span aria-hidden className="absolute -inset-2 rounded-full bg-primary/25 blur-xl" />
@@ -87,7 +89,9 @@ export default async function Home() {
         {posts[0] && <NowCard now={profile.now} updatedAt={profile.nowUpdatedAt} latest={{ slug: posts[0].slug, title: posts[0].title }} />}
       </header>
 
+      <div className="home-classic">
       <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
+      </div>
 
       <BlogIndex posts={summaries(posts)} />
 
