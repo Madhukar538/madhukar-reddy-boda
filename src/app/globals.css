@@ -1318,8 +1318,8 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
     align-items: center;
     gap: 0.25rem;
     padding: 0.375rem;
-    border-radius: 1.75rem;
-    clip-path: inset(0 0 calc(100% - 3.25rem) 0 round 1.75rem);
+    border-radius: var(--dock-r, 1.75rem);
+    clip-path: inset(0 0 calc(100% - 3.25rem) 0 round var(--dock-r, 1.75rem));
     opacity: 0;
     pointer-events: none;
     /* Draining back up: quick, before the capsule flows back. */
@@ -1327,7 +1327,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
   }
   .nav-dock[data-open] {
     /* Open wide to the left, so the hover labels and the shadow aren't cut off. */
-    clip-path: inset(-1rem -1rem -1rem -14rem round 1.75rem);
+    clip-path: inset(-1rem -1rem -1rem -14rem round var(--dock-r, 1.75rem));
     opacity: 1;
     pointer-events: auto;
     transition: opacity 0.05s linear 0.42s, clip-path 0.6s cubic-bezier(0.33, 1, 0.68, 1) 0.42s;
@@ -1354,7 +1354,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
     height: 2.5rem;
     width: 2.5rem;
     justify-content: center;
-    border-radius: 999px;
+    border-radius: var(--dock-tab-r, 999px);
   }
   /* Work with me: the one call to action, in the accent colour. */
   .nav-dock-cta {
@@ -1368,7 +1368,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
     right: calc(100% + 0.75rem);
     top: 50%;
     padding: 0.25rem 0.75rem;
-    border-radius: 999px;
+    border-radius: var(--dock-tab-r, 999px);
     font-size: 0.75rem;
     font-weight: 500;
     white-space: nowrap;
@@ -4351,3 +4351,35 @@ html[data-style='glass'] .nf-page::before { content: 'App not found'; font-famil
 html:is([data-style='gazette'], [data-style='receipt']) :is(.cs-stats, .bug-steps) * { border-radius: 0 !important; }
 html[data-style='receipt'] :is(.cs-num, .bug-step-num, .bug-step-n) { font-family: var(--font-jetbrains-mono), monospace; }
 html:is([data-style='dune'], [data-style='gazette']) .cs-num { font-family: var(--font-serif), Georgia, serif; font-weight: 400; }
+
+/* ============================================================
+   THE DOCKED SIDE MENU (navbar .nav-dock), look by look: its
+   corners (--dock-r for the dock, --dock-tab-r for tabs and
+   labels), the current page's mark and the call to action.
+   ============================================================ */
+@media (min-width: 1024px) {
+  html[data-style='terminal'] .nav-dock { --dock-r: 1rem; --dock-tab-r: 0.6rem; box-shadow: 4px 4px 0 hsl(var(--ink)); }
+  html[data-style='terminal'] .nav-dock-tab[data-active] { background: hsl(var(--lime)); }
+  html[data-style='terminal'] .nav-dock-cta { background: hsl(var(--ink)); color: hsl(var(--lime)); box-shadow: none; }
+  html[data-style='blueprint'] .nav-dock { --dock-r: 0.375rem; --dock-tab-r: 0.25rem; }
+  html[data-style='blueprint'] .nav-dock-tab[data-active] { box-shadow: inset 0 0 0 1px hsl(var(--bp-line)); }
+  html[data-style='blueprint'] .nav-dock-cta { box-shadow: none; }
+  html[data-style='arctic'] .nav-dock { --dock-r: 0.25rem; --dock-tab-r: 0.2rem; }
+  html[data-style='arctic'] .nav-dock-tab[data-active] { box-shadow: inset 3px 0 0 hsl(var(--primary)); background: hsl(var(--foreground) / 0.06); }
+  html[data-style='arctic'] .nav-dock-cta { box-shadow: none; }
+  html[data-style='synthwave'] .nav-dock { --dock-r: 0.125rem; --dock-tab-r: 0.125rem; }
+  html[data-style='synthwave'] .nav-dock-tab[data-active] { color: hsl(var(--sw-sun)); box-shadow: inset 0 -2px 0 hsl(var(--sw-sun)); }
+  html[data-style='synthwave'] .nav-dock-cta { box-shadow: 3px 3px 0 hsl(var(--sw-cyan)); }
+  html[data-style='dune'] .nav-dock { --dock-r: 0.125rem; --dock-tab-r: 0.125rem; }
+  html[data-style='dune'] .nav-dock-tab[data-active] { color: hsl(var(--primary)); }
+  html[data-style='dune'] .nav-dock-cta { background: hsl(var(--foreground)); color: hsl(var(--background)); box-shadow: none; }
+  html[data-style='gazette'] .nav-dock { --dock-r: 0; --dock-tab-r: 0; border: 1px solid hsl(var(--foreground)); box-shadow: none; }
+  html[data-style='gazette'] .nav-dock-tab[data-active] { background: hsl(var(--foreground)); color: hsl(var(--background)); }
+  html[data-style='gazette'] .nav-dock-cta { background: hsl(var(--primary)); box-shadow: none; }
+  html[data-style='receipt'] .nav-dock { --dock-r: 0; --dock-tab-r: 0; }
+  html[data-style='receipt'] .nav-dock-tab[data-active] { box-shadow: inset 0 0 0 1.5px hsl(var(--foreground)); }
+  html[data-style='receipt'] .nav-dock-cta { background: hsl(var(--foreground)); color: hsl(var(--card)); box-shadow: none; }
+  html[data-style='observatory'] .nav-dock { --dock-r: 0.5rem; --dock-tab-r: 0.375rem; }
+  html[data-style='observatory'] .nav-dock-tab[data-active] { color: hsl(var(--primary)); box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5); }
+  html[data-style='observatory'] .nav-dock-cta { box-shadow: 0 0 0 3px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.5); }
+}
