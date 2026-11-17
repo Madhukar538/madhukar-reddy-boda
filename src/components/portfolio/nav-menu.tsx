@@ -60,7 +60,7 @@ function WorkPanel({ data }: { data: NavMenuData }) {
         </ul>
         <div className="mt-auto border-t border-foreground/10 pt-4">
           <p className="font-mono text-[0.7rem] text-muted-foreground">
-            status: <span className="text-primary">open to work</span>
+            status: <span className="text-primary">open to fixing bugs</span>
           </p>
           <Link href="/work-with-me" className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors">
             Start a project <ArrowRight aria-hidden className="h-4 w-4" />

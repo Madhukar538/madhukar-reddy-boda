@@ -33,10 +33,10 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
       {/* Editorial's closing line (globals.css shows it only in that look). */}
       <section className="ed-cta" aria-labelledby="ed-cta-title">
         <p className="ed-cta-kicker">( What&apos;s next )</p>
-        <Link href="/work-with-me" className="ed-cta-link">
+        <Link href="/fix-a-bug" className="ed-cta-link">
           <span id="ed-cta-title" className="ed-cta-big">
-            <span>Let&apos;s build</span>
-            <span>something fast</span>
+            <span>Stuck on a bug?</span>
+            <span>Let&apos;s fix it fast</span>
           </span>
           <span className="ed-cta-go" aria-hidden>
             <ArrowUpRight />
@@ -48,7 +48,7 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
           </a>
           <span>Hyderabad, India · IST</span>
           <Link href="/fix-a-bug" className="ed-link">
-            Or send me a bug
+            Send a bug report
           </Link>
         </div>
       </section>

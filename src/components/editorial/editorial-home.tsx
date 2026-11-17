@@ -1,9 +1,14 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, FileDown } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, FileDown, Sparkles } from 'lucide-react';
+import {
+  siAngular, siApachesolr, siClaude, siCloudflare, siDocker, siDotnet, siGithubcopilot, siGrafana, siK6, siModelcontextprotocol,
+  siMongodb, siMqtt, siNextdotjs, siOllama, siPostgresql, siReact, siRedis, siTypescript, siWebrtc, type SimpleIcon,
+} from 'simple-icons';
 import type { ProjectCard } from '@/data/profile';
 import { caseStudyFor } from '@/data/case-studies';
 import { EditorialStory } from './editorial-story';
 import { EditorialNext } from './editorial-next';
+import { EditorialAgentMap } from './editorial-agent-map';
 
 /**
  * The Editorial look's homepage: a kinetic name, a running ticker, the numbers and a
@@ -20,9 +25,41 @@ const INDEX: [string, string][] = [
   ['Role', 'Senior Software Engineer, Revalsys'],
   ['Focus', 'AI architecture · .NET · RAG · MCP'],
   ['Based', 'Hyderabad, India'],
-  ['Status', 'Open to work'],
+  ['Status', 'Open to fixing bugs'],
 ];
-const TICKER = ['AI Architect', '.NET 8–10', 'Agentic AI', 'RAG', 'MCP', 'Solr 9 hybrid search', 'k6 load testing', 'MongoDB', 'Hyderabad'];
+/** The running band: what he works with, each with its mark ('ai' is a sparkle; the rest are the projects' own logos). */
+const TICKER: { label: string; icon: SimpleIcon | 'ai' }[] = [
+  { label: 'AI Architect', icon: 'ai' },
+  { label: '.NET 8–10', icon: siDotnet },
+  { label: 'MCP', icon: siModelcontextprotocol },
+  { label: 'Claude Code', icon: siClaude },
+  { label: 'Agentic AI', icon: 'ai' },
+  { label: 'Ollama', icon: siOllama },
+  { label: 'Solr 9', icon: siApachesolr },
+  { label: 'pgvector', icon: siPostgresql },
+  { label: 'k6', icon: siK6 },
+  { label: 'Grafana', icon: siGrafana },
+  { label: 'MongoDB', icon: siMongodb },
+  { label: 'Redis', icon: siRedis },
+  { label: 'Next.js', icon: siNextdotjs },
+  { label: 'React', icon: siReact },
+  { label: 'TypeScript', icon: siTypescript },
+  { label: 'Angular', icon: siAngular },
+  { label: 'GitHub Copilot', icon: siGithubcopilot },
+  { label: 'Docker', icon: siDocker },
+  { label: 'Cloudflare', icon: siCloudflare },
+  { label: 'MQTT', icon: siMqtt },
+  { label: 'WebRTC', icon: siWebrtc },
+];
+
+function TickerMark({ icon }: { icon: SimpleIcon | 'ai' }) {
+  if (icon === 'ai') return <Sparkles className="ed-ticker-logo" />;
+  return (
+    <svg className="ed-ticker-logo" viewBox="0 0 24 24" fill="currentColor">
+      <path d={icon.path} />
+    </svg>
+  );
+}
 
 type Metric = { value: React.ReactNode; label: string };
 
@@ -48,16 +85,17 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         </p>
         {/* The name, with a short index of who and where on the right, over a rule. */}
         <div className="ed-stage">
+          <EditorialAgentMap />
           <div className="ed-aside">
-          {/* A slowly turning badge: what he does, round an orange button to get in touch. */}
-          <Link href="/work-with-me" className="ed-badge" aria-label="Work with me">
+          {/* A slowly turning badge: what he does, round an orange button to send him a bug. */}
+          <Link href="/fix-a-bug" className="ed-badge" aria-label="Send me a bug">
             <svg viewBox="0 0 200 200" aria-hidden>
               <defs>
                 <path id="ed-badge-ring" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
               </defs>
               <text>
                 <textPath href="#ed-badge-ring" textLength="500" lengthAdjust="spacing">
-                  AI ARCHITECT ✶ .NET ENGINEER ✶ OPEN TO WORK ✶
+                  AI ARCHITECT ✶ .NET ENGINEER ✶ FIXES BUGS ✶
                 </textPath>
               </text>
             </svg>
@@ -111,9 +149,10 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         <div className="ed-ticker-track">
           {[0, 1].map((copy) => (
             <span key={copy} className="ed-ticker-run">
-              {TICKER.map((word) => (
-                <span key={word}>
-                  {word}
+              {TICKER.map(({ label, icon }) => (
+                <span key={label}>
+                  <TickerMark icon={icon} />
+                  {label}
                   <i>✶</i>
                 </span>
               ))}

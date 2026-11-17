@@ -2756,3 +2756,102 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
 @media (prefers-reduced-motion: reduce) { .live-xp-dot { animation: none; } }
 :is(.ed-metrics, .ed-journey-stats) .live-xp-main { white-space: nowrap; }
 .ed-journey-stats .live-xp-main { font-size: 0.66em; }
+
+/* ---- Editorial hero: the live map of how he ships (editorial-agent-map.tsx) ---- */
+.ed-map { display: none; }
+@media (min-width: 1280px) {
+  .ed-map { order: 1; display: block; flex: 1 1 0; min-width: 0; max-width: 34rem; margin: 0 clamp(1rem, 3vw, 3rem) 0.5rem; align-self: center; }
+}
+.ed-map figcaption {
+  display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;
+  font: 500 0.7rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--muted-foreground));
+}
+.ed-map-live { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: hsl(var(--ed-accent)); animation: live-xp-pulse 1s steps(2, jump-none) infinite; }
+.ed-map svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ed-map-lines path { fill: none; stroke: hsl(var(--ink) / 0.28); stroke-width: 1; }
+.ed-map-lines .ed-map-return { stroke-dasharray: 3 5; }
+.ed-map-node { fill: hsl(var(--background)); stroke: hsl(var(--ink)); stroke-width: 1.5; }
+.ed-map-you { fill: hsl(var(--ed-accent)); }
+.ed-map-lead { fill: hsl(var(--ink)); }
+.ed-map text { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-anchor: middle; fill: hsl(var(--ink)); }
+.ed-map-in { font-size: 8.5px; font-weight: 700; letter-spacing: 0.04em; }
+.ed-map-in-light { fill: hsl(var(--background)) !important; }
+.ed-map-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
+.ed-map-note { font-size: 9.5px; fill: hsl(var(--muted-foreground)) !important; }
+.ed-map-packet { fill: hsl(var(--ed-accent)); }
+@media (prefers-reduced-motion: reduce) { .ed-map-packet { display: none; } .ed-map-live { animation: none; } }
+
+/* ---- Journey: an exhibit beside each chapter (chapter-exhibit.tsx) ---- */
+@media (min-width: 1200px) {
+  .ed-chapter { grid-template-columns: clamp(5.5rem, 10vw, 9rem) minmax(0, 1fr) minmax(17rem, 22rem); }
+  .ed-exhibit { position: sticky; top: 22vh; }
+}
+@media (max-width: 1199px) { .ed-exhibit { grid-column: 2; max-width: 26rem; } }
+.ed-exhibit > div { position: relative; padding: 1.25rem; border: 1px solid hsl(var(--ink)); background: hsl(var(--card)); }
+.ex-kicker { margin-bottom: 0.9rem; font: 600 0.68rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--primary)); }
+.ex-mono { margin-top: 0.75rem; font: 500 0.72rem/1.45 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; color: hsl(var(--muted-foreground)); }
+.ex-big { font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 62; font-weight: 800; font-size: 4rem; line-height: 0.85; }
+.ex-big-sm { margin-top: 1rem; font-size: 2.4rem; }
+.ex-tag { display: inline-block; margin-top: 0.9rem; padding: 0.3rem 0.55rem; background: hsl(var(--ed-accent)); font: 600 0.72rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; }
+/* Degree: a ticket with a stamp. */
+.ex-ticket { border-style: dashed !important; }
+.ex-ticket p:not([class]) { margin-top: 0.4rem; font-weight: 600; }
+.ex-stamp {
+  position: absolute; right: 1rem; top: 1rem; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 9999px;
+  border: 2px solid hsl(var(--ed-accent)); color: hsl(var(--ed-accent)); font: 700 0.9rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; transform: rotate(-14deg);
+}
+/* Brands: a stack of names. */
+.ex-brands li { padding: 0.4rem 0; border-top: 1px solid hsl(var(--ink) / 0.15); font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 80; font-weight: 800; font-size: 1.45rem; text-transform: uppercase; line-height: 1; }
+/* Bars: before and after. */
+.ex-bar-row { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: 0.35rem 0.75rem; align-items: center; margin-top: 0.75rem; font: 500 0.72rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; }
+.ex-bar-row strong { grid-column: 2; font-size: 0.85rem; }
+.ex-bar { display: block; height: 0.85rem; background: hsl(var(--ink)); transform-origin: left; }
+.ex-bar-before { width: 100%; }
+.ex-bar-after { width: 3%; min-width: 4px; background: hsl(var(--ed-accent)); }
+.ex-bar-shrink { width: 33%; background: hsl(var(--ed-accent)); }
+.ex-org .ex-bar-row { grid-template-columns: 5.5rem minmax(0, 1fr); margin-top: 1.1rem; }
+/* R&D: a file tree. */
+.ex-tree li { font: 500 0.82rem/1.9 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; white-space: nowrap; }
+.ex-tree li span { color: hsl(var(--muted-foreground)); }
+/* AI: forty tools lighting up. */
+.ex-cells { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+.ex-cells span { aspect-ratio: 1; background: hsl(var(--ink)); }
+.ex-cells span:nth-child(7n + 3) { background: hsl(var(--ed-accent)); }
+/* Agents: an org chart. */
+.ex-org-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; position: relative; }
+.ex-org-row + .ex-org-row { margin-top: 1.1rem; }
+.ex-org-row + .ex-org-row::before { content: ''; position: absolute; left: 50%; top: -1.1rem; height: 1.1rem; border-left: 1px solid hsl(var(--ink)); }
+.ex-org-node { padding: 0.35rem 0.55rem; border: 1px solid hsl(var(--ink)); font: 600 0.7rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; background: hsl(var(--background)); }
+.ex-org-you { background: hsl(var(--ed-accent)); }
+.ex-org-lead { background: hsl(var(--ink)); color: hsl(var(--background)); }
+
+/* The exhibits play when their chapter arrives (data-in from editorial-fx); otherwise they rest finished. */
+@keyframes ex-grow { from { transform: scaleX(0); } }
+@keyframes ex-shrink-from-full { from { transform: scaleX(30); } }
+@keyframes ex-slide { from { opacity: 0; transform: translateX(1.5rem); } }
+@keyframes ex-type { from { opacity: 0; transform: translateX(-0.5rem); } }
+@keyframes ex-light { from { opacity: 0.12; } }
+@keyframes ex-stamp { from { opacity: 0; transform: rotate(-14deg) scale(2.2); } }
+.ed-exhibit[data-in] .ex-bar-before { animation: ex-grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards; }
+.ed-exhibit[data-in] .ex-bar-after { animation: ex-shrink-from-full 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.9s backwards; }
+.ed-exhibit[data-in] .ex-bar-shrink { animation: ex-shrink-from-full 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.5s backwards; transform-origin: left; }
+.ed-exhibit[data-in] .ex-brands li { animation: ex-slide 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--n) * 110ms + 150ms); }
+.ed-exhibit[data-in] .ex-tree li { animation: ex-type 0.4s ease-out backwards; animation-delay: calc(var(--n) * 220ms + 200ms); }
+.ed-exhibit[data-in] .ex-cells span { animation: ex-light 0.3s ease-out backwards; animation-delay: calc(var(--n) * 35ms + 150ms); }
+.ed-exhibit[data-in] .ex-stamp { animation: ex-stamp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.4) 0.5s backwards; }
+@media (prefers-reduced-motion: reduce) { .ed-exhibit * { animation: none !important; } }
+
+/* Logos in the running band. */
+.ed-ticker-logo { width: 0.62em; height: 0.62em; flex-shrink: 0; margin-right: -0.7rem; opacity: 0.92; }
+.ed-ticker-run > span > .ed-ticker-logo + * { margin-left: 0; }
+
+/* Editorial's menu is square: clip it square too (the round clip cut its corners off). */
+@media (min-width: 1280px) {
+  html[data-style='editorial'] .nav-flow-capsule { clip-path: inset(0 0 0 0); }
+  html[data-style='editorial'] .nav-flow-top[data-docked] .nav-flow-capsule { clip-path: inset(0 0 0 calc(100% - 3.25rem)); }
+}
+
+/* Wide screens: leave room on the right for the docked side menu (navbar .nav-dock). */
+@media (min-width: 1280px) {
+  :is(.ed-story, .ed-metrics, .ed-gallery-head) { padding-right: max(clamp(1rem, 4vw, 3.5rem), 6rem); }
+}
