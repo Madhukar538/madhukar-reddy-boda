@@ -7,6 +7,21 @@
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
 
+/** This site's own host names; any other host is another site on the platform (src/proxy.ts). */
+const PRIMARY_HOSTS = (process.env.NEXT_PUBLIC_PRIMARY_HOSTS || 'dhucar.in,www.dhucar.in,localhost,127.0.0.1')
+  .split(',')
+  .map((h) => h.trim().toLowerCase())
+  .filter(Boolean);
+
+/** True on this site's own domain; false in another site's admin, on that site's domain. */
+export const isPlatformHost = () => typeof window === 'undefined' || PRIMARY_HOSTS.includes(window.location.hostname.toLowerCase());
+
+/**
+ * Where the admin sends API calls: the API itself on this site, or, on another site's domain, that
+ * domain's own /api pass-through (app/(sites)), so its session cookie is first-party there.
+ */
+const apiBase = () => (isPlatformHost() ? API_URL : '');
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -22,7 +37,7 @@ export class ApiError extends Error {
 type CallOptions = { token?: string; csrf?: boolean; signal?: AbortSignal };
 
 export async function apiCall<T>(action: string, body: object = {}, { token, csrf, signal }: CallOptions = {}): Promise<T> {
-  if (!API_URL) throw new ApiError('The admin needs NEXT_PUBLIC_API_URL to be set at build time.', -99, 0);
+  if (isPlatformHost() && !API_URL) throw new ApiError('The admin needs NEXT_PUBLIC_API_URL to be set at build time.', -99, 0);
 
   // Uploads go as multipart (the browser sets its boundary); everything else is JSON.
   const isForm = body instanceof FormData;
@@ -33,7 +48,7 @@ export async function apiCall<T>(action: string, body: object = {}, { token, csr
 
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/api/${action}`, {
+    response = await fetch(`${apiBase()}/api/${action}`, {
       method: 'POST',
       headers,
       body: isForm ? body : JSON.stringify(body),
