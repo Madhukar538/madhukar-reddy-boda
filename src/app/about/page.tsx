@@ -49,7 +49,7 @@ export default async function AboutPage() {
     />
     <PortraitBackdrop />
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
-      <EditorialAbout name={content.profile.name} education={content.education} />
+      <EditorialAbout name={content.profile.name} education={content.education} about={content.story.about} />
       <div className="classic-only">
       <HomeHero
         content={{

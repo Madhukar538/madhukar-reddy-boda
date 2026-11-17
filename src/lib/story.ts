@@ -71,10 +71,37 @@ export const storySchema = z.object({
       )
       .max(12),
   }),
+  /** The Experience page told in acts: the experience groups in story order, each with an act title. Optional. */
+  journey: z
+    .object({
+      kicker: text(60),
+      acts: z.array(z.object({ group: text(80), title: text(80) })).max(10),
+    })
+    .optional(),
+  /**
+   * The About page as a Q&A. Optional. Answers may link with [label](/path); {name}, {degree},
+   * {institution}, {location} and {since} are filled in from the profile.
+   */
+  about: z
+    .object({
+      kicker: text(60),
+      title: text(120),
+      byline: text(160),
+      qa: z.array(z.object({ q: text(120), a: text(800) })).max(10),
+    })
+    .optional(),
 });
 
 export type Story = z.infer<typeof storySchema>;
+export type StoryJourney = NonNullable<Story['journey']>;
+export type StoryAbout = NonNullable<Story['about']>;
 export type StoryExhibit = Story['story']['chapters'][number]['exhibit'];
+
+/** Where an inline link in story text may point (the same rule as chapter links). */
+export const isSafeHref = (value: string) => /^\/(?!\/)/.test(value) || /^https:\/\//.test(value);
+
+/** Fills {name}-style placeholders from the given values; unknown ones stay as written. */
+export const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
 
 /** A stored story, or null when it is missing or doesn't validate (then the built-in one is used). */
 export function parseStory(json: string | null | undefined): Story | null {
@@ -217,6 +244,42 @@ export const BUILT_IN_STORY: Story = {
           ],
           bar: { label: 'Answer time', value: '40 s → 13 s' },
         },
+      },
+    ],
+  },
+  journey: {
+    kicker: 'The road so far',
+    acts: [
+      { group: 'Client delivery', title: 'Shipping for real users' },
+      { group: 'Performance & tooling', title: 'Making it fast' },
+      { group: 'Architecture & R&D', title: 'Leading R&D' },
+      { group: 'AI platforms', title: 'Building for AI' },
+    ],
+  },
+  about: {
+    kicker: 'About · In my own words',
+    title: 'The engineer *behind the work*',
+    byline: '{name} · Senior Software Engineer & AI Architect · Hyderabad',
+    qa: [
+      {
+        q: 'What do you do?',
+        a: 'I build backend systems and AI platforms, and I lead teams of AI coding agents to ship them. Day to day that is **.NET 10 APIs**, Next.js, Solr, Redis, SQL Server and MongoDB, carrying high traffic.',
+      },
+      {
+        q: 'How do you work?',
+        a: 'Production-first: **diagnose fast, fix right, prevent recurrence.** I measure before I guess, with k6 and Grafana, query and index tuning, and memory and GC work.',
+      },
+      {
+        q: 'Where does AI fit?',
+        a: 'In two places. What I build: RAG, Semantic Kernel, Microsoft Agent Framework, MCP servers, hybrid vector search and self-hosted LLMs on Ollama. And how I build: Claude Code, Codex, Copilot and Antigravity working as a team, with every change reviewed and proven.',
+      },
+      {
+        q: 'Where did it start?',
+        a: '{degree} at {institution}, {location}. Building professionally since {since}, in Hyderabad.',
+      },
+      {
+        q: 'What are you open to?',
+        a: 'Fixing bugs and giving solutions. If something is slow, broken or stuck, [send it over](/fix-a-bug).',
       },
     ],
   },
