@@ -176,7 +176,7 @@ export const getContent = cache(async (): Promise<SiteContent> => {
 });
 
 /** Themes the site has styles for (components/look-toggle.tsx lists how each looks in the picker). */
-export const KNOWN_THEMES: DesignStyle[] = ['terminal', 'midnight', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune'];
+export const KNOWN_THEMES: DesignStyle[] = ['terminal', 'midnight', 'blueprint', 'editorial', 'glass', 'arctic', 'synthwave', 'dune', 'gazette', 'receipt', 'observatory'];
 
 /** Which themes visitors can pick and which one the site opens in, set in the admin (Themes). */
 export type ThemeSettings = { defaultTheme: DesignStyle; enabled: DesignStyle[] };

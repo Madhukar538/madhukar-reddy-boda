@@ -76,7 +76,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], display: 'swap', vari
 const themeScript = (enabled: string[], fallback: string) =>
   `try{localStorage.removeItem('portfolio-accent');var e=${JSON.stringify(enabled)},t=${JSON.stringify(fallback)},s=localStorage.getItem('portfolio-style'),h=document.documentElement;if(s&&e.indexOf(s)<0){localStorage.removeItem('portfolio-style');s=null}t=s||t;if(t==='midnight'){h.removeAttribute('data-style')}else{h.setAttribute('data-style',t)}}catch(e){}`;
 // Runs after next-themes' own script, which may have set the other theme: Midnight is dark-only, Terminal light-only.
-const midnightDarkScript = `try{var d=document.documentElement,s=d.getAttribute('data-style'),t=s==='terminal'||s==='editorial'||s==='arctic'||s==='dune';if(t||!s||s==='blueprint'||s==='synthwave'){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
+const midnightDarkScript = `try{var d=document.documentElement,s=d.getAttribute('data-style'),t=s==='terminal'||s==='editorial'||s==='arctic'||s==='dune'||s==='gazette'||s==='receipt';if(t||!s||s==='blueprint'||s==='synthwave'||s==='observatory'){d.classList.remove(t?'dark':'light');d.classList.add(t?'light':'dark');d.style.colorScheme=t?'light':'dark'}}catch(e){}`;
 
 export default async function RootLayout({
   children,

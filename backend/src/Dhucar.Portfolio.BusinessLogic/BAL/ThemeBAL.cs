@@ -32,6 +32,9 @@ public class ThemeBAL(ThemeDAL themeDAL, RevalidationBAL revalidationBAL, AuditB
         ("arctic", "Arctic", "Cool light"),
         ("synthwave", "Synthwave", "Neon dark"),
         ("dune", "Dune", "Warm serif"),
+        ("gazette", "Gazette", "Newspaper"),
+        ("receipt", "Receipt", "Till slip"),
+        ("observatory", "Observatory", "Star atlas"),
     ];
 
     /// <summary>Used until an admin saves the settings: Terminal by default, every theme enabled.</summary>

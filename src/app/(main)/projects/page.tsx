@@ -6,6 +6,12 @@ import { Projects } from '@/components/portfolio/projects';
 import { BlogStrip } from '@/components/blog/blog-strip';
 import { EditorialCaseFiles } from '@/components/editorial/editorial-case-files';
 import { EditorialNext } from '@/components/editorial/editorial-next';
+import { ArcticProjects } from '@/components/looks/arctic-pages';
+import { SynthwaveProjects } from '@/components/looks/synthwave-pages';
+import { DuneProjects } from '@/components/looks/dune-pages';
+import { GazetteProjects } from '@/components/looks/gazette';
+import { ReceiptProjects } from '@/components/looks/receipt';
+import { ObservatoryProjects } from '@/components/looks/observatory';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/blog';
 
@@ -39,6 +45,12 @@ export default async function ProjectsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <EditorialCaseFiles keyProjects={keyProjects} clientProjects={clientProjects} />
+      <ArcticProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <SynthwaveProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <DuneProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <GazetteProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <ReceiptProjects keyProjects={keyProjects} clientProjects={clientProjects} />
+      <ObservatoryProjects keyProjects={keyProjects} clientProjects={clientProjects} />
       <div className="classic-only">
         <Projects keyProjects={keyProjects} clientProjects={clientProjects} />
       </div>

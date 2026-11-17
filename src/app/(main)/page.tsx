@@ -12,6 +12,12 @@ import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { HeroIdentity } from '@/components/portfolio/hero-identity';
 import { NowCard } from '@/components/portfolio/now-card';
 import { EditorialHome } from '@/components/editorial/editorial-home';
+import { ArcticHome } from '@/components/looks/arctic-home';
+import { SynthwaveHome } from '@/components/looks/synthwave-home';
+import { DuneHome } from '@/components/looks/dune-home';
+import { GazetteHome } from '@/components/looks/gazette';
+import { ReceiptHome } from '@/components/looks/receipt';
+import { ObservatoryHome } from '@/components/looks/observatory';
 import { experienceSince } from '@/lib/utils';
 import { LiveExperience } from '@/components/portfolio/live-experience';
 
@@ -40,6 +46,10 @@ export default async function Home() {
     <>
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
     <EditorialHome projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} story={story} />
+    {/* Each of these looks has its own homepage too (components/looks), shown only in that look. */}
+    {([['arctic', ArcticHome], ['synthwave', SynthwaveHome], ['dune', DuneHome], ['gazette', GazetteHome], ['receipt', ReceiptHome], ['observatory', ObservatoryHome]] as const).map(([look, LookHome]) => (
+      <LookHome key={look} heading={story.hero.heading} name={profile.name} projects={keyProjects} metrics={heroMetrics} since={experienceSince().since} posts={summaries(posts)} />
+    ))}
     <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
