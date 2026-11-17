@@ -1,65 +1,23 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, FileDown, Sparkles } from 'lucide-react';
-import {
-  siAngular, siApachesolr, siClaude, siCloudflare, siDocker, siDotnet, siGithubcopilot, siGrafana, siK6, siModelcontextprotocol,
-  siMongodb, siMqtt, siNextdotjs, siOllama, siPostgresql, siReact, siRedis, siTypescript, siWebrtc, type SimpleIcon,
-} from 'simple-icons';
+import { ArrowRight, ArrowUpRight, FileDown } from 'lucide-react';
 import type { ProjectCard } from '@/data/profile';
 import { caseStudyFor } from '@/data/case-studies';
 import { EditorialStory } from './editorial-story';
 import { EditorialNext } from './editorial-next';
 import { EditorialAgentMap } from './editorial-agent-map';
+import { InlineText } from './inline-text';
+import { TickerMark } from './ticker-icons';
+import type { Story } from '@/lib/story';
 
 /**
- * The Editorial look's homepage: a kinetic name, a running ticker, the numbers and a
- * sideways gallery of projects. It is in the page for every look but only shown in
+ * The Editorial look's homepage: a kinetic name, a running ticker, the numbers, the journey and a
+ * sideways gallery of projects, all from the site's story (lib/story.ts) and content. It is in the page for every look but only shown in
  * Editorial (globals.css), so switching looks needs no new request. The moving parts are
  * components/editorial/editorial-fx.tsx; without them this is a still, readable page.
  */
 
-const NAME = ['Madhu—', 'kar', 'Reddy'];
 /** Panels in the sideways gallery before the "All projects" one: enough to show range, short enough to scroll. */
 const SHOWN = 6;
-/** The index beside the name (the same facts are in the page's text for screen readers). */
-const INDEX: [string, string][] = [
-  ['Role', 'Senior Software Engineer, Revalsys'],
-  ['Focus', 'AI architecture · .NET · RAG · MCP'],
-  ['Based', 'Hyderabad, India'],
-  ['Status', 'Open to fixing bugs'],
-];
-/** The running band: what he works with, each with its mark ('ai' is a sparkle; the rest are the projects' own logos). */
-const TICKER: { label: string; icon: SimpleIcon | 'ai' }[] = [
-  { label: 'AI Architect', icon: 'ai' },
-  { label: '.NET 8–10', icon: siDotnet },
-  { label: 'MCP', icon: siModelcontextprotocol },
-  { label: 'Claude Code', icon: siClaude },
-  { label: 'Agentic AI', icon: 'ai' },
-  { label: 'Ollama', icon: siOllama },
-  { label: 'Solr 9', icon: siApachesolr },
-  { label: 'pgvector', icon: siPostgresql },
-  { label: 'k6', icon: siK6 },
-  { label: 'Grafana', icon: siGrafana },
-  { label: 'MongoDB', icon: siMongodb },
-  { label: 'Redis', icon: siRedis },
-  { label: 'Next.js', icon: siNextdotjs },
-  { label: 'React', icon: siReact },
-  { label: 'TypeScript', icon: siTypescript },
-  { label: 'Angular', icon: siAngular },
-  { label: 'GitHub Copilot', icon: siGithubcopilot },
-  { label: 'Docker', icon: siDocker },
-  { label: 'Cloudflare', icon: siCloudflare },
-  { label: 'MQTT', icon: siMqtt },
-  { label: 'WebRTC', icon: siWebrtc },
-];
-
-function TickerMark({ icon }: { icon: SimpleIcon | 'ai' }) {
-  if (icon === 'ai') return <Sparkles className="ed-ticker-logo" />;
-  return (
-    <svg className="ed-ticker-logo" viewBox="0 0 24 24" fill="currentColor">
-      <path d={icon.path} />
-    </svg>
-  );
-}
 
 type Metric = { value: React.ReactNode; label: string };
 
@@ -69,23 +27,25 @@ function projectHref(project: ProjectCard) {
   return project.post ? `/blog/${project.post}` : '/projects';
 }
 
-export function EditorialHome({ projects, metrics, since }: { projects: ProjectCard[]; metrics: Metric[]; since: string }) {
+export function EditorialHome({ projects, metrics, since, story }: { projects: ProjectCard[]; metrics: Metric[]; since: string; story: Story }) {
+  const { hero, ticker } = story;
   return (
     <div className="home-editorial">
       <section className="ed-hero" aria-labelledby="ed-title">
         {/* A heading for screen readers in this look; a role rather than a second <h1> in the page's HTML
             (the other looks' <h1> is in the same page, hidden here). */}
         <p id="ed-title" role="heading" aria-level={1} className="sr-only">
-          Boda Madhukar Reddy: I build fast .NET systems, and ship them with teams of AI agents.
+          {hero.heading}
         </p>
         <p className="ed-meta" aria-hidden>
-          <span>A story in chapters</span>
-          <span>Senior Software Engineer · AI Architect</span>
+          {hero.meta.map((m) => (
+            <span key={m}>{m}</span>
+          ))}
           <span>{since} →</span>
         </p>
         {/* The name, with a short index of who and where on the right, over a rule. */}
         <div className="ed-stage">
-          <EditorialAgentMap />
+          {hero.showAgentMap && <EditorialAgentMap />}
           <div className="ed-aside">
           {/* A slowly turning badge: what he does, round an orange button to send him a bug. */}
           <Link href="/fix-a-bug" className="ed-badge" aria-label="Send me a bug">
@@ -95,7 +55,7 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
               </defs>
               <text>
                 <textPath href="#ed-badge-ring" textLength="500" lengthAdjust="spacing">
-                  AI ARCHITECT ✶ .NET ENGINEER ✶ FIXES BUGS ✶
+                  {hero.badge}
                 </textPath>
               </text>
             </svg>
@@ -104,16 +64,16 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
             </span>
           </Link>
           <dl className="ed-index" aria-hidden>
-            {INDEX.map(([k, v], i) => (
-              <div key={k}>
-                <dt>({String(i + 1).padStart(2, '0')}) {k}</dt>
-                <dd>{v}</dd>
+            {hero.index.map(({ label, value }, i) => (
+              <div key={label}>
+                <dt>({String(i + 1).padStart(2, '0')}) {label}</dt>
+                <dd>{value}</dd>
               </div>
             ))}
           </dl>
           </div>
         <div className="ed-name" aria-hidden>
-          {NAME.map((line, l) => (
+          {hero.nameLines.map((line, l) => (
             <span key={line} className="ed-line" data-line={l}>
               {Array.from(line).map((ch, i) => (
                 <span key={i} className="ed-char" style={{ '--i': l * 6 + i } as React.CSSProperties}>
@@ -126,11 +86,9 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         </div>
         <div className="ed-intro">
           <p className="ed-lede" aria-hidden>
-            Builds fast <strong>.NET</strong> systems, and ships them with <em>teams of AI agents</em>.
+            <InlineText text={hero.lede} />
           </p>
-          <p className="ed-body">
-            Senior backend engineer at Revalsys, Hyderabad. I lead AI coding agents (Claude Code, Codex, Copilot, Antigravity) with specs, skills and review, and take what they build to production: multi-tenant RAG and MCP platforms, Solr 9 hybrid search, and APIs load-tested with k6.
-          </p>
+          <p className="ed-body">{hero.body}</p>
           <div className="ed-actions">
             <Link href="/projects" className="tinted-button">
               Explore work <ArrowRight className="h-4 w-4" />
@@ -149,7 +107,7 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         <div className="ed-ticker-track">
           {[0, 1].map((copy) => (
             <span key={copy} className="ed-ticker-run">
-              {TICKER.map(({ label, icon }) => (
+              {ticker.map(({ label, icon }) => (
                 <span key={label}>
                   <TickerMark icon={icon} />
                   {label}
@@ -173,7 +131,7 @@ export function EditorialHome({ projects, metrics, since }: { projects: ProjectC
         ))}
       </dl>
 
-      <EditorialStory />
+      <EditorialStory story={story.story} />
 
       <section className="ed-gallery" aria-labelledby="ed-work">
         <div className="ed-sticky">

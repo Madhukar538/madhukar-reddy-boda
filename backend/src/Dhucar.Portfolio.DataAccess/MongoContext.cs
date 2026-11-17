@@ -86,6 +86,9 @@ public class MongoContext
     /// <summary>The theme settings: one document, id "themes".</summary>
     public IMongoCollection<ThemeSettingsDocument> Themes => Database.GetCollection<ThemeSettingsDocument>("themes");
 
+    /// <summary>The Editorial homepage story: one document, id "story".</summary>
+    public IMongoCollection<StoryDocument> Stories => Database.GetCollection<StoryDocument>("story");
+
     /// <summary>Per-post reads and reactions.</summary>
     public IMongoCollection<PostStatsDocument> PostStats => Database.GetCollection<PostStatsDocument>("postStats");
 

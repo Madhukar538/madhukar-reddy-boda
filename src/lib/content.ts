@@ -4,6 +4,7 @@ import { blogs, readTime, type BlogPost } from '@/data/blogs';
 import * as builtIn from '@/data/profile';
 import type { ClientProject, Experiment, ProjectCard, SkillCategory, Status } from '@/data/profile';
 import type { DesignStyle } from '@/lib/design-style';
+import { BUILT_IN_STORY, parseStory, type Story } from '@/lib/story';
 
 /**
  * Where the site's content comes from. With API_URL set, posts, projects and
@@ -30,10 +31,12 @@ export type SiteContent = {
   keyProjects: ProjectCard[];
   clientProjects: ClientProject[];
   rdProjects: Experiment[];
+  /** The Editorial homepage's story (lib/story.ts). */
+  story: Story;
 };
 
 /** Content tags the API revalidates; post:<slug> tags are accepted too. */
-export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes'] as const;
+export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes', 'story'] as const;
 
 const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
@@ -55,6 +58,7 @@ export const BUILT_IN_CONTENT: SiteContent = {
   keyProjects: builtIn.keyProjects,
   clientProjects: builtIn.clientProjects,
   rdProjects: builtIn.rdProjects,
+  story: BUILT_IN_STORY,
 };
 
 // ---- API ----------------------------------------------------------------
@@ -88,6 +92,8 @@ const SAFETY_REFRESH_SECONDS = 300;
 const loadPosts = unstable_cache(() => callApi<ApiPost[]>('GetPosts'), ['api', 'posts'], { tags: ['posts'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadProjects = unstable_cache(() => callApi<ApiProject[]>('GetProjects'), ['api', 'projects'], { tags: ['projects'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadProfile = unstable_cache(() => callApi<ApiProfile>('GetProfile'), ['api', 'profile'], { tags: ['profile'], revalidate: SAFETY_REFRESH_SECONDS });
+// The stored story as JSON ("" until one is saved): validated here, so a bad save can't break the page.
+const loadStory = unstable_cache(() => callApi<{ json: string }>('GetStory'), ['api', 'story'], { tags: ['story'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadThemes = unstable_cache(() => callApi<ApiThemes>('GetThemes'), ['api', 'themes'], { tags: ['themes'], revalidate: SAFETY_REFRESH_SECONDS });
 
 // Warn once per section until it recovers, not once per page.
@@ -154,16 +160,18 @@ function toProfile(p: ApiProfile) {
 /** All site content for this request (deduplicated per render). */
 export const getContent = cache(async (): Promise<SiteContent> => {
   if (!apiBase()) return BUILT_IN_CONTENT;
-  const [posts, projects, profile] = await Promise.all([
+  const [posts, projects, profile, story] = await Promise.all([
     attempt('posts', loadPosts),
     attempt('projects', loadProjects),
     attempt('profile', loadProfile),
+    attempt('story', loadStory),
   ]);
   return {
     ...BUILT_IN_CONTENT,
     ...(posts ? { posts: byNewest(posts.map(toPost)) } : {}),
     ...(projects ? toProjects(projects) : {}),
     ...(profile ? toProfile(profile) : {}),
+    story: parseStory(story?.json) ?? BUILT_IN_STORY,
   };
 });
 
