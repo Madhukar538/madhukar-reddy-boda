@@ -21,13 +21,19 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
  *                    Nothing that identifies a visitor is kept: no IP, cookie, id or full user agent; emails, long
  *                    numbers and query strings are masked out of what is stored.
  */
-public partial class ClientErrorBAL(ClientErrorDAL clientErrorDAL, AuditBAL auditBAL, IContextService contextService, ICodeLogger codeLog)
+public partial class ClientErrorBAL(ClientErrorDAL clientErrorDAL, AuditBAL auditBAL, NotificationBAL notificationBAL, IContextService contextService, TimeProvider timeProvider, ICodeLogger codeLog)
 {
     /// <summary>Most error groups kept; new kinds are dropped once the list is full, until some are cleared.</summary>
     public const int MaxGroups = 200;
 
     /// <summary>Most groups the admin list shows.</summary>
     public const int ListLimit = 100;
+
+    /// <summary>Most "new kind of error" alerts sent in an hour, so a burst of junk reports can't flood the phone.</summary>
+    public const int AlertsPerHour = 5;
+
+    private static readonly Queue<DateTime> _alertTimes = new();
+    private static readonly object _alertLock = new();
 
     [GeneratedRegex(@"bot|crawl|spider|slurp|headless|lighthouse|pagespeed|preview|monitor|curl|wget|python|httpclient|go-http|java/|scrapy|uptime", RegexOptions.IgnoreCase)]
     private static partial Regex BotPattern();
@@ -92,8 +98,8 @@ public partial class ClientErrorBAL(ClientErrorDAL clientErrorDAL, AuditBAL audi
             string source = PathOf(rawSource);
             int line = Math.Clamp(objAPIRequest.Line, 0, 10_000_000);
             int column = Math.Clamp(objAPIRequest.Column, 0, 10_000_000);
-            DateTime now = DateTime.UtcNow;
-            await clientErrorDAL.RecordClientErrorDB(new ClientErrorDocument
+            DateTime now = timeProvider.GetUtcNow().UtcDateTime;
+            ClientErrorDocument error = new ClientErrorDocument
             {
                 Id = GroupId(message, source, line, column),
                 Message = message,
@@ -106,7 +112,15 @@ public partial class ClientErrorBAL(ClientErrorDAL clientErrorDAL, AuditBAL audi
                 Browser = BrowserFamily(userAgent),
                 FirstSeen = now,
                 LastSeen = now,
-            }, MaxGroups);
+            };
+            string outcome = await clientErrorDAL.RecordClientErrorDB(error, MaxGroups);
+            if (outcome == "new" && IsAlertAllowed(now))
+            {
+                await notificationBAL.SendAlert(
+                    $"⚠️ <b>New script error on the site</b>\n{NotificationBAL.Escape(error.Message)}\n{NotificationBAL.Escape(error.Page)} · {NotificationBAL.Escape(error.Browser)}" +
+                    (error.Look.Length > 0 ? $" · {NotificationBAL.Escape(error.Look)}" : string.Empty) +
+                    "\nAdmin → Errors");
+            }
         }
         catch (Exception ex)
         {
@@ -218,6 +232,24 @@ public partial class ClientErrorBAL(ClientErrorDAL clientErrorDAL, AuditBAL audi
             objResponse.ServerDate = DateTime.UtcNow;
         }
         return objResponse;
+    }
+
+    /// <summary>True while fewer than AlertsPerHour alerts have gone out in the last hour; records this one.</summary>
+    private static bool IsAlertAllowed(DateTime now)
+    {
+        lock (_alertLock)
+        {
+            while (_alertTimes.Count > 0 && now - _alertTimes.Peek() > TimeSpan.FromHours(1))
+            {
+                _alertTimes.Dequeue();
+            }
+            if (_alertTimes.Count >= AlertsPerHour)
+            {
+                return false;
+            }
+            _alertTimes.Enqueue(now);
+            return true;
+        }
     }
 
     /// <summary>One line of text with addresses reduced to their path and emails and long numbers masked, cut to max characters.</summary>

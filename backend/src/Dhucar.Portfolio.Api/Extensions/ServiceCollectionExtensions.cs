@@ -84,6 +84,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SecurityHeadersMiddleware>();
         services.AddSingleton<TenantMiddleware>();
         services.AddHostedService<StartupTasks>();
+        // Telegram alerts when the backups go wrong (status files from the backup services).
+        services.AddHostedService<BackupWatcher>();
 
         // Live presence on blog posts: tiny messages only, one shared tracker, pushed once a second.
         services.AddSignalR(hub =>
