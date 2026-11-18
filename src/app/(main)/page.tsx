@@ -41,7 +41,21 @@ export default async function Home() {
   return (
     <>
     <PortraitBackdrop priority={themes.defaultTheme === 'midnight'} />
-    <EditorialView page="home" defaultLook={themes.defaultTheme} props={{ projects: keyProjects, metrics: heroMetrics, since: experienceSince().since, story }} />
+    <EditorialView
+      page="home"
+      defaultLook={themes.defaultTheme}
+      props={{
+        projects: keyProjects,
+        metrics: heroMetrics,
+        since: experienceSince().since,
+        story,
+        writing: {
+          posts: posts.slice(0, 11).map(({ slug, title, excerpt, date, readTime, category }) => ({ slug, title, excerpt, date, readTime, category })),
+          topics: topics.slice(0, 16).map(({ slug, name, count, kind }) => ({ slug, name, count, kind })),
+          total: posts.length,
+        },
+      }}
+    />
     {/* The other looks' own homepages (components/looks): only the active one is in the page. */}
     <LookView
       page="home"
@@ -103,6 +117,8 @@ export default async function Home() {
       <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
       </div>
 
+      {/* The blog, popular posts and topics: Editorial has its own writing desk instead (editorial-writing.tsx). */}
+      <div className="home-shared">
       <BlogIndex posts={summaries(posts)} />
 
       <PopularPosts className="mt-14 md:mt-20 md:[&_ol]:grid md:[&_ol]:grid-cols-2 md:[&_ol]:gap-x-4" />
@@ -135,6 +151,7 @@ export default async function Home() {
           ))}
         </div>
       </section>
+      </div>
 
     </div>
     </>

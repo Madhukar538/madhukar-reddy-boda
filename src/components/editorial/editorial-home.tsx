@@ -7,6 +7,7 @@ import { EditorialNext } from './editorial-next';
 import { EditorialAgentMap } from './editorial-agent-map';
 import { InlineText } from './inline-text';
 import { TickerMark } from './ticker-icons';
+import { EditorialWriting, type DeskPost, type DeskTopic } from './editorial-writing';
 import type { Story } from '@/lib/story';
 
 /**
@@ -27,11 +28,32 @@ function projectHref(project: ProjectCard) {
   return project.post ? `/blog/${project.post}` : '/projects';
 }
 
+/** What the panel leads to, as its kicker: a case study or a write-up; nothing for a plain project. */
+function projectKind(project: ProjectCard) {
+  if (caseStudyFor(project.title)) return 'Case study';
+  return project.post ? 'Write-up' : null;
+}
+
 /**
  * variant "site" is another site on the platform (app/(sites)): its own pages only, so the links to
  * this site's Fix a bug, Work with me, résumé and project pages are left out.
  */
-export function EditorialHome({ projects, metrics, since, story, variant = 'primary' }: { projects: ProjectCard[]; metrics: Metric[]; since: string; story: Story; variant?: 'primary' | 'site' }) {
+export function EditorialHome({
+  projects,
+  metrics,
+  since,
+  story,
+  writing,
+  variant = 'primary',
+}: {
+  projects: ProjectCard[];
+  metrics: Metric[];
+  since: string;
+  story: Story;
+  /** The newest posts and the topics, for the writing desk (editorial-writing.tsx). */
+  writing?: { posts: DeskPost[]; topics: DeskTopic[]; total: number };
+  variant?: 'primary' | 'site';
+}) {
   const isPrimary = variant === 'primary';
   const { hero, ticker } = story;
   return (
@@ -162,9 +184,18 @@ export function EditorialHome({ projects, metrics, since, story, variant = 'prim
             {projects.slice(0, SHOWN).map((project, i) => (
               <li key={project.title}>
                 <Link href={projectHref(project)} className="ed-panel">
-                  <span className="ed-panel-no">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="ed-panel-top">
+                    <span className="ed-panel-no">{String(i + 1).padStart(2, '0')}</span>
+                    {projectKind(project) && <span className="ed-panel-kind">{projectKind(project)}</span>}
+                  </span>
                   <h3>{project.title}</h3>
-                  <p>{project.outcome ?? project.description}</p>
+                  <p>{project.description}</p>
+                  {project.outcome && (
+                    <p className="ed-panel-result">
+                      <span>Result</span>
+                      {project.outcome}
+                    </p>
+                  )}
                   <ul className="ed-panel-tech">
                     {project.tech.slice(0, 4).map((t) => (
                       <li key={t}>{t}</li>
@@ -178,7 +209,9 @@ export function EditorialHome({ projects, metrics, since, story, variant = 'prim
             ))}
             <li>
               <Link href="/projects" className="ed-panel ed-panel-all">
-                <span className="ed-panel-no">→</span>
+                <span className="ed-panel-top">
+                  <span className="ed-panel-no">→</span>
+                </span>
                 <h3>All projects</h3>
                 <p>Client work, lab experiments and the case studies behind them.</p>
               </Link>
@@ -187,6 +220,8 @@ export function EditorialHome({ projects, metrics, since, story, variant = 'prim
         </div>
       </section>
       )}
+
+      {isPrimary && writing && <EditorialWriting {...writing} />}
 
       {isPrimary && (
         <div className="ed-home-next">

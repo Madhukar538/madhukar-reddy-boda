@@ -4,9 +4,10 @@ import type { ClientProject, ProjectCard } from '@/data/profile';
 import { caseStudyFor } from '@/data/case-studies';
 
 /**
- * The Projects page in the Editorial look: each built system as a case file (the brief, the
- * result, what it was built with, where to read more), then the client work as a dated log.
- * Everything comes from the project data; shown only in Editorial (globals.css .ed-only).
+ * The Projects page in the Editorial look, laid out like a magazine: a contents list of every file,
+ * the systems with a measured result or a write-up as full case files (the brief, the result, what
+ * it was built with, where to read more), the rest as a compact grid, then the client work as a
+ * dated log. Everything comes from the project data; shown only in Editorial (globals.css .ed-only).
  */
 
 function readMore(project: ProjectCard) {
@@ -19,8 +20,16 @@ function readMore(project: ProjectCard) {
 /** The first year in a duration such as "2023 – 2024", for sorting the log newest first. */
 const startYear = (duration: string) => Number(duration.match(/\d{4}/)?.[0] ?? 0);
 
+const fileId = (i: number) => `file-${String(i + 1).padStart(2, '0')}`;
+
+/** A full case file needs something to show beyond the brief: a result, a write-up or the featured flag. */
+const isMajor = (project: ProjectCard) => Boolean(project.featured || project.outcome || readMore(project));
+
 export function EditorialCaseFiles({ keyProjects, clientProjects }: { keyProjects: ProjectCard[]; clientProjects: ClientProject[] }) {
   const log = [...clientProjects].sort((a, b) => startYear(b.duration) - startYear(a.duration));
+  const numbered = keyProjects.map((project, i) => ({ project, i }));
+  const major = numbered.filter(({ project }) => isMajor(project));
+  const minor = numbered.filter(({ project }) => !isMajor(project));
 
   return (
     <div className="ed-only ed-files">
@@ -28,11 +37,26 @@ export function EditorialCaseFiles({ keyProjects, clientProjects }: { keyProject
         ( {String(keyProjects.length).padStart(2, '0')} case files · {String(log.length).padStart(2, '0')} client builds )
       </p>
 
+      {/* Contents: every file at a glance, each a jump to its entry. */}
+      <nav className="ed-contents" aria-label="Case files">
+        <ol>
+          {numbered.map(({ project, i }) => (
+            <li key={project.title}>
+              <a href={`#${fileId(i)}`}>
+                <span className="ed-contents-no">{String(i + 1).padStart(2, '0')}</span>
+                <span className="ed-contents-title">{project.title}</span>
+                {project.outcome && <span className="ed-contents-flag">Result</span>}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <ol className="ed-file-list">
-        {keyProjects.map((project, i) => {
+        {major.map(({ project, i }) => {
           const more = readMore(project);
           return (
-            <li key={project.title} className="ed-file ed-reveal">
+            <li key={project.title} id={fileId(i)} className="ed-file ed-reveal">
               <div className="ed-file-tab">
                 <span>Case file {String(i + 1).padStart(2, '0')}</span>
                 {project.featured && <span className="ed-file-flag">Featured</span>}
@@ -69,6 +93,26 @@ export function EditorialCaseFiles({ keyProjects, clientProjects }: { keyProject
           );
         })}
       </ol>
+
+      {minor.length > 0 && (
+        <section className="ed-more-files" aria-labelledby="ed-more-title">
+          <h2 id="ed-more-title">More from the files</h2>
+          <ol>
+            {minor.map(({ project, i }) => (
+              <li key={project.title} id={fileId(i)} className="ed-reveal">
+                <span className="ed-mini-no">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <ul className="ed-file-tech">
+                  {project.tech.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       <section className="ed-log" aria-labelledby="ed-log-title">
         <h2 id="ed-log-title">The client log</h2>
