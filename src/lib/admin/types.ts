@@ -225,3 +225,6 @@ export type ThemeSettings = {
   defaultTheme: string;
   themes: { id: string; label: string; hint: string; isEnabled: boolean; isDefault: boolean }[];
 };
+
+/** A standalone page made in the admin, served at /<slug> (content is empty in lists). */
+export type AdminPage = { slug: string; title: string; description: string; content: string; isPublished: boolean; updatedAt: string };

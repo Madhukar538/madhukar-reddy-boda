@@ -155,6 +155,21 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         kind: 'text',
+        id: 'retrieval',
+        label: 'Accuracy',
+        title: 'A table of contents beside the vectors',
+        body: [
+          'Speed was half the problem. On long documents, vector search returned chunks that were similar to the question but not the section that answered it, so answers came back close but not accurate.',
+          'Now an LLM writes a table of contents for every document when it is indexed. At question time two retrievals run in parallel: an LLM reads the tables of contents and picks the sections that answer the question, while vector search finds matching chunks as before. Both result sets are merged, de-duplicated and re-ranked before the answer is written.',
+        ],
+        points: [
+          'The TOC path brings back whole sections, so procedures and policies arrive complete.',
+          'The vector path still finds the one specific line a section-level view would skim past.',
+          'Running both in parallel costs the slower of the two, not both added together.',
+        ],
+      },
+      {
+        kind: 'text',
         id: 'hardware',
         label: 'Hardware',
         title: 'Choosing the GPU: bandwidth beat memory size',

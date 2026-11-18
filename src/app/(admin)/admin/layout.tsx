@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <AdminSessionProvider>
-      <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-8 lg:pt-32 pb-16">{children}</div>
+      {children}
     </AdminSessionProvider>
   );
 }

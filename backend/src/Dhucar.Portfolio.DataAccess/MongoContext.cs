@@ -92,6 +92,9 @@ public class MongoContext
     /// <summary>The public bug log: one document, id "bugLog".</summary>
     public IMongoCollection<BugLogDocument> BugLogs => Database.GetCollection<BugLogDocument>("bugLog");
 
+    /// <summary>Pages made in the admin, served at /&lt;slug&gt;.</summary>
+    public IMongoCollection<PageDocument> Pages => Database.GetCollection<PageDocument>("pages");
+
     /// <summary>Browser error groups.</summary>
     public IMongoCollection<ClientErrorDocument> ClientErrors => Database.GetCollection<ClientErrorDocument>("clientErrors");
 
@@ -174,6 +177,7 @@ public class MongoContext
             new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Descending(x => x.CreatedAt)),
             new CreateIndexModel<TicketDocument>(Builders<TicketDocument>.IndexKeys.Ascending(x => x.ResolvedAt), new CreateIndexOptions { Sparse = true }),
         ]);
+        await Pages.Indexes.CreateOneAsync(new CreateIndexModel<PageDocument>(Builders<PageDocument>.IndexKeys.Ascending(x => x.IsPublished).Ascending(x => x.Title)));
         await ClientErrors.Indexes.CreateOneAsync(new CreateIndexModel<ClientErrorDocument>(
             Builders<ClientErrorDocument>.IndexKeys.Ascending(x => x.LastSeen), new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(90) }));
         await Media.Indexes.CreateOneAsync(new CreateIndexModel<MediaDocument>(Builders<MediaDocument>.IndexKeys.Descending(x => x.UploadedAt)));

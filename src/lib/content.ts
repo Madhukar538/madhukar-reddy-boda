@@ -36,8 +36,8 @@ export type SiteContent = {
   story: Story;
 };
 
-/** Content tags the API revalidates; post:<slug> tags are accepted too. */
-export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes', 'story', 'bugLog'] as const;
+/** Content tags the API revalidates (lib/content-tags.ts); post:<slug> and page:<slug> are accepted too. */
+export { CONTENT_TAGS } from '@/lib/content-tags';
 
 export const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
@@ -74,11 +74,11 @@ export type ApiProfile = Omit<Profile, 'nowUpdatedAt'> & { nowUpdatedAt?: string
 
 const apiBase = () => (process.env.API_URL || '').replace(/\/$/, '');
 
-async function callApi<T>(action: string): Promise<T> {
+async function callApi<T>(action: string, body: object = {}): Promise<T> {
   const response = await fetch(`${apiBase()}/api/${action}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: '{}',
+    body: JSON.stringify(body),
     cache: 'no-store',
     signal: AbortSignal.timeout(5000),
   });
@@ -202,4 +202,25 @@ export const getBugLog = cache(async (): Promise<FixedBug[]> => {
   const api = await attempt('bugLog', loadBugLog);
   if (!api?.updatedAt) return builtInBugLog;
   return api.entries.map((b) => ({ ...b, stack: b.stack ?? '', result: b.result || undefined }));
+});
+
+/** A page made in the admin (Admin → Pages), served at /<slug>. */
+export type SitePage = { slug: string; title: string; description: string; content: string; updatedAt: string };
+
+const loadPages = unstable_cache(() => callApi<SitePage[]>('GetPages'), ['api', 'pages'], { tags: ['pages'], revalidate: SAFETY_REFRESH_SECONDS });
+
+/** The published pages made in the admin, without their content; none without the API. */
+export const getPages = cache(async (): Promise<SitePage[]> => {
+  if (!apiBase()) return [];
+  return (await attempt('pages', loadPages)) ?? [];
+});
+
+/** One published page with its content, or null when there is none at that address. */
+export const getPage = cache(async (slug: string): Promise<SitePage | null> => {
+  if (!apiBase() || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 64) return null;
+  // Only addresses in the published list are fetched, so unknown paths never reach the API.
+  const listed = (await getPages()).some((p) => p.slug === slug);
+  if (!listed) return null;
+  const load = unstable_cache(() => callApi<SitePage>('GetPage', { slug }), ['api', 'page', slug], { tags: ['pages', `page:${slug}`], revalidate: SAFETY_REFRESH_SECONDS });
+  return attempt(`page:${slug}`, load);
 });

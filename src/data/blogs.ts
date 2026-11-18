@@ -18,6 +18,83 @@ export const readTime = (html: string) => `${Math.max(1, Math.round(countWords(h
 
 const posts: Omit<BlogPost, 'readTime'>[] = [
   {
+    slug: "rag-table-of-contents-parallel-retrieval",
+    title: "When Vector Search Wasn't Enough: A Table of Contents per Document, Searched in Parallel",
+    excerpt: "Our RAG assistant indexed every document and still gave answers that missed the point. What fixed it: an LLM writes a table of contents for each document at indexing time, and at question time an LLM picks sections from those contents while vector search runs in parallel. Both result sets are merged and re-ranked before the answer is written.",
+    date: "November 18, 2026",
+    category: "Artificial Intelligence",
+    tags: ["RAG", "LLMs", "pgvector", "Document AI"],
+    content: `
+      <p class="lead">Our multi-tenant RAG assistant indexed every document a client uploaded, split it into chunks, embedded them and searched them with <strong>pgvector</strong>. On paper it was a working pipeline. In practice the answers were often not accurate: close to the question, but not the part of the document that actually answered it. The fix wasn't a better embedding model. It was giving the system what a person uses first when they open a long document: <strong>the table of contents</strong>.</p>
+
+      <h2>1. How It Started: Chunks and Vectors Only</h2>
+      <pre>
+upload ──▶ split into chunks ──▶ embed ──▶ pgvector
+                                              │
+question ──▶ embed ──▶ nearest chunks ◀───────┘
+                            │
+                            ▼
+                     LLM writes the answer</pre>
+      <p>This is the textbook pipeline, and for short documents it was fine. With long documents (manuals, policies, product catalogues) the answers drifted.</p>
+
+      <h2>2. Why the Answers Missed</h2>
+      <ul>
+        <li><strong>Similar is not the same as relevant.</strong> Vector search returns the chunks whose wording is closest to the question. A chunk that mentions the right words in passing can outrank the section that actually answers it.</li>
+        <li><strong>Chunks lose their place.</strong> Once a document is cut into pieces, a chunk no longer knows which chapter it belongs to. "The limit is 30 days" means nothing without the heading above it.</li>
+        <li><strong>Answers span sections.</strong> When the answer is a whole procedure, the top few chunks bring back fragments of it, not the section.</li>
+      </ul>
+      <p>None of this is a bug you can patch in the vector search. The index simply doesn't know how the document is organised.</p>
+
+      <h2>3. The Change: An LLM Writes a Table of Contents at Indexing Time</h2>
+      <p>When a document is indexed, an LLM now reads it once and writes its table of contents: each section's title and what it covers, with a pointer to where that section's text lives. The TOC is stored next to the document's chunks. It is small, so it is cheap to read again later, and it describes the document the way its author organised it, not the way a chunker happened to cut it.</p>
+      <p>Generating the TOC with an LLM, rather than reading headings out of the file, matters because many uploaded documents don't have clean headings at all: scanned files, exported pages, long text with no structure. The LLM gives every document an outline either way.</p>
+
+      <h2>4. At Question Time: Two Paths in Parallel</h2>
+      <pre>
+                question
+                    │
+         ┌──────────┴──────────┐  in parallel
+         ▼                     ▼
+  LLM reads TOCs,        embed question
+  picks sections               │
+         │                     ▼
+         ▼                pgvector top
+  fetch sections            chunks
+         │                     │
+         └──────────┬──────────┘
+                    ▼
+       merge, de-dupe, re-rank
+                    │
+                    ▼
+         LLM writes the answer</pre>
+      <ul>
+        <li><strong>The TOC path:</strong> an LLM reads the tables of contents and picks the sections that should answer the question, the way a person scans a contents page. Those sections are fetched whole.</li>
+        <li><strong>The vector path:</strong> the same nearest-chunk search as before, still good at finding a specific phrase or fact wherever it sits.</li>
+        <li><strong>In parallel:</strong> both start at once, so the wait is the slower of the two, not the two added together. This mattered to us: the same platform had just been through a latency audit, and retrieval was not allowed to give that time back.</li>
+      </ul>
+
+      <h2>5. Merge, Then Re-rank</h2>
+      <p>The two paths overlap: a vector chunk is often a piece of a section the TOC path already picked. So the results are merged, duplicates removed, and the whole set re-ranked against the question as one list. Only the top of that list goes to the model that writes the answer. Each path covers the other's blind spot: the TOC path brings the right section in full, the vector path brings the exact line that a section-level view would skim past.</p>
+
+      <h2>6. What Changed</h2>
+      <p>The answers became accurate where they had been missing the point. Questions that needed a whole procedure got the whole section instead of fragments, and questions about one specific detail still found it through the vector path.</p>
+
+      <h2>7. The Costs</h2>
+      <ul>
+        <li><strong>Indexing does more work:</strong> one LLM pass per document to write the TOC.</li>
+        <li><strong>The TOC has to stay current:</strong> when a document is replaced, its TOC is written again with it.</li>
+        <li><strong>One more model call per question:</strong> the section picker. Its input is only the tables of contents, so it is small, and running it in parallel keeps it off the critical path.</li>
+      </ul>
+
+      <h2>8. Takeaways</h2>
+      <ul>
+        <li>When RAG answers are close but wrong, look at <em>what the index knows</em> before tuning the embeddings.</li>
+        <li>A document's structure is information. A table of contents puts it back after chunking takes it away.</li>
+        <li>Two retrieval paths that fail differently, run in parallel and re-ranked together, beat either one alone.</li>
+      </ul>
+    `,
+  },
+  {
     slug: "herdr-ai-agent-team-claude-code-antigravity-copilot-codex",
     title: "My AI Dev Team Lives in Herdr: Claude Code as Tech Lead, Antigravity as Developers, Copilot and Codex as Reviewers",
     excerpt: "Nine agent sessions, one owner. Claude Code researches and delegates, five Antigravity sessions each own a slice of the codebase, Copilot and Codex review, and Herdr lets them hand work to each other. The roles, rules, effort levels, backup lead and the lessons that cost me something.",

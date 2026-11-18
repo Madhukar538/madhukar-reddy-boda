@@ -1,0 +1,88 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "title": "Boda Madhukar Reddy — Engineering blog",
+      "description": ""
+    },
+    {
+      "path": "/about",
+      "title": "About",
+      "description": "Senior Software Engineer and AI architect leading teams of AI coding agents: .NET 10, Next.js, Solr, SQL Server, Redis, k6, RAG, MCP and self-hosted LLMs."
+    },
+    {
+      "path": "/ai",
+      "title": "Connect your AI",
+      "description": "This portfolio is an MCP server. Connect Claude, Cursor or VS Code and ask your AI assistant about my experience, projects and writing."
+    },
+    {
+      "path": "/bug-log",
+      "title": "Bug log",
+      "description": "Bugs I have fixed: what people saw, why it happened, what changed and what it measured afterwards."
+    },
+    {
+      "path": "/experience",
+      "title": "Experience",
+      "description": "Senior Software Engineer at Revalsys Technologies: .NET R&D, multi-tenant RAG and MCP platforms, hybrid search, offline-first apps and large e-commerce builds."
+    },
+    {
+      "path": "/fix-a-bug",
+      "title": "Fix a bug",
+      "description": "Stuck on a bug, a slow API or an architecture question? Describe it and it becomes a triaged ticket on my phone."
+    },
+    {
+      "path": "/graph",
+      "title": "Knowledge graph",
+      "description": "An interactive map of my projects, R&D experiments, blog posts and the technologies that connect them."
+    },
+    {
+      "path": "/lab",
+      "title": "R&D Lab",
+      "description": "Experiments in load testing, AI code review, RAG, IoT predictive maintenance, encryption, messaging and gRPC."
+    },
+    {
+      "path": "/lab/hybrid-search",
+      "title": "Hybrid Search Visualizer: BM25 vs Vector vs RRF",
+      "description": "Interactive visualization comparing Okapi BM25 keyword search, dense vector kNN semantic search, and Reciprocal Rank Fusion (RRF) on Solr 9 and .NET."
+    },
+    {
+      "path": "/projects",
+      "title": "Projects",
+      "description": "IoT data platforms, developer tooling, video conferencing, RAG systems and e-commerce builds for Jockey, Speedo, Manyavar and more."
+    },
+    {
+      "path": "/sitemap",
+      "title": "Sitemap",
+      "description": "Every page on the site in one place: the pages, case studies, posts, topics and the feeds for machines."
+    },
+    {
+      "path": "/status",
+      "title": "System status",
+      "description": "Live status of this site: Cloudflare, the Next.js front end, the .NET API and MongoDB, with response times, uptime and the last deploys."
+    },
+    {
+      "path": "/topics",
+      "title": "Topics",
+      "description": "Browse posts by topic: software architecture, AI and RAG, DevOps and homelab, observability and performance."
+    },
+    {
+      "path": "/work-with-me",
+      "title": "Work with me",
+      "description": "Performance audits and load testing for .NET APIs, self-hosted AI assistants and agents, architecture reviews, and fixing stubborn bugs."
+    }
+  ],
+  "files": [
+    {
+      "path": "/llms-full.txt"
+    },
+    {
+      "path": "/llms.txt"
+    },
+    {
+      "path": "/rss.xml"
+    },
+    {
+      "path": "/sitemap.xml"
+    }
+  ]
+}
