@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Palette } from 'lucide-react';
+import { Check, Palette, Shuffle, X } from 'lucide-react';
 import { STYLE_STORAGE_KEY, applyDesignStyle, useDesignStyle, type DesignStyle } from '@/lib/design-style';
 import { cn } from '@/lib/utils';
 
@@ -44,12 +44,33 @@ export function ThemeOptionsProvider({ value, children }: { value: ThemeOptions;
       if (current !== saved) applyDesignStyle(saved);
     } catch {}
   }, [value.enabled]);
+
+  // T moves to the next enabled theme (not while typing, nor with a modifier key held).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 't' && e.key !== 'T') return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]')) return;
+      if (value.enabled.length < 2) return;
+      const order = THEMES.map((t) => t.id).filter((id) => value.enabled.includes(id));
+      const current = (document.documentElement.dataset.style ?? 'midnight') as DesignStyle;
+      applyDesignStyle(order[(order.indexOf(current) + 1) % order.length]);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [value.enabled]);
+
   return <ThemeOptionsContext.Provider value={value}>{children}</ThemeOptionsContext.Provider>;
 }
 
 const MENU_W = 208;
-/** The menu's height: its label plus one row per theme (kept in step with the rows' padding). */
-const menuHeight = (count: number) => 38 + count * 55;
+/** The menu's height: its label, one row per theme and the Surprise me row with the tip (kept in step with their padding). */
+const menuHeight = (count: number) => 38 + count * 55 + 72;
+/** Set once the visitor has seen the first-visit hint (or picked a theme), so it never shows again. */
+const HINT_KEY = 'portfolio-look-hint';
+/** Two pickers are on the page (top bar and phone tab bar); only the visible one shows the hint. */
+let hintClaimed = false;
 const GAP = 8;
 
 /**
@@ -66,6 +87,48 @@ export function LookToggle({ className }: { className?: string }) {
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const current = themes.find((t) => t.id === look) ?? themes[0] ?? THEMES[0];
+  const [hint, setHint] = useState<{ top: number; left: number } | null>(null);
+
+  const dismissHint = () => {
+    setHint(null);
+    try {
+      localStorage.setItem(HINT_KEY, '1');
+    } catch {}
+  };
+
+  // First visit: a short note beside the button that the site comes in several looks. Once, ever,
+  // and not for anyone who has already picked a look.
+  useEffect(() => {
+    if (themes.length < 2) return;
+    try {
+      if (localStorage.getItem(HINT_KEY) || localStorage.getItem(STYLE_STORAGE_KEY)) return;
+    } catch {
+      return;
+    }
+    const show = window.setTimeout(() => {
+      const b = button.current;
+      if (!b || hintClaimed || b.getClientRects().length === 0) return;
+      const r = b.getBoundingClientRect();
+      if (r.width === 0) return;
+      hintClaimed = true;
+      const width = 240;
+      const left = Math.min(Math.max(GAP, r.right - width), window.innerWidth - width - GAP);
+      setHint({ top: r.top > window.innerHeight / 2 ? r.top - GAP - 64 : r.bottom + GAP, left });
+    }, 2500);
+    return () => window.clearTimeout(show);
+  }, [themes.length]);
+
+  useEffect(() => {
+    if (!hint) return;
+    const hide = window.setTimeout(dismissHint, 9000);
+    return () => window.clearTimeout(hide);
+  }, [hint]);
+
+  const surprise = () => {
+    const others = themes.filter((t) => t.id !== look);
+    if (others.length) setLook(others[Math.floor(Math.random() * others.length)].id);
+    setOpen(false);
+  };
 
   // Below the button when there is room, otherwise above; right edges aligned, kept on screen.
   useLayoutEffect(() => {
@@ -115,7 +178,10 @@ export function LookToggle({ className }: { className?: string }) {
       <button
         ref={button}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (hint) dismissHint();
+          setOpen(!open);
+        }}
         aria-label={`Theme: ${current.label}. Change theme`}
         aria-expanded={open}
         aria-haspopup="true"
@@ -167,6 +233,33 @@ export function LookToggle({ className }: { className?: string }) {
                 </button>
               );
             })}
+            <div className="mt-1 border-t border-foreground/10 pt-1">
+              <button
+                type="button"
+                onClick={surprise}
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-semibold text-foreground/85 transition-colors hover:bg-foreground/5"
+              >
+                <Shuffle aria-hidden className="h-4 w-4" />
+                Surprise me
+              </button>
+              <p className="px-2.5 pb-1 text-[11px] text-muted-foreground">
+                Tip: press <kbd className="rounded px-1 ring-1 ring-foreground/20">T</kbd> to switch looks.
+              </p>
+            </div>
+          </div>,
+          document.body
+        )}
+      {hint &&
+        !open &&
+        createPortal(
+          <div role="status" className="look-hint glass glass-strong fixed z-[390] flex items-start gap-2 p-3 text-sm" style={{ top: hint.top, left: hint.left, width: 240 }}>
+            <Palette aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <button type="button" onClick={() => { dismissHint(); setOpen(true); }} className="min-w-0 flex-1 text-left">
+              This site comes in {themes.length} looks. <span className="font-semibold text-primary">Try one</span>
+            </button>
+            <button type="button" onClick={dismissHint} aria-label="Dismiss" className="shrink-0 text-muted-foreground hover:text-foreground">
+              <X className="h-4 w-4" />
+            </button>
           </div>,
           document.body
         )}
