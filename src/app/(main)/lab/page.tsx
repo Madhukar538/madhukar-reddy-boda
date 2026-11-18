@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { ArrowRight, Scale } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
   title: 'R&D Lab — Boda Madhukar Reddy',
   description: 'Experiments in load testing, AI code review, RAG, IoT predictive maintenance, encryption, messaging and gRPC.',
   alternates: { canonical: '/lab' },
+  openGraph: pageOpenGraph('/lab'),
 };
 
 export default async function LabPage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { Experience } from '@/components/portfolio/experience';
 import { EditorialView } from '@/components/looks/editorial-view';
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
   title: 'Experience — Boda Madhukar Reddy',
   description: 'Senior Software Engineer at Revalsys Technologies: .NET R&D, multi-tenant RAG and MCP platforms, hybrid search, offline-first apps and large e-commerce builds.',
   alternates: { canonical: '/experience' },
+  openGraph: pageOpenGraph('/experience'),
 };
 
 export default async function ExperiencePage() {

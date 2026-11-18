@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { BugProcess, BugReportForm } from '@/components/portfolio/bug-report-form';
 import Link from 'next/link';
@@ -12,6 +13,7 @@ const TROUBLE = ['Stack traces', '504s under load', 'Slow queries', 'Memory leak
 
 export const metadata: Metadata = {
   alternates: { canonical: '/fix-a-bug' },
+  openGraph: pageOpenGraph('/fix-a-bug'),
   title: 'Fix a bug — Boda Madhukar Reddy',
   description:
     'Stuck on a bug, a slow API or an architecture question? Describe it and it becomes a triaged ticket on my phone.',

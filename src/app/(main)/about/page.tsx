@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import { HomeHero } from '@/components/portfolio/home-hero';
 import { PortraitBackdrop } from '@/components/portfolio/portrait-backdrop';
 import { Summary } from '@/components/portfolio/summary';
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
   title: 'About — Boda Madhukar Reddy',
   description: 'Senior Software Engineer and AI architect leading teams of AI coding agents: .NET 10, Next.js, Solr, SQL Server, Redis, k6, RAG, MCP and self-hosted LLMs.',
   alternates: { canonical: '/about' },
+  openGraph: pageOpenGraph('/about'),
 };
 
 export default async function AboutPage() {

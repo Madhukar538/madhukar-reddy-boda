@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { experienceSince } from '@/lib/utils';
 import { ArrowRight, ArrowUpRight, Bug, Check, Gauge, Layers, Mail, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
   description:
     'Performance audits and load testing for .NET APIs, self-hosted AI assistants and agents, architecture reviews, and fixing stubborn bugs.',
   alternates: { canonical: '/work-with-me' },
+  openGraph: pageOpenGraph('/work-with-me'),
 };
 
 type Service = {

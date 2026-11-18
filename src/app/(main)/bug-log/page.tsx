@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
@@ -7,6 +8,7 @@ import { bugLog } from '@/data/bug-log';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/bug-log' },
+  openGraph: pageOpenGraph('/bug-log'),
   title: 'Bug log — Boda Madhukar Reddy',
   description: 'Bugs I have fixed: what people saw, why it happened, what changed and what it measured afterwards.',
 };

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { McpConnect } from '@/components/portfolio/mcp-connect';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/ai' },
+  openGraph: pageOpenGraph('/ai'),
   title: 'Connect your AI — Boda Madhukar Reddy',
   description:
     'This portfolio is an MCP server. Connect Claude, Cursor or VS Code and ask your AI assistant about my experience, projects and writing.',

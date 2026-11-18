@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { ChevronLeft, PenLine } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
   description:
     'Interactive visualization comparing Okapi BM25 keyword search, dense vector kNN semantic search, and Reciprocal Rank Fusion (RRF) on Solr 9 and .NET.',
   alternates: { canonical: '/lab/hybrid-search' },
+  openGraph: pageOpenGraph('/lab/hybrid-search'),
 };
 
 export default function HybridSearchPage() {

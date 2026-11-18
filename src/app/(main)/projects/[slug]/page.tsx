@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle2, Wrench } from 'lucide-react';
@@ -7,7 +8,7 @@ import { Callout } from '@/components/vault/callout';
 import { LocalGraphLazy } from '@/components/vault/local-graph-lazy';
 import { caseStudies, type CaseChapter } from '@/data/case-studies';
 import { diagrams } from '@/data/diagrams';
-import { clampMetaDescription, slugify } from '@/lib/blog';
+import { clampMetaDescription, siteUrl, slugify } from '@/lib/blog';
 import { getContent } from '@/lib/content';
 import { localGraph } from '@/lib/vault';
 
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${study.project}: case study`.length > 40 ? { absolute: `${study.project}: case study` } : `${study.project}: case study — Boda Madhukar Reddy`,
     description: clampMetaDescription(study.summary, 155),
     alternates: { canonical: `/projects/${study.slug}` },
+    openGraph: pageOpenGraph(`/projects/${study.slug}`, 'article'),
   };
 }
 
@@ -118,8 +120,38 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const content = await getContent();
   const graph = study.post ? localGraph(content, study.post) : null;
 
+  // What the page is for search engines: a case study by the site's person, and where it sits.
+  const base = siteUrl();
+  const url = `${base}/projects/${study.slug}`;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        '@id': `${url}#case-study`,
+        headline: study.title,
+        name: `${study.project}: case study`,
+        description: study.summary,
+        url,
+        author: { '@id': `${base}/#person` },
+        about: study.project,
+        keywords: study.tech.join(', '),
+        ...(study.post ? { isBasedOn: `${base}/blog/${study.post}` } : {}),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+          { '@type': 'ListItem', position: 2, name: 'Projects', item: `${base}/projects` },
+          { '@type': 'ListItem', position: 3, name: study.project, item: url },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="ed-case container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-20">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       {/* Reading progress, driven by the page scroll (CSS only). */}
       <div aria-hidden className="cs-progress fixed inset-x-0 top-0 z-50 h-[3px] origin-left bg-primary" />
 

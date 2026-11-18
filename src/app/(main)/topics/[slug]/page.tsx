@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${topic.name} — Boda Madhukar Reddy`,
     description,
     alternates: { canonical: `/topics/${topic.slug}` },
+    openGraph: pageOpenGraph(`/topics/${topic.slug}`),
   };
 }
 

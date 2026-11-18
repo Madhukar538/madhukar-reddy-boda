@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import { AutoRefresh } from '@/components/portfolio/auto-refresh';
 import { probeApi, uptimeMonitors, type Beat, type Monitor } from '@/lib/status';
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   title: 'System status — Boda Madhukar Reddy',
   description: 'Live status of this site: Cloudflare, the Next.js front end, the .NET API and MongoDB, with response times, uptime and the last deploys.',
   alternates: { canonical: '/status' },
+  openGraph: pageOpenGraph('/status'),
 };
 
 // Checked live on every request (the page refreshes itself every 30 s while open).
