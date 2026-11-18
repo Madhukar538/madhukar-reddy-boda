@@ -22,6 +22,7 @@ import { chunkReloadScript } from '@/lib/chunk-reload';
 import { KNOWN_THEMES, getContent, getThemeSettings } from '@/lib/content';
 import { ThemeOptionsProvider } from '@/components/look-toggle';
 import { TrackingBeacon } from '@/components/tracking-beacon';
+import { ErrorReporter } from '@/components/error-reporter';
 import { GenieLauncher } from '@/components/genie/genie-launcher';
 
 export const metadata: Metadata = {
@@ -203,6 +204,7 @@ export default async function RootLayout({
             <QuickSwitcher />
             <HoverPreview />
             <TrackingBeacon />
+            <ErrorReporter />
             <GenieLauncher email={profile.email} />
           </OsModeProvider>
           </ThemeOptionsProvider>

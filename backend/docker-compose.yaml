@@ -30,7 +30,8 @@ services:
       # Setting the users first adds a few seconds to each start: give a slow host time.
       start_period: 60s
 
-  # Nightly dump of the database into the mongo-backups volume, newest 14 kept (mongo/backup.sh).
+  # Nightly dump of the database into the mongo-backups volume, newest 14 kept, each one
+  # restore-checked in a throwaway MongoDB (mongo/backup.sh).
   mongo-backup:
     build: ./mongo
     restart: unless-stopped
@@ -46,6 +47,7 @@ services:
       BACKUP_AT_UTC: "${BACKUP_AT_UTC:-21:00}"
     volumes:
       - mongo-backups:/backups
+      - backup-status:/status
 
   # Copies those dumps off this server, encrypted, to Cloudflare R2 (or any S3-compatible storage).
   # Idle until the OFFSITE_* variables are set (offsite/offsite.sh).
@@ -64,6 +66,7 @@ services:
       OFFSITE_EVERY_HOURS: "${OFFSITE_EVERY_HOURS:-6}"
     volumes:
       - mongo-backups:/backups:ro
+      - backup-status:/status
 
   api:
     build: .
@@ -93,9 +96,15 @@ services:
       Portfolio__Site__RevalidateSecret: "${REVALIDATE_SECRET}"
       # The deployed commit, reported by /health (Coolify: "Include Source Commit in Build").
       SOURCE_COMMIT: "${SOURCE_COMMIT:-}"
+      # Where the backup services record their last run, for the admin's backup line.
+      Portfolio__Backups__StatusDirectory: "/backup-status"
+    volumes:
+      - backup-status:/backup-status:ro
 
 volumes:
   # The database files. Survives redeploys; removing this volume deletes the data.
   mongo-data:
   # The nightly dumps. On the same disk as the data: mongo-offsite copies them off the server.
   mongo-backups:
+  # The backup and offsite services' last results (a few small JSON files), read by the API.
+  backup-status:

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { CHUNK_ERROR, reloadForNewBuild } from '@/lib/chunk-reload';
+import { reportError } from '@/lib/report-error';
 
 /** Last-resort screen when the app itself fails to render. */
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
@@ -9,7 +10,8 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 
   useEffect(() => {
     if (isStaleBuild) reloadForNewBuild();
-  }, [isStaleBuild]);
+    else reportError(error);
+  }, [isStaleBuild, error]);
 
   return (
     <html lang="en">

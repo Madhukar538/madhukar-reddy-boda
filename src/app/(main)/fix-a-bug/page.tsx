@@ -4,9 +4,8 @@ import { PageShell } from '@/components/portfolio/page-shell';
 import { BugProcess, BugReportForm } from '@/components/portfolio/bug-report-form';
 import Link from 'next/link';
 import { CalendarClock, ListChecks } from 'lucide-react';
-import { getContent } from '@/lib/content';
+import { getBugLog, getContent } from '@/lib/content';
 import { bookingUrl } from '@/lib/booking';
-import { bugLog } from '@/data/bug-log';
 
 /** The kinds of trouble that come in, for the Editorial band under the title. */
 const TROUBLE = ['Stack traces', '504s under load', 'Slow queries', 'Memory leaks', 'Race conditions', 'Flaky deploys', 'Broken integrations', 'Hallucinating agents'];
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FixABugPage() {
-  const { profile } = await getContent();
+  const [{ profile }, bugLog] = await Promise.all([getContent(), getBugLog()]);
   const booking = bookingUrl();
   // Shown only when there is something real behind them (a booking link, logged fixes).
   const actions =

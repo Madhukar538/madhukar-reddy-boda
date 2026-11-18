@@ -5,6 +5,7 @@ import * as builtIn from '@/data/profile';
 import type { ClientProject, Experiment, ProjectCard, SkillCategory, Status } from '@/data/profile';
 import type { DesignStyle } from '@/lib/design-style';
 import { BUILT_IN_STORY, parseStory, type Story } from '@/lib/story';
+import { bugLog as builtInBugLog, type FixedBug } from '@/data/bug-log';
 
 /**
  * Where the site's content comes from. With API_URL set, posts, projects and
@@ -36,7 +37,7 @@ export type SiteContent = {
 };
 
 /** Content tags the API revalidates; post:<slug> tags are accepted too. */
-export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes', 'story'] as const;
+export const CONTENT_TAGS = ['posts', 'projects', 'profile', 'themes', 'story', 'bugLog'] as const;
 
 export const byNewest = (list: BlogPost[]) => [...list].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
@@ -94,6 +95,8 @@ const loadProjects = unstable_cache(() => callApi<ApiProject[]>('GetProjects'), 
 const loadProfile = unstable_cache(() => callApi<ApiProfile>('GetProfile'), ['api', 'profile'], { tags: ['profile'], revalidate: SAFETY_REFRESH_SECONDS });
 // The stored story as JSON ("" until one is saved): validated here, so a bad save can't break the page.
 const loadStory = unstable_cache(() => callApi<{ json: string }>('GetStory'), ['api', 'story'], { tags: ['story'], revalidate: SAFETY_REFRESH_SECONDS });
+// The bug log edited in the admin (updatedAt is null until it has been saved once).
+const loadBugLog = unstable_cache(() => callApi<{ entries: FixedBug[]; updatedAt: string | null }>('GetBugLog'), ['api', 'bugLog'], { tags: ['bugLog'], revalidate: SAFETY_REFRESH_SECONDS });
 const loadThemes = unstable_cache(() => callApi<ApiThemes>('GetThemes'), ['api', 'themes'], { tags: ['themes'], revalidate: SAFETY_REFRESH_SECONDS });
 
 // Warn once per section until it recovers, not once per page.
@@ -191,4 +194,12 @@ export const getThemeSettings = cache(async (): Promise<ThemeSettings> => {
   if (!api || enabled.length === 0) return BUILT_IN_THEMES;
   const defaultTheme = enabled.find((id) => id === api.defaultTheme) ?? enabled[0];
   return { defaultTheme, enabled };
+});
+
+/** The public bug log, newest first: the admin's once it has been saved, else src/data/bug-log.ts. */
+export const getBugLog = cache(async (): Promise<FixedBug[]> => {
+  if (!apiBase()) return builtInBugLog;
+  const api = await attempt('bugLog', loadBugLog);
+  if (!api?.updatedAt) return builtInBugLog;
+  return api.entries.map((b) => ({ ...b, stack: b.stack ?? '', result: b.result || undefined }));
 });

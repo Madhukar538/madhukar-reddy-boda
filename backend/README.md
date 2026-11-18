@@ -211,6 +211,8 @@ db.settings.findOne({ _id: "security" })
 
 **Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps the `portfolio` database every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it can read `portfolio` and nothing else.
 
+Every dump is then **restore-checked**: restored into a throwaway MongoDB started inside the backup container (never the live database), and every collection the live database had must come back. A dump that fails the check is kept but not counted as good. The result is written to the `backup-status` volume, which the API reads (read-only) for the line at the top of Admin → Traffic: when the last good backup was, how many collections and documents came back, and whether the offsite copy is verified. It warns when the last good backup is over 36 hours old or the last attempt failed. CI runs the same drill on every pull request (the "Backups (restore drill)" job).
+
 The dumps sit on the same disk as the database, so copy one elsewhere now and then:
 
 ```sh
@@ -238,7 +240,7 @@ Then restart the API.
 | `OFFSITE_ENCRYPTION_PASSWORD` | a long random password. **Keep a copy outside the server** (a password manager): without it the copies cannot be read. |
 | `OFFSITE_KEEP_DAYS`, `OFFSITE_EVERY_HOURS` | optional, default `60` and `6` |
 
-Its log says "copied, N dumps in the bucket" after each run. To restore from the bucket on any machine with rclone, set the same `RCLONE_CONFIG_*` values the script sets, then decrypt a dump while downloading it, and restore it as above:
+After each copy it runs `rclone cryptcheck`, which confirms every dump in the bucket decrypts to exactly the local file (by hash, without downloading), and records the result for the admin's backup line. Its log says "copied and verified, N dumps in the bucket" after each run. To restore from the bucket on any machine with rclone, set the same `RCLONE_CONFIG_*` values the script sets, then decrypt a dump while downloading it, and restore it as above:
 
 ```sh
 rclone copy sealed:portfolio-2026-10-31T210000Z.gz .

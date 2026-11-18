@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { Plus } from 'lucide-react';
 import { errorMessage } from '@/lib/admin/api';
 import { nowDate } from '@/lib/utils';
 import { profile as builtInProfile } from '@/data/profile';
 import type { Profile, SaveResult } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
-import { SaveBar, ensureRefreshed, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
+import { ListItem, SaveBar, ensureRefreshed, move, savedMessage, useLeaveGuard, type Status } from '@/components/admin/editor';
 import { Field, Notice, Panel, Spinner, fieldClass, splitLines, splitList } from '@/components/admin/ui';
 
 // Lists are edited as text (comma- or line-separated) and split on save,
@@ -38,28 +38,6 @@ const fromForm = (f: Form): Profile => ({
     groups: f.experience.groups.filter((g) => g.label.trim()).map((g) => ({ label: g.label.trim(), items: splitLines(g.items) })),
   },
 });
-
-const move = <T,>(list: T[], from: number, to: number) => {
-  if (to < 0 || to >= list.length) return list;
-  const next = [...list];
-  const [item] = next.splice(from, 1);
-  next.splice(to, 0, item);
-  return next;
-};
-
-function ListItem({ index, count, onMove, onRemove, children }: { index: number; count: number; onMove: (to: number) => void; onRemove: () => void; children: ReactNode }) {
-  const icon = 'flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-foreground/10 hover:text-foreground disabled:opacity-30';
-  return (
-    <div className="glass-inset flex gap-3 rounded-xl p-3">
-      <div className="min-w-0 flex-1 space-y-3">{children}</div>
-      <div className="flex shrink-0 flex-col">
-        <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => onMove(index - 1)} className={icon}><ArrowUp className="h-4 w-4" /></button>
-        <button type="button" aria-label="Move down" disabled={index === count - 1} onClick={() => onMove(index + 1)} className={icon}><ArrowDown className="h-4 w-4" /></button>
-        <button type="button" aria-label="Remove" onClick={onRemove} className={icon}><X className="h-4 w-4" /></button>
-      </div>
-    </div>
-  );
-}
 
 const addButton = 'inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline';
 

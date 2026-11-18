@@ -64,3 +64,40 @@ jobs:
           dotnet-version: 8.0.x
       # The tests start their own throwaway MongoDB (Mongo2Go): no services needed.
       - run: dotnet test Dhucar.Portfolio.sln --configuration Release
+
+  backups:
+    name: Backups (restore drill)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend/mongo
+    steps:
+      - uses: actions/checkout@v4
+      # The same image and backup.sh the server runs: a database with some data, one backup,
+      # and its restore check into a throwaway MongoDB must pass with every collection back.
+      - run: docker build -t portfolio-mongo .
+      - name: Start a database with some data
+        run: |
+          docker network create drill
+          docker run -d --name mongo --network drill \
+            -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=drill-root \
+            -e MONGO_APP_USERNAME=portfolio -e MONGO_APP_PASSWORD=drill-app -e MONGO_APP_DATABASE=portfolio \
+            portfolio-mongo mongod --wiredTigerCacheSizeGB 0.25
+          for i in $(seq 1 60); do docker exec mongo healthcheck.sh && break; sleep 2; done
+          docker exec mongo mongosh --quiet -u portfolio -p drill-app --authenticationDatabase portfolio portfolio --eval '
+            db.posts.insertMany([{ _id: "a", title: "A" }, { _id: "b", title: "B" }]);
+            db.profile.insertOne({ _id: "profile", name: "Drill" });
+            db.pageViews.insertMany(Array.from({ length: 500 }, (_, i) => ({ _id: String(i), path: "/" })));'
+      - name: Back up once and restore-check it
+        run: |
+          mkdir -p backups status
+          docker run --rm --network drill -e MONGO_APP_USERNAME=portfolio -e MONGO_APP_PASSWORD=drill-app -e BACKUP_ONCE=1 \
+            -v "$PWD/backups:/backups" -v "$PWD/status:/status" --entrypoint backup.sh portfolio-mongo
+          cat status/backup.json status/backup-good.json
+          grep -q '"isOk":true' status/backup.json
+          grep -q '"collections":3' status/backup-good.json
+          grep -q '"documents":503' status/backup-good.json
+          ls backups/portfolio-*.gz
+      - if: failure()
+        run: docker logs mongo | tail -50
