@@ -291,6 +291,24 @@
       "sortOrder": 2
     },
     {
+      "id": "dhucar-in-portfolio-platform",
+      "kind": "key",
+      "title": "dhucar.in: Portfolio Platform",
+      "description": "This site, built and run end to end: Next.js 16 pages kept fresh by on-demand revalidation from a .NET 8 API, self-hosted MongoDB, passkey sign-in for the admin, live presence over SignalR, a read-only MCP endpoint for AI assistants and eight switchable designs, deployed with Coolify behind a Cloudflare Tunnel.",
+      "tech": [
+        "Next.js 16",
+        ".NET 8",
+        "MongoDB",
+        "SignalR",
+        "MCP",
+        "Coolify"
+      ],
+      "post": "",
+      "isFeatured": false,
+      "outcome": "",
+      "sortOrder": 3
+    },
+    {
       "id": "real-time-iot-data-platform",
       "kind": "key",
       "title": "Real-Time IoT Data Platform",
@@ -305,7 +323,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 3
+      "sortOrder": 4
     },
     {
       "id": "custom-intellisense-extension",
@@ -318,7 +336,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 4
+      "sortOrder": 5
     },
     {
       "id": "outlook-reminder-plugin",
@@ -334,7 +352,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 5
+      "sortOrder": 6
     },
     {
       "id": "modular-video-conferencing-system",
@@ -351,7 +369,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 6
+      "sortOrder": 7
     },
     {
       "id": "faceauth-with-liveness-detection",
@@ -366,7 +384,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 7
+      "sortOrder": 8
     },
     {
       "id": "context-aware-support-chatbot",
@@ -382,7 +400,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 8
+      "sortOrder": 9
     },
     {
       "id": "multi-tier-in-memory-caching-engine",
@@ -398,7 +416,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 9
+      "sortOrder": 10
     },
     {
       "id": "developer-knowledge-discovery-rag",
@@ -414,7 +432,7 @@
       "post": "building-rag-pipeline-internal-documentation",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 10
+      "sortOrder": 11
     },
     {
       "id": "pwbassistant-nuget-package",
@@ -429,7 +447,7 @@
       "post": "",
       "isFeatured": false,
       "outcome": "",
-      "sortOrder": 11
+      "sortOrder": 12
     },
     {
       "id": "fossil-india",
@@ -452,7 +470,7 @@
         "Established nonce-based CSP and secure headers for production environments.",
         "Coordinated SEO, metadata mapping and QA verification for organic ranking preservation."
       ],
-      "sortOrder": 12
+      "sortOrder": 13
     },
     {
       "id": "jockey",
@@ -482,7 +500,7 @@
         "Interacted with clients, prepared requirement documents, and provided production support.",
         "Managed releases via DevOps and coordinated with the testing team."
       ],
-      "sortOrder": 13
+      "sortOrder": 14
     },
     {
       "id": "manyavar",
@@ -509,7 +527,7 @@
         "Contributed to various modules to enhance the platform's functionality and performance.",
         "Worked within a team to deliver features for a high-traffic e-commerce website."
       ],
-      "sortOrder": 14
+      "sortOrder": 15
     },
     {
       "id": "luxcozi",
@@ -536,7 +554,7 @@
         "Contributed to various modules to enhance the platform's functionality and performance.",
         "Worked within a team to deliver features for a high-traffic e-commerce website."
       ],
-      "sortOrder": 15
+      "sortOrder": 16
     },
     {
       "id": "speedo",
@@ -565,7 +583,7 @@
         "Understood client requirements and provided production support.",
         "Coordinated with testing teams and prepared release notes for UAT and Production deployments."
       ],
-      "sortOrder": 16
+      "sortOrder": 17
     },
     {
       "id": "local-llm-gpu-benchmark-rtx-5090-vs-dgx-spark",
@@ -580,7 +598,7 @@
       ],
       "post": "rtx-5090-vs-dgx-spark-local-llm-inference",
       "status": "RESEARCH",
-      "sortOrder": 17
+      "sortOrder": 18
     },
     {
       "id": "hybrid-product-search-bm25-vector-rrf",
@@ -596,7 +614,7 @@
       ],
       "post": "hybrid-search-solr-bm25-vector-rrf",
       "status": "POC",
-      "sortOrder": 18
+      "sortOrder": 19
     },
     {
       "id": "on-demand-isr-next-js-16-net",
@@ -611,7 +629,7 @@
       ],
       "post": "nextjs-dotnet-on-demand-isr",
       "status": "POC",
-      "sortOrder": 19
+      "sortOrder": 20
     },
     {
       "id": "mcp-server-for-code-database-intelligence",
@@ -628,7 +646,7 @@
       ],
       "post": "mcp-server-code-database-intelligence",
       "status": "WIP",
-      "sortOrder": 20
+      "sortOrder": 21
     },
     {
       "id": "self-hosted-web-analytics",
@@ -643,7 +661,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 21
+      "sortOrder": 22
     },
     {
       "id": "mongodb-query-tuning-for-a-meeting-platform",
@@ -657,7 +675,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 22
+      "sortOrder": 23
     },
     {
       "id": "voice-ivr-agent-over-rag",
@@ -672,7 +690,7 @@
       ],
       "post": "",
       "status": "RESEARCH",
-      "sortOrder": 23
+      "sortOrder": 24
     },
     {
       "id": "in-browser-llm-inference-with-webllm",
@@ -686,7 +704,7 @@
       ],
       "post": "",
       "status": "RESEARCH",
-      "sortOrder": 24
+      "sortOrder": 25
     },
     {
       "id": "image-table-extraction-with-document-ai",
@@ -701,7 +719,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 25
+      "sortOrder": 26
     },
     {
       "id": "10-node-bare-metal-vmss-cluster",
@@ -716,7 +734,7 @@
       ],
       "post": "homelab-vmss-docker-swarm-vs-k3s",
       "status": "RESEARCH",
-      "sortOrder": 26
+      "sortOrder": 27
     },
     {
       "id": "legacy-jquery-site-next-js-static-export",
@@ -731,7 +749,7 @@
       ],
       "post": "",
       "status": "WIP",
-      "sortOrder": 27
+      "sortOrder": 28
     },
     {
       "id": "custom-roslyn-analyzer",
@@ -745,7 +763,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 28
+      "sortOrder": 29
     },
     {
       "id": "api-load-testing-observability",
@@ -760,7 +778,7 @@
       ],
       "post": "load-testing-microservices-k6-grafana",
       "status": "SHIPPED",
-      "sortOrder": 29
+      "sortOrder": 30
     },
     {
       "id": "pdf-generation-from-html-in-c",
@@ -774,7 +792,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 30
+      "sortOrder": 31
     },
     {
       "id": "ai-code-review-assistant",
@@ -790,7 +808,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 31
+      "sortOrder": 32
     },
     {
       "id": "iot-predictive-maintenance-poc",
@@ -806,7 +824,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 32
+      "sortOrder": 33
     },
     {
       "id": "advanced-rag-for-internal-docs",
@@ -821,7 +839,7 @@
       ],
       "post": "building-rag-pipeline-internal-documentation",
       "status": "SHIPPED",
-      "sortOrder": 33
+      "sortOrder": 34
     },
     {
       "id": "end-to-end-encryption-layer",
@@ -835,7 +853,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 34
+      "sortOrder": 35
     },
     {
       "id": "rabbitmq-microservices-bus",
@@ -849,7 +867,7 @@
       ],
       "post": "",
       "status": "SHIPPED",
-      "sortOrder": 35
+      "sortOrder": 36
     },
     {
       "id": "grpc-service-mesh",
@@ -863,7 +881,7 @@
       ],
       "post": "",
       "status": "POC",
-      "sortOrder": 36
+      "sortOrder": 37
     }
   ],
   "profile": {
@@ -877,7 +895,7 @@
     "github": "https://github.com/Madhukar538",
     "linkedin": "https://www.linkedin.com/in/madhukar-reddy-boda",
     "twitter": "",
-    "summary": "Senior Software Engineer, AI architect and agentic AI developer with nearly 5 years of research and development, building and scaling high-traffic .NET systems and self-hosted AI platforms. Leads teams of AI coding agents (Claude Code, Codex, Copilot and Antigravity) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
+    "summary": "AI architect and senior .NET engineer with nearly 5 years of building and scaling high-traffic .NET systems and self-hosted AI platforms. Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
     "now": "Running a team of AI coding agents in Herdr: Claude Code leads; Antigravity, Copilot and Codex build and review.",
     "nowUpdatedAt": "2026-11-14",
     "skillCategories": [
@@ -994,6 +1012,18 @@
         ]
       },
       {
+        "title": "Payments & Commerce",
+        "color": "cyan",
+        "skills": [
+          "Juspay",
+          "Paytm",
+          "PayU",
+          "GoKwik checkout",
+          "Shiprocket shipping",
+          "ONDC"
+        ]
+      },
+      {
         "title": "DevOps & Infrastructure",
         "color": "cyan",
         "skills": [
@@ -1047,6 +1077,7 @@
         {
           "label": "AI platforms",
           "items": [
+            "Runs a team of AI coding agents in Herdr: Claude Code leads and plans, Antigravity builds, Copilot and Codex review, guided by written specs, agent skills and multi-agent review, with every change owned and merged by hand.",
             "Architected a multi-tenant RAG chatbot platform on .NET 10 (Microsoft Agent Framework agents, pgvector, text-to-SQL, MCP tools, PII guardrails and SignalR streaming), then led an end-to-end latency audit that cut typical answer time from 30–40 s to about 13 s.",
             "Built an MCP (Model Context Protocol) server exposing 40+ tools that give AI assistants a map of C# codebases and SQL Server schemas, using Roslyn code analysis and schema extraction synced to MongoDB.",
             "Designed a hybrid product search engine on Solr 9 that fuses BM25 keyword and kNN vector results with Reciprocal Rank Fusion.",
@@ -1079,6 +1110,7 @@
           "items": [
             "Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.",
             "Led the ONDC (Open Network for Digital Commerce) protocol integration.",
+            "Integrated payment gateways (Juspay, Paytm and PayU), GoKwik checkout and Shiprocket shipping into the e-commerce platforms.",
             "Shipped core modules across the 6-product RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS and RevalInventory.",
             "Built Reval Meet, a video conferencing platform on WebRTC, SignalR and Node.js."
           ]
