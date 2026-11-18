@@ -1,15 +1,14 @@
 import type { MetadataRoute } from 'next';
 import { allTopics, isoDate, siteUrl } from '@/lib/blog';
-import { getContent } from '@/lib/content';
+import { getBugLog, getContent } from '@/lib/content';
 import { caseStudies } from '@/data/case-studies';
-import { bugLog } from '@/data/bug-log';
 
 // Rendered per request from the tagged data cache (lib/content.ts), so it is
 // current as soon as content changes; static route handlers aren't revalidated by tag.
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { posts } = await getContent();
+  const [{ posts }, bugLog] = await Promise.all([getContent(), getBugLog()]);
   const base = siteUrl();
   const latest = isoDate(posts[0]);
   const pages = [

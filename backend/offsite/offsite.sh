@@ -4,13 +4,25 @@
 # here, before it leaves, with OFFSITE_ENCRYPTION_PASSWORD (rclone crypt), so the bucket
 # only ever holds ciphertext. Copies older than OFFSITE_KEEP_DAYS are removed from the bucket.
 #
+# After each copy, rclone cryptcheck confirms every dump in the bucket decrypts to exactly the
+# local file, and the outcome goes to /status/offsite.json (the backup-status volume) for the admin.
+#
 # Idle until configured: without the OFFSITE_* settings it logs that and does nothing.
 set -eu
+
+# Written whole under a temporary name, then moved: the API never reads half a file.
+status() { # isConfigured isOk message [copies]
+  mkdir -p /status
+  printf '{"at":"%s","isConfigured":%s,"isOk":%s,"message":"%s","copies":%s}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$1" "$2" "$3" "${4:-0}" > /status/offsite.json.tmp \
+    && mv /status/offsite.json.tmp /status/offsite.json
+}
 
 for name in OFFSITE_ENDPOINT OFFSITE_BUCKET OFFSITE_ACCESS_KEY_ID OFFSITE_SECRET_ACCESS_KEY OFFSITE_ENCRYPTION_PASSWORD; do
   eval "value=\${$name:-}"
   if [ -z "$value" ]; then
     echo "offsite: $name is not set, so nothing is copied off the server. Set the OFFSITE_* variables to turn it on."
+    status false false "Not set up: the OFFSITE_* settings are missing."
     while true; do sleep 86400; done
   fi
 done
@@ -36,11 +48,19 @@ export RCLONE_CONFIG_SEALED_PASSWORD
 
 copy() {
   # Only finished dumps (a dump being written is still *.part); a name already there is never rewritten.
-  if rclone copy /backups sealed: --include 'portfolio-*.gz' --immutable --quiet; then
-    echo "offsite: copied, $(rclone lsf sealed: --include 'portfolio-*.gz' | wc -l) dumps in the bucket"
-  else
+  if ! rclone copy /backups sealed: --include 'portfolio-*.gz' --immutable --quiet; then
     echo "offsite: copy FAILED, will retry in ${EVERY_HOURS}h" >&2
+    status true false "The copy failed; retrying in ${EVERY_HOURS}h."
     return 0
+  fi
+  copies=$(rclone lsf sealed: --include 'portfolio-*.gz' | wc -l | tr -d ' ')
+  # Each local dump must be in the bucket and decrypt to the same bytes (checked by hash, no download).
+  if rclone cryptcheck /backups sealed: --one-way --include 'portfolio-*.gz' --quiet; then
+    echo "offsite: copied and verified, $copies dumps in the bucket"
+    status true true "Copied and verified." "$copies"
+  else
+    echo "offsite: verification FAILED: a copy in the bucket does not match its dump" >&2
+    status true false "A copy in the bucket does not match its dump." "$copies"
   fi
   rclone delete sealed: --include 'portfolio-*.gz' --min-age "${KEEP_DAYS}d" --quiet \
     || echo "offsite: removing copies older than ${KEEP_DAYS} days FAILED" >&2

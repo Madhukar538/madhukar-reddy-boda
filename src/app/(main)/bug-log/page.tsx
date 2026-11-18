@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
-import { bugLog } from '@/data/bug-log';
+import { getBugLog } from '@/lib/content';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/bug-log' },
@@ -13,8 +13,9 @@ export const metadata: Metadata = {
   description: 'Bugs I have fixed: what people saw, why it happened, what changed and what it measured afterwards.',
 };
 
-/** The public log of fixed bugs (src/data/bug-log.ts); a 404 until it has entries. */
-export default function BugLogPage() {
+/** The public log of fixed bugs (Admin → Bug log, else src/data/bug-log.ts); a 404 until it has entries. */
+export default async function BugLogPage() {
+  const bugLog = await getBugLog();
   if (bugLog.length === 0) notFound();
   return (
     <PageShell
@@ -29,9 +30,9 @@ export default function BugLogPage() {
     >
       <ol className="bug-log space-y-5">
         {bugLog.map((bug, i) => (
-          <li key={bug.title} className="glass p-6 md:p-8">
+          <li key={`${i}-${bug.title}`} className="glass p-6 md:p-8">
             <p className="font-mono text-xs text-muted-foreground">
-              #{String(bugLog.length - i).padStart(3, '0')} · {bug.when} · {bug.stack}
+              #{String(bugLog.length - i).padStart(3, '0')} · {bug.when}{bug.stack ? ` · ${bug.stack}` : ''}
             </p>
             <h2 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight">{bug.title}</h2>
             <dl className="mt-5 grid gap-4 md:grid-cols-3">

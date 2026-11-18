@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { Loader2, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Loader2, Save, Trash2, X } from 'lucide-react';
 import type { SaveResult } from '@/lib/admin/types';
 import { Notice, dangerButton } from './ui';
 
@@ -65,3 +65,27 @@ export const toInputDate = (date: string) => {
 
 export const fromInputDate = (value: string) =>
   value ? new Date(`${value}T00:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '';
+
+/** The list with one item moved from one place to another (unchanged when the target is out of range). */
+export const move = <T,>(list: T[], from: number, to: number) => {
+  if (to < 0 || to >= list.length) return list;
+  const next = [...list];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+};
+
+/** One row of an editable list, with move up/down and remove buttons beside it. */
+export function ListItem({ index, count, onMove, onRemove, children }: { index: number; count: number; onMove: (to: number) => void; onRemove: () => void; children: ReactNode }) {
+  const icon = 'flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-foreground/10 hover:text-foreground disabled:opacity-30';
+  return (
+    <div className="glass-inset flex gap-3 rounded-xl p-3">
+      <div className="min-w-0 flex-1 space-y-3">{children}</div>
+      <div className="flex shrink-0 flex-col">
+        <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => onMove(index - 1)} className={icon}><ArrowUp className="h-4 w-4" /></button>
+        <button type="button" aria-label="Move down" disabled={index === count - 1} onClick={() => onMove(index + 1)} className={icon}><ArrowDown className="h-4 w-4" /></button>
+        <button type="button" aria-label="Remove" onClick={onRemove} className={icon}><X className="h-4 w-4" /></button>
+      </div>
+    </div>
+  );
+}

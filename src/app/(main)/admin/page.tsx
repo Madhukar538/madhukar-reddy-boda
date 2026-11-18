@@ -12,6 +12,7 @@ import { RankedList, TrafficChart } from '@/components/admin/traffic-chart';
 import { ContentSync } from '@/components/admin/content-sync';
 import { THEMES } from '@/components/look-toggle';
 import { TicketSummary } from '@/components/admin/ticket-summary';
+import { SiteHealth } from '@/components/admin/site-health';
 
 const RANGES = [7, 30, 90] as const;
 
@@ -71,6 +72,8 @@ function Dashboard() {
           <Link href="/admin/comments" className="font-medium text-primary hover:underline">Review now</Link>.
         </Notice>
       )}
+
+      <SiteHealth />
 
       <TicketSummary />
 

@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, FileText, FolderKanban, LifeBuoy, LogOut, MessageSquare, Palette, RefreshCw, ShieldCheck, UserRound, BookOpenText, Globe2 } from 'lucide-react';
+import { BarChart3, FileText, FolderKanban, LifeBuoy, LogOut, MessageSquare, Palette, RefreshCw, ShieldCheck, UserRound, BookOpenText, Globe2, Bug, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { isPlatformHost } from '@/lib/admin/api';
 import { useAdmin } from './session';
@@ -15,15 +15,17 @@ const NAV = [
   { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
   { href: '/admin/comments', label: 'Comments', icon: MessageSquare },
   { href: '/admin/tickets', label: 'Tickets', icon: LifeBuoy },
+  { href: '/admin/errors', label: 'Errors', icon: TriangleAlert },
   { href: '/admin/profile', label: 'Profile', icon: UserRound },
   { href: '/admin/story', label: 'Story', icon: BookOpenText },
+  { href: '/admin/bug-log', label: 'Bug log', icon: Bug },
   { href: '/admin/themes', label: 'Themes', icon: Palette },
   { href: '/admin/sites', label: 'Sites', icon: Globe2 },
   { href: '/admin/security', label: 'Security', icon: ShieldCheck },
 ];
 
-/** What another site's admin has: no tickets (they come from this site's bug reports), themes or sites. */
-const PLATFORM_ONLY = ['/admin/tickets', '/admin/themes', '/admin/sites'];
+/** What another site's admin has: no tickets or bug log (they belong to this site's Fix a bug), browser errors (only this site reports them), themes or sites. */
+const PLATFORM_ONLY = ['/admin/tickets', '/admin/errors', '/admin/bug-log', '/admin/themes', '/admin/sites'];
 
 /** Frame for every signed-in admin page: sends signed-out visitors to the sign-in page. */
 export function AdminShell({ title, actions, children }: { title: string; actions?: ReactNode; children: ReactNode }) {
