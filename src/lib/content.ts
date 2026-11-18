@@ -205,7 +205,7 @@ export const getBugLog = cache(async (): Promise<FixedBug[]> => {
 });
 
 /** A page made in the admin (Admin → Pages), served at /<slug>. */
-export type SitePage = { slug: string; title: string; description: string; content: string; updatedAt: string };
+export type SitePage = { slug: string; title: string; description: string; content: string; updatedAt: string; showIn: '' | 'footer' | 'menu' };
 
 const loadPages = unstable_cache(() => callApi<SitePage[]>('GetPages'), ['api', 'pages'], { tags: ['pages'], revalidate: SAFETY_REFRESH_SECONDS });
 

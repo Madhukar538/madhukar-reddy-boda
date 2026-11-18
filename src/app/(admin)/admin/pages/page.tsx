@@ -32,6 +32,7 @@ function PageList() {
             <span className="block font-medium">{page.title}</span>
             <span className="block font-mono text-xs text-muted-foreground">/{page.slug}</span>
           </span>
+          {page.showIn && <span className="chip">{page.showIn === 'menu' ? 'In the menu' : 'In the footer'}</span>}
           {!page.isPublished && <span className="chip chip-orange">Draft</span>}
           <span className="w-44 text-right text-sm tabular-nums text-muted-foreground">{formatDateTime(page.updatedAt)}</span>
         </Link>

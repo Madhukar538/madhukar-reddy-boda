@@ -28,4 +28,7 @@ public class SavePageRequestDTO
 
     /// <summary>Shown on the site.</summary>
     public bool IsPublished { get; set; }
+
+    /// <summary>Where the site links to it besides the sitemap: "" (nowhere), "footer" or "menu" (the Work menu).</summary>
+    public string ShowIn { get; set; } = string.Empty;
 }

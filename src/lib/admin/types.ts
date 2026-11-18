@@ -227,4 +227,4 @@ export type ThemeSettings = {
 };
 
 /** A standalone page made in the admin, served at /<slug> (content is empty in lists). */
-export type AdminPage = { slug: string; title: string; description: string; content: string; isPublished: boolean; updatedAt: string };
+export type AdminPage = { slug: string; title: string; description: string; content: string; isPublished: boolean; updatedAt: string; showIn: '' | 'footer' | 'menu' };

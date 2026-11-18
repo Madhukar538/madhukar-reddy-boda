@@ -29,6 +29,9 @@ public partial class PageBAL(PageDAL pageDAL, RevalidationBAL revalidationBAL, A
         "og", "projects", "sitemap", "sites", "status", "ticket", "topics", "work-with-me", "resume", "feed", "rss",
     };
 
+    /// <summary>Where a page can be linked from besides the sitemap: nowhere, the footer or the Work menu.</summary>
+    public static readonly string[] Placements = [string.Empty, "footer", "menu"];
+
     [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$")]
     private static partial Regex SlugPattern();
 
@@ -150,12 +153,14 @@ public partial class PageBAL(PageDAL pageDAL, RevalidationBAL revalidationBAL, A
             string title = (objAPIRequest.Title ?? string.Empty).Trim();
             string description = (objAPIRequest.Description ?? string.Empty).Trim();
             string content = objAPIRequest.Content ?? string.Empty;
+            string showIn = (objAPIRequest.ShowIn ?? string.Empty).Trim();
             string error =
                 slug.Length is 0 or > 64 || !SlugPattern().IsMatch(slug) ? "The address must be 1–64 lower-case letters, digits and hyphens (e.g. uses or my-setup)."
                 : ReservedSlugs.Contains(slug) ? $"/{slug} is already a page on the site. Choose another address."
                 : title.Length is 0 or > 120 ? "A title is required (up to 120 characters)."
                 : description.Length > 300 ? "The description is limited to 300 characters."
                 : content.Trim().Length == 0 || content.Length > MaxContentLength ? "Content is required (up to 200,000 characters)."
+                : !Placements.Contains(showIn) ? "Show in must be the footer, the menu or nowhere."
                 : string.Empty;
             if (error.Length > 0)
             {
@@ -180,6 +185,7 @@ public partial class PageBAL(PageDAL pageDAL, RevalidationBAL revalidationBAL, A
                 Description = description,
                 Content = PostBAL.SanitizeHtml(content),
                 IsPublished = objAPIRequest.IsPublished,
+                ShowIn = showIn,
                 CreatedAt = existing?.CreatedAt ?? now,
                 UpdatedAt = now,
             });
@@ -265,6 +271,7 @@ public partial class PageBAL(PageDAL pageDAL, RevalidationBAL revalidationBAL, A
         Description = x.Description,
         Content = isWithContent ? x.Content : string.Empty,
         IsPublished = x.IsPublished,
+        ShowIn = x.ShowIn,
         UpdatedAt = x.UpdatedAt,
     };
 }
