@@ -263,6 +263,10 @@ export const BUILT_IN_STORY: Story = {
         a: 'I build backend systems and AI platforms, and I lead teams of AI coding agents to ship them. Day to day that is **.NET 10 APIs**, Next.js, Solr, Redis, SQL Server and MongoDB, carrying high traffic.',
       },
       {
+        q: 'Who do you build for?',
+        a: 'The clients who run Revalsys products. I sit with their teams, turn what they need into scoped releases, ship them into their production and stay with it until it works for them: storefronts, payments and shipping, ERP modules and AI assistants.',
+      },
+      {
         q: 'How do you work?',
         a: 'Production-first: **diagnose fast, fix right, prevent recurrence.** I measure before I guess, with k6 and Grafana, query and index tuning, and memory and GC work.',
       },

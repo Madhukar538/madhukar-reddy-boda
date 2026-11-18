@@ -896,7 +896,7 @@
     "github": "https://github.com/Madhukar538",
     "linkedin": "https://www.linkedin.com/in/madhukar-reddy-boda",
     "twitter": "",
-    "summary": "AI architect, agentic full stack developer and senior .NET engineer with nearly 5 years of building and scaling high-traffic .NET systems and self-hosted AI platforms. Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
+    "summary": "AI architect, agentic full stack developer and senior .NET engineer with nearly 5 years of building and scaling high-traffic .NET systems and self-hosted AI platforms. Works forward-deployed: sits with the clients who run Revalsys products, scopes what they need and ships it into their production. Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
     "now": "Running a team of AI coding agents in Herdr: Claude Code leads; Antigravity, Copilot and Codex build and review.",
     "nowUpdatedAt": "2026-11-14",
     "skillCategories": [
@@ -1109,6 +1109,7 @@
         {
           "label": "Client delivery",
           "items": [
+            "Works directly with the clients who run Revalsys products: understands what they need, scopes it into releases and ships it into their production.",
             "Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.",
             "In early 2026, migrated Fossil India from Angular to Next.js and from .NET Core 3.1 to .NET 10 with a team of AI coding agents, and shipped it to production.",
             "Led the ONDC (Open Network for Digital Commerce) protocol integration.",
