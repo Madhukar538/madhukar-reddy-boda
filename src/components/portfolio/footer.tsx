@@ -21,7 +21,7 @@ const pages = [
 
 const icons = { GitHub: Github, LinkedIn: Linkedin };
 
-export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks: SocialLink[] }) {
+export function Footer({ profile, socialLinks, bugsFixed = 0 }: { profile: Profile; socialLinks: SocialLink[]; bugsFixed?: number }) {
   const socials = [
     { href: `mailto:${profile.email}`, icon: Mail, label: 'Email' },
     ...socialLinks.map(({ network, href }) => ({ href, icon: icons[network], label: network })),
@@ -66,7 +66,7 @@ export function Footer({ profile, socialLinks }: { profile: Profile; socialLinks
             )}
           </div>
           <nav aria-label="Footer" className="grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
-            {pages.map((p) => (
+            {(bugsFixed > 0 ? pages.flatMap((p) => (p.href === '/fix-a-bug' ? [p, { href: '/bug-log', label: 'Bug log' }] : [p])) : pages).map((p) => (
               <Link key={p.href} href={p.href} className="tap text-foreground/70 hover:text-primary transition-colors">
                 {p.label}
               </Link>

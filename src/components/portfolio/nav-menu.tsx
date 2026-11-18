@@ -11,6 +11,8 @@ export type NavMenuData = {
   projects: { title: string; blurb: string; href: string }[];
   posts: { title: string; href: string; date: string }[];
   topics: { name: string; href: string }[];
+  /** Entries in the public bug log; its link is shown only when there are some. */
+  bugsFixed?: number;
 };
 
 type MenuId = 'work' | 'writing';
@@ -49,6 +51,9 @@ function WorkPanel({ data }: { data: NavMenuData }) {
             { href: '/lab', label: 'R&D lab', note: 'Experiments and prototypes' },
             { href: '/experience', label: 'Experience', note: 'Where I have worked' },
             { href: '/graph', label: 'Knowledge graph', note: 'How it all connects' },
+            ...(data.bugsFixed
+              ? [{ href: '/bug-log', label: 'Bug log', note: `${data.bugsFixed} ${data.bugsFixed === 1 ? 'bug' : 'bugs'} fixed, and how` }]
+              : []),
           ].map((l) => (
             <li key={l.href}>
               <Link href={l.href} className="group block">
