@@ -453,7 +453,7 @@
       "id": "fossil-india",
       "kind": "client",
       "title": "Fossil India",
-      "description": "Led migration from Angular to Next.js with focus on performance, security, and feature parity.",
+      "description": "Led the migration of the storefront from Angular to Next.js and its backend from .NET Core 3.1 to .NET 10, built with a team of AI coding agents and shipped to production with feature parity, performance and security in focus.",
       "tech": [
         "Next.js",
         "React",
@@ -466,6 +466,7 @@
       "url": "",
       "responsibilities": [
         "Defined migration strategy and phased rollout for minimal disruption.",
+        "Ran the migration with AI coding agents working from specs and skills, reviewing and owning every change before it shipped to production.",
         "Implemented performance optimizations (lazy hydration, dynamic imports, image and font optimizations).",
         "Established nonce-based CSP and secure headers for production environments.",
         "Coordinated SEO, metadata mapping and QA verification for organic ranking preservation."
@@ -886,7 +887,7 @@
   ],
   "profile": {
     "name": "Boda Madhukar Reddy",
-    "title": "Senior Software Engineer · AI Architect · Agentic AI Developer",
+    "title": "Senior Software Engineer · AI Architect · Agentic Full Stack Developer",
     "company": "Revalsys Technologies",
     "location": "Hyderabad, India",
     "email": "madhukarreddyboda538@gmail.com",
@@ -895,7 +896,7 @@
     "github": "https://github.com/Madhukar538",
     "linkedin": "https://www.linkedin.com/in/madhukar-reddy-boda",
     "twitter": "",
-    "summary": "AI architect and senior .NET engineer with nearly 5 years of building and scaling high-traffic .NET systems and self-hosted AI platforms. Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
+    "summary": "AI architect, agentic full stack developer and senior .NET engineer with nearly 5 years of building and scaling high-traffic .NET systems and self-hosted AI platforms. Runs a team of AI coding agents (Claude Code leads and plans, Antigravity builds, Copilot and Codex review) with specs, skills and review, and owns what they ship: a product foundation in two days, and legacy worker services moved to .NET 10 in two. Cut a multi-tenant RAG chatbot's answer time from 30–40 s to about 13 s and MongoDB query latency from up to 2 s to under 50 ms. Works across .NET 10, Microsoft Agent Framework, MCP, Solr 9 hybrid search and k6 + Grafana.",
     "now": "Running a team of AI coding agents in Herdr: Claude Code leads; Antigravity, Copilot and Codex build and review.",
     "nowUpdatedAt": "2026-11-14",
     "skillCategories": [
@@ -1109,6 +1110,7 @@
           "label": "Client delivery",
           "items": [
             "Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.",
+            "Migrated Fossil India from Angular to Next.js and from .NET Core 3.1 to .NET 10 with a team of AI coding agents, and shipped it to production.",
             "Led the ONDC (Open Network for Digital Commerce) protocol integration.",
             "Integrated payment gateways (Juspay, Paytm and PayU), GoKwik checkout and Shiprocket shipping into the e-commerce platforms.",
             "Shipped core modules across the 6-product RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS and RevalInventory.",
