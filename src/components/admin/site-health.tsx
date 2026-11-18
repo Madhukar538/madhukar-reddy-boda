@@ -15,6 +15,7 @@ type BackupStatus = {
   lastAttemptMessage: string;
   lastGoodAt: string | null;
   lastGoodBytes: number;
+  databases: number;
   collections: number;
   documents: number;
   isOffsiteConfigured: boolean;
@@ -77,7 +78,7 @@ export function SiteHealth() {
             {backup.lastGoodAt ? (
               <>
                 <span className="font-semibold">Last good backup {ago(backup.lastGoodAt)}</span> ({formatDateTime(backup.lastGoodAt)}): restored in a
-                throwaway database with {backup.collections} collections and {backup.documents.toLocaleString('en-IN')} documents, {size(backup.lastGoodBytes)}.
+                throwaway database: {backup.databases > 1 ? `${backup.databases} sites' databases, ` : ''}{backup.collections} collections and {backup.documents.toLocaleString('en-IN')} documents, {size(backup.lastGoodBytes)}.
               </>
             ) : (
               <span className="font-semibold">No backup has passed its restore check yet.</span>

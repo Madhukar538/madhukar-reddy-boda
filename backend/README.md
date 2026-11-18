@@ -180,7 +180,7 @@ The API can serve more than one portfolio. **Each site has its own MongoDB datab
 - **Primary site only, for now:** page revalidation, Telegram alerts and data migrations.
 - **On their own domains** (the Next.js app): with `SITES_ENABLED=true`, `src/proxy.ts` rewrites any host not in `PRIMARY_HOSTS` (default `dhucar.in,www.dhucar.in,localhost,127.0.0.1`) to `/sites/<host>/…` (`src/app/(sites)`): that site's own layout, Editorial homepage, Experience and About, loaded from the API by `X-Tenant-Host`, with no fallback to this site's content. Every other path on such a domain is a 404 in the site's own layout. Off by default; `/sites/…` can never be opened directly. Point a site's DNS (and Cloudflare) at the app before turning it on.
 
-The database user needs `readWrite` on each site's database as well as `portfolio`: grant it when adding a site, or use a role that covers `site_*`. Nothing changes for the primary site.
+The database user gets `readWriteAnyDatabase` (all application databases, not MongoDB's own `admin`, `config` or `local`) from `mongo/set-users.js` on every start, so a new site's `site_<slug>` database works without a manual grant, and the nightly backup covers it.
 
 ## Deploy (Coolify)
 
@@ -209,9 +209,9 @@ use portfolio
 db.settings.findOne({ _id: "security" })
 ```
 
-**Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps the `portfolio` database every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it can read `portfolio` and nothing else.
+**Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps every site's database (`portfolio` and each `site_<slug>`) into one archive every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it reads the application databases and not MongoDB's own.
 
-Every dump is then **restore-checked**: restored into a throwaway MongoDB started inside the backup container (never the live database), and every collection the live database had must come back. A dump that fails the check is kept but not counted as good. The result is written to the `backup-status` volume, which the API reads (read-only) for the line at the top of Admin → Traffic: when the last good backup was, how many collections and documents came back, and whether the offsite copy is verified. It warns when the last good backup is over 36 hours old or the last attempt failed. CI runs the same drill on every pull request (the "Backups (restore drill)" job).
+Every dump is then **restore-checked**: restored into a throwaway MongoDB started inside the backup container (never the live database), and every collection of every site's database must come back. A dump that fails the check is kept but not counted as good. The result is written to the `backup-status` volume, which the API reads (read-only) for the line at the top of Admin → Traffic: when the last good backup was, how many collections and documents came back, and whether the offsite copy is verified. It warns when the last good backup is over 36 hours old or the last attempt failed. CI runs the same drill on every pull request (the "Backups (restore drill)" job).
 
 The dumps sit on the same disk as the database, so copy one elsewhere now and then:
 

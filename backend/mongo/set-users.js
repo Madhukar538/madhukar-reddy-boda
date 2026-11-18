@@ -18,4 +18,11 @@ for (const name of ['MONGO_INITDB_ROOT_USERNAME', 'MONGO_INITDB_ROOT_PASSWORD', 
 }
 const appDatabase = env.MONGO_APP_DATABASE || 'portfolio';
 upsert('admin', env.MONGO_INITDB_ROOT_USERNAME, env.MONGO_INITDB_ROOT_PASSWORD, [{ role: 'root', db: 'admin' }]);
-upsert(appDatabase, env.MONGO_APP_USERNAME, env.MONGO_APP_PASSWORD, [{ role: 'readWrite', db: appDatabase }]);
+// The API's user: its own database, plus every other site's (site_<slug>, made when a site is added)
+// through readWriteAnyDatabase, which covers application databases but not admin, config or local.
+// Nothing else lives in this MongoDB, so new sites work without a manual grant, and the nightly
+// backup (backup.sh, as this user) can dump them all.
+upsert(appDatabase, env.MONGO_APP_USERNAME, env.MONGO_APP_PASSWORD, [
+  { role: 'readWrite', db: appDatabase },
+  { role: 'readWriteAnyDatabase', db: 'admin' },
+]);

@@ -59,6 +59,7 @@ public class BackupBAL(BackupStatusDAL backupStatusDAL, ICodeLogger codeLog)
                     status.LastGoodAt = Time(g, "at");
                     status.LastGoodFile = Text(g, "file");
                     status.LastGoodBytes = (long)Number(g, "bytes");
+                    status.Databases = (int)Number(g, "databases");
                     status.Collections = (int)Number(g, "collections");
                     status.Documents = (long)Number(g, "documents");
                 }

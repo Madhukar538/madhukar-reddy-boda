@@ -1,13 +1,14 @@
 #!/bin/sh
-# Nightly dump of the portfolio database into /backups (the mongo-backups volume),
-# keeping the newest $BACKUP_KEEP files. Runs as the API's own user: it can read
-# the portfolio database and nothing else.
+# Nightly dump of every site's database (portfolio, and site_<slug> for each other site)
+# into one archive in /backups (the mongo-backups volume), keeping the newest $BACKUP_KEEP
+# files. Runs as the API's own user, which can read the application databases but not
+# MongoDB's own admin, config and local.
 #
 # Every dump is then restore-checked: restored into a throwaway MongoDB inside this
-# container (never the live one), and every collection the live database had must come
-# back. The outcome goes to /status (the backup-status volume) for Admin → Traffic:
+# container (never the live one), and every collection of every database the live server
+# had must come back. The outcome goes to /status (the backup-status volume) for Admin → Traffic:
 #   backup.json        the last attempt: when, and whether it was good
-#   backup-good.json   the last dump that restored cleanly: when, file, size, collections, documents
+#   backup-good.json   the last dump that restored cleanly: when, file, size, databases, collections, documents
 # BACKUP_ONCE=1 runs one backup and check, then exits (the CI drill uses it).
 set -eu
 
@@ -33,6 +34,14 @@ attempt() { # isOk message
 
 # Restores $1 into a throwaway mongod and checks every collection named in $EXPECTED came back.
 # Prints the backup-good.json document on success; returns non-zero with the reason on stderr otherwise.
+# Every application database's collections, as db.collection, sorted and comma-separated.
+LIST_COLLECTIONS='
+  const skip = ["admin", "config", "local"];
+  const names = db.adminCommand({ listDatabases: 1, nameOnly: true }).databases
+    .map((d) => d.name).filter((n) => !skip.includes(n))
+    .flatMap((n) => db.getSiblingDB(n).getCollectionNames().filter((c) => !c.startsWith("system.")).map((c) => n + "." + c));
+  print(names.sort().join(","));'
+
 restore_check() {
   dir=$(mktemp -d /tmp/restore-check.XXXXXX)
   ok=0
@@ -41,12 +50,14 @@ restore_check() {
     if mongorestore --host 127.0.0.1 --port "$SCRATCH_PORT" --gzip --archive="$1" --quiet; then
       FILE="$(basename "$1")" BYTES="$(stat -c %s "$1")" \
       mongosh --quiet --host 127.0.0.1 --port "$SCRATCH_PORT" portfolio --eval '
+        const skip = ["admin", "config", "local"];
         const expected = (process.env.EXPECTED || "").split(",").filter(Boolean);
-        const names = db.getCollectionNames().filter((n) => !n.startsWith("system."));
+        const databases = db.adminCommand({ listDatabases: 1, nameOnly: true }).databases.map((d) => d.name).filter((n) => !skip.includes(n));
+        const names = databases.flatMap((n) => db.getSiblingDB(n).getCollectionNames().filter((c) => !c.startsWith("system.")).map((c) => n + "." + c));
         const missing = expected.filter((n) => !names.includes(n));
         if (missing.length > 0) { console.error("missing after restore: " + missing.join(", ")); quit(1); }
-        const documents = names.reduce((sum, n) => sum + db.getCollection(n).countDocuments(), 0);
-        print(JSON.stringify({ at: new Date().toISOString(), file: process.env.FILE, bytes: Number(process.env.BYTES), collections: names.length, documents }));
+        const documents = names.reduce((sum, n) => { const [d, ...c] = n.split("."); return sum + db.getSiblingDB(d).getCollection(c.join(".")).countDocuments(); }, 0);
+        print(JSON.stringify({ at: new Date().toISOString(), file: process.env.FILE, bytes: Number(process.env.BYTES), databases: databases.length, collections: names.length, documents }));
       ' && ok=1
     else
       echo "backup: restore of $1 FAILED" >&2
@@ -61,8 +72,8 @@ restore_check() {
 
 backup() {
   file="/backups/portfolio-$(date -u +%Y-%m-%dT%H%M%SZ).gz"
-  # The collections there are now: each must come back from the dump.
-  if ! EXPECTED=$(live --eval 'print(db.getCollectionNames().filter((n) => !n.startsWith("system.")).sort().join(","))'); then
+  # The collections there are now, in every site's database: each must come back from the dump.
+  if ! EXPECTED=$(live --eval "$LIST_COLLECTIONS"); then
     echo "backup: FAILED, could not reach the database" >&2
     attempt false "Could not reach the database."
     return 0
@@ -70,7 +81,8 @@ backup() {
   export EXPECTED
   # Written under a temporary name first, so a half-written dump never looks like a good one.
   if mongodump --host mongo --port 27017 --username "$MONGO_APP_USERNAME" --password "$MONGO_APP_PASSWORD" \
-      --authenticationDatabase portfolio --db portfolio --gzip --archive="$file.part" --quiet; then
+      --authenticationDatabase portfolio --gzip --archive="$file.part" --quiet \
+      --nsExclude 'admin.*' --nsExclude 'config.*' --nsExclude 'local.*'; then
     mv "$file.part" "$file"
     echo "backup: wrote $file ($(du -h "$file" | cut -f1))"
     if good=$(restore_check "$file"); then
