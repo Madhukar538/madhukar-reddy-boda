@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { FluidBackground } from './fluid-background';
+import dynamic from 'next/dynamic';
 import { useDesignStyle } from '@/lib/design-style';
 
 /**
@@ -10,6 +10,9 @@ import { useDesignStyle } from '@/lib/design-style';
  * highlight position (--mx / --my) to whichever .glass-interactive
  * element is under the cursor.
  */
+// The WebGL fluid is Glass's alone: its code loads only when Glass is on.
+const FluidBackground = dynamic(() => import('./fluid-background').then((m) => m.FluidBackground), { ssr: false });
+
 export function LiquidWallpaper() {
   // Both looks use the CSS blobs and the pointer highlight; only Glass adds the
   // WebGL fluid.

@@ -8,7 +8,7 @@ import { Briefcase, User, FlaskConical, Handshake, Home, Mail, PenLine, Phone, F
 import { openQuickSwitcher } from '@/lib/vault-client';
 import { LookToggle } from '@/components/look-toggle';
 import { cn } from '@/lib/utils';
-import { m } from 'framer-motion';
+import { SlidingIndicator, useSlidingIndicator } from '@/components/sliding-indicator';
 import { MegaPanel, MegaTrigger, useMegaMenu, type NavMenuData } from '@/components/portfolio/nav-menu';
 
 // Every page on the site — each one is its own URL.
@@ -47,6 +47,8 @@ export type NavContact = { email: string; phone: string; phoneHref: string };
 
 export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuData }) {
   const pathname = usePathname();
+  // The tab bar's highlight slides to the current page's tab (components/sliding-indicator).
+  const tabs = useSlidingIndicator<HTMLElement>(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [docked, setDocked] = useState(false);
   const megaMenu = useMegaMenu(docked);
@@ -217,7 +219,8 @@ export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuDa
       {/* ── Mobile / tablet floating tab bar ── */}
       <div className="vt-tabbar lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-0 z-[100] flex items-end justify-center gap-1.5 min-[360px]:gap-2 px-2 pointer-events-none">
         {/* No LiquidLens here: its refraction keeps the text behind the bar sharp, which fights the labels. */}
-        <nav className="glass glass-strong glass-bar glass-pill pointer-events-auto flex items-center p-1" aria-label="Main">
+        <nav ref={tabs.row} className="glass glass-strong glass-bar glass-pill pointer-events-auto relative flex items-center p-1" aria-label="Main">
+          <SlidingIndicator {...tabs} fit="cover" className="nav-active-pill rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]" />
           {tabLinks.map((link) => {
             const Icon = link.icon;
             const isActive = isActivePath(pathname, link.href);
@@ -226,18 +229,12 @@ export function Navbar({ contact, menu }: { contact: NavContact; menu: NavMenuDa
                 key={link.href}
                 href={link.href}
                 aria-current={isActive ? 'page' : undefined}
+                data-slide-active={isActive ? '' : undefined}
                 className={cn(
                   'relative flex w-[2.875rem] min-[360px]:w-[3.25rem] sm:w-16 flex-col items-center justify-center py-1.5 rounded-full transition-colors duration-200',
                   isActive ? 'text-primary' : 'text-foreground/70 hover:text-foreground'
                 )}
               >
-                {isActive && (
-                  <m.span
-                    layoutId="mobile-pill"
-                    className="nav-active-pill absolute inset-0 rounded-full bg-foreground/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
                 <Icon className="relative h-[1.15rem] w-[1.15rem]" strokeWidth={isActive ? 2.4 : 2} />
                 <span className="relative text-[11px] font-medium mt-0.5">{link.label}</span>
               </Link>

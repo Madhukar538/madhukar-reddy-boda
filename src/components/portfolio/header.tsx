@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { AnimatePresence, m } from 'framer-motion';
+import { MotionProvider } from '@/components/motion-provider';
 import Image from 'next/image';
 
 const navLinks = [
@@ -19,7 +20,7 @@ const navLinks = [
   { href: '#education', label: 'Education' },
 ];
 
-export function Header() {
+function HeaderBody() {
   const [activeSection, setActiveSection] = useState('');
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -143,5 +144,14 @@ export function Header() {
         </div>
       </div>
     </header>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function Header() {
+  return (
+    <MotionProvider>
+      <HeaderBody />
+    </MotionProvider>
   );
 }

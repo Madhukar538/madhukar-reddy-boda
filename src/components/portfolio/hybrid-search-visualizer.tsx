@@ -22,6 +22,7 @@ import {
 } from '@/lib/hybrid-search-engine';
 import { cn } from '@/lib/utils';
 import { m, AnimatePresence } from 'framer-motion';
+import { MotionProvider } from '@/components/motion-provider';
 
 const PRESETS = [
   {
@@ -61,7 +62,7 @@ const PRESETS = [
   },
 ];
 
-export function HybridSearchVisualizer() {
+function HybridSearchVisualizerBody() {
   const [queryText, setQueryText] = useState('waterproof chronograph with brown leather strap');
   const [kConstant, setKConstant] = useState(60);
   const [bm25Weight, setBm25Weight] = useState(0.5);
@@ -540,5 +541,14 @@ export function HybridSearchVisualizer() {
         )}
       </div>
     </div>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function HybridSearchVisualizer() {
+  return (
+    <MotionProvider>
+      <HybridSearchVisualizerBody />
+    </MotionProvider>
   );
 }

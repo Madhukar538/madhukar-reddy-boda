@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { m } from 'framer-motion';
+import type { ComponentProps } from 'react';
+import { MotionProvider } from '@/components/motion-provider';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
 import { anchorId, cn } from '@/lib/utils';
@@ -24,7 +26,7 @@ const filters: { id: 'ALL' | Status; label: string }[] = [
   { id: 'RESEARCH', label: 'Research' },
 ];
 
-export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
+function ResearchBody({ rdProjects }: { rdProjects: Experiment[] }) {
   const [filter, setFilter] = useState<'ALL' | Status>('ALL');
   // Experiments with a full write-up lead: they're the strongest evidence.
   const visible = (filter === 'ALL' ? rdProjects : rdProjects.filter((p) => p.status === filter))
@@ -113,5 +115,14 @@ export function Research({ rdProjects }: { rdProjects: Experiment[] }) {
         })}
       </div>
     </Section>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function Research(props: ComponentProps<typeof ResearchBody>) {
+  return (
+    <MotionProvider>
+      <ResearchBody {...props} />
+    </MotionProvider>
   );
 }

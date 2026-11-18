@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { PageShell } from '@/components/portfolio/page-shell';
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   title: 'Projects — Boda Madhukar Reddy',
   description: 'IoT data platforms, developer tooling, video conferencing, RAG systems and e-commerce builds for Jockey, Speedo, Manyavar and more.',
   alternates: { canonical: '/projects' },
+  openGraph: pageOpenGraph('/projects'),
 };
 
 export default async function ProjectsPage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageOpenGraph } from '@/lib/seo';
 import Link from 'next/link';
 import { PageShell } from '@/components/portfolio/page-shell';
 import { allTopics, postsForTopic } from '@/lib/blog';
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   title: 'Topics — Boda Madhukar Reddy',
   description: 'Browse posts by topic: software architecture, AI and RAG, DevOps and homelab, observability and performance.',
   alternates: { canonical: '/topics' },
+  openGraph: pageOpenGraph('/topics'),
 };
 
 export default async function TopicsPage() {
