@@ -4342,6 +4342,31 @@ html:is([data-style='terminal'], [data-style='blueprint'], [data-style='glass'])
 .tm-stack { color: #E0AF68; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tm-lsla .tm-desc, .tm-lsla .tm-out { display: block; }
 .tm-out { color: #9ECE6A; }
+/* Terminal's own writing section (TerminalWriting) replaces the shared blog list, popular posts and topics. */
+html[data-style='terminal'] .home-shared { display: none; }
+/* With the shared blocks hidden, the classic page's container is empty: no room kept for it. */
+html:is([data-style='terminal'], [data-style='editorial']) .home-rest { padding: 0; }
+.tm-blog { margin-top: 3.5rem; }
+@media (min-width: 768px) { .tm-blog { margin-top: 4.5rem; } }
+.tm-posts { margin-top: 0.5rem !important; }
+.tm-posts li { display: grid; grid-template-columns: 6.5rem 3.75rem 11rem minmax(0, 1fr); gap: 1rem; padding: 0.3rem 0; }
+.tm-posts li + li { border-top: 1px dashed #2A2A2E; }
+.tm-post-date { color: hsl(60 3% 58%); }
+.tm-post-read { color: #E0AF68; white-space: nowrap; }
+.tm-post-cat { color: #7DCFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tm-post-main a { color: #fff; font-weight: 700; }
+.tm-post-main a:hover, .tm-topics a:hover, .tm-open:hover { background: hsl(var(--lime)); color: hsl(var(--ink)); }
+.tm-post-main .tm-desc { display: block; }
+@media (max-width: 767px) {
+  .tm-posts li { grid-template-columns: auto auto minmax(0, 1fr); gap: 0 0.75rem; }
+  .tm-post-main { grid-column: 1 / -1; }
+  .tm-posts li:not(:first-child) .tm-desc { display: none; }
+}
+.tm-topics { display: flex; flex-wrap: wrap; gap: 0.15rem 1.5rem; }
+.tm-topics a { color: #D6D6CE; }
+.tm-topics a.tm-topic-cat { color: #7AA2F7; font-weight: 700; }
+.tm-topics .tm-dim { margin-left: 0.25rem; }
+.tm-open { color: hsl(var(--lime)) !important; font-weight: 700; }
 
 /* ---- Blueprint: drawing sheets in a frame with zone marks and a title block ---- */
 .bs-sheet { position: relative; padding: 2rem 1rem 1rem; border: 2px solid hsl(var(--bp-line)); outline: 1px solid hsl(var(--bp-line) / 0.5); outline-offset: 6px; background: hsl(var(--background) / 0.55); }

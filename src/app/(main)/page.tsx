@@ -37,6 +37,12 @@ const heroMetrics = [
 export default async function Home() {
   const [{ posts, experience, keyProjects, rdProjects, profile, story }, themes] = await Promise.all([getContent(), getThemeSettings()]);
   const topics = allTopics(posts);
+  // The writing section's posts and topics, for the looks that lay out their own (Editorial, Terminal).
+  const writing = {
+    posts: posts.slice(0, 11).map(({ slug, title, excerpt, date, readTime, category }) => ({ slug, title, excerpt, date, readTime, category })),
+    topics: topics.slice(0, 16).map(({ slug, name, count, kind }) => ({ slug, name, count, kind })),
+    total: posts.length,
+  };
 
   return (
     <>
@@ -49,20 +55,16 @@ export default async function Home() {
         metrics: heroMetrics,
         since: experienceSince().since,
         story,
-        writing: {
-          posts: posts.slice(0, 11).map(({ slug, title, excerpt, date, readTime, category }) => ({ slug, title, excerpt, date, readTime, category })),
-          topics: topics.slice(0, 16).map(({ slug, name, count, kind }) => ({ slug, name, count, kind })),
-          total: posts.length,
-        },
+        writing,
       }}
     />
     {/* The other looks' own homepages (components/looks): only the active one is in the page. */}
     <LookView
       page="home"
       defaultLook={themes.defaultTheme}
-      props={{ heading: story.hero.heading, name: profile.name, projects: withHrefs(keyProjects), metrics: heroMetrics, since: experienceSince().since, posts: summaries(posts).slice(0, 5) }}
+      props={{ heading: story.hero.heading, name: profile.name, projects: withHrefs(keyProjects), metrics: heroMetrics, since: experienceSince().since, posts: summaries(posts).slice(0, 5), writing }}
     />
-    <div className="container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
+    <div className="home-rest container mx-auto max-w-6xl px-4 md:px-6 pt-10 lg:pt-36 pb-12 lg:pb-16">
       <LegacyHashRedirect />
 
       {/* Intro. In Midnight the portrait sits on the right; text is constrained to the left so it never overlaps the face. */}
@@ -117,7 +119,7 @@ export default async function Home() {
       <HomeBento content={{ experience, keyProjects, rdProjects, postCount: posts.length, topicCount: topics.length }} />
       </div>
 
-      {/* The blog, popular posts and topics: Editorial has its own writing desk instead (editorial-writing.tsx). */}
+      {/* The blog, popular posts and topics: Editorial and Terminal lay out their own writing instead. */}
       <div className="home-shared">
       <BlogIndex posts={summaries(posts)} />
 
