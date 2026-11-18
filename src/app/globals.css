@@ -17,28 +17,28 @@
     --card-foreground: 240 6% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 6% 11%;
-    --primary: 211 100% 50%;
+    --primary: 211 100% 40%;         /* #0066CC: 4.5:1 on white and on its own tints */
     --primary-foreground: 0 0% 100%;
     --secondary: 240 11% 91%;
     --secondary-foreground: 240 6% 11%;
     --muted: 240 11% 91%;
-    --muted-foreground: 240 4% 42%;
-    --accent: 211 100% 50%;
+    --muted-foreground: 240 5% 36%;
+    --accent: 211 100% 40%;
     --accent-foreground: 0 0% 100%;
     --destructive: 3 100% 59%;
     --destructive-foreground: 0 0% 100%;
     --border: 240 6% 84%;
     --input: 240 6% 84%;
-    --ring: 211 100% 50%;
+    --ring: 211 100% 40%;
     --radius: 1rem;
 
     /* System colors (light - muted, professional) */
-    --sys-green: 152 57% 42%;
-    --sys-orange: 38 92% 48%;
-    --sys-teal: 199 89% 45%;
-    --sys-indigo: 226 70% 55%;
-    --sys-pink: 340 75% 55%;
-    --sys-purple: 250 60% 58%;
+    --sys-green: 152 60% 28%;
+    --sys-orange: 28 90% 30%;
+    --sys-teal: 199 89% 30%;
+    --sys-indigo: 226 70% 48%;
+    --sys-pink: 340 75% 42%;
+    --sys-purple: 250 60% 50%;
 
     /* Precision surface material */
     --glass-radius: 0.875rem;
@@ -533,8 +533,10 @@
   padding: 0.15em 0.4em;
   border-radius: 0.4rem;
   font-size: 0.85em;
-  color: hsl(var(--primary));
-  background: hsl(var(--foreground) / 0.08);
+  /* Text colour on a faint tint, the accent as an underline: readable on every look's paper and in callouts. */
+  color: hsl(var(--foreground));
+  background: hsl(var(--foreground) / 0.07);
+  box-shadow: inset 0 -1.5px 0 hsl(var(--primary) / 0.7);
 }
 
 /* Code and diagram blocks */
@@ -1393,7 +1395,7 @@ html:not([data-style]) .portrait-offset { padding-top: calc(46svh - 6rem); }
   padding: 0.375rem 0.75rem;
   font-size: 13px;
   font-weight: 500;
-  color: hsl(var(--foreground) / 0.6);
+  color: hsl(var(--foreground) / 0.75);
   transition: color 0.2s;
 }
 .nav-link:hover { color: hsl(var(--foreground)); }
@@ -2236,17 +2238,18 @@ html[data-style='editorial'] {
   --muted-foreground: 30 4% 32%;
   --border: 35 8% 76%;
   --input: 35 8% 76%;
-  --primary: 16 100% 40%;          /* links and labels: dark enough to read */
+  --primary: 16 100% 37%;          /* links and labels: 5:1 on the paper */
   --primary-foreground: 40 17% 96%;
   --accent: var(--primary);
   --accent-foreground: 40 17% 96%;
-  --ring: 16 100% 40%;
+  --ring: 16 100% 37%;
   --ed-accent: 18 100% 50%;        /* #FF4D00 signal orange, for fills */
+  --ed-accent-text: 18 100% 46%;   /* the same orange as large type: 3:1 on the paper */
   --ink: 0 0% 4%;
   --glass-radius: 0;
   --blob-opacity: 0;
   --sys-green: 142 72% 28%;
-  --sys-orange: 18 100% 40%;
+  --sys-orange: 18 100% 33%;
   --sys-teal: 186 80% 26%;
   --sys-indigo: 240 60% 45%;
   --sys-pink: 330 70% 40%;
@@ -2332,7 +2335,7 @@ html[data-style='editorial'] .article-body > p:first-of-type::first-letter {
   float: left; margin: 0.06em 0.12em 0 0;
   font-family: var(--font-display), 'Anybody', system-ui, sans-serif;
   font-variation-settings: 'wdth' 70; font-weight: 800; font-size: 4.4em; line-height: 0.78;
-  color: hsl(var(--ed-accent));
+  color: hsl(var(--ed-accent-text));
 }
 html[data-style='editorial'] .vault-tag { border-radius: 0; background: transparent; box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45); }
 html[data-style='editorial'] .vault-tag:hover { background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
@@ -2348,8 +2351,8 @@ html[data-style='editorial'] .post-index a::after { content: '→'; opacity: 0; 
 @media (hover: hover) {
   html[data-style='editorial'] .post-index a:hover { background: hsl(var(--ink)); padding-left: 1.25rem; }
   html[data-style='editorial'] .post-index a:hover :is(span, *) { color: hsl(var(--background)); }
-  html[data-style='editorial'] .post-index a:hover::before { color: hsl(var(--ed-accent)); }
-  html[data-style='editorial'] .post-index a:hover::after { opacity: 1; margin-left: 0; color: hsl(var(--ed-accent)); }
+  html[data-style='editorial'] .post-index a:hover::before { color: hsl(var(--ed-accent-text)); }
+  html[data-style='editorial'] .post-index a:hover::after { opacity: 1; margin-left: 0; color: hsl(var(--ed-accent-text)); }
 }
 
 /* The journey: chapters down a line that fills as you read. */
@@ -2375,7 +2378,7 @@ html[data-style='editorial'] .ed-story-head h2 {
   font-variation-settings: 'wdth' 60; font-weight: 800; font-size: clamp(3.25rem, 7.5vw, 6.75rem); line-height: 0.85;
   color: transparent; -webkit-text-stroke: 1.5px hsl(var(--ink));
 }
-.ed-chapter:last-child .ed-chapter-no { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+.ed-chapter:last-child .ed-chapter-no { color: hsl(var(--ed-accent-text)); -webkit-text-stroke-color: hsl(var(--ed-accent-text)); }
 .ed-chapter-text { max-width: 44rem; }
 .ed-chapter-era { font: 500 0.75rem/1.2 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.1em; color: hsl(var(--primary)); }
 html[data-style='editorial'] .ed-chapter h3 {
@@ -2420,7 +2423,7 @@ html[data-style='editorial'] .classic-only { display: none; }
   font-size: clamp(3.5rem, 8vw, 7rem); line-height: 0.85; text-transform: uppercase;
   color: transparent; -webkit-text-stroke: 1.5px hsl(var(--ink));
 }
-.ed-act:last-child .ed-act-no { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+.ed-act:last-child .ed-act-no { color: hsl(var(--ed-accent-text)); -webkit-text-stroke-color: hsl(var(--ed-accent-text)); }
 html[data-style='editorial'] .ed-act h2 { margin-top: 0.75rem; font-size: clamp(1.75rem, 3.2vw, 2.75rem); }
 .ed-act-label { margin-top: 0.6rem; font: 500 0.72rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--primary)); }
 .ed-beats { display: grid; }
@@ -2435,7 +2438,7 @@ html[data-style='editorial'] .ed-act h2 { margin-top: 0.75rem; font-size: clamp(
   font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 62; font-weight: 800;
   font-size: clamp(3.25rem, 10vw, 9rem); line-height: 0.84; text-transform: uppercase; letter-spacing: -0.01em;
 }
-.ed-about-title em { display: block; font-style: normal; color: hsl(var(--ed-accent)); }
+.ed-about-title em { display: block; font-style: normal; color: hsl(var(--ed-accent-text)); }
 .ed-about-byline { margin-top: 1.5rem; font: 500 0.78rem/1.4 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; }
 .ed-qa { display: grid; margin-bottom: clamp(2rem, 6vh, 4rem); }
 .ed-qa > div { display: grid; gap: 0.75rem 3rem; padding: clamp(2rem, 5vh, 3rem) 0; border-bottom: 1px solid hsl(var(--ink) / 0.2); }
@@ -2494,7 +2497,7 @@ html[data-style='editorial'] .ed-next { margin-top: clamp(3.5rem, 9vh, 6rem); }
 }
 .ed-next-title svg { flex-shrink: 0; width: 0.7em; height: 0.7em; transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
 @media (hover: hover) {
-  .ed-next-link:hover .ed-next-title { color: hsl(var(--ed-accent)); }
+  .ed-next-link:hover .ed-next-title { color: hsl(var(--ed-accent-text)); }
   .ed-next-link:hover .ed-next-title svg { transform: translateX(0.2em); }
 }
 .ed-next-link:focus-visible { outline: 3px solid hsl(var(--ed-accent)); outline-offset: 4px; }
@@ -2513,7 +2516,7 @@ html[data-style='editorial'] .ed-cta { display: block; padding: clamp(3rem, 9vh,
   transition: font-variation-settings 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
 }
 .ed-cta-big span { white-space: nowrap; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease; }
-.ed-cta-big span:last-child { color: hsl(var(--ed-accent)); }
+.ed-cta-big span:last-child { color: hsl(var(--ed-accent-text)); }
 .ed-cta-go {
   flex-shrink: 0; display: grid; place-items: center;
   width: clamp(4rem, 9vw, 8rem); aspect-ratio: 1; border-radius: 9999px;
@@ -2523,7 +2526,7 @@ html[data-style='editorial'] .ed-cta { display: block; padding: clamp(3rem, 9vh,
 .ed-cta-go svg { width: 40%; height: 40%; }
 @media (hover: hover) {
   /* The two lines swap colours and slide apart: lively, and the width never changes. */
-  .ed-cta-link:hover .ed-cta-big span:first-child { color: hsl(var(--ed-accent)); transform: translateX(0.18em); }
+  .ed-cta-link:hover .ed-cta-big span:first-child { color: hsl(var(--ed-accent-text)); transform: translateX(0.18em); }
   .ed-cta-link:hover .ed-cta-big span:last-child { color: hsl(var(--ink)); transform: translateX(-0.06em); }
   .ed-cta-link:hover .ed-cta-go { transform: rotate(45deg); background: hsl(var(--ed-accent)); color: hsl(var(--ink)); }
 }
@@ -2600,7 +2603,7 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
   .ed-name { font-size: 27vw; }
 }
 .ed-line { display: block; white-space: nowrap; will-change: transform; }
-.ed-line[data-line='1'] { padding-left: 18vw; color: hsl(var(--ed-accent)); }
+.ed-line[data-line='1'] { padding-left: 18vw; color: hsl(var(--ed-accent-text)); }
 .ed-line[data-line='2'] { padding-left: 6vw; }
 .ed-char {
   --wd: 62;
@@ -2648,7 +2651,7 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
   font-variation-settings: 'wdth' 70; font-weight: 800;
   font-size: clamp(1.75rem, 4.5vw, 3.75rem); line-height: 1; text-transform: uppercase; white-space: nowrap;
 }
-.ed-ticker-run i { font-style: normal; color: hsl(var(--ed-accent)); font-size: 0.6em; }
+.ed-ticker-run i { font-style: normal; color: hsl(var(--ed-accent-text)); font-size: 0.6em; }
 @keyframes ed-marquee { to { transform: translate3d(-50%, 0, 0); } }
 
 .ed-metrics {
@@ -2707,8 +2710,8 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
 .ed-panel-all { background: hsl(var(--ed-accent)); }
 @media (hover: hover) {
   .ed-panel:hover { background: hsl(var(--ink)); color: hsl(var(--background)); }
-  .ed-panel:hover .ed-panel-no { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
-  .ed-panel-all:hover .ed-panel-no { -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+  .ed-panel:hover .ed-panel-no { color: hsl(var(--ed-accent-text)); -webkit-text-stroke-color: hsl(var(--ed-accent-text)); }
+  .ed-panel-all:hover .ed-panel-no { -webkit-text-stroke-color: hsl(var(--ed-accent-text)); }
   .ed-panel:hover .ed-panel-go { transform: translate(3px, -3px) rotate(45deg); }
 }
 .ed-panel:focus-visible { outline: 3px solid hsl(var(--ed-accent)); outline-offset: 3px; }
@@ -2798,7 +2801,7 @@ html[data-style='editorial'] footer > .border-t { border-top-color: hsl(var(--in
 .ex-ticket p:not([class]) { margin-top: 0.4rem; font-weight: 600; }
 .ex-stamp {
   position: absolute; right: 1rem; top: 1rem; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 9999px;
-  border: 2px solid hsl(var(--ed-accent)); color: hsl(var(--ed-accent)); font: 700 0.9rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; transform: rotate(-14deg);
+  border: 2px solid hsl(var(--ed-accent)); color: hsl(var(--ed-accent-text)); font: 700 0.9rem/1 ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; transform: rotate(-14deg);
 }
 /* Brands: a stack of names. */
 .ex-brands li { padding: 0.4rem 0; border-top: 1px solid hsl(var(--ink) / 0.15); font-family: var(--font-display), 'Anybody', system-ui, sans-serif; font-variation-settings: 'wdth' 80; font-weight: 800; font-size: 1.45rem; text-transform: uppercase; line-height: 1; }
@@ -2876,9 +2879,9 @@ html[data-style='editorial'] .callout {
   border-left: 6px solid hsl(var(--callout));
 }
 html[data-style='editorial'] .callout-title { font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; }
-html[data-style='editorial'] :is(.genie-button, .genie-orb) { background: hsl(var(--ink)); color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] :is(.genie-button, .genie-orb) { background: hsl(var(--ink)); color: hsl(var(--ed-accent-text)); }
 html[data-style='editorial'] .genie-button { border-radius: 0; box-shadow: 6px 6px 0 hsl(var(--ed-accent)); }
-html[data-style='editorial'] .genie-button::after { border-color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .genie-button::after { border-color: hsl(var(--ed-accent-text)); }
 
 /* ---- Blog posts: field notes. */
 html[data-style='editorial'] .ed-read-progress { position: fixed; inset: 0 0 auto 0; z-index: 60; height: 4px; transform-origin: left center; background: hsl(var(--ed-accent)); }
@@ -2963,7 +2966,7 @@ html[data-style='editorial'] .bug-field {
   transition: border-color 0.2s ease;
 }
 html[data-style='editorial'] textarea.bug-field { border: 1px solid hsl(var(--ink) / 0.3); padding: 0.75rem; }
-html[data-style='editorial'] .bug-field:focus { box-shadow: none; border-color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .bug-field:focus { box-shadow: none; border-color: hsl(var(--ed-accent-text)); }
 html[data-style='editorial'] .bug-choice { border-radius: 0; font-family: ui-monospace, 'SF Mono', var(--font-jetbrains-mono), Menlo, monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
 html[data-style='editorial'] .bug-choice[aria-checked='true'] { background: hsl(var(--ink)); box-shadow: inset 0 -3px 0 hsl(var(--ed-accent)); }
 html[data-style='editorial'] .bug-send {
@@ -2982,7 +2985,7 @@ html[data-style='editorial'] .bug-step-n {
   font-variation-settings: 'wdth' 60; font-weight: 900; font-size: 2.4rem; line-height: 0.8;
   color: transparent; -webkit-text-stroke: 1.5px hsl(var(--ink));
 }
-html[data-style='editorial'] .bug-steps > li:hover .bug-step-n { color: hsl(var(--ed-accent)); -webkit-text-stroke-color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .bug-steps > li:hover .bug-step-n { color: hsl(var(--ed-accent-text)); -webkit-text-stroke-color: hsl(var(--ed-accent-text)); }
 
 /* ---- 404: the missing chapter. */
 html[data-style='editorial'] .nf-page .trace-404 { display: none; }
@@ -2997,7 +3000,7 @@ html[data-style='editorial'] .ed-404-num {
   font-size: clamp(9rem, 34vw, 22rem); line-height: 0.8; margin-top: 0.75rem;
   color: hsl(var(--ink)); user-select: none;
 }
-html[data-style='editorial'] .ed-404-num .ed-char:nth-child(2) { color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ed-404-num .ed-char:nth-child(2) { color: hsl(var(--ed-accent-text)); }
 html[data-style='editorial'] .ed-404-num { justify-content: center; gap: 0.04em; }
 @media (max-width: 699px) { html[data-style='editorial'] .ed-404-num { font-size: 52vw; } }
 @media (max-width: 767px) { html[data-style='editorial'] .bug-form.glass { box-shadow: 5px 5px 0 hsl(var(--ink)); margin-right: 5px; } }
@@ -3014,7 +3017,7 @@ html[data-style='editorial'] .ed-404-num { justify-content: center; gap: 0.04em;
 .ticket-step[data-done] .ticket-step-mark { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
 .ticket-step[aria-current='step'] .ticket-step-mark { box-shadow: 0 0 0 4px hsl(var(--primary) / 0.2); }
 html[data-style='editorial'] .ticket-step-mark { border-radius: 0; }
-html[data-style='editorial'] .ticket-step[data-done] .ticket-step-mark { background: hsl(var(--ink)); border-color: hsl(var(--ink)); color: hsl(var(--ed-accent)); }
+html[data-style='editorial'] .ticket-step[data-done] .ticket-step-mark { background: hsl(var(--ink)); border-color: hsl(var(--ink)); color: hsl(var(--ed-accent-text)); }
 html[data-style='editorial'] .ticket-step { border-right-color: hsl(var(--ink)); }
 
 /* ---- Other sites on the platform (app/(sites)): a plain masthead and footer in Editorial. */
@@ -3852,11 +3855,11 @@ html[data-style='receipt'] {
   --muted-foreground: 0 0% 35%;
   --border: 0 0% 70%;
   --input: 0 0% 70%;
-  --primary: 0 62% 47%;            /* #C62E2E stamp red */
+  --primary: 0 65% 42%;            /* #B12525 stamp red: 4.5:1 on the desk */
   --primary-foreground: 0 0% 100%;
   --accent: var(--primary);
   --accent-foreground: 0 0% 100%;
-  --ring: 0 62% 47%;
+  --ring: 0 65% 42%;
   --glass-radius: 0;
   --blob-opacity: 0;
 }
@@ -4569,3 +4572,16 @@ html[data-style='bazaar'] .nf-page::before { content: 'Out of stock: this page';
 .bz-facts-strong { font-weight: 800; font-size: 0.82rem; }
 .bz-facts-note { padding: 0.3rem 0; border-bottom: 4px solid #000; font-weight: 600; }
 .bz-facts-ing { padding-top: 0.35rem; }
+
+/* ============================================================
+   CONTRAST FIXES (axe, WCAG 2 AA), where a look's own colours fell short.
+   ============================================================ */
+html:not([data-style]) .chip-accent { color: hsl(356 75% 72%); }
+/* Inside Terminal's dark window the accent is the lime, not the violet meant for paper. */
+.tm-window { --primary: 75 90% 58%; }
+/* Synthwave's fourth tape colour, lighter on the dark card. */
+.sw-t4 { --tape: #A78BFA; }
+/* Bazaar: pack brands at full strength; the live clock on a sticker in the sticker's ink. */
+.bz-pack-brand { opacity: 1; }
+.bz-sticker .live-xp, .bz-sticker .live-xp * { color: inherit !important; }
+.bz-sticker .live-xp-dot { background: currentColor !important; }

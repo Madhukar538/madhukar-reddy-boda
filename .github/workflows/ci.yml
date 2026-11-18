@@ -40,6 +40,8 @@ jobs:
           npm start -- -p 3000 > next.log 2>&1 &
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3000/ && break; sleep 1; done
           BASE_URL=http://localhost:3000 node scripts/check-looks.mjs
+          # Page weight budget (scripts/budget.json): fails if a main page's first load got heavier.
+          BASE_URL=http://localhost:3000 node scripts/check-budget.mjs
       # The screenshots, one per look and page, to look through on any pull request.
       - if: always()
         uses: actions/upload-artifact@v4

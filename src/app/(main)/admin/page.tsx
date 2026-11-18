@@ -10,6 +10,7 @@ import { useAdmin } from '@/components/admin/session';
 import { Notice, Panel, Spinner } from '@/components/admin/ui';
 import { RankedList, TrafficChart } from '@/components/admin/traffic-chart';
 import { ContentSync } from '@/components/admin/content-sync';
+import { THEMES } from '@/components/look-toggle';
 import { TicketSummary } from '@/components/admin/ticket-summary';
 
 const RANGES = [7, 30, 90] as const;
@@ -115,6 +116,9 @@ function Dashboard() {
             <Panel title="Top referrers" description="Only the referring site is kept, never the full URL."><RankedList items={summary.topReferrers} empty="No referrers yet." /></Panel>
             <Panel title="Devices"><RankedList items={summary.devices} /></Panel>
             <Panel title="Countries" description="From Cloudflare, when the API runs behind it."><RankedList items={summary.countries} empty="No country data yet." /></Panel>
+            <Panel title="Themes in use" description="Page views by the theme they were shown in: which looks visitors actually pick. Change the default in Themes.">
+              <RankedList items={(summary.looks ?? []).map((l) => ({ ...l, key: THEMES.find((t) => t.id === l.key)?.label ?? l.key }))} empty="No theme data yet." />
+            </Panel>
           </div>
         </div>
       )}

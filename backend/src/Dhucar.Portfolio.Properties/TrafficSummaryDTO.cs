@@ -34,4 +34,7 @@ public class TrafficSummaryDTO
 
     /// <summary>Views by country.</summary>
     public List<CountItemDTO> Countries { get; set; } = new();
+
+    /// <summary>Views by site look (theme).</summary>
+    public List<CountItemDTO> Looks { get; set; } = new();
 }

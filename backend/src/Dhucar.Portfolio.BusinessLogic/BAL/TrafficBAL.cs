@@ -15,8 +15,8 @@ namespace Dhucar.Portfolio.BusinessLogic.BAL;
 /*
  * Author Name     :  Boda Madhukar Reddy
  * Create Date     :  26 Sep 2026
- * Modified Date   :  18 Oct 2026
- * Modified Reason :  Traffic reports run in parallel
+ * Modified Date   :  18 Nov 2026
+ * Modified Reason :  Page views record the site look; the summary counts them
  * Layer           :  BusinessLogic
  * Modified By     :  Boda Madhukar Reddy
  * Description     :  Cookieless, privacy-first page-view tracking and the traffic dashboard summary.
@@ -43,6 +43,7 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
+    //  1.1        Boda Madhukar Reddy    18 Nov 2026       Records the site look
     //****************************************************************************************************
     /// <summary>
     /// <c>TrackPageView : </c> Records one anonymous view: no IP, cookie or id stored; honours Do Not Track and Global Privacy Control; skips bots, admin and API paths.
@@ -81,6 +82,8 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
                 Device = DeviceClass(userAgent),
                 Country = contextService.GetCountry(),
                 VisitorHash = VisitorHash(salt, contextService.GetClientIp(), userAgent),
+                // Only a registered theme id: the field is free text from the browser.
+                Look = ThemeBAL.Registry.Any(t => t.Id == objAPIRequest.Look) ? objAPIRequest.Look : string.Empty,
             });
             // A blog post's lasting read count (raw page views expire).
             await engagementBAL.RecordRead(path);
@@ -113,6 +116,7 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
     //----------------------------------------------------------------------------------------------------
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //  1.1        Boda Madhukar Reddy    18 Oct 2026       Reports run in parallel
+    //  1.2        Boda Madhukar Reddy    18 Nov 2026       Views by site look
     //****************************************************************************************************
     /// <summary>
     /// <c>GetTrafficSummary : </c> Totals, daily series and top pages, referrers, devices and countries for the last N days.
@@ -130,7 +134,8 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
             Task<List<CountItemDTO>> referrersTask = pageViewDAL.GetTopValuesDB(fromDay, "ReferrerHost", 10);
             Task<List<CountItemDTO>> devicesTask = pageViewDAL.GetTopValuesDB(fromDay, "Device", 5);
             Task<List<CountItemDTO>> countriesTask = pageViewDAL.GetTopValuesDB(fromDay, "Country", 10);
-            await Task.WhenAll(dailyTask, pagesTask, referrersTask, devicesTask, countriesTask);
+            Task<List<CountItemDTO>> looksTask = pageViewDAL.GetTopValuesDB(fromDay, "Look", 20);
+            await Task.WhenAll(dailyTask, pagesTask, referrersTask, devicesTask, countriesTask, looksTask);
             List<DailyTrafficDTO> daily = dailyTask.Result;
             objResponse.Data = new TrafficSummaryDTO
             {
@@ -142,6 +147,7 @@ public partial class TrafficBAL(PageViewDAL pageViewDAL, SaltDAL saltDAL, Engage
                 TopReferrers = referrersTask.Result,
                 Devices = devicesTask.Result,
                 Countries = countriesTask.Result,
+                Looks = looksTask.Result,
             };
             objResponse.ReturnCode = (int)ErrorCode.Success;
             objResponse.ReturnMessage = "Success.";

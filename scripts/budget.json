@@ -1,0 +1,9 @@
+{
+  "about": "Compressed KB per page on first load, in the default look (scripts/check-budget.mjs). Set at about 15% over the sizes measured on 18 Nov 2026: / html 41, js 252, css 55, fonts 112, total 631. Raise a number in the same pull request when growth is intended.",
+  "pages": {
+    "/": { "html": 48, "js": 290, "css": 64, "fonts": 130, "total": 725 },
+    "/projects": { "html": 42, "js": 292, "css": 64, "fonts": 130, "total": 625 },
+    "/experience": { "html": 34, "js": 285, "css": 64, "fonts": 148, "total": 600 },
+    "/about": { "html": 45, "js": 288, "css": 64, "fonts": 130, "total": 616 }
+  }
+}

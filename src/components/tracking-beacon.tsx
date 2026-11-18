@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
 
 /**
- * Privacy-first page-view counter. Sends only the path, the referrer and a
- * utm_source to the API: no cookies, no ids, nothing stored in the browser.
+ * Privacy-first page-view counter. Sends only the path, the referrer, a
+ * utm_source and the look (theme) the page is shown in to the API: no cookies, no ids, nothing stored in the browser.
  * The API keeps only the referrer's host and a daily-salted visitor hash.
  * Skipped with Do Not Track or Global Privacy Control, on admin pages, and
  * when NEXT_PUBLIC_API_URL isn't set. Sent after the page is idle.
@@ -25,7 +25,7 @@ export function TrackingBeacon() {
       fetch(`${API_URL}/api/TrackPageView`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: pathname, referrer: document.referrer, utmSource: utmSource.slice(0, 64) }),
+        body: JSON.stringify({ path: pathname, referrer: document.referrer, utmSource: utmSource.slice(0, 64), look: document.documentElement.dataset.style ?? 'midnight' }),
         credentials: 'omit',
         keepalive: true,
       }).catch(() => {});

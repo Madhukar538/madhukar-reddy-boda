@@ -1,6 +1,7 @@
 // Opens the site's main pages in every look, at desktop and phone widths, and fails if a page
-// doesn't keep the look, a look's own blocks are missing, a phone page scrolls sideways, or the
-// browser logs an error. Saves a desktop screenshot of each page and look to look-shots/.
+// doesn't keep the look, a look's own blocks are missing, a phone page scrolls sideways, the
+// browser logs an error, or (at desktop) axe finds a WCAG 2 A/AA problem such as text contrast.
+// Saves a desktop screenshot of each page and look to look-shots/.
 //
 //   BASE_URL=http://localhost:3000 node scripts/check-looks.mjs
 //
@@ -8,6 +9,7 @@
 // it is registered.
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
+import { AxeBuilder } from '@axe-core/playwright';
 
 const BASE = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
 const OUT = 'look-shots';
@@ -74,7 +76,15 @@ for (const look of looks) {
         if (device === 'phone' && state.overflow > 1) failures.push(`${where}: scrolls sideways by ${state.overflow}px`);
         // A missing page logs its own 404 to the console; that one is expected.
         for (const e of errors.filter((msg) => !(name === '404' && /404/.test(msg)))) failures.push(`${where}: ${e.slice(0, 200)}`);
-        if (device === 'desktop') await page.screenshot({ path: `${OUT}/${look}-${name}.png` });
+        if (device === 'desktop') {
+          await page.screenshot({ path: `${OUT}/${look}-${name}.png` });
+          const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+          for (const v of axe.violations) {
+            const node = v.nodes[0];
+            const detail = (node?.any[0]?.message ?? v.help).split('. Expected')[0];
+            failures.push(`${where}: ${v.id} on ${v.nodes.length} element(s), e.g. ${node?.target.join(' ')}: ${detail}`);
+          }
+        }
       } catch (e) {
         failures.push(`${where}: ${String(e.message).split('\n')[0]}`);
       }

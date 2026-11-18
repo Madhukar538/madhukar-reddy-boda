@@ -81,7 +81,7 @@ public class PageViewDAL(MongoContext context)
     //****************************************************************************************************
     // Layer                 :   DataAccess
     // Method Name           :   GetTopValuesDB
-    // Method Description    :   Counts views by one field (Path, ReferrerHost, Device, Country) since a date; empty values are skipped.
+    // Method Description    :   Counts views by one field (Path, ReferrerHost, Device, Country, UtmSource, Look) since a date; empty values are skipped.
     // Author                :   Boda Madhukar Reddy
     // Creation Date         :   26 Sep 2026
     // Input Parameters      :   fromDay, field, limit
@@ -94,11 +94,11 @@ public class PageViewDAL(MongoContext context)
     //  1.0        Boda Madhukar Reddy    26 Sep 2026       Creation
     //****************************************************************************************************
     /// <summary>
-    /// <c>GetTopValuesDB : </c> Counts views by one field (Path, ReferrerHost, Device, Country) since a date; empty values are skipped.
+    /// <c>GetTopValuesDB : </c> Counts views by one field (Path, ReferrerHost, Device, Country, UtmSource, Look) since a date; empty values are skipped.
     /// </summary>
     public async Task<List<CountItemDTO>> GetTopValuesDB(string fromDay, string field, int limit)
     {
-        string[] allowed = ["Path", "ReferrerHost", "Device", "Country", "UtmSource"];
+        string[] allowed = ["Path", "ReferrerHost", "Device", "Country", "UtmSource", "Look"];
         if (!allowed.Contains(field))
         {
             throw new ArgumentException("Unsupported field.", nameof(field));
