@@ -43,7 +43,7 @@ export const caseStudies: CaseStudy[] = [
     project: 'Multi-Tenant AI Chatbot Platform',
     title: 'From 40 seconds to about 13: rebuilding a multi-tenant AI agent',
     summary:
-      'An embeddable RAG assistant on .NET 10 worked, but a data question took 30–40 seconds. An end-to-end audit ranked the fixes, the agent moved to Microsoft Agent Framework with MCP tools for data and docs, and most answers now arrive in about 13 seconds.',
+      'Clients embed this RAG assistant, built on .NET 10, in their own products. It worked, but a data question took 30–40 seconds. An end-to-end audit ranked the fixes, the agent moved to Microsoft Agent Framework with MCP tools for data and docs, and most answers now arrive in about 13 seconds.',
     note: 'Measured on the running platform. The next step, a change to how the model runs on the server, is still being tested.',
     stats: [
       { value: '30–40 s', label: 'per data question, before' },

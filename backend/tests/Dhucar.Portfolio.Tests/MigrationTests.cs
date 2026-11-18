@@ -46,12 +46,14 @@ public class MigrationTests
         string durationField = jockey.Contains("duration") ? "duration" : "Duration";
         await projects.UpdateOneAsync(new BsonDocument("_id", "jockey"), Builders<BsonDocument>.Update.Set(durationField, "Jan 2021 – May 2023"));
         await Migrations(factory).DeleteManyAsync(FilterDefinition<BsonDocument>.Empty);
-        Assert.Equal([MigrationId, "0002-experience-bullets", "0003-agentic-developer", "0004-ai-architect", "0005-agentic-full-stack"], await RunPending(factory));
+        Assert.Equal([MigrationId, "0002-experience-bullets", "0003-agentic-developer", "0004-ai-architect", "0005-agentic-full-stack", "0006-forward-deployed"], await RunPending(factory));
         Assert.Equal("Dec 2021 – May 2023", (await projects.Find(new BsonDocument("_id", "jockey")).SingleAsync())[durationField].AsString);
 
         BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         string summaryField = profile.Contains("summary") ? "summary" : "Summary";
-        Assert.Equal(Migration20261117AiArchitect.Summary.Replace(Migration20261118AgenticFullStack.OldOpening, Migration20261118AgenticFullStack.NewOpening), profile[summaryField].AsString);
+        string expected = Migration20261117AiArchitect.Summary.Replace(Migration20261118AgenticFullStack.OldOpening, Migration20261118AgenticFullStack.NewOpening);
+        int firstEnd = expected.IndexOf(". ", StringComparison.Ordinal) + 2;
+        Assert.Equal(expected[..firstEnd] + Migration20261118ForwardDeployed.Sentence + expected[firstEnd..], profile[summaryField].AsString);
         string experienceField = profile.Contains("experience") ? "experience" : "Experience";
         BsonDocument experience = profile[experienceField].AsBsonDocument;
         BsonArray groups = experience[experience.Contains("groups") ? "groups" : "Groups"].AsBsonArray;
@@ -141,9 +143,9 @@ public class MigrationTests
             { summaryField, Migration20261114AgenticDeveloper.Summary },
             { nowField, "Edited by hand." },
         }));
-        await Migrations(factory).DeleteManyAsync(new BsonDocument("_id", new BsonDocument("$in", new BsonArray { "0004-ai-architect", "0005-agentic-full-stack" })));
+        await Migrations(factory).DeleteManyAsync(new BsonDocument("_id", new BsonDocument("$in", new BsonArray { "0004-ai-architect", "0005-agentic-full-stack", "0006-forward-deployed" })));
 
-        Assert.Equal(["0004-ai-architect", "0005-agentic-full-stack"], await RunPending(factory));
+        Assert.Equal(["0004-ai-architect", "0005-agentic-full-stack", "0006-forward-deployed"], await RunPending(factory));
         BsonDocument after = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         Assert.Equal(Migration20261118AgenticFullStack.Title, after[titleField].AsString);
         Assert.StartsWith(Migration20261118AgenticFullStack.NewOpening, after[summaryField].AsString);
@@ -167,10 +169,32 @@ public class MigrationTests
         await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0005-agentic-full-stack"));
         factory.Site.Requests.Clear();
 
-        Assert.Equal(["0005-agentic-full-stack"], await RunPending(factory));
+        await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0006-forward-deployed"));
+        Assert.Equal(["0005-agentic-full-stack", "0006-forward-deployed"], await RunPending(factory));
         BsonDocument after = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
         Assert.Equal("My own title", after[titleField].AsString);
         Assert.Equal("My own summary.", after[summaryField].AsString);
         Assert.Empty(factory.Site.Requests);
+    }
+
+    [Fact]
+    public async Task Forward_deployed_sentence_is_added_once_after_the_first_sentence()
+    {
+        using ApiFactory factory = new();
+        factory.CreateApiClient();
+
+        BsonDocument profile = await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync();
+        string summaryField = profile.Contains("summary") ? "summary" : "Summary";
+        await Profile(factory).UpdateOneAsync(FilterDefinition<BsonDocument>.Empty, Builders<BsonDocument>.Update.Set(summaryField, Migration20261118AgenticFullStack.NewOpening + " with years of work. Cut latency."));
+        await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0006-forward-deployed"));
+
+        Assert.Equal(["0006-forward-deployed"], await RunPending(factory));
+        string summary = (await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync())[summaryField].AsString;
+        Assert.Equal(Migration20261118AgenticFullStack.NewOpening + " with years of work. " + Migration20261118ForwardDeployed.Sentence + "Cut latency.", summary);
+
+        // Run again: not added twice.
+        await Migrations(factory).DeleteOneAsync(new BsonDocument("_id", "0006-forward-deployed"));
+        Assert.Equal(["0006-forward-deployed"], await RunPending(factory));
+        Assert.Equal(summary, (await Profile(factory).Find(FilterDefinition<BsonDocument>.Empty).SingleAsync())[summaryField].AsString);
     }
 }
