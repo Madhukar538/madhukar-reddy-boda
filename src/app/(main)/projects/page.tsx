@@ -50,12 +50,12 @@ export default async function ProjectsPage() {
 
       <BlogStrip posts={posts} className="mt-14" />
 
-      <Link href="/lab" className="group glass glass-interactive mt-8 flex items-center gap-4 p-5 md:p-6">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--sys-purple)/0.15)] text-[hsl(var(--sys-purple))]">
+      <Link href="/lab" className="lab-link group glass glass-interactive mt-8 flex items-center gap-4 p-5 md:p-6">
+        <span className="lab-link-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--sys-purple)/0.15)] text-[hsl(var(--sys-purple))]">
           <FlaskConical className="h-5 w-5" />
         </span>
         <span className="flex-1">
-          <span className="block text-[17px] font-semibold text-foreground">Visit the R&amp;D Lab</span>
+          <span className="lab-link-title block text-[17px] font-semibold text-foreground">Visit the R&amp;D Lab</span>
           <span className="block text-sm text-muted-foreground">Experiments, proofs of concept and internal tools.</span>
         </span>
         <ArrowRight className="h-5 w-5 text-primary transition-transform group-hover:translate-x-1" />

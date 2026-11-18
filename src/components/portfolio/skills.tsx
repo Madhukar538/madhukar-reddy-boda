@@ -54,16 +54,16 @@ const CORE_SKILLS = new Set([
 export function Skills({ skillCategories }: { skillCategories: SkillCategory[] }) {
   return (
     <Section id="skills" title="Tech Stack" comment="Skills and technologies" data={skillCategories}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5 md:gap-6">
+      <div className="skill-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5 md:gap-6">
         {skillCategories.map(({ title, skills, color = 'green' }) => {
           const Icon = icons[title] ?? Code2;
           return (
-          <div key={title} className="cs-reveal glass p-5 max-sm:p-4">
-            <div className="flex items-center gap-3 mb-4 max-sm:mb-3">
-              <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconTint[color]}`}>
+          <div key={title} className="skill-card cs-reveal glass p-5 max-sm:p-4">
+            <div className="skill-head flex items-center gap-3 mb-4 max-sm:mb-3">
+              <span className={`skill-icon flex h-9 w-9 items-center justify-center rounded-xl ${iconTint[color]}`}>
                 <Icon className="h-[1.1rem] w-[1.1rem]" />
               </span>
-              <span className="text-[15px] font-semibold text-foreground">{title}</span>
+              <span className="skill-title text-[15px] font-semibold text-foreground">{title}</span>
             </div>
             <div className="skill-row flex flex-wrap gap-1.5">
               {skills.map((skill) => {

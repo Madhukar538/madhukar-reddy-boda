@@ -5,9 +5,9 @@ import type { Education as EducationData } from '@/lib/content';
 export function Education({ education }: { education: EducationData }) {
   return (
     <Section id="education" title="Education" comment="Academic background" data={education}>
-      <div className="glass p-6 md:p-8">
+      <div className="edu-card glass p-6 md:p-8">
         <div className="flex flex-col sm:flex-row items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--sys-indigo))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_8px_20px_-8px_hsl(var(--sys-indigo)/0.7)]">
+          <span className="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--sys-indigo))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_8px_20px_-8px_hsl(var(--sys-indigo)/0.7)]">
             <GraduationCap className="h-5 w-5" />
           </span>
           <div className="space-y-1.5">

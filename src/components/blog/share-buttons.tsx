@@ -33,7 +33,7 @@ export function ShareButtons({ title }: { title: string }) {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="share-buttons flex flex-wrap items-center gap-2">
       {canShare && (
         <button
           type="button"
