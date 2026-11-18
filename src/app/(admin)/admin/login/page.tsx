@@ -96,7 +96,7 @@ function SignIn() {
   if (status === 'loading' || status === 'signed-in' || passwordAllowed === null) return <Spinner label={status === 'signed-in' ? 'Signing you in' : 'Checking your session'} />;
 
   return (
-    <div className="mx-auto max-w-md">
+    <div className="mx-auto max-w-md px-4 py-16 md:py-24">
       <p className="eyebrow">Admin</p>
       <h1 className="mb-6 text-4xl font-bold tracking-tight">Sign in</h1>
 

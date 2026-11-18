@@ -131,7 +131,7 @@ function Dashboard() {
 
 export default function AdminHome() {
   return (
-    <AdminShell title="Traffic">
+    <AdminShell title="Dashboard">
       <Dashboard />
     </AdminShell>
   );

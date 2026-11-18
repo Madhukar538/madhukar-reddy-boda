@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { revalidateTag } from 'next/cache';
-import { CONTENT_TAGS } from '@/lib/content';
+import { TAG_PATTERN } from '@/lib/content-tags';
 
 // Refreshes cached content the moment it changes. Two callers, each proving who it is:
 // - the API, after a save: X-Signature is sha256=HMAC(REVALIDATE_SECRET, "{X-Timestamp}.{body}")
@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 const MAX_AGE_SECONDS = 5 * 60;
 const MAX_BODY_BYTES = 4096;
-const TAG = new RegExp(`^(${CONTENT_TAGS.join('|')}|post:[a-z0-9-]{1,128})$`);
+const TAG = TAG_PATTERN;
 const BEARER = /^Bearer [\w-]+\.[\w-]+\.[\w-]+$/;
 
 const reply = (status: number, message: string) => Response.json({ message }, { status });

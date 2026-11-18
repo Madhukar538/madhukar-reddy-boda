@@ -91,7 +91,7 @@ export default function SetupPage() {
   if (step === 0 && available === null) return <Spinner />;
   if (step === 0 && !available) {
     return (
-      <div className="mx-auto max-w-lg">
+      <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
         <p className="eyebrow">Admin</p>
         <h1 className="mb-6 text-4xl font-bold tracking-tight">Already set up</h1>
         <div className="glass space-y-4 p-6">
@@ -105,7 +105,7 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg">
+    <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
       <p className="eyebrow">Admin</p>
       <h1 className="mb-4 text-4xl font-bold tracking-tight">Set up the admin account</h1>
       <ol className="mb-6 flex gap-2 text-xs font-medium">
