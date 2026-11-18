@@ -22,7 +22,18 @@ const pages = [
 
 const icons = { GitHub: Github, LinkedIn: Linkedin };
 
-export function Footer({ profile, socialLinks, bugsFixed = 0 }: { profile: Profile; socialLinks: SocialLink[]; bugsFixed?: number }) {
+export function Footer({
+  profile,
+  socialLinks,
+  bugsFixed = 0,
+  extraLinks = [],
+}: {
+  profile: Profile;
+  socialLinks: SocialLink[];
+  bugsFixed?: number;
+  /** Pages made in the admin and linked from the footer, after the built-in ones. */
+  extraLinks?: { href: string; label: string }[];
+}) {
   const socials = [
     { href: `mailto:${profile.email}`, icon: Mail, label: 'Email' },
     ...socialLinks.map(({ network, href }) => ({ href, icon: icons[network], label: network })),
@@ -67,7 +78,7 @@ export function Footer({ profile, socialLinks, bugsFixed = 0 }: { profile: Profi
             )}
           </div>
           <nav aria-label="Footer" className="grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
-            {(bugsFixed > 0 ? pages.flatMap((p) => (p.href === '/fix-a-bug' ? [p, { href: '/bug-log', label: 'Bug log' }] : [p])) : pages).map((p) => (
+            {[...(bugsFixed > 0 ? pages.flatMap((p) => (p.href === '/fix-a-bug' ? [p, { href: '/bug-log', label: 'Bug log' }] : [p])) : pages), ...extraLinks].map((p) => (
               <Link key={p.href} href={p.href} className="tap text-foreground/70 hover:text-primary transition-colors">
                 {p.label}
               </Link>

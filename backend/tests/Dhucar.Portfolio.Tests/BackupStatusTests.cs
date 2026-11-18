@@ -25,7 +25,7 @@ public class BackupStatusTests
         try
         {
             File.WriteAllText(Path.Combine(folder, "backup.json"), "{\"at\":\"2026-11-18T21:00:05Z\",\"isOk\":false,\"message\":\"The dump failed.\"}");
-            File.WriteAllText(Path.Combine(folder, "backup-good.json"), "{\"at\":\"2026-11-17T21:00:09.123Z\",\"file\":\"portfolio-2026-11-17T210000Z.gz\",\"bytes\":48213,\"collections\":17,\"documents\":3456}");
+            File.WriteAllText(Path.Combine(folder, "backup-good.json"), "{\"at\":\"2026-11-17T21:00:09.123Z\",\"file\":\"portfolio-2026-11-17T210000Z.tar\",\"bytes\":48213,\"databases\":2,\"collections\":17,\"documents\":3456}");
             // Half-written or broken: ignored, not an error.
             File.WriteAllText(Path.Combine(folder, "offsite.json"), "{\"at\":");
             using ApiFactory factory = new(new() { ["Portfolio:Backups:StatusDirectory"] = folder });
@@ -37,8 +37,9 @@ public class BackupStatusTests
             Assert.False(data.GetProperty("isLastAttemptOk").GetBoolean());
             Assert.Equal("The dump failed.", data.GetProperty("lastAttemptMessage").GetString());
             Assert.Equal(new DateTime(2026, 11, 17, 21, 0, 9, 123, DateTimeKind.Utc), data.GetProperty("lastGoodAt").GetDateTime().ToUniversalTime());
-            Assert.Equal("portfolio-2026-11-17T210000Z.gz", data.GetProperty("lastGoodFile").GetString());
+            Assert.Equal("portfolio-2026-11-17T210000Z.tar", data.GetProperty("lastGoodFile").GetString());
             Assert.Equal(48213, data.GetProperty("lastGoodBytes").GetInt64());
+            Assert.Equal(2, data.GetProperty("databases").GetInt32());
             Assert.Equal(17, data.GetProperty("collections").GetInt32());
             Assert.Equal(3456, data.GetProperty("documents").GetInt64());
             Assert.False(data.GetProperty("isOffsiteConfigured").GetBoolean());

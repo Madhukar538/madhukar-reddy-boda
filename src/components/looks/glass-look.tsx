@@ -19,7 +19,7 @@ const initials = (s: string) =>
     .map((w) => w[0].toUpperCase())
     .join('');
 
-export function GlassHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function GlassHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   return (
     <div className="home-glass look-home">
       <p id="gl-title" role="heading" aria-level={1} className="sr-only">
@@ -62,7 +62,75 @@ export function GlassHome({ heading, name, projects, metrics, since, posts }: Lo
           </Link>
         ))}
       </section>
+      {writing && <GlassWriting {...writing} />}
     </div>
+  );
+}
+
+/**
+ * Glass's writing, in place of the shared blog list: two widgets under the notifications. A large
+ * list widget of the next posts (the three newest are the notifications above), each with its
+ * topic's tinted icon, and a Topics widget of tinted chips with their counts.
+ */
+function GlassWriting({ posts, topics, total }: NonNullable<LookHomeProps['writing']>) {
+  const list = posts.slice(3, 10);
+  const categories = [...new Set(posts.map((p) => p.category))];
+  const tint = (category: string) => TINTS[categories.indexOf(category) % TINTS.length];
+  if (list.length === 0 && topics.length === 0) return null;
+  return (
+    <section aria-labelledby="gl-writing-title" className="gl-today">
+      <div className="gl-widget gl-reading glass glass-strong">
+        <div className="gl-widget-head">
+          <span className="gl-icon gl-icon-sm gl-t1" aria-hidden>
+            B
+          </span>
+          <h2 id="gl-writing-title">Writing</h2>
+          <Link href="/blog" className="gl-widget-more">
+            All {total}
+          </Link>
+        </div>
+        <ul>
+          {list.map((p) => (
+            <li key={p.slug}>
+              <Link href={`/blog/${p.slug}`}>
+                <span className={`gl-icon gl-icon-sm ${tint(p.category)}`} aria-hidden>
+                  {initials(p.category)}
+                </span>
+                <span className="gl-reading-text">
+                  <span className="gl-note-title">{p.title}</span>
+                  <span className="gl-reading-meta">
+                    {p.category} · {shortDate(p.date)} · {p.readTime}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {topics.length > 0 && (
+        <div className="gl-widget gl-topics glass glass-strong">
+          <div className="gl-widget-head">
+            <span className="gl-icon gl-icon-sm gl-t4" aria-hidden>
+              #
+            </span>
+            <h2>Topics</h2>
+            <Link href="/topics" className="gl-widget-more">
+              All
+            </Link>
+          </div>
+          <ul>
+            {topics.map((t) => (
+              <li key={t.slug}>
+                <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'gl-chip gl-chip-cat' : 'gl-chip'}>
+                  {t.name}
+                  <span>{t.count}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
   );
 }
 

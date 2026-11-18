@@ -48,21 +48,21 @@ export RCLONE_CONFIG_SEALED_PASSWORD
 
 copy() {
   # Only finished dumps (a dump being written is still *.part); a name already there is never rewritten.
-  if ! rclone copy /backups sealed: --include 'portfolio-*.gz' --immutable --quiet; then
+  if ! rclone copy /backups sealed: --include 'portfolio-*.{tar,gz}' --immutable --quiet; then
     echo "offsite: copy FAILED, will retry in ${EVERY_HOURS}h" >&2
     status true false "The copy failed; retrying in ${EVERY_HOURS}h."
     return 0
   fi
-  copies=$(rclone lsf sealed: --include 'portfolio-*.gz' | wc -l | tr -d ' ')
+  copies=$(rclone lsf sealed: --include 'portfolio-*.{tar,gz}' | wc -l | tr -d ' ')
   # Each local dump must be in the bucket and decrypt to the same bytes (checked by hash, no download).
-  if rclone cryptcheck /backups sealed: --one-way --include 'portfolio-*.gz' --quiet; then
+  if rclone cryptcheck /backups sealed: --one-way --include 'portfolio-*.{tar,gz}' --quiet; then
     echo "offsite: copied and verified, $copies dumps in the bucket"
     status true true "Copied and verified." "$copies"
   else
     echo "offsite: verification FAILED: a copy in the bucket does not match its dump" >&2
     status true false "A copy in the bucket does not match its dump." "$copies"
   fi
-  rclone delete sealed: --include 'portfolio-*.gz' --min-age "${KEEP_DAYS}d" --quiet \
+  rclone delete sealed: --include 'portfolio-*.{tar,gz}' --min-age "${KEEP_DAYS}d" --quiet \
     || echo "offsite: removing copies older than ${KEEP_DAYS} days FAILED" >&2
 }
 

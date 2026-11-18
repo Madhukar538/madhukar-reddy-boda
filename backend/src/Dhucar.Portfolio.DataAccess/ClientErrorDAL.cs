@@ -23,7 +23,7 @@ public class ClientErrorDAL(MongoContext context)
     // Input Parameters      :   error, maxGroups
     // Modified Date         :
     // Modified Reason       :
-    // Return Values         :   bool (false when a new group was refused because the list is full)
+    // Return Values         :   string: "seen" (counted in its group), "new" (a new group) or "full" (refused: the list is full)
     //----------------------------------------------------------------------------------------------------
     //  Version    Author                 Date              Remarks
     //----------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ public class ClientErrorDAL(MongoContext context)
     /// <summary>
     /// <c>RecordClientErrorDB : </c> Counts one more report of a known error, or starts a new group while there are fewer than maxGroups.
     /// </summary>
-    public async Task<bool> RecordClientErrorDB(ClientErrorDocument error, int maxGroups)
+    public async Task<string> RecordClientErrorDB(ClientErrorDocument error, int maxGroups)
     {
         UpdateDefinition<ClientErrorDocument> seenAgain = Builders<ClientErrorDocument>.Update
             .Inc(x => x.Count, 1)
@@ -43,11 +43,11 @@ public class ClientErrorDAL(MongoContext context)
         UpdateResult existing = await context.ClientErrors.UpdateOneAsync(x => x.Id == error.Id, seenAgain);
         if (existing.MatchedCount > 0)
         {
-            return true;
+            return "seen";
         }
         if (await context.ClientErrors.CountDocumentsAsync(FilterDefinition<ClientErrorDocument>.Empty) >= maxGroups)
         {
-            return false;
+            return "full";
         }
         // Upsert, so two first reports arriving together make one group with both counted.
         UpdateDefinition<ClientErrorDocument> firstSeen = seenAgain
@@ -57,8 +57,9 @@ public class ClientErrorDAL(MongoContext context)
             .SetOnInsert(x => x.Column, error.Column)
             .SetOnInsert(x => x.Stack, error.Stack)
             .SetOnInsert(x => x.FirstSeen, error.FirstSeen);
-        await context.ClientErrors.UpdateOneAsync(x => x.Id == error.Id, firstSeen, new UpdateOptions { IsUpsert = true });
-        return true;
+        UpdateResult created = await context.ClientErrors.UpdateOneAsync(x => x.Id == error.Id, firstSeen, new UpdateOptions { IsUpsert = true });
+        // Two first reports at once: only the one that created the group calls it new.
+        return created.UpsertedId != null ? "new" : "seen";
     }
 
     //****************************************************************************************************

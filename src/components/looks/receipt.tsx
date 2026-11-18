@@ -16,7 +16,7 @@ function Slip({ children, className = '' }: { children: React.ReactNode; classNa
 
 const Rule = () => <p className="rc-rule" aria-hidden />;
 
-export function ReceiptHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function ReceiptHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   return (
     <div className="home-receipt look-home">
       <p id="rc-title" role="heading" aria-level={1} className="sr-only">
@@ -67,7 +67,7 @@ export function ReceiptHome({ heading, name, projects, metrics, since, posts }: 
         <h2 className="rc-center">RECENT TRANSACTIONS</h2>
         <Rule />
         <ol className="rc-items">
-          {posts.slice(0, 5).map((p) => (
+          {(writing?.posts ?? posts).slice(0, writing ? 10 : 5).map((p) => (
             <li key={p.slug}>
               <Link href={`/blog/${p.slug}`} className="rc-row rc-post">
                 <span>{p.title}</span>
@@ -76,6 +76,27 @@ export function ReceiptHome({ heading, name, projects, metrics, since, posts }: 
             </li>
           ))}
         </ol>
+        {writing && (
+          <>
+            <Rule />
+            <h3 className="rc-center rc-dept-title">DEPARTMENTS</h3>
+            <ul className="rc-items rc-depts">
+              {writing.topics.map((t) => (
+                <li key={t.slug}>
+                  <Link href={`/topics/${t.slug}`} className={`rc-row${t.kind === 'category' ? ' rc-dept-cat' : ''}`}>
+                    <span>{t.name.toUpperCase()}</span>
+                    <span>x{t.count}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Rule />
+            <Link href="/blog" className="rc-row rc-total">
+              <span>ALL POSTS</span>
+              <span>{writing.total}</span>
+            </Link>
+          </>
+        )}
         <Rule />
         <Link href="/fix-a-bug" className="rc-center rc-cta">
           RETURNS &amp; BUG REPORTS →

@@ -33,7 +33,7 @@ function Sign({ name, since }: { name: string; since: string }) {
   );
 }
 
-export function BazaarHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function BazaarHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   const stock = projects.slice(0, 8);
   const rows = [stock.slice(0, 4), stock.slice(4, 8)].filter((r) => r.length);
   return (
@@ -80,14 +80,39 @@ export function BazaarHome({ heading, name, projects, metrics, since, posts }: L
       <section aria-labelledby="bz-specials-title" className="bz-board">
         <h2 id="bz-specials-title">Today&apos;s specials</h2>
         <ol>
-          {posts.slice(0, 5).map((p) => (
+          {(writing?.posts ?? posts).slice(0, writing ? 10 : 5).map((p) => (
             <li key={p.slug}>
               <Link href={`/blog/${p.slug}`}>{p.title}</Link>
               <span>{shortDate(p.date)}</span>
             </li>
           ))}
         </ol>
+        {writing && (
+          <p className="bz-board-all">
+            <Link href="/blog">Full menu: all {writing.total} →</Link>
+          </p>
+        )}
       </section>
+      {writing && writing.topics.length > 0 && (
+        <section aria-labelledby="bz-tags-title" className="bz-tags">
+          <h2 id="bz-tags-title">Browse by aisle</h2>
+          <ul>
+            {writing.topics.map((t, i) => (
+              <li key={t.slug} style={{ ['--tilt' as string]: `${(((i * 7) % 5) - 2) * 0.6}deg` }}>
+                <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'bz-tag bz-tag-cat' : 'bz-tag'}>
+                  {t.name}
+                  <span>{t.count} in stock</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p>
+            <Link href="/topics" className="bz-tags-all">
+              Every aisle →
+            </Link>
+          </p>
+        </section>
+      )}
     </div>
   );
 }

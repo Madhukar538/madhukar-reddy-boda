@@ -19,7 +19,7 @@ import { HoverPreview } from '@/components/vault/hover-preview';
 import { allTopics, siteUrl } from '@/lib/blog';
 import { caseStudyFor } from '@/data/case-studies';
 import { chunkReloadScript } from '@/lib/chunk-reload';
-import { KNOWN_THEMES, getBugLog, getContent, getThemeSettings } from '@/lib/content';
+import { KNOWN_THEMES, getBugLog, getContent, getPages, getThemeSettings } from '@/lib/content';
 import { ThemeOptionsProvider } from '@/components/look-toggle';
 import { TrackingBeacon } from '@/components/tracking-beacon';
 import { ErrorReporter } from '@/components/error-reporter';
@@ -85,7 +85,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [{ profile, socialLinks, education, keyProjects, posts }, themes, bugLog] = await Promise.all([getContent(), getThemeSettings(), getBugLog()]);
+  const [{ profile, socialLinks, education, keyProjects, posts }, themes, bugLog, adminPages] = await Promise.all([getContent(), getThemeSettings(), getBugLog(), getPages()]);
+  // Pages made in the admin that asked to be linked from the menu or the footer.
+  const linkedPages = (where: 'menu' | 'footer') => adminPages.filter((p) => p.showIn === where).map((p) => ({ href: `/${p.slug}`, label: p.title, note: p.description }));
   // The top bar's mega menus (components/portfolio/nav-menu.tsx).
   const menu = {
     projects: keyProjects.filter((p) => p.featured).concat(keyProjects.filter((p) => !p.featured)).slice(0, 3).map((p) => {
@@ -100,6 +102,7 @@ export default async function RootLayout({
     topics: allTopics(posts).slice(0, 8).map((t) => ({ name: t.name, href: `/topics/${t.slug}` })),
     // Fixed bugs in the public log: its link shows only while there are some.
     bugsFixed: bugLog.length,
+    pages: linkedPages('menu'),
   };
   const base = siteUrl();
   // Google Knowledge Graph and entity graph linking
@@ -201,7 +204,7 @@ export default async function RootLayout({
               <SocialRail profile={profile} socialLinks={socialLinks} />
               {children}
             </main>
-            <Footer profile={profile} socialLinks={socialLinks} bugsFixed={bugLog.length} />
+            <Footer profile={profile} socialLinks={socialLinks} bugsFixed={bugLog.length} extraLinks={linkedPages('footer')} />
             <Toaster />
             <QuickSwitcher />
             <HoverPreview />

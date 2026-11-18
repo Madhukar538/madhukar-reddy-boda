@@ -35,4 +35,7 @@ public class PageDocument
 
     /// <summary>UTC time it was last saved.</summary>
     public DateTime UpdatedAt { get; set; }
+
+    /// <summary>Where the site links to it besides the sitemap: "" (nowhere), "footer" or "menu" (the Work menu).</summary>
+    public string ShowIn { get; set; } = string.Empty;
 }

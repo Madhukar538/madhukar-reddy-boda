@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { ProjectCard } from '@/data/profile';
 import type { PostSummary } from '@/lib/blog';
+import type { DeskPost, DeskTopic } from '@/components/editorial/editorial-writing';
 
 /**
  * What every look's own homepage (Arctic, Synthwave, Dune) is built from. Like Editorial's, each one
@@ -14,6 +15,8 @@ export type LookHomeProps = {
   metrics: { value: ReactNode; label: string }[];
   since: string;
   posts: PostSummary[];
+  /** The newest posts and the topics, for a look that lays out its own writing section instead of the shared blog list. */
+  writing?: { posts: DeskPost[]; topics: DeskTopic[]; total: number };
 };
 
 /** A project with where it links (worked out on the server: components/looks/server.ts withHrefs). */

@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { revalidateTag } from 'next/cache';
 import { TAG_PATTERN } from '@/lib/content-tags';
+import { isAdminRequest } from '@/lib/admin-auth';
 
 // Refreshes cached content the moment it changes. Two callers, each proving who it is:
 // - the API, after a save: X-Signature is sha256=HMAC(REVALIDATE_SECRET, "{X-Timestamp}.{body}")
@@ -12,7 +13,6 @@ export const dynamic = 'force-dynamic';
 const MAX_AGE_SECONDS = 5 * 60;
 const MAX_BODY_BYTES = 4096;
 const TAG = TAG_PATTERN;
-const BEARER = /^Bearer [\w-]+\.[\w-]+\.[\w-]+$/;
 
 const reply = (status: number, message: string) => Response.json({ message }, { status });
 
@@ -27,31 +27,13 @@ function isFresh(timestamp: string) {
   return /^\d{1,12}$/.test(timestamp) && age <= MAX_AGE_SECONDS;
 }
 
-/** True only if the API accepts the token as a current admin session. */
-async function isAdmin(authorization: string) {
-  const api = (process.env.API_URL || '').replace(/\/$/, '');
-  if (!api) return false;
-  try {
-    const response = await fetch(`${api}/api/GetCurrentAdmin`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: authorization },
-      body: '{}',
-      cache: 'no-store',
-      signal: AbortSignal.timeout(5000),
-    });
-    return response.ok && ((await response.json()) as { returnCode?: number }).returnCode === 1;
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(request: Request) {
   const body = await request.text();
   if (Buffer.byteLength(body) > MAX_BODY_BYTES) return reply(413, 'Body too large.');
 
   const authorization = request.headers.get('authorization') ?? '';
   if (authorization) {
-    if (!BEARER.test(authorization) || !(await isAdmin(authorization))) return reply(401, 'Not signed in.');
+    if (!(await isAdminRequest(authorization))) return reply(401, 'Not signed in.');
   } else {
     const secret = process.env.REVALIDATE_SECRET ?? '';
     if (secret.length < 32) return reply(404, 'Not found.');

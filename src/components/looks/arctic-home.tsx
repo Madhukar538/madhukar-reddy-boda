@@ -15,7 +15,14 @@ const LINES = [
   { code: 'M', label: 'MCP', tone: 'ar-l4' },
 ];
 
-export function ArcticHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+/** A topic's line colour: each category gets one of the four, in the order the topics list them. */
+const toneFor = (writing: NonNullable<LookHomeProps['writing']>, category: string) => {
+  const categories = writing.topics.filter((t) => t.kind === 'category').map((t) => t.name);
+  const i = categories.indexOf(category);
+  return LINES[(i < 0 ? 0 : i) % LINES.length].tone;
+};
+
+export function ArcticHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   return (
     <div className="home-arctic look-home">
       <section className="ar-hero" aria-labelledby="ar-title">
@@ -88,14 +95,48 @@ export function ArcticHome({ heading, name, projects, metrics, since, posts }: L
       <section className="ar-next" aria-labelledby="ar-next-title">
         <h2 id="ar-next-title">Next departures</h2>
         <ol>
-          {posts.slice(0, 4).map((p) => (
+          {(writing?.posts ?? posts).slice(0, writing ? 10 : 4).map((p) => (
             <li key={p.slug}>
               <time dateTime={p.date}>{shortDate(p.date)}</time>
-              <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+              <span className="ar-next-main">
+                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                {writing && (
+                  <span className="ar-next-line">
+                    <span className={`ar-line-badge ar-line-sm ${toneFor(writing, p.category)}`} aria-hidden>
+                      {p.category[0]}
+                    </span>
+                    {p.category}
+                  </span>
+                )}
+              </span>
               <span className="ar-via">{p.readTime}</span>
             </li>
           ))}
         </ol>
+        {writing && (
+          <>
+            <h3 className="ar-net-title">Network map</h3>
+            <ul className="ar-net" aria-label="Topics">
+              {writing.topics.map((t) => (
+                <li key={t.slug}>
+                  <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'ar-net-cat' : undefined}>
+                    {t.kind === 'category' && (
+                      <span className={`ar-line-badge ar-line-sm ${toneFor(writing, t.name)}`} aria-hidden>
+                        {t.name[0]}
+                      </span>
+                    )}
+                    {t.name}
+                    <span className="ar-net-n">{t.count}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="ar-next-all">
+              <Link href="/blog">All {writing.total} departures →</Link>
+              <Link href="/topics">Every line →</Link>
+            </p>
+          </>
+        )}
       </section>
     </div>
   );

@@ -66,6 +66,9 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Source maps for the browser bundles, for Admin → Errors' readable stacks. They are moved out of the
+  // served folder right after the build (scripts/hide-source-maps.mjs), so they are never public.
+  productionBrowserSourceMaps: true,
   generateBuildId: async () => buildId,
   env: {
     NEXT_PUBLIC_BUILD_ID: buildId,

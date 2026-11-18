@@ -45,6 +45,11 @@ public class PageTests
         Assert.Equal(string.Empty, listed.GetProperty("content").GetString());
         Assert.Contains(factory.Site.Requests, r => r.Body.Contains("\"page:uses\"", StringComparison.Ordinal) && r.Body.Contains("\"pages\"", StringComparison.Ordinal));
 
+        // Linked from the footer, if asked; anything else is refused.
+        Assert.Equal(HttpStatusCode.OK, (await session.Client.Post("SavePage", new { originalSlug = "uses", slug = "uses", title = "Uses", description = "", content = "<p>x</p>", isPublished = true, showIn = "footer" }, token: session.AccessToken)).Status);
+        Assert.Equal("footer", Assert.Single((await anonymous.Post("GetPages")).Data.EnumerateArray()).GetProperty("showIn").GetString());
+        Assert.Equal(HttpStatusCode.BadRequest, (await session.Client.Post("SavePage", new { originalSlug = "uses", slug = "uses", title = "Uses", description = "", content = "<p>x</p>", isPublished = true, showIn = "sidebar" }, token: session.AccessToken)).Status);
+
         // Deleted: gone from the site.
         Assert.Equal(HttpStatusCode.OK, (await session.Client.Post("DeletePage", new { slug = "uses" }, token: session.AccessToken)).Status);
         Assert.Equal(HttpStatusCode.NotFound, (await anonymous.Post("GetPage", new { slug = "uses" })).Status);

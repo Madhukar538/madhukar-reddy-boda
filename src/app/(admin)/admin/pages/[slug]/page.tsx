@@ -14,9 +14,9 @@ import { Field, Notice, Spinner, fieldClass } from '@/components/admin/ui';
 import { ImagePicker } from '@/components/admin/image-picker';
 import { previewDoc } from '@/components/admin/preview';
 
-type Form = { slug: string; title: string; description: string; content: string; isPublished: boolean };
+type Form = { slug: string; title: string; description: string; content: string; isPublished: boolean; showIn: AdminPage['showIn'] };
 
-const EMPTY: Form = { slug: '', title: '', description: '', content: '', isPublished: false };
+const EMPTY: Form = { slug: '', title: '', description: '', content: '', isPublished: false, showIn: '' };
 
 const slugify = (text: string) =>
   text.toLowerCase().replace(/&[a-z]+;/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64);
@@ -43,7 +43,7 @@ function Editor({ slug }: { slug: string }) {
     if (isNew) return;
     call<AdminPage>('GetPageForEdit', { slug })
       .then((page) => {
-        const loaded: Form = { slug: page.slug, title: page.title, description: page.description, content: page.content, isPublished: page.isPublished };
+        const loaded: Form = { slug: page.slug, title: page.title, description: page.description, content: page.content, isPublished: page.isPublished, showIn: page.showIn ?? '' };
         setOriginal(loaded);
         setForm(loaded);
       })
@@ -175,6 +175,13 @@ function Editor({ slug }: { slug: string }) {
                 className={`${fieldClass} font-mono text-sm`}
               />
             </div>
+          </Field>
+          <Field label="Link it from" hint="Besides the sitemap, which lists every published page.">
+            <select value={form.showIn} onChange={(e) => set('showIn', e.target.value as Form['showIn'])} className={fieldClass}>
+              <option value="">Nowhere else</option>
+              <option value="footer">The footer</option>
+              <option value="menu">The Work menu</option>
+            </select>
           </Field>
           {!isNew && original.isPublished && (
             <Link href={`/${slug}`} target="_blank" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">

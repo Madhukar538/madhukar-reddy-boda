@@ -29,6 +29,8 @@ type AdminSession = {
   signIn: (token: AuthToken) => void;
   /** Refresh the live site's cached content now (fallback for when the API's own call didn't get through). */
   refreshSite: (tags: string[]) => Promise<boolean>;
+  /** POSTs JSON to one of this site's own admin-only routes (app/api/...) with the session; null if it fails. */
+  callSite: <T>(path: string, body: unknown) => Promise<T | null>;
   signOut: (everywhere?: boolean) => Promise<void>;
 };
 
@@ -134,6 +136,22 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const callSite = useCallback(async <T,>(path: string, body: unknown): Promise<T | null> => {
+    const current = tokenRef.current;
+    if (!current) return null;
+    try {
+      const response = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${current.accessToken}` },
+        body: JSON.stringify(body),
+        cache: 'no-store',
+      });
+      return response.ok ? ((await response.json()) as T) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
   const signOut = useCallback(
     async (everywhere = false) => {
       const current = tokenRef.current;
@@ -160,9 +178,10 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
       call,
       signIn: apply,
       refreshSite,
+      callSite,
       signOut,
     }),
-    [status, error, token, call, apply, refreshSite, signOut, renew]
+    [status, error, token, call, apply, refreshSite, callSite, signOut, renew]
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

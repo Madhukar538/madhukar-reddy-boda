@@ -227,4 +227,7 @@ export type ThemeSettings = {
 };
 
 /** A standalone page made in the admin, served at /<slug> (content is empty in lists). */
-export type AdminPage = { slug: string; title: string; description: string; content: string; isPublished: boolean; updatedAt: string };
+export type AdminPage = { slug: string; title: string; description: string; content: string; isPublished: boolean; updatedAt: string; showIn: '' | 'footer' | 'menu' };
+
+/** One stack frame of a browser error, mapped back to its source (app/api/resolve-stack); source is empty when it couldn't be. */
+export type ResolvedFrame = { generated: string; source: string; line: number; column: number; name: string | null };

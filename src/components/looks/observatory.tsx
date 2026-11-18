@@ -16,7 +16,7 @@ const STARS = [
 
 const designation = (i: number) => `DH-${String(i + 1).padStart(3, '0')}`;
 
-export function ObservatoryHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function ObservatoryHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   const shown = projects.slice(0, STARS.length);
   const path = shown.map((_, i) => `${STARS[i][0]},${STARS[i][1]}`).join(' ');
   return (
@@ -78,7 +78,67 @@ export function ObservatoryHome({ heading, name, projects, metrics, since, posts
           </ol>
         </section>
       </div>
+      {writing && <ObservatoryCatalogue {...writing} />}
     </div>
+  );
+}
+
+/**
+ * Observatory's writing, past the log and in place of the shared blog list: the older posts as a
+ * star catalogue (catalogue number, object, class, date observed) and the topics as constellations.
+ */
+function ObservatoryCatalogue({ posts, topics, total }: NonNullable<LookHomeProps['writing']>) {
+  const objects = posts.slice(5, 11);
+  return (
+    <section className="ob-panel ob-skycat" aria-labelledby="ob-cat-title">
+      <h2 id="ob-cat-title">Star catalogue</h2>
+      {objects.length > 0 && (
+        <table className="ob-cat">
+          <thead>
+            <tr>
+              <th scope="col">Cat.</th>
+              <th scope="col">Object</th>
+              <th scope="col" className="ob-hide-sm">
+                Class
+              </th>
+              <th scope="col">Observed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {objects.map((p, i) => (
+              <tr key={p.slug}>
+                <td>DH-{String(total - 5 - i).padStart(3, '0')}</td>
+                <td>
+                  <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                </td>
+                <td className="ob-hide-sm">{p.category}</td>
+                <td>{shortDate(p.date)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {topics.length > 0 && (
+        <>
+          <h3 className="ob-const-title">Constellations</h3>
+          <ul className="ob-const">
+            {topics.map((t) => (
+              <li key={t.slug}>
+                <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'ob-const-cat' : undefined}>
+                  <span className="ob-star" aria-hidden />
+                  {t.name}
+                  <span className="ob-const-n">{t.count}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p className="ob-cat-all">
+        <Link href="/blog">The full sky: {total} posts →</Link>
+        <Link href="/topics">Every constellation →</Link>
+      </p>
+    </section>
   );
 }
 

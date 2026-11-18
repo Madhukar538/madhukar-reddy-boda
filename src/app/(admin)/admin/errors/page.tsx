@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Check, RefreshCw, Trash2 } from 'lucide-react';
 import { errorMessage } from '@/lib/admin/api';
+import type { ResolvedFrame } from '@/lib/admin/types';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { useAdmin } from '@/components/admin/session';
 import { Notice, Panel, Spinner, dangerButton, formatDateTime, secondaryButton } from '@/components/admin/ui';
@@ -21,6 +22,45 @@ type ClientError = {
   firstSeen: string;
   lastSeen: string;
 };
+
+/** The error's stack mapped to source files and lines, on demand (the maps stay on the server). */
+function SourceFrames({ error }: { error: ClientError }) {
+  const { callSite } = useAdmin();
+  const [frames, setFrames] = useState<ResolvedFrame[] | null>(null);
+  const [state, setState] = useState<'idle' | 'busy' | 'failed'>('idle');
+
+  const resolve = async () => {
+    setState('busy');
+    const result = await callSite<{ frames: ResolvedFrame[] }>('/api/resolve-stack', { stack: error.stack, source: error.source, line: error.line, column: error.column });
+    if (result) {
+      setFrames(result.frames);
+      setState('idle');
+    } else {
+      setState('failed');
+    }
+  };
+
+  if (frames) {
+    const mapped = frames.filter((f) => f.source);
+    return mapped.length === 0 ? (
+      <p className="mt-2 text-xs text-muted-foreground">No source found: this error came from a build whose source maps are gone, or from code outside the site.</p>
+    ) : (
+      <ol className="mt-2 space-y-1 font-mono text-xs">
+        {mapped.map((f) => (
+          <li key={f.generated}>
+            <span className="font-semibold text-foreground">{f.source}:{f.line}:{f.column}</span>
+            {f.name && <span className="text-muted-foreground"> in {f.name}</span>}
+          </li>
+        ))}
+      </ol>
+    );
+  }
+  return (
+    <button type="button" onClick={resolve} disabled={state === 'busy'} className="mt-2 text-xs font-medium text-primary hover:underline disabled:opacity-60">
+      {state === 'busy' ? 'Finding the source…' : state === 'failed' ? "Couldn't load the source maps. Try again" : 'Show source'}
+    </button>
+  );
+}
 
 /**
  * Script errors visitors' browsers hit on the public site, grouped by message and the place in the
@@ -114,6 +154,7 @@ function ErrorList() {
                   <Check className="h-4 w-4" /> {busy === e.id ? 'Clearing…' : 'Mark fixed'}
                 </button>
               </div>
+              {(e.stack || e.source) && <SourceFrames error={e} />}
               {e.stack && (
                 <details className="mt-3">
                   <summary className="cursor-pointer text-xs font-medium text-primary">Stack</summary>

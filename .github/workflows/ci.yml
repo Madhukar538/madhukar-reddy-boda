@@ -88,7 +88,8 @@ jobs:
           docker exec mongo mongosh --quiet -u portfolio -p drill-app --authenticationDatabase portfolio portfolio --eval '
             db.posts.insertMany([{ _id: "a", title: "A" }, { _id: "b", title: "B" }]);
             db.profile.insertOne({ _id: "profile", name: "Drill" });
-            db.pageViews.insertMany(Array.from({ length: 500 }, (_, i) => ({ _id: String(i), path: "/" })));'
+            db.pageViews.insertMany(Array.from({ length: 500 }, (_, i) => ({ _id: String(i), path: "/" })));
+            db.getSiblingDB("site_drill").profile.insertOne({ _id: "profile", name: "Another site" });'
       - name: Back up once and restore-check it
         run: |
           mkdir -p backups status
@@ -96,8 +97,10 @@ jobs:
             -v "$PWD/backups:/backups" -v "$PWD/status:/status" --entrypoint backup.sh portfolio-mongo
           cat status/backup.json status/backup-good.json
           grep -q '"isOk":true' status/backup.json
-          grep -q '"collections":3' status/backup-good.json
-          grep -q '"documents":503' status/backup-good.json
-          ls backups/portfolio-*.gz
+          # Both sites: the main database and another site's, every collection and document back.
+          grep -q '"databases":2' status/backup-good.json
+          grep -q '"collections":4' status/backup-good.json
+          grep -q '"documents":504' status/backup-good.json
+          ls backups/portfolio-*.tar
       - if: failure()
         run: docker logs mongo | tail -50

@@ -43,7 +43,7 @@ function Sheet({ title, sheet, children }: { title: string; sheet: string; child
   );
 }
 
-export function BlueprintHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function BlueprintHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   return (
     <div className="home-blueprint look-home">
       <p id="bs-title" role="heading" aria-level={1} className="sr-only">
@@ -89,16 +89,107 @@ export function BlueprintHome({ heading, name, projects, metrics, since, posts }
             ))}
           </tbody>
         </table>
-        <h2 className="bs-h">Notes</h2>
-        <ol className="bs-notes">
-          {posts.slice(0, 4).map((p) => (
-            <li key={p.slug}>
-              <Link href={`/blog/${p.slug}`}>{p.title}</Link> <span className="bs-dim">({shortDate(p.date)})</span>
-            </li>
-          ))}
-        </ol>
+        {!writing && (
+          <>
+            <h2 className="bs-h">Notes</h2>
+            <ol className="bs-notes">
+              {posts.slice(0, 4).map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/blog/${p.slug}`}>{p.title}</Link> <span className="bs-dim">({shortDate(p.date)})</span>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
       </Sheet>
+      {writing && <BlueprintWriting {...writing} />}
     </div>
+  );
+}
+
+const issued = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+/**
+ * Blueprint's writing, in place of the shared blog list: a second sheet, the drawing register. The
+ * two newest posts are detail views, the rest rows of the register (drawing number, title,
+ * discipline, issue date), and the topics a legend of keynotes with their post counts.
+ */
+function BlueprintWriting({ posts, topics, total }: NonNullable<LookHomeProps['writing']>) {
+  if (posts.length === 0) return null;
+  const views = posts.slice(0, 2);
+  const register = posts.slice(2, 10);
+  const dwg = (i: number) => `W-${String(total - i).padStart(3, '0')}`;
+  return (
+    <section aria-labelledby="bs-writing-title" className="bs-writing">
+      <Sheet title="Writing: drawing register" sheet="1A of 4">
+        <p className="bs-label">Drawing register · {total} issued</p>
+        <h2 id="bs-writing-title" className="bs-name bs-name-sm">
+          Writing
+        </h2>
+        <div className="bs-views bs-writing-views">
+          {views.map((p, i) => (
+            <Link key={p.slug} href={`/blog/${p.slug}`}>
+              <span className="bs-view-out">
+                Detail {String.fromCharCode(65 + i)} · {dwg(i)} · {p.category}
+              </span>
+              <span className="bs-view-title">{p.title}</span>
+              <span className="bs-view-desc">{p.excerpt}</span>
+              <span className="bs-dim">
+                Issued {issued(p.date)} · {p.readTime}
+              </span>
+            </Link>
+          ))}
+        </div>
+        {register.length > 0 && (
+          <>
+            <h3 className="bs-h">Register</h3>
+            <table className="bs-parts bs-register">
+              <thead>
+                <tr>
+                  <th scope="col">Dwg</th>
+                  <th scope="col">Title</th>
+                  <th scope="col" className="bs-hide-sm">
+                    Discipline
+                  </th>
+                  <th scope="col">Issued</th>
+                </tr>
+              </thead>
+              <tbody>
+                {register.map((p, i) => (
+                  <tr key={p.slug}>
+                    <td>{dwg(i + 2)}</td>
+                    <td>
+                      <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                    </td>
+                    <td className="bs-hide-sm">{p.category}</td>
+                    <td>{issued(p.date)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+        {topics.length > 0 && (
+          <>
+            <h3 className="bs-h">Keynotes</h3>
+            <ul className="bs-keys">
+              {topics.map((t) => (
+                <li key={t.slug}>
+                  <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'bs-key-cat' : undefined}>
+                    <span className="bs-key-n">{t.count}</span>
+                    {t.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <p className="bs-writing-links">
+          <Link href="/blog">Full register: all {total} posts →</Link>
+          <Link href="/topics">Every topic →</Link>
+        </p>
+      </Sheet>
+    </section>
   );
 }
 

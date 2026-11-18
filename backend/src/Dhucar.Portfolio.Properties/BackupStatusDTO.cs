@@ -32,6 +32,9 @@ public class BackupStatusDTO
     /// <summary>The last good dump's size in bytes.</summary>
     public long LastGoodBytes { get; set; }
 
+    /// <summary>Databases (one per site) that came back in the restore check.</summary>
+    public int Databases { get; set; }
+
     /// <summary>Collections that came back in the restore check.</summary>
     public int Collections { get; set; }
 

@@ -48,7 +48,7 @@ function Window({ title, children, className = '' }: { title: string; children: 
   );
 }
 
-export function TerminalHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function TerminalHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   return (
     <div className="home-terminal look-home">
       <p id="tm-title" role="heading" aria-level={1} className="sr-only">
@@ -80,19 +80,96 @@ export function TerminalHome({ heading, name, projects, metrics, since, posts }:
           ))}
           <span aria-hidden>{'}'}</span>
         </dl>
-        <Prompt cmd="tail -n 5 ~/blog/posts.log" />
-        <ol className="tm-log">
-          {posts.slice(0, 5).map((p) => (
+        {writing ? (
+          <Prompt cmd="cd ~/blog" />
+        ) : (
+          <>
+            <Prompt cmd="tail -n 5 ~/blog/posts.log" />
+            <ol className="tm-log">
+              {posts.slice(0, 5).map((p) => (
+                <li key={p.slug}>
+                  <time dateTime={p.date}>[{isoDay(p.date)}]</time> <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                </li>
+              ))}
+            </ol>
+            <Cursor />
+          </>
+        )}
+      </Window>
+      {writing && <TerminalWriting {...writing} />}
+    </div>
+  );
+}
+
+function Cursor({ path = '~' }: { path?: string }) {
+  return (
+    <p className="tm-prompt">
+      <span className="tm-user">visitor@dhucar</span>:<span className="tm-path">{path}</span>$ <span className="tm-cursor" aria-hidden />
+    </p>
+  );
+}
+
+/**
+ * Terminal's writing section, in place of the shared blog list: the newest posts as a long listing
+ * (date, read time, category, title), the three newest with their excerpt as a comment, then the
+ * topics as a directory listing with their post counts.
+ */
+function TerminalWriting({ posts, topics, total }: NonNullable<LookHomeProps['writing']>) {
+  if (posts.length === 0) return null;
+  const shown = posts.slice(0, 10);
+  return (
+    <section aria-labelledby="tm-blog-title" className="tm-blog">
+      <Window title="visitor@dhucar: ~/blog (zsh)">
+        <h2 id="tm-blog-title" className="sr-only">
+          Writing
+        </h2>
+        <Prompt cmd={`ls -lt | head -${shown.length}`} path="~/blog" />
+        <p className="tm-dim">total {total}</p>
+        <ol className="tm-posts">
+          {shown.map((p, i) => (
             <li key={p.slug}>
-              <time dateTime={p.date}>[{isoDay(p.date)}]</time> <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+              <time dateTime={p.date} className="tm-post-date">
+                {isoDay(p.date)}
+              </time>
+              <span className="tm-post-read">{p.readTime.replace(/\s*read$/i, '')}</span>
+              <span className="tm-post-cat" title={p.category}>
+                {slug(p.category)}
+              </span>
+              <span className="tm-post-main">
+                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                {i < 3 && p.excerpt && <span className="tm-desc"># {p.excerpt}</span>}
+              </span>
             </li>
           ))}
         </ol>
-        <p className="tm-prompt">
-          <span className="tm-user">visitor@dhucar</span>:<span className="tm-path">~</span>$ <span className="tm-cursor" aria-hidden />
+        {topics.length > 0 && (
+          <>
+            <Prompt cmd="ls ~/blog/topics" path="~/blog" />
+            <ul className="tm-topics">
+              {topics.map((t) => (
+                <li key={t.slug}>
+                  <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'tm-topic-cat' : undefined}>
+                    {t.kind === 'category' ? `${t.slug}/` : t.slug}
+                  </Link>
+                  <span className="tm-dim">({t.count})</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <Prompt cmd="open --all" path="~/blog" />
+        <p>
+          <Link href="/blog" className="tm-open">
+            → all {total} posts
+          </Link>{' '}
+          <span className="tm-dim">·</span>{' '}
+          <Link href="/topics" className="tm-open">
+            → every topic
+          </Link>
         </p>
+        <Cursor path="~/blog" />
       </Window>
-    </div>
+    </section>
   );
 }
 
