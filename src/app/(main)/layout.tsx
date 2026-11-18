@@ -14,7 +14,6 @@ import { EditorialFx } from '@/components/editorial/editorial-fx';
 import { Footer } from '@/components/portfolio/footer';
 import { SocialRail } from '@/components/portfolio/social-rail';
 import { OsModeProvider } from '@/components/os/os-mode';
-import { MotionProvider } from '@/components/motion-provider';
 import { QuickSwitcher } from '@/components/vault/quick-switcher';
 import { HoverPreview } from '@/components/vault/hover-preview';
 import { allTopics, siteUrl } from '@/lib/blog';
@@ -189,7 +188,6 @@ export default async function RootLayout({
           <MidnightDark />
           <ViewTransitions />
           <ThemeOptionsProvider value={themes}>
-          <MotionProvider>
           <OsModeProvider>
             <LiquidWallpaper />
             <BlueprintFx />
@@ -207,7 +205,6 @@ export default async function RootLayout({
             <TrackingBeacon />
             <GenieLauncher email={profile.email} />
           </OsModeProvider>
-          </MotionProvider>
           </ThemeOptionsProvider>
         </ThemeProvider>
       </body>

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Pause, Play, RotateCcw, StepForward } from 'lucide-react';
 import { m } from 'framer-motion';
+import type { ComponentProps } from 'react';
+import { MotionProvider } from '@/components/motion-provider';
 import { cn } from '@/lib/utils';
 import type { Diagram, DiagramEdge, DiagramNode, NodeKind } from '@/data/diagrams';
 
@@ -49,7 +51,7 @@ function parseStep(step: string[], edges: Map<string, DiagramEdge>): Travel[] {
     .filter((t): t is Travel => !!t.edge);
 }
 
-export function ArchitectureDiagram({ diagram }: { diagram: Diagram }) {
+function ArchitectureDiagramBody({ diagram }: { diagram: Diagram }) {
   const nodes = useMemo(() => new Map(diagram.nodes.map((n) => [n.id, n])), [diagram]);
   const edges = useMemo(() => new Map(diagram.edges.map((e) => [e.id, e])), [diagram]);
 
@@ -441,5 +443,14 @@ export function ArchitectureDiagram({ diagram }: { diagram: Diagram }) {
         </figcaption>
       </div>
     </figure>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function ArchitectureDiagram(props: ComponentProps<typeof ArchitectureDiagramBody>) {
+  return (
+    <MotionProvider>
+      <ArchitectureDiagramBody {...props} />
+    </MotionProvider>
   );
 }

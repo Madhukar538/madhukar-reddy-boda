@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { m } from 'framer-motion';
+import { SlidingIndicator, useSlidingIndicator } from '@/components/sliding-indicator';
 import { Bug, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PostCard } from './post-card';
@@ -12,6 +12,7 @@ import type { PostSummary } from '@/lib/blog';
 export function BlogIndex({ posts }: { posts: PostSummary[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
+  const filter = useSlidingIndicator<HTMLDivElement>(category);
   const inputRef = useRef<HTMLInputElement>(null);
   // Every post's full text, loaded the first time someone searches (titles, tags and excerpts match before it arrives).
   const [bodies, setBodies] = useState<Record<string, string> | null>(null);
@@ -97,25 +98,20 @@ export function BlogIndex({ posts }: { posts: PostSummary[] }) {
 
         <div className="-mx-4 -my-4 px-4 py-4 overflow-x-auto md:-mx-4 md:px-4">
           {/* A tab row: the chosen topic is underlined in the accent. */}
-          <div className="inline-flex min-w-full items-center gap-6 border-b border-foreground/10">
+          <div ref={filter.row} className="relative inline-flex min-w-full items-center gap-6 border-b border-foreground/10">
+            <SlidingIndicator {...filter} fit="underline" className="h-0.5 bg-primary" />
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setCategory(cat)}
                 aria-pressed={category === cat}
+                data-slide-active={category === cat ? '' : undefined}
                 className={cn(
                   'relative whitespace-nowrap pb-3 pt-1 text-sm font-medium transition-colors duration-200',
                   category === cat ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                {category === cat && (
-                  <m.span
-                    layoutId="blog-index-filter"
-                    className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
-                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                  />
-                )}
                 <span className="relative">{cat}</span>
               </button>
             ))}

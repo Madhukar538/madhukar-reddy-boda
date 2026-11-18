@@ -2,6 +2,8 @@
 
 import { useState, type ReactNode } from 'react';
 import { m } from 'framer-motion';
+import type { ComponentProps } from 'react';
+import { MotionProvider } from '@/components/motion-provider';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { Section } from '@/components/portfolio/section';
@@ -91,7 +93,7 @@ function areaOf(p: ProjectCard): Area {
   return 'platform';
 }
 
-export function Projects({ keyProjects, clientProjects }: { keyProjects: ProjectCard[]; clientProjects: ClientProject[] }) {
+function ProjectsBody({ keyProjects, clientProjects }: { keyProjects: ProjectCard[]; clientProjects: ClientProject[] }) {
   const [area, setArea] = useState<(typeof AREAS)[number]['id']>('all');
   const showKey = (p: ProjectCard) => area === 'all' || area === areaOf(p);
   const featured = keyProjects.filter((p) => p.featured && showKey(p));
@@ -208,5 +210,14 @@ export function Projects({ keyProjects, clientProjects }: { keyProjects: Project
       </>
       )}
     </Section>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function Projects(props: ComponentProps<typeof ProjectsBody>) {
+  return (
+    <MotionProvider>
+      <ProjectsBody {...props} />
+    </MotionProvider>
   );
 }

@@ -5,6 +5,8 @@ import { useState, type ReactNode } from 'react';
 import { toYaml, highlightJson, highlightYaml } from '@/lib/formatter';
 import { Check, Copy } from 'lucide-react';
 import { m } from 'framer-motion';
+import type { ComponentProps } from 'react';
+import { MotionProvider } from '@/components/motion-provider';
 
 interface SectionProps {
   id: string;
@@ -15,7 +17,7 @@ interface SectionProps {
   data?: any; // Structured data for the section to support JSON/YAML code views
 }
 
-export function Section({ id, title, children, className, comment, data }: SectionProps) {
+function SectionBody({ id, title, children, className, comment, data }: SectionProps) {
   const [viewMode, setViewMode] = useState<'ui' | 'json' | 'yaml'>('ui');
   const [copied, setCopied] = useState(false);
 
@@ -118,5 +120,14 @@ export function Section({ id, title, children, className, comment, data }: Secti
         </div>
       )}
     </section>
+  );
+}
+
+/** With its own motion provider, so framer-motion loads only on pages that use this (not site-wide). */
+export function Section(props: ComponentProps<typeof SectionBody>) {
+  return (
+    <MotionProvider>
+      <SectionBody {...props} />
+    </MotionProvider>
   );
 }
