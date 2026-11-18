@@ -12,7 +12,7 @@ import { actTitle, type AboutProps, type ExperienceProps, type ProjectsProps } f
 
 const issueDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
 
-export function GazetteHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function GazetteHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   const [lead, ...briefs] = projects;
   return (
     <div className="home-gazette look-home">
@@ -94,7 +94,57 @@ export function GazetteHome({ heading, name, projects, metrics, since, posts }: 
           ))}
         </ol>
       </section>
+      {writing && <GazetteBriefs {...writing} />}
     </div>
+  );
+}
+
+/**
+ * Gazette's writing, past the opinion page and in place of the shared blog list: the older posts
+ * as briefs in narrow columns, and the topics as the edition's index, with leaders to their counts.
+ */
+function GazetteBriefs({ posts, topics, total }: NonNullable<LookHomeProps['writing']>) {
+  const briefs = posts.slice(4, 10);
+  return (
+    <section className="gz-briefs" aria-labelledby="gz-briefs-title">
+      {briefs.length > 0 && (
+        <>
+          <h2 id="gz-briefs-title" className="gz-section">
+            Also in this edition
+          </h2>
+          <ol className="gz-brief-list">
+            {briefs.map((p) => (
+              <li key={p.slug}>
+                <p className="gz-brief-kicker">{p.category}</p>
+                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                <time dateTime={p.date}>
+                  {shortDate(p.date)} · {p.readTime}
+                </time>
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+      {topics.length > 0 && (
+        <>
+          <h2 className="gz-section">Index to this edition</h2>
+          <ul className="gz-index">
+            {topics.map((t) => (
+              <li key={t.slug}>
+                <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'gz-index-cat' : undefined}>
+                  {t.name}
+                </Link>
+                <span className="gz-leader" aria-hidden />
+                <span>{t.count}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p className="gz-more">
+        <Link href="/blog">The full archive: {total} stories →</Link>
+      </p>
+    </section>
   );
 }
 

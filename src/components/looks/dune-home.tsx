@@ -9,12 +9,12 @@ import { projectHref, shortDate, type LookHomeProps } from './types';
 
 const ROMAN = ['I', 'II', 'III', 'IV'];
 
-export function DuneHome({ heading, name, projects, metrics, since, posts }: LookHomeProps) {
+export function DuneHome({ heading, name, projects, metrics, since, posts, writing }: LookHomeProps) {
   const year = Number(since.match(/\d{4}/)?.[0] ?? 2021);
   const contents = [
     { title: 'Selected work', href: '#dune-work', page: `${Math.min(projects.length, 5)} entries` },
     { title: 'Figures', href: '#dune-figures', page: `${metrics.length} figures` },
-    { title: 'Recent writing', href: '#dune-writing', page: `${Math.min(posts.length, 4)} essays` },
+    { title: 'Recent writing', href: '#dune-writing', page: `${writing ? writing.total : Math.min(posts.length, 4)} essays` },
     { title: 'The full story', href: '/experience', page: 'continued' },
   ];
   return (
@@ -103,14 +103,44 @@ export function DuneHome({ heading, name, projects, metrics, since, posts }: Loo
           Chapter III
         </p>
         <h2 id="du-writing-title">Recent writing</h2>
+        {writing?.posts[0] && (
+          <Link href={`/blog/${writing.posts[0].slug}`} className="du-lead">
+            <span className="du-lead-kicker">
+              The latest · {writing.posts[0].category} · {writing.posts[0].readTime}
+            </span>
+            <span className="du-lead-title">{writing.posts[0].title}</span>
+            <span className="du-lead-excerpt">{writing.posts[0].excerpt}</span>
+          </Link>
+        )}
         <ol className="du-writing">
-          {posts.slice(0, 4).map((p) => (
+          {(writing ? writing.posts.slice(1, 10) : posts.slice(0, 4)).map((p) => (
             <li key={p.slug}>
               <Link href={`/blog/${p.slug}`}>{p.title}</Link>
               <time dateTime={p.date}>{shortDate(p.date)}</time>
             </li>
           ))}
         </ol>
+        {writing && (
+          <>
+            <h3 className="du-index-title">Index</h3>
+            <ul className="du-index">
+              {[...writing.topics]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((t) => (
+                  <li key={t.slug}>
+                    <Link href={`/topics/${t.slug}`} className={t.kind === 'category' ? 'du-index-cat' : undefined}>
+                      {t.name}
+                    </Link>
+                    <span className="du-leader" aria-hidden />
+                    <span className="du-index-n">{t.count}</span>
+                  </li>
+                ))}
+            </ul>
+            <p className="du-more">
+              <Link href="/blog">All {writing.total} essays →</Link>
+            </p>
+          </>
+        )}
       </section>
 
       <p className="du-colophon">
