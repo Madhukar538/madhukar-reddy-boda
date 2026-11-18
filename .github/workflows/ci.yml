@@ -101,6 +101,6 @@ jobs:
           grep -q '"databases":2' status/backup-good.json
           grep -q '"collections":4' status/backup-good.json
           grep -q '"documents":504' status/backup-good.json
-          ls backups/portfolio-*.gz
+          ls backups/portfolio-*.tar
       - if: failure()
         run: docker logs mongo | tail -50

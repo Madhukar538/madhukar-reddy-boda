@@ -209,7 +209,7 @@ use portfolio
 db.settings.findOne({ _id: "security" })
 ```
 
-**Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps every site's database (`portfolio` and each `site_<slug>`) into one archive every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it reads the application databases and not MongoDB's own.
+**Backups.** The `mongo-backup` container (`mongo/backup.sh`, built into the image by `mongo/Dockerfile`) dumps every site's database (`portfolio` and each `site_<slug>`) into one file (`portfolio-<time>.tar`: each database dumped and gzipped on its own) every night at 21:00 UTC (02:30 IST), plus once on every start, into the `mongo-backups` volume, and keeps the newest 14 (`BACKUP_KEEP`, `BACKUP_AT_UTC` to change). Its log shows each dump and the next time. It uses the API's own user, so it reads the application databases and not MongoDB's own.
 
 Every dump is then **restore-checked**: restored into a throwaway MongoDB started inside the backup container (never the live database), and every collection of every site's database must come back. A dump that fails the check is kept but not counted as good. The result is written to the `backup-status` volume, which the API reads (read-only) for the line at the top of Admin → Traffic: when the last good backup was, how many collections and documents came back, and whether the offsite copy is verified. It warns when the last good backup is over 36 hours old or the last attempt failed. CI runs the same drill on every pull request (the "Backups (restore drill)" job).
 
@@ -217,16 +217,18 @@ The dumps sit on the same disk as the database, so copy one elsewhere now and th
 
 ```sh
 # on the server: the newest dump, out of the backup container
-docker exec <mongo-backup-container> sh -c 'ls -1t /backups/*.gz | head -1'
-docker cp <mongo-backup-container>:/backups/portfolio-2026-10-31T210000Z.gz .
+docker exec <mongo-backup-container> sh -c 'ls -1t /backups/portfolio-* | head -1'
+docker cp <mongo-backup-container>:/backups/portfolio-2026-10-31T210000Z.tar .
 ```
 
-To restore one, copy it into the `mongo` container and replace the database with it:
+To restore one, copy it into the `mongo` container, unpack it and replace the database with it (`--nsInclude "portfolio.*"` restores dhucar.in only; `"site_<slug>.*"` restores another site, and leaving it out restores every site):
 
 ```sh
-docker cp portfolio-2026-10-31T210000Z.gz <mongo-container>:/tmp/restore.gz
-docker exec <mongo-container> sh -c 'mongorestore -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --gzip --archive=/tmp/restore.gz --nsInclude "portfolio.*" --drop'
+docker cp portfolio-2026-10-31T210000Z.tar <mongo-container>:/tmp/restore.tar
+docker exec <mongo-container> sh -c 'rm -rf /tmp/restore && mkdir /tmp/restore && tar -xf /tmp/restore.tar -C /tmp/restore && mongorestore -u root -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --gzip --dir /tmp/restore --nsInclude "portfolio.*" --drop'
 ```
+
+Dumps made before November 2026 are single `.gz` archives: restore those with `--gzip --archive=/tmp/restore.gz` in place of `--dir`.
 
 Then restart the API.
 
@@ -243,7 +245,7 @@ Then restart the API.
 After each copy it runs `rclone cryptcheck`, which confirms every dump in the bucket decrypts to exactly the local file (by hash, without downloading), and records the result for the admin's backup line. Its log says "copied and verified, N dumps in the bucket" after each run. To restore from the bucket on any machine with rclone, set the same `RCLONE_CONFIG_*` values the script sets, then decrypt a dump while downloading it, and restore it as above:
 
 ```sh
-rclone copy sealed:portfolio-2026-10-31T210000Z.gz .
+rclone copy sealed:portfolio-2026-10-31T210000Z.tar .
 ```
 
 **Moving from MongoDB Atlas.** Deploy once, so the empty database is seeded. Then replace it with your Atlas data, so admin users, passkeys, posts, comments, tickets and media come across:
