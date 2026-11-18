@@ -148,7 +148,7 @@ export const experience = {
       label: 'Client delivery',
       items: [
         'Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.',
-        'Migrated Fossil India from Angular to Next.js and from .NET Core 3.1 to .NET 10 with a team of AI coding agents, and shipped it to production.',
+        'In early 2026, migrated Fossil India from Angular to Next.js and from .NET Core 3.1 to .NET 10 with a team of AI coding agents, and shipped it to production.',
         'Led the ONDC (Open Network for Digital Commerce) protocol integration.',
         'Integrated payment gateways (Juspay, Paytm and PayU), GoKwik checkout and Shiprocket shipping into the e-commerce platforms.',
         'Shipped core modules across the 6-product RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS and RevalInventory.',
@@ -286,9 +286,9 @@ export const clientProjects: ClientProject[] = [
     title: 'Fossil India',
     client: 'Fossil India',
     role: 'Lead Architect (Migration)',
-    duration: '2023 – 2024',
+    duration: '2023 – 2024 · 2026',
     description:
-      'Led the migration of the storefront from Angular to Next.js and its backend from .NET Core 3.1 to .NET 10, built with a team of AI coding agents and shipped to production with feature parity, performance and security in focus.',
+      'In early 2026, led the migration of the storefront from Angular to Next.js and its backend from .NET Core 3.1 to .NET 10, built with a team of AI coding agents and shipped to production with feature parity, performance and security in focus.',
     responsibilities: [
       'Defined migration strategy and phased rollout for minimal disruption.',
       'Ran the migration with AI coding agents working from specs and skills, reviewing and owning every change before it shipped to production.',
