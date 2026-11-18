@@ -85,6 +85,11 @@ export const skillCategories: SkillCategory[] = [
     skills: ['RabbitMQ', 'SignalR', 'gRPC', 'MQTT', 'WebRTC', 'Socket.IO', 'Firebase (FCM)'],
   },
   {
+    title: 'Payments & Commerce',
+    color: 'cyan',
+    skills: ['Juspay', 'Paytm', 'PayU', 'GoKwik checkout', 'Shiprocket shipping', 'ONDC'],
+  },
+  {
     title: 'DevOps & Infrastructure',
     color: 'cyan',
     skills: ['Docker', 'Docker Swarm', 'K3s', 'Proxmox', 'Coolify', 'Cloudflare Tunnel', 'Terraform', 'Azure', 'Azure DevOps / TFS', 'IIS'],
@@ -144,6 +149,7 @@ export const experience = {
       items: [
         'Delivered core features for 5 high-traffic e-commerce brands (Jockey, Speedo, Manyavar, LuxCozi and Fossil India) on Angular and .NET.',
         'Led the ONDC (Open Network for Digital Commerce) protocol integration.',
+        'Integrated payment gateways (Juspay, Paytm and PayU), GoKwik checkout and Shiprocket shipping into the e-commerce platforms.',
         'Shipped core modules across the 6-product RevalSuite: RevalERP, RevalHRM, RevalCRM, RevalPOS, RevalCMS and RevalInventory.',
         'Built Reval Meet, a video conferencing platform on WebRTC, SignalR and Node.js.',
       ],

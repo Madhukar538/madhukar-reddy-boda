@@ -2,6 +2,7 @@ import { Section } from '@/components/portfolio/section';
 import {
   BrainCircuit,
   Code2,
+  CreditCard,
   Container,
   Database,
   Gauge,
@@ -23,6 +24,7 @@ const icons: Record<string, LucideIcon> = {
   'Messaging & Realtime': Radio,
   'DevOps & Infrastructure': Container,
   'Observability & Quality': Gauge,
+  'Payments & Commerce': CreditCard,
 };
 
 

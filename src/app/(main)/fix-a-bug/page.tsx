@@ -8,7 +8,7 @@ import { getBugLog, getContent } from '@/lib/content';
 import { bookingUrl } from '@/lib/booking';
 
 /** The kinds of trouble that come in, for the Editorial band under the title. */
-const TROUBLE = ['Stack traces', '504s under load', 'Slow queries', 'Memory leaks', 'Race conditions', 'Flaky deploys', 'Broken integrations', 'Hallucinating agents'];
+const TROUBLE = ['Stack traces', '504s under load', 'Slow queries', 'Memory leaks', 'Race conditions', 'Flaky deploys', 'Broken integrations', 'Failed payments', 'Hallucinating agents'];
 
 export const metadata: Metadata = {
   alternates: { canonical: '/fix-a-bug' },
