@@ -15,6 +15,13 @@ export type Award = {
 export const awards: Award[] = [
   {
     body: 'WD Awards',
+    title: 'Site Favorite',
+    project: 'dhucar.in',
+    month: 'November 2026',
+    url: 'https://static.wdawards.com/certificates/2026/11/fb421fdc612770dd.pdf',
+  },
+  {
+    body: 'WD Awards',
     title: 'Nominee',
     project: 'dhucar.in',
     month: 'October 2026',
